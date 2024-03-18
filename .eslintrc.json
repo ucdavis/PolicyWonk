@@ -1,20 +1,18 @@
 {
   "extends": [
-    "next/core-web-vitals", // remove if not using next
-    "eslint:recommended",
+    // "eslint:recommended", // uncomment if not using next 
     "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "next/core-web-vitals",
+    "plugin:prettier/recommended" // prettier goes last so it can override other configs
   ],
   "plugins": [
-    "@typescript-eslint",
     "react",
     "react-hooks",
     "import",
     "prettier"
   ],
   "rules": {
-    "eqeqeq": "error",
+    "eqeqeq": "error", // require === and !==
     "no-console": "warn",
     "prettier/prettier": "error",
     "react/display-name": "off",
