@@ -6,6 +6,9 @@ export default auth((req: any) => {
 
   const isLoggedIn = !!req.auth;
 
+  console.log("isLoggedIn: ", isLoggedIn);
+  console.log("route: ", route, url);
+
   if (!isLoggedIn && !route.startsWith("/api/auth")) {
     console.log("redirecting to signin");
     return Response.redirect(new URL("/api/auth/signin", url));

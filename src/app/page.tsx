@@ -43,7 +43,6 @@ export default function Home() {
         <a
           href="/protected"
           className={styles.card}
-          target="_blank"
           rel="noopener noreferrer"
         >
           <h2>
