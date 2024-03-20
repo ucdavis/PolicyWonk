@@ -1,4 +1,6 @@
-import { auth } from "@/auth";
+import { auth } from '@/auth';
+
+const unprotectedRoutes = ['/api/auth', '/auth'];
 
 export default auth((req: any) => {
   const url = req.nextUrl;
@@ -6,17 +8,26 @@ export default auth((req: any) => {
 
   const isLoggedIn = !!req.auth;
 
-  console.log("isLoggedIn: ", isLoggedIn);
-  console.log("route: ", route, url);
-
-  if (!isLoggedIn && !route.startsWith("/api/auth")) {
-    console.log("redirecting to signin");
-    return Response.redirect(new URL("/api/auth/signin", url));
-  } else {
-    return;
+  if (!isLoggedIn) {
+    // auth routes are unprotected
+    if (unprotectedRoutes.some((pattern) => route.startsWith(pattern))) {
+      return;
+    } else {
+      // redirect to login page with callbackUrl
+      const callbackUrl = new URL(route, url).toString();
+      return Response.redirect(
+        new URL(
+          `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`,
+          url
+        )
+      );
+    }
   }
+
+  // user is logged in, allow access
+  return;
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };
