@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📘 PolicyWonk: UCD Policy Expert always on call!
 
-## Getting Started
+Welcome to **PolicyWonk**, your app for navigating the complex maze of UCOP (University of California Office of the President) and UC Davis policies! 🌟 Whether you're a student, faculty, staff, or administrator, understanding and complying with university policies is now easier than ever.
 
-First, run the development server:
+## How Can PolicyWonk Assist You?
+- **Immediate Answers**: Got a policy question? Just ask, and PolicyWonk provides you with clear, concise answers, pronto! ✏️
+- **Always Informed**: PolicyWonk's database is continuously updated, ensuring you get the most current policy information. 📅
+- **Simple to Use**: Designed with user-friendliness in mind, PolicyWonk makes navigating policies as straightforward as chatting with a friend. 🤝
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## How to Get Started?
+Website coming soon!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Sources:
+See [UC Davis Policy Documents Repository](https://github.com/ucdavis/policy) for the full list of policies and procedures available ("ucdavis" github team member access required).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Sources include `UCOP Policies`, `UC Davis Administrative Policy Manuals`, and `UCOP Collective Bargaining Agreements`.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Development
 
-## Learn More
+Policy Wonk is a NextJS app. To run the app locally, you will need to have Node.js installed. 
 
-To learn more about Next.js, take a look at the following resources:
+First, copy the `.env.local` file (in 1pass and notion) to the root directory.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then, run the following commands:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+`npm install`
 
-## Deploy on Vercel
+AND
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`npm run dev` or `npm start` to start the app.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
