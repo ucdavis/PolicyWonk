@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useChat } from 'ai/react';
+import { useChat, Message } from 'ai/react';
 
 const MainContent: React.FC = () => {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+  });
 
   return (
     <main className='main-content text-center py-4 d-flex flex-column'>
@@ -14,13 +16,23 @@ const MainContent: React.FC = () => {
         Meet Policywonk, your personal guide to navigating all the ins and outs
         of UC policies...
       </p>
-      <div>
-        {messages.map((m) => (
-          <div key={m.id}>
-            {m.role}: {m.content}
-          </div>
-        ))}
-      </div>
+      {messages.map((m: Message) => (
+        <div key={m.id} style={{ whiteSpace: 'pre-wrap' }}>
+          <strong>{`${m.role}: `}</strong>
+          {m.role !== 'data' && m.content}
+          {m.role === 'data' && (
+            <>
+              {(m.data as any).description}
+              <br />
+              <pre className={'bg-gray-200'}>
+                {JSON.stringify(m.data, null, 2)}
+              </pre>
+            </>
+          )}
+          <br />
+          <br />
+        </div>
+      ))}
 
       <div className='input-group d-flex justify-content-center mt-auto'>
         <input
