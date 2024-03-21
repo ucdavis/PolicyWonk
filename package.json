@@ -11,6 +11,7 @@
     "lint:fix": "next lint --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.12.2",
     "ai": "^3.0.13",
     "bootstrap": "^5.3.3",
     "next": "14.1.3",
