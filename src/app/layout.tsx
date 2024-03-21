@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/main.scss';
+import Sidebar from '@/components/layout/sidebar';
 
 export const metadata: Metadata = {
   title: 'Policy Wonk',
@@ -14,7 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body>{children}</body>
+      <body>
+        <main className='d-flex flex-nowrap'>
+          <Sidebar />
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
