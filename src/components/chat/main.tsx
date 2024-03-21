@@ -28,11 +28,12 @@ const MainContent: React.FC = () => {
       <div className='form-floating'>
         <textarea
           className='form-control'
-          placeholder='Leave a comment here'
+          placeholder='Message Policy Wonk'
           id='floatingTextarea'
         ></textarea>
-        <label htmlFor='floatingTextarea'>Comments</label>
+        <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
       </div>
+      <button className='btn btn-primary mt-3'>Send</button>
 
       <p className='disclaimer-text'>
         Disclaimer: The information provided by Policywonk is for general
