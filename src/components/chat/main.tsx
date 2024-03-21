@@ -1,61 +1,10 @@
+'use client';
+
 import React from 'react';
-import { useMutation } from '@tanstack/react-query';
-
-const useChatResponse = () => {
-  const [reponses, setResponses] = React.useState<string>('');
-  const [data, setData] = React.useState<string>('');
-  const [loading, setLoading] = React.useState<boolean>(false);
-
-  const { mutate: startChatStreaming } = useMutation({
-    mutationFn: async (message: string) => {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
-
-      if (!response.body) {
-        throw new Error('No response body');
-      }
-
-      // TODO: other error handling?
-
-      return response.body.getReader();
-    },
-    onSuccess: (reader) => {
-      setLoading(true);
-      const read = async () => {
-        const { done, value } = await reader.read();
-        if (done) {
-          setLoading(false);
-          return;
-        }
-
-        const text = new TextDecoder('utf-8').decode(value);
-
-        // determine how to handle end stream, might have to return [DONE] from the server
-        setResponses((prev) => prev + text);
-
-        read(); // keep reading
-      };
-
-      read();
-    },
-  });
-
-  return { reponses, data, loading, startChatStreaming };
-};
+import { useChat } from 'ai/react';
 
 const MainContent: React.FC = () => {
-  const [message, setMessage] = React.useState<string>('');
-
-  const { reponses, data, loading, startChatStreaming } = useChatResponse();
-
-  const handleSendMessage = () => {
-    startChatStreaming(message);
-  };
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
 
   return (
     <main className='main-content text-center py-4 d-flex flex-column'>
@@ -65,7 +14,13 @@ const MainContent: React.FC = () => {
         Meet Policywonk, your personal guide to navigating all the ins and outs
         of UC policies...
       </p>
-      <div>Chat goes in here</div>
+      <div>
+        {messages.map((m) => (
+          <div key={m.id}>
+            {m.role}: {m.content}
+          </div>
+        ))}
+      </div>
 
       <div className='input-group d-flex justify-content-center mt-auto'>
         <input
@@ -81,17 +36,20 @@ const MainContent: React.FC = () => {
           placeholder='How many holidays are in march?'
         />
       </div>
-      <div className='form-floating'>
-        <textarea
-          className='form-control'
-          placeholder='Message Policy Wonk'
-          id='floatingTextarea'
-        ></textarea>
-        <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
-      </div>
-      <button className='btn btn-primary mt-3' onClick={handleSendMessage}>
-        Send
-      </button>
+
+      <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
+        <div className='form-floating'>
+          <textarea
+            className='form-control'
+            placeholder='Message Policy Wonk'
+            value={input}
+            onChange={handleInputChange}
+            id='floatingTextarea'
+          ></textarea>
+          <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
+        </div>
+        <button className='btn btn-primary mt-3'>Send</button>
+      </form>
 
       <p className='disclaimer-text'>
         Disclaimer: The information provided by Policywonk is for general
