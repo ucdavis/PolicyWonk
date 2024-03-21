@@ -9,12 +9,12 @@
     "production": "next build && next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
-
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
     "next": "14.1.3",
     "next-auth": "^5.0.0-beta.15",
+    "openai": "^4.29.2",
     "react": "^18",
     "react-dom": "^18",
     "reactstrap": "^9.2.2"
