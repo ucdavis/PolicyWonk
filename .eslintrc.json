@@ -1,6 +1,7 @@
 {
   "extends": [
     // "eslint:recommended", // uncomment if not using next 
+    "plugin:@tanstack/eslint-plugin-query/recommended", // react-query
     "plugin:react/recommended",
     "next/core-web-vitals",
     "plugin:prettier/recommended" // prettier goes last so it can override other configs

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './styles/main.scss';
 import Sidebar from '@/components/layout/sidebar';
+
+const queryClient = new QueryClient();
 
 export const metadata: Metadata = {
   title: 'Policy Wonk',
@@ -16,10 +19,12 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <main className='d-flex flex-nowrap'>
-          <Sidebar />
-          {children}
-        </main>
+        <QueryClientProvider client={queryClient}>
+          <main className='d-flex flex-nowrap'>
+            <Sidebar />
+            {children}
+          </main>
+        </QueryClientProvider>
       </body>
     </html>
   );
