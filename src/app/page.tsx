@@ -4,7 +4,7 @@ import MainContent from '@/components/chat/main';
 
 const HomePage: React.FC = () => {
   return (
-    <div className='container'>
+    <div className='wonk-container'>
       <MainContent />
     </div>
   );

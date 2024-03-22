@@ -4,9 +4,14 @@ const Footer: React.FC = () => {
   return (
     <footer>
       <p>links</p>
-      <p>UC Logo here</p>
-      <p>copyright</p>
-      <span className='version-notice'>Policywonk v1.2.3.311</span>
+      <a target='_blank' href='https://ucdavis.edu'>
+        <img src='/media/ucdavis-grey.svg' alt='UC Davis logo greyscale' />
+      </a>
+      <p>
+        copyright 2024 code here
+        <br />
+        <span className='version-notice'>Policywonk v1.2.3.311</span>
+      </p>
     </footer>
   );
 };

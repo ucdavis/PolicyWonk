@@ -18,16 +18,21 @@ h4 {
 }
 h1 {
   font-weight: 600;
-  font-size: 1.6rem;
-  a {
-    text-decoration: underline;
+  font-size: 1.5rem;
+  &.logo {
+    
+    a {
+    text-decoration: none;
+    color:$primary-font;
   }
+  }
+  
 }
 h2 {
   font-size: 1.2rem;
 }
 h3 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 h4 {
   font-size: 1.2rem;
@@ -60,25 +65,17 @@ label {
   text-transform: capitalize;
   color: $primary-font;
 }
-.form-text {
-  color: $secondary-font;
-  font-size: 0.8rem;
-}
 a {
   color: $primary-color;
   &:hover {
     color: darken($primary-color, 4);
   }
 }
-li {
-  color: $primary-font;
-  &.breadcrumb-item {
-    a {
-      text-decoration: none;
-    }
-  }
+.subtitle {
+  font-size:1.2rem;
+  color:$secondary-font;
+  font-weight: 400;
 }
-
 .discreet {
   color: $secondary-font;
 }

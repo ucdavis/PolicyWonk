@@ -15,12 +15,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <head>
+        <link rel='image_src' href='/media/thumbnail.jpg' />
+        <link rel='shortcut icon' href='/media/favicon.ico' />
+        <link
+          rel='apple-touch-icon'
+          sizes='192x192'
+          href='/media/logo192.png'
+        />
+        <link
+          rel='apple-touch-icon'
+          sizes='512x512'
+          href='/media/logo512.png'
+        />
+      </head>
       <body>
         <main className='row'>
-          <div className='col-4 sidebar-wrapper'>
+          <div className='sidebar-wrapper'>
             <Sidebar />
           </div>
-          <div className='col-8 main-wrapper'> {children}</div>
+          <div className='col-8 col-lg-9 wonk-wrapper'> {children}</div>
         </main>
       </body>
     </html>

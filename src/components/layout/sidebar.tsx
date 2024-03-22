@@ -6,11 +6,12 @@ const Sidebar: React.FC = () => {
   return (
     <div className='sidebar-container'>
       <header>
-        <h3>
-          <a href='/' className='logo'>
-            Policy Wonk
+        <h1 className='logo'>
+          <a href='/'>
+            Policy Wonk <br />
+            <span className='subtitle'>Your UC Policy expert</span>
           </a>
-        </h3>
+        </h1>
 
         <div>
           <UserNameDisplay />
