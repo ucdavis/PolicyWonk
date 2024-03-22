@@ -1,0 +1,87 @@
+html {
+  color: $primary-font;
+}
+a.header-link {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-family: $sans-bold;
+  &:hover {
+    color: #fff;
+  }
+}
+h1,
+h2,
+h3,
+h4 {
+  color: $primary-font;
+}
+h1 {
+  font-weight: 600;
+  font-size: 1.6rem;
+  a {
+    text-decoration: underline;
+  }
+}
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.2rem;
+}
+h4 {
+  font-size: 1.2rem;
+  color: $secondary-font;
+}
+h5 {
+  text-transform: uppercase;
+  color: $primary-font;
+  font-size: 1.2rem;
+  font-family: $sans-reg;
+  margin-bottom: 0px;
+}
+p {
+  color: $primary-font;
+  font-size: 1rem;
+  &.subtitle {
+    margin-bottom: 0;
+  }
+  &.lede {
+    font-size: 1.2rem;
+    font-family: $sans-bold;
+  }
+  &.form-helper {
+    font-size: 0.9rem;
+    color: $secondary-font;
+  }
+}
+label {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  color: $primary-font;
+}
+.form-text {
+  color: $secondary-font;
+  font-size: 0.8rem;
+}
+a {
+  color: $primary-color;
+  &:hover {
+    color: darken($primary-color, 4);
+  }
+}
+li {
+  color: $primary-font;
+  &.breadcrumb-item {
+    a {
+      text-decoration: none;
+    }
+  }
+}
+
+.discreet {
+  color: $secondary-font;
+}
+.form-label {
+  text-transform: uppercase;
+}

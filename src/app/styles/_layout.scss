@@ -1,0 +1,16 @@
+.sidebar-wrapper {
+  background-color: $primary-bg;
+  height:100vh;
+  .sidebar-container {
+    display: flex;
+    height:100%;
+    flex-direction: column;
+    header {
+      margin-bottom:auto;
+    }
+    footer {
+      
+    }
+  }
+
+}

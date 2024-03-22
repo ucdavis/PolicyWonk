@@ -16,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <main className='d-flex flex-nowrap'>
-          <Sidebar />
-          {children}
+        <main className='row'>
+          <div className='col-4 sidebar-wrapper'>
+            <Sidebar />
+          </div>
+          <div className='col-8 main-wrapper'> {children}</div>
         </main>
       </body>
     </html>
