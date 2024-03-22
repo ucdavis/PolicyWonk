@@ -9,7 +9,12 @@ const MainContent: React.FC = () => {
   });
 
   return (
-    <main className='main-content text-center py-4 d-flex flex-column'>
+    <main className='main-content d-flex flex-column'>
+      <img
+        className='img-fluid policy-png'
+        src='/media/policy-wonk.png'
+        alt='Aggie Gold Robot cartoon'
+      />
       <h2 className='main-title'>Policy Wonk</h2>
       <h3 className='sub-title'>Your UC Policy Expert</h3>
       <p className='intro-text'>

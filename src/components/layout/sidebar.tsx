@@ -4,24 +4,20 @@ import { auth } from '@/auth';
 
 const Sidebar: React.FC = () => {
   return (
-    <div
-      className='d-flex flex-column flex-shrink-0 p-3 text-bg-dark'
-      style={{ width: '280px' }}
-    >
-      <a
-        href='/'
-        className='d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none'
-      >
-        <svg className='bi pe-none me-2' width='40' height='32'>
-          <use xlinkHref='#bootstrap' />
-        </svg>
-        <span className='fs-4'>Policy Wonk</span>
-      </a>
-      <hr />
-      <div className='mb-auto'>
-        <UserNameDisplay />
-      </div>
-      <hr />
+    <div className='sidebar-container'>
+      <header>
+        <h1 className='logo'>
+          <a href='/'>
+            Policy Wonk <br />
+            <span className='subtitle'>Your UC Policy expert</span>
+          </a>
+        </h1>
+
+        <div>
+          <UserNameDisplay />
+        </div>
+      </header>
+
       <Footer />
     </div>
   );

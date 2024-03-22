@@ -1,0 +1,36 @@
+@import "bootstrap/scss/_functions";
+@import "bootstrap/scss/_variables";
+@import "@ucdavis/gunrockin/sass/gunrockin.scss";
+$primary-color: #FFCC33;
+$secondary-color: #1D4776;
+$theme-colors: (
+  primary: $primary-color,
+  secondary: lighten($primary-color, 7),
+  warning: $sunflower,
+  danger: $doubledecker,
+  link: $primary-color,
+  success: $quad,
+  info: $recpool,
+);
+@import "bootstrap/scss/bootstrap";
+@import "@ucdavis/gunrockin/sass/_typography.scss";
+
+$primary-bg: #FFF2CC;
+
+$borders: #e6e7e9;
+$primary-font: rgba(31, 31, 31, 0.99); //
+$secondary-font: rgba(31, 31, 31, 0.7); //
+$tertiary-font: rgba(31, 31, 31, 0.48); //
+
+$box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+  0 1px 1px rgba(0, 0, 0, 0.075);
+
+$danger: $merlot;
+$error-color: $danger;
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 700px;
+    margin: 1.75rem auto;
+  }
+}
