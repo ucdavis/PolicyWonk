@@ -45,7 +45,7 @@ const MainContent: React.FC = () => {
       {messages
         .filter((m) => m.role === 'assistant' || m.role === 'user')
         .map((m: Message) => (
-          <div key={m.id} style={{ whiteSpace: 'pre-wrap' }}>
+          <div key={m.id}>
             <strong>{`${m.role}: `}</strong>
             <ChatMessage message={m} />
             <br />
