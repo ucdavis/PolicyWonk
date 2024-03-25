@@ -12,7 +12,7 @@ import { ChatMessage } from '../chatMessage';
 import Ask from './ask';
 
 const MainContent: React.FC = () => {
-  const { messages, setMessages, reload, append } = useChat({
+  const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
 
@@ -68,7 +68,7 @@ const MainContent: React.FC = () => {
         />
       </div>
 
-      <Ask onQuestionSubmitted={onQuestionSubmitted} />
+      <Ask onQuestionSubmitted={onQuestionSubmitted} allowSend={!isLoading} />
 
       <p className='disclaimer-text small mt-2'>
         Disclaimer: The information provided by Policywonk is for general
