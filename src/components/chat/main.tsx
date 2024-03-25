@@ -1,7 +1,10 @@
 'use client';
 
 import { useChat, Message } from 'ai/react';
+import Image from 'next/image';
 import React from 'react';
+
+import Logo from '../../../public/media/policy-wonk.png';
 
 const MainContent: React.FC = () => {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
@@ -10,9 +13,9 @@ const MainContent: React.FC = () => {
 
   return (
     <main className='main-content d-flex flex-column'>
-      <img
+      <Image
         className='img-fluid policy-png'
-        src='/media/policy-wonk.png'
+        src={Logo}
         alt='Aggie Gold Robot cartoon'
       />
       <h2 className='main-title'>Policy Wonk</h2>
