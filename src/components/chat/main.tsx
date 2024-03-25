@@ -70,7 +70,7 @@ const MainContent: React.FC = () => {
 
       <Ask onQuestionSubmitted={onQuestionSubmitted} />
 
-      <p className='disclaimer-text'>
+      <p className='disclaimer-text small mt-2'>
         Disclaimer: The information provided by Policywonk is for general
         informational purposes only and should not be considered legal or
         professional advice. Always consult with the appropriate experts and
