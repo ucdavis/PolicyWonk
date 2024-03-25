@@ -15,14 +15,10 @@ const MainContent: React.FC = () => {
     api: '/api/chat',
   });
 
-  const onQuestionSubmitted = (question: string) => {
-    const handler = async () => {
-      const newMessages = await getChatMessages(question);
-      setMessages(newMessages);
-      reload();
-    };
-
-    handler();
+  const onQuestionSubmitted = async (question: string) => {
+    const newMessages = await getChatMessages(question);
+    setMessages(newMessages);
+    reload();
   };
 
   return (

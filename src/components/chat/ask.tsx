@@ -1,4 +1,3 @@
-import openai from 'openai';
 import React from 'react';
 
 interface AskProps {
