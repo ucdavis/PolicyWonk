@@ -20,7 +20,9 @@
     "openai": "^4.29.2",
     "react": "^18",
     "react-dom": "^18",
-    "reactstrap": "^9.2.2"
+    "react-markdown": "^9.0.1",
+    "reactstrap": "^9.2.2",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
