@@ -6,7 +6,7 @@ interface AskProps {
   onQuestionSubmitted: (question: string) => void;
 }
 
-const Ask: React.FC<AskProps> = (props: AskProps) => {
+const Ask: React.FC<AskProps> = ({ allowSend, onQuestionSubmitted }) => {
   const [message, setMessage] = React.useState('');
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -17,7 +17,11 @@ const Ask: React.FC<AskProps> = (props: AskProps) => {
     }
   }, []);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+  function handleSubmit(
+    event:
+      | React.FormEvent<HTMLFormElement>
+      | React.KeyboardEvent<HTMLTextAreaElement>
+  ): void {
     event.preventDefault();
 
     if (!message) {
@@ -26,7 +30,7 @@ const Ask: React.FC<AskProps> = (props: AskProps) => {
 
     setMessage('');
 
-    props.onQuestionSubmitted(message);
+    onQuestionSubmitted(message);
   }
 
   return (
@@ -45,10 +49,16 @@ const Ask: React.FC<AskProps> = (props: AskProps) => {
           autoCorrect='off'
           name='message'
           rows={1}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey && allowSend) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
         ></textarea>
         <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
       </div>
-      <button className='btn btn-primary mt-3' disabled={!props.allowSend}>
+      <button className='btn btn-primary mt-3' disabled={!allowSend}>
         Send
       </button>
     </form>

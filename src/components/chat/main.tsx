@@ -10,6 +10,7 @@ import Logo from '../../../public/media/policy-wonk.png';
 import { ChatMessage } from '../chatMessage';
 
 import Ask from './ask';
+import DefaultQuestions from './defaultQuestions';
 
 const MainContent: React.FC = () => {
   const { messages, setMessages, reload, append, isLoading } = useChat({
@@ -53,20 +54,10 @@ const MainContent: React.FC = () => {
           </div>
         ))}
 
-      <div className='input-group d-flex justify-content-center mt-auto'>
-        <input
-          type='text'
-          disabled
-          className='form-control me-2'
-          placeholder='How many holidays are in march?'
-        />
-        <input
-          type='text'
-          disabled
-          className='form-control'
-          placeholder='How many holidays are in march?'
-        />
-      </div>
+      <DefaultQuestions
+        onQuestionSubmitted={onQuestionSubmitted}
+        allowSend={!isLoading}
+      />
 
       <Ask onQuestionSubmitted={onQuestionSubmitted} allowSend={!isLoading} />
 
