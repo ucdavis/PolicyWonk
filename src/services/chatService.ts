@@ -84,8 +84,7 @@ const getSearchResults = async (
 const transformSearchResults = (searchResults: SearchResponse<PolicyIndex>) => {
   // Each document should be delimited by triple quotes and then note the excerpt of the document
   const docTextArray = searchResults.hits.hits.map((hit: any) => {
-    return `"""${hit._source.text}\n\n-from <${hit._source.metadata.url},
-    )}|${cleanupTitle(hit._source.metadata.title)}>"""`;
+    return `"""${hit._source.text}\n\n-from [${cleanupTitle(hit._source.metadata.title)}](${hit._source.metadata.url})"""`;
   });
 
   return docTextArray.join('\n\n');
@@ -103,8 +102,8 @@ const getSystemMessage = (docText: string) => {
     content: `
     You are a helpful assistant who is an expert in university policy at UC Davis. You will be provided with several documents each delimited by triple quotes and then asked a question.
   Your task is to answer the question in nicely formatted markdown using only the provided documents and to cite the the documents used to answer the question. 
-  If the documents do not contain the information needed to answer this question then simply write: "Insufficient information to answer this question." 
-  If an answer to the question is provided, it must be annotated with a citation. \n\n ${docText}`,
+  If the documents do not contain the information needed to answer this question then simply write: "Sorry, I wasn't able to find enough information to answer this question." 
+  If an answer to the question is provided, it must be annotated with a citation including the source URL and title. \n\n ${docText}`,
   } as Message;
 };
 

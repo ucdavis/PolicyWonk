@@ -11,14 +11,21 @@ import Logo from '../../../public/media/policy-wonk.png';
 import Ask from './ask';
 
 const MainContent: React.FC = () => {
-  const { messages, setMessages, reload } = useChat({
+  const { messages, setMessages, reload, append } = useChat({
     api: '/api/chat',
   });
 
   const onQuestionSubmitted = async (question: string) => {
-    const newMessages = await getChatMessages(question);
-    setMessages(newMessages);
-    reload();
+    if (messages.length === 0) {
+      const newMessages = await getChatMessages(question);
+      setMessages(newMessages);
+      reload();
+    } else {
+      append({
+        role: 'user',
+        content: question,
+      });
+    }
   };
 
   return (
