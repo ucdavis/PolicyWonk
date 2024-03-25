@@ -7,6 +7,7 @@ import React from 'react';
 import { getChatMessages } from '@/services/chatService';
 
 import Logo from '../../../public/media/policy-wonk.png';
+import { ChatMessage } from '../chatMessage';
 
 import Ask from './ask';
 
@@ -46,7 +47,7 @@ const MainContent: React.FC = () => {
         .map((m: Message) => (
           <div key={m.id} style={{ whiteSpace: 'pre-wrap' }}>
             <strong>{`${m.role}: `}</strong>
-            {m.role !== 'data' && m.content}
+            <ChatMessage message={m} />
             <br />
             <br />
           </div>
