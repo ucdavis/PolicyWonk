@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { useChat, Message } from 'ai/react';
+import React from 'react';
 
 const MainContent: React.FC = () => {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
@@ -58,6 +58,7 @@ const MainContent: React.FC = () => {
         <div className='form-floating'>
           <textarea
             className='form-control'
+            autoFocus
             placeholder='Message Policy Wonk'
             value={input}
             onChange={handleInputChange}
