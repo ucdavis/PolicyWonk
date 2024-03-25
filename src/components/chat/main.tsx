@@ -4,12 +4,26 @@ import { useChat, Message } from 'ai/react';
 import Image from 'next/image';
 import React from 'react';
 
+import { getChatMessages } from '@/services/chatService';
+
 import Logo from '../../../public/media/policy-wonk.png';
 
+import Ask from './ask';
+
 const MainContent: React.FC = () => {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const { messages, setMessages, reload } = useChat({
     api: '/api/chat',
   });
+
+  const onQuestionSubmitted = (question: string) => {
+    const handler = async () => {
+      const newMessages = await getChatMessages(question);
+      setMessages(newMessages);
+      reload();
+    };
+
+    handler();
+  };
 
   return (
     <main className='main-content d-flex flex-column'>
@@ -24,23 +38,16 @@ const MainContent: React.FC = () => {
         Meet Policywonk, your personal guide to navigating all the ins and outs
         of UC policies...
       </p>
-      {messages.map((m: Message) => (
-        <div key={m.id} style={{ whiteSpace: 'pre-wrap' }}>
-          <strong>{`${m.role}: `}</strong>
-          {m.role !== 'data' && m.content}
-          {m.role === 'data' && (
-            <>
-              {(m.data as any).description}
-              <br />
-              <pre className={'bg-gray-200'}>
-                {JSON.stringify(m.data, null, 2)}
-              </pre>
-            </>
-          )}
-          <br />
-          <br />
-        </div>
-      ))}
+      {messages
+        .filter((m) => m.role === 'assistant' || m.role === 'user')
+        .map((m: Message) => (
+          <div key={m.id} style={{ whiteSpace: 'pre-wrap' }}>
+            <strong>{`${m.role}: `}</strong>
+            {m.role !== 'data' && m.content}
+            <br />
+            <br />
+          </div>
+        ))}
 
       <div className='input-group d-flex justify-content-center mt-auto'>
         <input
@@ -57,20 +64,7 @@ const MainContent: React.FC = () => {
         />
       </div>
 
-      <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
-        <div className='form-floating'>
-          <textarea
-            className='form-control'
-            autoFocus
-            placeholder='Message Policy Wonk'
-            value={input}
-            onChange={handleInputChange}
-            id='floatingTextarea'
-          ></textarea>
-          <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
-        </div>
-        <button className='btn btn-primary mt-3'>Send</button>
-      </form>
+      <Ask onQuestionSubmitted={onQuestionSubmitted} />
 
       <p className='disclaimer-text'>
         Disclaimer: The information provided by Policywonk is for general

@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import OpenAI from 'openai';
 
 // IMPORTANT! Set the runtime to edge
 // https://vercel.com/blog/introducing-the-vercel-ai-sdk
