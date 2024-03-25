@@ -25,9 +25,7 @@ export const getChatMessages = async (query: string) => {
   // 1. get embeddings
   // 2. get search results from elastic
   // 3. generate a LLM message
-  // 4. send the message to the server
-  // 5. disable the text area -- only one question allowed for now (no follow-ups)
-
+  // 4. return the message
   const embeddings = await getEmbeddings(query);
 
   const searchResults = await getSearchResults(embeddings);
