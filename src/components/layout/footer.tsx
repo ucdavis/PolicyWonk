@@ -4,7 +4,7 @@ const Footer: React.FC = () => {
   return (
     <footer>
       <p>links</p>
-      <a target='_blank' href='https://ucdavis.edu'>
+      <a target='_blank' rel='noopener noreferrer' href='https://ucdavis.edu'>
         <img src='/media/ucdavis-grey.svg' alt='UC Davis logo greyscale' />
       </a>
       <p>
