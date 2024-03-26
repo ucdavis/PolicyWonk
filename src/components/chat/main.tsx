@@ -31,7 +31,7 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <main className='main-content d-flex flex-column'>
+    <div className='main-content d-flex flex-column'>
       <Image
         className='img-fluid policy-png'
         src={Logo}
@@ -67,7 +67,7 @@ const MainContent: React.FC = () => {
         professional advice. Always consult with the appropriate experts and
         refer to official policies for accurate and up-to-date information.
       </p>
-    </main>
+    </div>
   );
 };
 
