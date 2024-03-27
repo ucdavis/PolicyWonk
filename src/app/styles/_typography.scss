@@ -1,15 +1,6 @@
 html {
   color: $primary-font;
 }
-a.header-link {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.88);
-  text-decoration: none;
-  font-family: $sans-bold;
-  &:hover {
-    color: #fff;
-  }
-}
 h1,
 h2,
 h3,
@@ -57,6 +48,12 @@ p {
   &.form-helper {
     font-size: 0.9rem;
     color: $secondary-font;
+  }
+  a {
+    color:$secondary-color;
+    &:hover {
+      color:lighten($secondary-color, 7);
+    }
   }
 }
 label {

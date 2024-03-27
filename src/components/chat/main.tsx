@@ -44,11 +44,17 @@ const MainContent: React.FC = () => {
         {messages
           .filter((m) => m.role === 'assistant' || m.role === 'user')
           .map((m: Message) => (
-            <div key={m.id}>
-              <strong>{`${m.role}: `}</strong>
-              <ChatMessage message={m} />
-              <br />
-              <br />
+            <div className='row mb-3' key={m.id}>
+              <div className='col-1'>
+                <img src='/media/ph-user.png' alt='profile-portrait' />
+              </div>
+              <div className='col-11'>
+                <p>
+                  <strong>{`${m.role}: `}</strong>
+                </p>
+
+                <ChatMessage message={m} />
+              </div>
             </div>
           ))}
       </div>

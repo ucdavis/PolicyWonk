@@ -2,13 +2,13 @@
 @import "bootstrap/scss/_variables";
 @import "@ucdavis/gunrockin/sass/gunrockin.scss";
 $primary-color: #FFCC33;
-$secondary-color: #1D4776;
+$secondary-color: #003A5D;
 $theme-colors: (
   primary: $primary-color,
-  secondary: lighten($primary-color, 7),
+  secondary: $secondary-color,
   warning: $sunflower,
   danger: $doubledecker,
-  link: $primary-color,
+  link: $secondary-color,
   success: $quad,
   info: $recpool,
 );
