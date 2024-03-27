@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 interface ChatBoxProps {
@@ -12,6 +13,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
 }) => {
   const [message, setMessage] = React.useState('');
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const router = useRouter();
 
   // focus on the input when the component mounts
   React.useEffect(() => {
@@ -36,11 +38,18 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     onQuestionSubmitted(message);
   }
 
+  function handleNewMessage(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    router.push('/new');
+  }
+
   return (
     <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
-      <div className='form-floating'>
-        <div className='input-group'>
-          <button className='input-group-text'>+</button>
+      <div className='input-group'>
+        <button className='input-group-text' onClick={handleNewMessage}>
+          +
+        </button>
+        <div className='form-floating'>
           <textarea
             ref={inputRef}
             tabIndex={0}
