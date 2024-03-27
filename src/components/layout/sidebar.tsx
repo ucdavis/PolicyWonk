@@ -9,7 +9,7 @@ const Sidebar: React.FC = () => {
         <h1 className='logo'>
           <a href='/'>
             Policy Wonk <br />
-            <span className='subtitle'>Your UC Policy expert</span>
+            <span className='subtitle'>Your UCD Policy expert</span>
           </a>
         </h1>
 

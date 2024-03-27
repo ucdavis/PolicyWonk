@@ -52,8 +52,7 @@ p {
     margin-bottom: 0;
   }
   &.lede {
-    font-size: 1.2rem;
-    font-family: $sans-bold;
+    font-size: 1.1rem;
   }
   &.form-helper {
     font-size: 0.9rem;
@@ -78,6 +77,8 @@ a {
 }
 .discreet {
   color: $secondary-font;
+  font-size:0.9rem;
+  font-style: italic;
 }
 .form-label {
   text-transform: uppercase;

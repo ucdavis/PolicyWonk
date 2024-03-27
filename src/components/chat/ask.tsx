@@ -37,7 +37,7 @@ const Ask: React.FC<AskProps> = (props: AskProps) => {
           tabIndex={0}
           className='form-control'
           autoFocus
-          placeholder='Message Policy Wonk'
+          placeholder='Ask your policy question'
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           spellCheck={false}
@@ -46,7 +46,7 @@ const Ask: React.FC<AskProps> = (props: AskProps) => {
           name='message'
           rows={1}
         ></textarea>
-        <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
+        <label htmlFor='floatingTextarea'>Ask your policy question</label>
       </div>
       <button className='btn btn-primary mt-3' disabled={!props.allowSend}>
         Send
