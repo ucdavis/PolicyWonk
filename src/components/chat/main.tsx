@@ -1,13 +1,12 @@
 'use client';
+import React from 'react';
 
 import { useChat, Message } from 'ai/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
 
-import Logo from '../../../public/media/policy-wonk.svg';
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
@@ -16,7 +15,6 @@ import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
-import StartScreen from './startScreen';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
@@ -36,21 +34,6 @@ const MainContent: React.FC = () => {
         content: question,
       });
     }
-  };
-  const RolePortrait = ({ role }: { role: string }) => {
-    return (
-      <div className='role-portrait'>
-        <Image
-          width={42}
-          height={42}
-          className='chat-image'
-          src={
-            role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
-          }
-          alt={role}
-        />
-      </div>
-    );
   };
 
   const onNewMessage = () => {
@@ -117,3 +100,23 @@ const MainContent: React.FC = () => {
 };
 
 export default MainContent;
+
+const RolePortrait = React.memo(function RolePortrait({
+  role,
+}: {
+  role: string;
+}) {
+  return (
+    <div className='role-portrait'>
+      <Image
+        width={42}
+        height={42}
+        className='chat-image'
+        src={
+          role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
+        }
+        alt={role}
+      />
+    </div>
+  );
+});
