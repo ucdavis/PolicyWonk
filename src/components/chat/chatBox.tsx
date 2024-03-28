@@ -52,6 +52,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         </button>
         <div className='form-floating'>
           <textarea
+            id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
             className='form-control'
@@ -71,7 +72,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
               }
             }}
           ></textarea>
-          <label htmlFor='floatingTextarea'>Message Policy Wonk</label>
+          <label htmlFor='messageTextArea'>Message Policy Wonk</label>
         </div>
       </div>
       <button className='btn btn-primary mt-3' disabled={!allowSend}>
