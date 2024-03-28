@@ -1,11 +1,13 @@
+import Image from 'next/image';
 import React from 'react';
+
+import Logo from '/public/media/ucdavis-grey.svg';
 
 const Footer: React.FC = () => {
   return (
     <footer>
-      <p>links</p>
       <a target='_blank' href='https://ucdavis.edu'>
-        <img src='/media/ucdavis-grey.svg' alt='UC Davis logo greyscale' />
+        <Image src={Logo} alt='UC Davis logo greyscale' />
       </a>
       <p>
         copyright 2024 code here

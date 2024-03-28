@@ -10,7 +10,7 @@ import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
 
-const MainContent: React.FC = () => {
+const ChatPanel: React.FC = () => {
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
@@ -54,4 +54,4 @@ const MainContent: React.FC = () => {
   );
 };
 
-export default MainContent;
+export default ChatPanel;

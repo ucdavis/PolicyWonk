@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ChatPanel from '@/components/chat/main';
+import ChatPanel from '@/components/chat/chatPanel';
 
 const HomePage: React.FC = () => {
   return (
