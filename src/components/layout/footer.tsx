@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import React from 'react';
 
 import Logo from '/public/media/ucdavis-grey.svg';

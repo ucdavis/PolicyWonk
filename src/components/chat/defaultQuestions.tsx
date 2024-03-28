@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface DefaultQuestionsProps {
   allowSend: boolean;
   onQuestionSubmitted: (question: string) => void;
