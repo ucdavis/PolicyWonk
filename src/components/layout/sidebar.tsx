@@ -1,32 +1,35 @@
+import Link from 'next/link';
+import { Session } from 'next-auth';
 import React from 'react';
-import Footer from './footer';
+
 import { auth } from '@/auth';
+import SidebarLinks from '@/components/layout/sidebarLinks';
+
+import Footer from './footer';
 
 const Sidebar: React.FC = () => {
   return (
     <div className='sidebar-container'>
       <header>
         <h1 className='logo'>
-          <a href='/'>
+          <Link href='/'>
             Policy Wonk <br />
-            <span className='subtitle'>Your UCD Policy expert</span>
-          </a>
+            <span className='subtitle'>Your UC Policy expert</span>
+          </Link>
         </h1>
-
         <div>
           <UserNameDisplay />
         </div>
+        <SidebarLinks />
       </header>
-
       <Footer />
     </div>
   );
 };
 
-const UserNameDisplay = async () => {
-  const session = await auth();
+export default Sidebar;
 
+const UserNameDisplay: React.FC = async ({}) => {
+  const session = (await auth()) as Session;
   return <>{session?.user?.name}</>;
 };
-
-export default Sidebar;

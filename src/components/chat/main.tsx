@@ -2,16 +2,25 @@
 
 import { useChat, Message } from 'ai/react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
 
 import Logo from '../../../public/media/policy-wonk.svg';
-import { ChatMessage } from '../chatMessage';
+import Disclaimer from '../layout/disclaimer';
+import WonkBottom from '../layout/wonkBottom';
+import WonkTop from '../layout/wonkTop';
 
-import Ask from './ask';
+import ChatBox from './chatBox';
+import ChatHeader from './chatHeader';
+import { ChatMessage } from './chatMessage';
+import DefaultQuestions from './defaultQuestions';
+import StartScreen from './startScreen';
 
 const MainContent: React.FC = () => {
+  const router = useRouter();
+
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
@@ -44,61 +53,66 @@ const MainContent: React.FC = () => {
     );
   };
 
+  const onNewMessage = () => {
+    router.push('/new');
+  };
+
   return (
-    <main className='wonk-container'>
-      <div className='wonk-top'>
-        <Image
-          className='img-fluid policy-png mb-2'
-          src={Logo}
-          alt='Aggie Gold Robot cartoon'
-        />
-        <p className='lede'>
-          Meet Policywonk, your personal guide to navigating all the ins and
-          outs of UCD policies...
-        </p>
-        {messages
-          .filter((m) => m.role === 'assistant' || m.role === 'user')
-          .map((m: Message) => (
-            <div className='row mb-3' key={m.id}>
-              <div className='col-1'>
-                <RolePortrait role={m.role} />
-              </div>
-              <div className='col-11'>
-                <p className='chat-name'>
-                  <strong>{`${m.role}: `}</strong>
-                </p>
+    <div>
+      {messages?.length === 0 && !isLoading ? (
+        <>
+          <WonkTop>
+            <ChatHeader />
+          </WonkTop>
+          <WonkBottom>
+            <DefaultQuestions
+              onQuestionSubmitted={onQuestionSubmitted}
+              allowSend={!isLoading}
+            />
+            <ChatBox
+              onQuestionSubmitted={onQuestionSubmitted}
+              allowSend={!isLoading && messages.length === 0}
+              onNewMessage={onNewMessage}
+            />
+            <Disclaimer />
+          </WonkBottom>
+        </>
+      ) : (
+        <>
+          <WonkTop>
+            {messages // TODO: add suspense boundary and loading animation
+              .filter((m) => m.role === 'assistant' || m.role === 'user')
+              .map((m: Message) => (
+                <div className='row mb-3' key={m.id}>
+                  <div className='col-1'>
+                    <RolePortrait role={m.role} />
+                  </div>
+                  <div className='col-11'>
+                    <p className='chat-name'>
+                      <strong>{`${m.role}: `}</strong>
+                    </p>
 
-                <ChatMessage message={m} />
-              </div>
+                    <ChatMessage message={m} />
+                  </div>
+                </div>
+              ))}
+          </WonkTop>
+          <WonkBottom>
+            <div className='d-flex flex-column mt-3'>
+              <button
+                className='btn btn-primary mt-3'
+                onClick={() => {
+                  onNewMessage();
+                }}
+                aria-label='Ask another question'
+              >
+                Ask another question
+              </button>
             </div>
-          ))}
-      </div>
-      <div className='wonk-bottom'>
-        <div className='input-group d-flex justify-content-center mt-auto'>
-          <input
-            type='text'
-            disabled
-            className='form-control me-2'
-            placeholder='How many holidays are in march?'
-          />
-          <input
-            type='text'
-            disabled
-            className='form-control'
-            placeholder='How many holidays are in march?'
-          />
-        </div>
-
-        <Ask onQuestionSubmitted={onQuestionSubmitted} allowSend={!isLoading} />
-
-        <p className='discreet mt-2'>
-          Disclaimer: The information provided by Policywonk is for general
-          informational purposes only and should not be considered legal or
-          professional advice. Always consult with the appropriate experts and
-          refer to official policies for accurate and up-to-date information.
-        </p>
-      </div>
-    </main>
+          </WonkBottom>
+        </>
+      )}
+    </div>
   );
 };
 
