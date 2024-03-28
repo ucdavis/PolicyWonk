@@ -66,6 +66,7 @@ const MainContent: React.FC = () => {
               onClick={() => {
                 onNewMessage();
               }}
+              aria-label='Ask another question'
             >
               Ask another question
             </button>

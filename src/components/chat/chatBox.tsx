@@ -47,6 +47,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             e.preventDefault();
             onNewMessage();
           }}
+          aria-label='Start a new conversation'
         >
           +
         </button>
@@ -75,7 +76,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           <label htmlFor='messageTextArea'>Message Policy Wonk</label>
         </div>
       </div>
-      <button className='btn btn-primary mt-3' disabled={!allowSend}>
+      <button
+        className='btn btn-primary mt-3'
+        disabled={!allowSend}
+        aria-label='Send message'
+        aria-disabled={!allowSend}
+      >
         Send
       </button>
     </form>
