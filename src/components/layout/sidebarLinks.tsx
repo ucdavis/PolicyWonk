@@ -7,13 +7,10 @@ const SidebarLinks: React.FC = () => {
   return (
     <div>
       <div>
-        <Link href='#'>Link 1</Link>
+        <Link href='#'>Internal Link</Link>
       </div>
       <div>
-        <Link href='#'>Link 2</Link>
-      </div>
-      <div>
-        <Link href='#'>Link 3</Link>
+        <a href='#'>External Link</a>
       </div>
     </div>
   );
