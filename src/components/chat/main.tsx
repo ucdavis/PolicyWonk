@@ -41,39 +41,40 @@ const MainContent: React.FC = () => {
   return (
     <div>
       {messages?.length === 0 && !isLoading ? (
-        <StartScreen
-          onQuestionSubmitted={onQuestionSubmitted}
-          isLoading={isLoading}
-        />
+        <>
+          <StartScreen
+            onQuestionSubmitted={onQuestionSubmitted}
+            isLoading={isLoading}
+          />
+          <ChatBox
+            onQuestionSubmitted={onQuestionSubmitted}
+            allowSend={!isLoading && messages.length === 0}
+            onNewMessage={onNewMessage}
+          />
+        </>
       ) : (
-        messages
-          .filter((m) => m.role === 'assistant' || m.role === 'user')
-          .map((m: Message) => (
-            <div key={m.id}>
-              <strong>{`${m.role}: `}</strong>
-              <ChatMessage message={m} />
-            </div>
-          ))
-      )}
-
-      {messages?.length === 0 ? (
-        // remove the ability to ask new questions in the chat, send them to the new page instead
-        <ChatBox
-          onQuestionSubmitted={onQuestionSubmitted}
-          allowSend={!isLoading && messages.length === 0}
-          onNewMessage={onNewMessage}
-        />
-      ) : (
-        <div className='d-flex flex-column mt-3'>
-          <button
-            className='btn btn-primary mt-3'
-            onClick={() => {
-              onNewMessage();
-            }}
-          >
-            Ask another question
-          </button>
-        </div>
+        <>
+          <div>
+            {messages // TODO: add suspense boundary / loading animation
+              .filter((m) => m.role === 'assistant' || m.role === 'user')
+              .map((m: Message) => (
+                <div key={m.id}>
+                  <strong>{`${m.role}: `}</strong>
+                  <ChatMessage message={m} />
+                </div>
+              ))}
+          </div>
+          <div className='d-flex flex-column mt-3'>
+            <button
+              className='btn btn-primary mt-3'
+              onClick={() => {
+                onNewMessage();
+              }}
+            >
+              Ask another question
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
