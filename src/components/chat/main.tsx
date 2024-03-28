@@ -6,7 +6,7 @@ import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
 
-import Logo from '../../../public/media/policy-wonk.png';
+import Logo from '../../../public/media/policy-wonk.svg';
 import { ChatMessage } from '../chatMessage';
 
 import Ask from './ask';
@@ -28,6 +28,21 @@ const MainContent: React.FC = () => {
       });
     }
   };
+  const RolePortrait = ({ role }: { role: string }) => {
+    return (
+      <div className='role-portrait'>
+        <Image
+          width={42}
+          height={42}
+          className='chat-image'
+          src={
+            role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
+          }
+          alt={role}
+        />
+      </div>
+    );
+  };
 
   return (
     <main className='wonk-container'>
@@ -46,10 +61,10 @@ const MainContent: React.FC = () => {
           .map((m: Message) => (
             <div className='row mb-3' key={m.id}>
               <div className='col-1'>
-                <img src='/media/ph-user.png' alt='profile-portrait' />
+                <RolePortrait role={m.role} />
               </div>
               <div className='col-11'>
-                <p>
+                <p className='chat-name'>
                   <strong>{`${m.role}: `}</strong>
                 </p>
 

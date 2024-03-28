@@ -55,6 +55,13 @@ p {
       color:lighten($secondary-color, 7);
     }
   }
+  &.chat-name {
+    font-size: 0.8rem;
+    color:$primary-font;
+    text-transform: uppercase;
+    margin-bottom:0;
+    margin-top:0;
+  }
 }
 label {
   font-size: 0.8rem;
