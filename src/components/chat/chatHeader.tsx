@@ -1,18 +1,22 @@
+import React from 'react';
+
 import Image from 'next/image';
 
-import Logo from '/public/media/policy-wonk.svg';
+import Logo from '/public/media/policy-wonk.png';
 
 const ChatHeader: React.FC = ({}) => {
   return (
     <>
       <Image
-        className='img-fluid policy-png mb-2'
+        className='img-fluid policy-png'
         src={Logo}
         alt='Aggie Gold Robot cartoon'
       />
-      <p className='lede'>
+      <h2 className='main-title'>Policy Wonk</h2>
+      <h3 className='sub-title'>Your UC Policy Expert</h3>
+      <p className='intro-text'>
         Meet Policywonk, your personal guide to navigating all the ins and outs
-        of UCD policies...
+        of UC policies...
       </p>
     </>
   );

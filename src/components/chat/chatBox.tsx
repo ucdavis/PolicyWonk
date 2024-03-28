@@ -58,7 +58,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             tabIndex={0}
             className='form-control'
             autoFocus
-            placeholder='Ask your policy question'
+            placeholder='Message Policy Wonk'
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             spellCheck={false}
@@ -73,7 +73,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
               }
             }}
           ></textarea>
-          <label htmlFor='messageTextArea'>Ask your policy question</label>
+          <label htmlFor='messageTextArea'>Message Policy Wonk</label>
         </div>
       </div>
       <button

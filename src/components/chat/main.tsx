@@ -2,7 +2,6 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
