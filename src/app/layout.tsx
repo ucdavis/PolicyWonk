@@ -34,9 +34,7 @@ export default function RootLayout({
           <div className='sidebar-wrapper'>
             <Sidebar />
           </div>
-          <div className='col-8 col-lg-9 wonk-wrapper'>
-            <div className='wonk-container'>{children}</div>
-          </div>
+          <div className='col-8 col-lg-9 wonk-wrapper'>{children}</div>
         </main>
       </body>
     </html>
