@@ -2,7 +2,7 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import Logo from '/public/media/policy-wonk.png';
+import Logo from '/public/media/policy-wonk.svg';
 
 const ChatHeader: React.FC = ({}) => {
   return (
