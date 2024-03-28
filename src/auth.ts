@@ -1,6 +1,5 @@
-import AzureAd from 'next-auth/providers/azure-ad';
-
 import NextAuth from 'next-auth';
+import AzureAd from 'next-auth/providers/azure-ad';
 
 export const {
   handlers: { GET, POST },

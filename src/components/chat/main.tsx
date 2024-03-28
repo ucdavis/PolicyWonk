@@ -1,17 +1,18 @@
 'use client';
 
 import { useChat, Message } from 'ai/react';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
 
-import Logo from '../../../public/media/policy-wonk.png';
-import { ChatMessage } from '../chatMessage';
-
-import Ask from './ask';
+import ChatBox from './chatBox';
+import { ChatMessage } from './chatMessage';
+import StartScreen from './startScreen';
 
 const MainContent: React.FC = () => {
+  const router = useRouter();
+
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
@@ -29,54 +30,50 @@ const MainContent: React.FC = () => {
     }
   };
 
+  const onNewMessage = () => {
+    router.push('/new');
+  };
+
   return (
-    <main className='main-content d-flex flex-column'>
-      <Image
-        className='img-fluid policy-png'
-        src={Logo}
-        alt='Aggie Gold Robot cartoon'
-      />
-      <h2 className='main-title'>Policy Wonk</h2>
-      <h3 className='sub-title'>Your UC Policy Expert</h3>
-      <p className='intro-text'>
-        Meet Policywonk, your personal guide to navigating all the ins and outs
-        of UC policies...
-      </p>
-      {messages
-        .filter((m) => m.role === 'assistant' || m.role === 'user')
-        .map((m: Message) => (
-          <div key={m.id}>
-            <strong>{`${m.role}: `}</strong>
-            <ChatMessage message={m} />
-            <br />
-            <br />
+    <div>
+      {messages?.length === 0 && !isLoading ? (
+        <>
+          <StartScreen
+            onQuestionSubmitted={onQuestionSubmitted}
+            isLoading={isLoading}
+          />
+          <ChatBox
+            onQuestionSubmitted={onQuestionSubmitted}
+            allowSend={!isLoading && messages.length === 0}
+            onNewMessage={onNewMessage}
+          />
+        </>
+      ) : (
+        <>
+          <div>
+            {messages // TODO: add suspense boundary / loading animation
+              .filter((m) => m.role === 'assistant' || m.role === 'user')
+              .map((m: Message) => (
+                <div key={m.id}>
+                  <strong>{`${m.role}: `}</strong>
+                  <ChatMessage message={m} />
+                </div>
+              ))}
           </div>
-        ))}
-
-      <div className='input-group d-flex justify-content-center mt-auto'>
-        <input
-          type='text'
-          disabled
-          className='form-control me-2'
-          placeholder='How many holidays are in march?'
-        />
-        <input
-          type='text'
-          disabled
-          className='form-control'
-          placeholder='How many holidays are in march?'
-        />
-      </div>
-
-      <Ask onQuestionSubmitted={onQuestionSubmitted} allowSend={!isLoading} />
-
-      <p className='disclaimer-text small mt-2'>
-        Disclaimer: The information provided by Policywonk is for general
-        informational purposes only and should not be considered legal or
-        professional advice. Always consult with the appropriate experts and
-        refer to official policies for accurate and up-to-date information.
-      </p>
-    </main>
+          <div className='d-flex flex-column mt-3'>
+            <button
+              className='btn btn-primary mt-3'
+              onClick={() => {
+                onNewMessage();
+              }}
+              aria-label='Ask another question'
+            >
+              Ask another question
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
