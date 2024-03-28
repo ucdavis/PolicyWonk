@@ -1,6 +1,9 @@
 'use client';
 
+import { on } from 'events';
+
 import { useChat, Message } from 'ai/react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
@@ -9,8 +12,11 @@ import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
+import StartScreen from './startScreen';
 
 const MainContent: React.FC = () => {
+  const router = useRouter();
+
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
@@ -28,28 +34,47 @@ const MainContent: React.FC = () => {
     }
   };
 
+  const onNewMessage = () => {
+    router.push('/new');
+  };
+
   return (
     <div>
-      {messages?.length === 0 && !isLoading && <ChatHeader />}
-      {messages?.length === 0 && isLoading && <p>Loading...</p>}
-      {messages
-        .filter((m) => m.role === 'assistant' || m.role === 'user')
-        .map((m: Message) => (
-          <div key={m.id}>
-            <strong>{`${m.role}: `}</strong>
-            <ChatMessage message={m} />
-          </div>
-        ))}
+      {messages?.length === 0 && !isLoading ? (
+        <StartScreen
+          onQuestionSubmitted={onQuestionSubmitted}
+          isLoading={isLoading}
+        />
+      ) : (
+        messages
+          .filter((m) => m.role === 'assistant' || m.role === 'user')
+          .map((m: Message) => (
+            <div key={m.id}>
+              <strong>{`${m.role}: `}</strong>
+              <ChatMessage message={m} />
+            </div>
+          ))
+      )}
 
-      <DefaultQuestions
-        onQuestionSubmitted={onQuestionSubmitted}
-        allowSend={!isLoading}
-      />
-
-      <ChatBox
-        onQuestionSubmitted={onQuestionSubmitted}
-        allowSend={!isLoading}
-      />
+      {messages?.length === 0 ? (
+        // remove the ability to ask new questions in the chat, send them to the new page instead
+        <ChatBox
+          onQuestionSubmitted={onQuestionSubmitted}
+          allowSend={!isLoading && messages.length === 0}
+          onNewMessage={onNewMessage}
+        />
+      ) : (
+        <div className='d-flex flex-column mt-3'>
+          <button
+            className='btn btn-primary mt-3'
+            onClick={() => {
+              onNewMessage();
+            }}
+          >
+            Ask another question
+          </button>
+        </div>
+      )}
     </div>
   );
 };
