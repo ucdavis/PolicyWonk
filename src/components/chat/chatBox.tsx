@@ -42,7 +42,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
       <div className='input-group'>
         <button
-          className='input-group-text'
+          className='input-group-text btn btn-secondary'
           onClick={(e) => {
             e.preventDefault();
             onNewMessage();
