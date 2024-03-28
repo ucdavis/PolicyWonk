@@ -1,7 +1,5 @@
 'use client';
 
-import { on } from 'events';
-
 import { useChat, Message } from 'ai/react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -9,9 +7,7 @@ import React from 'react';
 import { getChatMessages } from '@/services/chatService';
 
 import ChatBox from './chatBox';
-import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
-import DefaultQuestions from './defaultQuestions';
 import StartScreen from './startScreen';
 
 const MainContent: React.FC = () => {
