@@ -1,8 +1,9 @@
 'use client';
 
+import React from 'react';
+
 import { useChat, Message } from 'ai/react';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 
 import { getChatMessages } from '@/services/chatService';
 

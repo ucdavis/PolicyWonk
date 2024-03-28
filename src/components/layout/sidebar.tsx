@@ -1,6 +1,7 @@
+import React from 'react';
+
 import Link from 'next/link';
 import { Session } from 'next-auth';
-import React from 'react';
 
 import { auth } from '@/auth';
 import SidebarLinks from '@/components/layout/sidebarLinks';
