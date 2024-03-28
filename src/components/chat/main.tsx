@@ -41,7 +41,7 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='wonk-container'>
       {messages?.length === 0 && !isLoading ? (
         <>
           <WonkTop>
