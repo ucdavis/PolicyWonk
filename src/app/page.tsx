@@ -1,11 +1,11 @@
 import React from 'react';
 
-import ChatPanel from '@/components/chat/chatPanel';
+import MainContent from '@/components/chat/main';
 
 const HomePage: React.FC = () => {
   return (
     <div className='main-content d-flex flex-column'>
-      <ChatPanel />
+      <MainContent />
       <p className='disclaimer-text small mt-2'>
         Disclaimer: The information provided by Policywonk is for general
         informational purposes only and should not be considered legal or
