@@ -49,12 +49,6 @@ p {
     font-size: 0.9rem;
     color: $secondary-font;
   }
-  a {
-    color:$secondary-color;
-    &:hover {
-      color:lighten($secondary-color, 7);
-    }
-  }
   &.chat-name {
     font-size: 0.8rem;
     color:$primary-font;
@@ -69,11 +63,12 @@ label {
   color: $primary-font;
 }
 a {
-  color: $primary-color;
-  &:hover {
-    color: darken($primary-color, 4);
+    color:$secondary-color;
+    &:hover {
+      color:lighten($secondary-color, 7);
+    }
   }
-}
+
 .subtitle {
   font-size:1.2rem;
   color:$secondary-font;

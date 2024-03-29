@@ -1,6 +1,6 @@
 .btn {
   padding: 8px 12px;
-  border-radius: 2px;
+  border-radius: 4px;
   font-size: 0.8rem;
   letter-spacing: 0.025em;
   text-decoration: none;
@@ -11,7 +11,18 @@
     margin-right: 8px;
   }
 }
+.btn-wonk {
+   border-bottom:2px solid #fff;
+  &:hover {
+    border-bottom:2px solid $primary-color;
+  }
+}
 .policy-png {
   width:40px;
 }
-
+.color-secondary-font {
+  color:$secondary-font;
+}
+.btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
+  border-color:$borders;
+}

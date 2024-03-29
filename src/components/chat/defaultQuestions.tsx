@@ -16,11 +16,11 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
     'Do I need approval to work from home?',
   ];
   return (
-    <div className='input-group d-flex flex-wrap justify-content-center'>
+    <div className='input-group d-flex flex-wrap justify-content-between'>
       {questions.map((question, index) => (
         <button
           key={index}
-          className='form-control me-2 mb-2 btn'
+          className='form-control me-2 mb-2 btn btn-wonk text-start color-secondary-font'
           style={{ flex: '0 0 48%' }} // i dont know the right way to flex and account for margin
           onClick={() => {
             onQuestionSubmitted(question);
