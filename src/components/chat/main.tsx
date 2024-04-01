@@ -2,10 +2,11 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
+import { logMessages } from '@/services/loggingService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -22,6 +23,17 @@ const MainContent: React.FC = () => {
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
   });
+
+  React.useEffect(() => {
+    if (!isLoading && messages.length > 2) {
+      // response has been generated
+      const relevantMessages = messages.filter(
+        (m) => m.role === 'assistant' || m.role === 'user'
+      );
+
+      logMessages(chatId, relevantMessages);
+    }
+  }, [messages, isLoading]);
 
   const onQuestionSubmitted = async (question: string) => {
     if (messages.length === 0) {
