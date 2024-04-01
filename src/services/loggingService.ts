@@ -19,14 +19,21 @@ const searchClient: Client = new Client(config);
 
 const indexName = process.env.ELASTIC_LOG_INDEX ?? 'test_vectorstore_logs';
 
+let logIndexExists = false;
+
 /**
  * Ensures that the log index exists in the Elasticsearch cluster.
  */
-export const ensureLogIndexExists = async () => {
+const ensureLogIndexExists = async () => {
+  if (logIndexExists) {
+    // already ran, exit
+    return;
+  }
+
   const indexExists = await searchClient.indices.exists({ index: indexName });
 
   if (indexExists) {
-    console.log(`Index ${indexName} already exists.`);
+    logIndexExists = true;
     return;
   }
 
@@ -59,7 +66,7 @@ export const ensureLogIndexExists = async () => {
     },
   });
 
-  console.log(`Index ${indexName} created.`);
+  logIndexExists = true;
 };
 
 export const logMessages = async (chatId: string, messages: Message[]) => {
@@ -77,6 +84,9 @@ export const logResponse = async (
   model: string,
   user: string
 ) => {
+  // TODO: run only once on startup
+  await ensureLogIndexExists();
+
   const chatLog: ChatLog = {
     user,
     llm_model: model,
