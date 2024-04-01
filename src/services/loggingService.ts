@@ -1,5 +1,10 @@
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Message } from 'ai';
+import { Session } from 'next-auth';
+
+import { auth } from '@/auth';
+
+const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 // get my vector store
 const config: ClientOptions = {
@@ -44,12 +49,25 @@ export const ensureLogIndexExists = async () => {
               content: { type: 'text' }, // The actual message content
             },
           },
+          metadata: {
+            type: 'object', // Using object type for arbitrary key/value pairs
+            enabled: true, // Default is true, explicitly setting for clarity
+            dynamic: true, // Allows arbitrary fields to be indexed without pre-defining them
+          },
         },
       },
     },
   });
 
   console.log(`Index ${indexName} created.`);
+};
+
+export const logMessages = async (chatId: string, messages: Message[]) => {
+  const session = (await auth()) as Session;
+
+  const user = session?.user?.name ?? 'Unknown User';
+
+  await logResponse(chatId, messages, llmModel, user);
 };
 
 // use elasticsearch to log the user's query and the results
@@ -59,20 +77,26 @@ export const logResponse = async (
   model: string,
   user: string
 ) => {
+  const chatLog: ChatLog = {
+    user,
+    llm_model: model,
+    timestamp: new Date(),
+    messages: messages.map((m) => ({
+      id: m.id,
+      role: m.role,
+      content: m.content,
+    })),
+    reaction: '',
+    metadata: {
+      vector: 'Elastic dense vector + cosine',
+      chunk_strategy: 'recursive, large chunks',
+    },
+  };
   // log the query and the results to elasticsearch
   await searchClient.index({
     index: indexName,
     id,
-    body: {
-      user,
-      llm_model: model,
-      timestamp: new Date(),
-      messages: messages.map((m) => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-      })),
-    },
+    body: chatLog,
   });
 };
 
@@ -92,3 +116,17 @@ export const logReaction = async (id: string, reaction: string) => {
     },
   });
 };
+
+// Defining a generic type for metadata to allow any structure of key/value pairs
+interface Metadata {
+  [key: string]: any; // Use `any` or a more specific type if known structure
+}
+
+interface ChatLog {
+  user: string; // User as a string
+  llm_model: string; // LLM model used for the chat session
+  reaction: string; // User's reaction or empty
+  timestamp: Date; // Timestamp for when the log was created
+  messages: Message[]; // Array of Message objects
+  metadata: Metadata; // Flexible key/value pairs for arbitrary metadata
+}

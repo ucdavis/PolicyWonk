@@ -4,6 +4,9 @@ import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
 
+const embeddingModel =
+  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';
+
 // API key is stored in env
 const openai = new OpenAI();
 
@@ -49,7 +52,7 @@ export const getChatMessages = async (query: string) => {
 const getEmbeddings = async (query: string) => {
   // get our embeddings
   const embeddings = await openai.embeddings.create({
-    model: 'text-embedding-3-large', // needs to be the same model as we used to index
+    model: embeddingModel, // needs to be the same model as we used to index
     input: query,
   });
 
