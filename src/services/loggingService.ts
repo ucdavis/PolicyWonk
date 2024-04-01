@@ -1,4 +1,5 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
+'use server';
+import { Client, ClientOptions, errors } from '@elastic/elasticsearch';
 import { Message } from 'ai';
 import { Session } from 'next-auth';
 
@@ -10,14 +11,14 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 const config: ClientOptions = {
   node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
   auth: {
-    username: process.env.ELASTIC_SEARCHER_USERNAME ?? 'elastic',
-    password: process.env.ELASTIC_SEARCHER_PASSWORD ?? 'changeme',
+    username: process.env.ELASTIC_WRITE_USERNAME ?? 'policylogger',
+    password: process.env.ELASTIC_WRITE_PASSWORD ?? 'changeme',
   },
 };
 
 const searchClient: Client = new Client(config);
 
-const indexName = process.env.ELASTIC_LOG_INDEX ?? 'test_vectorstore_logs';
+const indexName = process.env.ELASTIC_LOG_INDEX ?? 'test_vectorstore_app_logs';
 
 let logIndexExists = false;
 
@@ -26,8 +27,7 @@ let logIndexExists = false;
  */
 const ensureLogIndexExists = async () => {
   if (logIndexExists) {
-    // already ran, exit
-    return;
+    return; // only check once
   }
 
   const indexExists = await searchClient.indices.exists({ index: indexName });

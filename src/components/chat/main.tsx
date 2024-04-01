@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
+import { nanoid } from 'nanoid';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -20,20 +21,26 @@ import DefaultQuestions from './defaultQuestions';
 const MainContent: React.FC = () => {
   const router = useRouter();
 
+  const chatId = React.useMemo(() => nanoid(), []);
+
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
+    id: chatId,
   });
 
   React.useEffect(() => {
-    if (!isLoading && messages.length > 2) {
-      // response has been generated
+    const logAsyncMessages = async () => {
       const relevantMessages = messages.filter(
         (m) => m.role === 'assistant' || m.role === 'user'
       );
 
-      logMessages(chatId, relevantMessages);
+      await logMessages(chatId, relevantMessages);
+    };
+
+    if (!isLoading && messages.length > 2) {
+      logAsyncMessages();
     }
-  }, [messages, isLoading]);
+  }, [messages, isLoading, chatId]);
 
   const onQuestionSubmitted = async (question: string) => {
     if (messages.length === 0) {
