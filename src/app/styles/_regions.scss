@@ -11,6 +11,10 @@ img.chat-image {
             color:$secondary-color;
         }
     }
+    .svg-inline--fa {
+    height:1rem;
+    vertical-align: -0.125em;
+}
 }
 .form-control:focus {
     border-color: lighten($primary-color, 7);
