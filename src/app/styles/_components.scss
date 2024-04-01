@@ -11,6 +11,15 @@
     margin-right: 8px;
   }
 }
+.btn-feedback {
+  border:none;
+  background-color: rgba(255,255,255,0.99999);
+  color:$tertiary-font;
+  font-size:1.4rem;
+  &:hover {
+    color:$secondary-color;
+  }
+}
 .btn-wonk {
    border-bottom:2px solid #fff;
   &:hover {
@@ -25,4 +34,7 @@
 }
 .btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
   border-color:$borders;
+}
+:focus-visible {
+    outline: 2px solid $primary-color;
 }
