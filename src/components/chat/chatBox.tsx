@@ -41,7 +41,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   return (
     <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
       <div className='input-group'>
-        <button
+        {/* <button
           className='input-group-text btn btn-secondary'
           onClick={(e) => {
             e.preventDefault();
@@ -50,7 +50,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           aria-label='Start a new conversation'
         >
           +
-        </button>
+        </button> */}
         <div className='form-floating'>
           <textarea
             id='messageTextArea'
