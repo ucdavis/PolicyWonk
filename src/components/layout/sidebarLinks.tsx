@@ -3,6 +3,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/fontawesome-free-brands';
 
 // import Link from 'next/link';
 
@@ -26,7 +27,7 @@ const SidebarLinks: React.FC = () => {
           href='https://github.com/ucdavis/PolicyWonk'
           className='ps-2'
         >
-          <FontAwesomeIcon icon={faInfoCircle} />
+          <FontAwesomeIcon icon={faGithub} />
         </a>
       </div>
     </div>
