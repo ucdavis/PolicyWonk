@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next dev",
-    "production": "next start",
+    "production": "next build && next start",
+    "serve": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
