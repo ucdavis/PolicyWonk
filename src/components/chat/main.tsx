@@ -94,7 +94,6 @@ const MainContent: React.FC = () => {
                     <p className='chat-name'>
                       <strong>{`${m.role}: `}</strong>
                     </p>
-
                     <ChatMessage message={m} />
                   </div>
                 </div>
@@ -134,9 +133,9 @@ const RolePortrait = React.memo(function RolePortrait({
       <Image
         width={42}
         height={42}
-        className='chat-image'
+        className='chat-portrait'
         src={
-          role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
+          role === 'assistant' ? '/media/ph-robot.svg' : '/media/ph-profile.svg'
         }
         alt={role}
       />

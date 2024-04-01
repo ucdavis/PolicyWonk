@@ -29,11 +29,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <main className='row'>
+        <main className='d-flex'>
           <div className='sidebar-wrapper'>
             <Sidebar />
           </div>
-          <div className='col-8 col-lg-9 wonk-wrapper'>{children}</div>
+          <div className='wonk-wrapper'>{children}</div>
         </main>
       </body>
     </html>

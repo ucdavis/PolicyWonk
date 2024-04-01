@@ -1,5 +1,8 @@
-
-img.chat-image {
+img.user-profile {
+    border-radius:4px;
+    margin-right:8px;
+}
+img.chat-portrait {
     border-radius:4px;
     box-shadow: $box-shadow;
 }
@@ -12,8 +15,8 @@ img.chat-image {
         }
     }
     .svg-inline--fa {
-    height:1rem;
-    vertical-align: -0.125em;
+        height:1rem;
+        vertical-align: -0.125em;
 }
 }
 .form-control:focus {
@@ -23,4 +26,10 @@ img.chat-image {
 }
 .form-control:focus-visible {
     outline: 2px solid $primary-color;
+}
+.home-message {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 550px;
+    padding-top:8%;
 }
