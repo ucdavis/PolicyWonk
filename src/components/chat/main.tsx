@@ -17,6 +17,7 @@ import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
+import Feedback from './feedback';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
@@ -98,6 +99,9 @@ const MainContent: React.FC = () => {
                   </div>
                 </div>
               ))}
+            {messages.length > 2 &&
+              messages[messages.length - 1].role === 'assistant' &&
+              !isLoading && <Feedback chatId={chatId} />}
           </WonkTop>
           <WonkBottom>
             <div className='d-flex flex-column mt-3'>
