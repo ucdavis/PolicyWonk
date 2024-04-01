@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import SidebarLinks from '@/components/layout/sidebarLinks';
 
 import Footer from './footer';
 
@@ -21,7 +20,6 @@ const Sidebar: React.FC = () => {
         <div>
           <UserNameDisplay />
         </div>
-        <SidebarLinks />
       </header>
       <Footer />
     </div>
