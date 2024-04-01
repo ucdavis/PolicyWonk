@@ -2,11 +2,14 @@ import Image from 'next/image';
 
 import React from 'react';
 
+import SidebarLinks from '@/components/layout/sidebarLinks';
+
 import Logo from '/public/media/ucdavis-grey.svg';
 
 const Footer: React.FC = () => {
   return (
     <footer>
+      <SidebarLinks />
       <a target='_blank' rel='noopener noreferrer' href='https://ucdavis.edu'>
         <Image src={Logo} alt='UC Davis logo greyscale' />
       </a>

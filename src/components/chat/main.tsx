@@ -2,8 +2,8 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
 
@@ -81,9 +81,9 @@ const MainContent: React.FC = () => {
               ))}
           </WonkTop>
           <WonkBottom>
-            <div className='d-flex flex-column mt-3'>
+            <div className='d-flex flex-column'>
               <button
-                className='btn btn-primary mt-3'
+                className='btn btn-primary mt-3 mb-3'
                 onClick={() => {
                   onNewMessage();
                 }}

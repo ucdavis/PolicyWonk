@@ -1,5 +1,26 @@
-// chat 
+
 img.chat-image {
     border-radius:4px;
     box-shadow: $box-shadow;
+}
+.external-links {
+    a {
+        font-size:1.1rem;
+        color:$tertiary-font;
+        &:hover {
+            color:$secondary-color;
+        }
+    }
+    .svg-inline--fa {
+    height:1rem;
+    vertical-align: -0.125em;
+}
+}
+.form-control:focus {
+    border-color: lighten($primary-color, 7);
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(255, 204, 51, 0.25);
+}
+.form-control:focus-visible {
+    outline: 2px solid $primary-color;
 }
