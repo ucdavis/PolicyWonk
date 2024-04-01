@@ -2,10 +2,12 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
+import { nanoid } from 'nanoid';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
+import { logMessages } from '@/services/loggingService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -15,13 +17,31 @@ import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
+import Feedback from './feedback';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
 
+  const chatId = React.useMemo(() => nanoid(), []);
+
   const { messages, setMessages, reload, append, isLoading } = useChat({
     api: '/api/chat',
+    id: chatId,
   });
+
+  React.useEffect(() => {
+    const logAsyncMessages = async () => {
+      const relevantMessages = messages.filter(
+        (m) => m.role === 'assistant' || m.role === 'user'
+      );
+
+      await logMessages(chatId, relevantMessages);
+    };
+
+    if (!isLoading && messages.length > 2) {
+      logAsyncMessages();
+    }
+  }, [messages, isLoading, chatId]);
 
   const onQuestionSubmitted = async (question: string) => {
     if (messages.length === 0) {
@@ -79,6 +99,9 @@ const MainContent: React.FC = () => {
                   </div>
                 </div>
               ))}
+            {messages.length > 2 &&
+              messages[messages.length - 1].role === 'assistant' &&
+              !isLoading && <Feedback chatId={chatId} />}
           </WonkTop>
           <WonkBottom>
             <div className='d-flex flex-column'>

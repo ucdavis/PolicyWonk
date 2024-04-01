@@ -1,6 +1,8 @@
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import OpenAI from 'openai';
 
+const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
+
 // IMPORTANT! Set the runtime to edge
 // https://vercel.com/blog/introducing-the-vercel-ai-sdk
 export const runtime = 'edge';
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
 
   // Ask OpenAI for a streaming chat completion given the prompt
   const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model: llmModel,
     stream: true,
     messages,
   });
