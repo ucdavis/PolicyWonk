@@ -17,7 +17,6 @@ export default function RootLayout({
     <html lang='en'>
       <head>
         <link rel='image_src' href='/media/thumbnail.jpg' />
-        <link rel='shortcut icon' href='/media/favicon.ico' />
         <link
           rel='apple-touch-icon'
           sizes='192x192'
