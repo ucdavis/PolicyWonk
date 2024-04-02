@@ -38,11 +38,11 @@ const UserNameDisplay: React.FC = async ({}) => {
   '
       >
         <p>
-          <img
+          {/* <img
             className='user-profile'
             src='/media/ph-profile.svg'
             alt='profile-avatar'
-          />
+          /> */}
           {session?.user?.name}
         </p>
       </div>
