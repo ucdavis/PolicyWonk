@@ -56,7 +56,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
-            className='form-control'
+            className='form-control wonk-input'
             autoFocus
             placeholder='Message Policy Wonk'
             value={message}
