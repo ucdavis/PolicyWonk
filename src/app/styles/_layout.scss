@@ -1,10 +1,11 @@
 $responsive-sidebar-sm: 150px;
 $responsive-sidebar-md: 250px;
 $responsive-sidebar-lg: 400px;
+$content-padding-value:40px 0;
 .wonk-wrapper {
   height:100vh;
   .wonk-container {
-  padding: 40px 0;
+  padding: $content-padding-value;
   max-width: 880px;
   margin-left:$responsive-sidebar-sm;
   padding-left:5%;
@@ -39,7 +40,7 @@ $responsive-sidebar-lg: 400px;
   }
   .sidebar-container {
     text-align: right;
-    padding:40px 0;
+    padding:$content-padding-value;
     margin-right:5%;
     display: flex;
     height:100%;
