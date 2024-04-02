@@ -96,7 +96,7 @@ const cleanupTitle = (title: string) => {
   return title.replace(/"/g, '');
 };
 
-const getSystemMessage = (docText: string) => {
+export const getSystemMessage = (docText: string) => {
   return {
     id: '1',
     role: 'system',
