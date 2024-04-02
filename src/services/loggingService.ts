@@ -1,5 +1,5 @@
 'use server';
-import { Client, ClientOptions, errors } from '@elastic/elasticsearch';
+import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Message } from 'ai';
 import { Session } from 'next-auth';
 
