@@ -10,10 +10,10 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
   onQuestionSubmitted,
 }) => {
   const questions = [
-    'How many holidays are in march?',
-    'What are the official staff holidays?',
-    'What is the meal limit for a business lunch?',
     'Do I need approval to work from home?',
+    'What is extended leave?',
+    'What are the official campus holidays?',
+    'When must security updates be installed?',
   ];
   return (
     <div className='input-group d-flex flex-wrap justify-content-between'>
