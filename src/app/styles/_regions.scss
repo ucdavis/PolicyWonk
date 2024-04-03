@@ -30,6 +30,9 @@ img.chat-portrait {
     margin: 0 auto;
     max-width: 550px;
     padding-top:8%;
+    img {
+        width:75px;
+    }
 }
 .form-floating {
     .wonk-input {
