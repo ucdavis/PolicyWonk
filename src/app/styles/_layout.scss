@@ -7,7 +7,7 @@ $content-padding-value:40px 0;
   width:100%;
   .wonk-container {
   padding: $content-padding-value;
-  max-width: 880px;
+  max-width: 1024px;
   margin-left:$responsive-sidebar-sm;
   padding-left:5%;
   padding-right:5%;
@@ -19,6 +19,8 @@ $content-padding-value:40px 0;
   }
   @include breakpoint(lg) {
     margin-left:$responsive-sidebar-lg;
+    padding-left:2%;
+    padding-right:2%;
   }
   .wonk-top {
     margin-bottom:auto;

@@ -30,15 +30,15 @@ export default Footer;
 
 const UserNameDisplay: React.FC = async ({}) => {
   const session = (await auth()) as Session;
+
+  if (!session) {
+    return null;
+  }
+
   return (
     <>
       <p className='mb-0'>
         <span className='me-1'>Logged in as:</span>
-        {/* <img
-            className='user-profile'
-            src='/media/ph-profile.svg'
-            alt='profile-avatar'
-          /> */}
         {session?.user?.name}
       </p>
     </>
