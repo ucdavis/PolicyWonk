@@ -85,19 +85,26 @@ const MainContent: React.FC = () => {
           <WonkTop>
             {messages // TODO: add suspense boundary and loading animation
               .filter((m) => m.role === 'assistant' || m.role === 'user')
-              .map((m: Message) => (
-                <div className='row mb-3' key={m.id}>
-                  <div className='col-1'>
-                    <RolePortrait role={m.role} />
+              .map((m: Message) => {
+                const roleDisplayName =
+                  m.role === 'user' ? 'You' : 'Policy Wonk';
+                return (
+                  <div className='row mb-3' key={m.id}>
+                    <div className='col-1'>
+                      <RolePortrait
+                        role={m.role}
+                        roleDisplayName={roleDisplayName}
+                      />
+                    </div>
+                    <div className='col-11'>
+                      <p className='chat-name'>
+                        <strong>{`${roleDisplayName}: `}</strong>
+                      </p>
+                      <ChatMessage message={m} />
+                    </div>
                   </div>
-                  <div className='col-11'>
-                    <p className='chat-name'>
-                      <strong>{`${m.role}: `}</strong>
-                    </p>
-                    <ChatMessage message={m} />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             {messages.length > 2 &&
               messages[messages.length - 1].role === 'assistant' &&
               !isLoading && <Feedback chatId={chatId} />}
@@ -125,8 +132,10 @@ export default MainContent;
 
 const RolePortrait = React.memo(function RolePortrait({
   role,
+  roleDisplayName,
 }: {
   role: string;
+  roleDisplayName: string;
 }) {
   return (
     <div className='role-portrait'>
@@ -137,7 +146,7 @@ const RolePortrait = React.memo(function RolePortrait({
         src={
           role === 'assistant' ? '/media/ph-robot.svg' : '/media/ph-profile.svg'
         }
-        alt={role}
+        alt={roleDisplayName}
       />
     </div>
   );
