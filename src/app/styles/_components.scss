@@ -11,18 +11,74 @@
     margin-right: 8px;
   }
 }
+.btn-feedback {
+  border:none;
+  background-color: rgba(255,255,255,0.99999);
+  color:$tertiary-font;
+  font-size:1.4rem;
+  &:hover {
+    color:$secondary-color;
+  }
+}
 .btn-wonk {
    border-bottom:2px solid #fff;
+   width:100%;
+   margin-right:2%;
+   margin-bottom:1%;
+   @include breakpoint(md) {
+     width:48%;
+  }
   &:hover {
     border-bottom:2px solid $primary-color;
   }
-}
-.policy-png {
-  width:40px;
 }
 .color-secondary-font {
   color:$secondary-font;
 }
 .btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
   border-color:$borders;
+}
+:focus-visible {
+    outline: 2px solid $primary-color;
+}
+
+
+.wonk-portrait-loading {
+#antennae-keyframe {
+	animation: antennae 0.5s infinite;
+}
+@keyframes antennae {
+  0%, 100% {
+    transform: translate(32%,0%);
+  }
+  23% {
+    transform: translate(32%,3%);
+  }
+  
+}
+#eye-keyframe {
+  animation: eyepan 1s infinite;
+}
+@keyframes eyepan {
+  0%,100% {
+    transform: translate(7.5%,3.9%);
+  }
+    50% {
+      transform: translate(5%,3.9%);
+    }
+    
+}
+#eyelid {
+  animation: eyelid 1s infinite;
+  transform-origin:30px 50px;
+}
+ @keyframes eyelid {
+  0%,100% {
+    transform: rotate(0deg);
+  }
+   50% {
+     transform: rotate(-15deg);
+   }
+    
+}
 }

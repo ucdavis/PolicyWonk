@@ -1,10 +1,7 @@
 import React from 'react';
 
-import {
-  faThumbsUp,
-  faThumbsDown,
-  faClipboardCheck,
-} from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
+import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { logReaction } from '@/services/loggingService';
@@ -47,14 +44,13 @@ const Feedback = ({ chatId }: FeedbackProps) => {
       <div className='col-11'>
         <div>
           <button
-            className='btn btn-primary'
-            style={{ marginRight: '1em' }}
+            className='btn-feedback me-1'
             onClick={() => onFeedback('thumbs_up')}
           >
             <FontAwesomeIcon icon={faThumbsUp} />
           </button>
           <button
-            className='btn btn-primary'
+            className='btn-feedback'
             onClick={() => onFeedback('thumbs_down')}
           >
             <FontAwesomeIcon icon={faThumbsDown} />

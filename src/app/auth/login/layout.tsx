@@ -3,9 +3,5 @@ export default function LoginLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className='card'>
-      <div className='card-body text-center'>{children}</div>
-    </div>
-  );
+  return <div className='wonk-container'>{children}</div>;
 }

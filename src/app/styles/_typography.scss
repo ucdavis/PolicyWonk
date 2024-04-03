@@ -9,7 +9,13 @@ h4 {
 }
 h1 {
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
+   @include breakpoint(md) {
+    font-size:1.3rem;
+  }
+     @include breakpoint(lg) {
+    font-size:1.5rem;
+  }
   &.logo {
     
     a {
@@ -38,12 +44,16 @@ h5 {
 }
 p {
   color: $primary-font;
-  font-size: 1rem;
-  &.subtitle {
-    margin-bottom: 0;
-  }
+  font-size: 0.8rem;
+         @include breakpoint(md) {
+        font-size:0.9rem;
+      }
+        @include breakpoint(lg) {
+        font-size:1rem;
+      }
   &.lede {
     font-size: 1.1rem;
+    color:$secondary-font;
   }
   &.form-helper {
     font-size: 0.9rem;
@@ -68,12 +78,6 @@ a {
       color:lighten($secondary-color, 7);
     }
   }
-
-.subtitle {
-  font-size:1.2rem;
-  color:$secondary-font;
-  font-weight: 400;
-}
 .discreet {
   color: $secondary-font;
   font-size:0.9rem;
@@ -82,3 +86,16 @@ a {
 .form-label {
   text-transform: uppercase;
 }
+.subtitle {
+    margin-bottom: 0;
+    font-size:0.8rem;
+    color:$secondary-font;
+    font-weight:400;
+       @include breakpoint(md) {
+        font-size:0.9rem;
+      }
+        @include breakpoint(lg) {
+        font-size:1rem;
+      }
+    
+  } 

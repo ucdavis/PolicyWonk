@@ -3,7 +3,6 @@ import React from 'react';
 
 import { useChat, Message } from 'ai/react';
 import { nanoid } from 'nanoid';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
@@ -15,7 +14,7 @@ import WonkTop from '../layout/wonkTop';
 
 import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
-import { ChatMessage } from './chatMessage';
+import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
@@ -85,20 +84,15 @@ const MainContent: React.FC = () => {
           <WonkTop>
             {messages // TODO: add suspense boundary and loading animation
               .filter((m) => m.role === 'assistant' || m.role === 'user')
-              .map((m: Message) => (
-                <div className='row mb-3' key={m.id}>
-                  <div className='col-1'>
-                    <RolePortrait role={m.role} />
-                  </div>
-                  <div className='col-11'>
-                    <p className='chat-name'>
-                      <strong>{`${m.role}: `}</strong>
-                    </p>
-
-                    <ChatMessage message={m} />
-                  </div>
-                </div>
-              ))}
+              .map((m: Message) => {
+                return (
+                  <ChatMessageContainer
+                    isLoading={isLoading}
+                    key={m.id}
+                    message={m}
+                  />
+                );
+              })}
             {messages.length > 2 &&
               messages[messages.length - 1].role === 'assistant' &&
               !isLoading && <Feedback chatId={chatId} />}
@@ -123,23 +117,3 @@ const MainContent: React.FC = () => {
 };
 
 export default MainContent;
-
-const RolePortrait = React.memo(function RolePortrait({
-  role,
-}: {
-  role: string;
-}) {
-  return (
-    <div className='role-portrait'>
-      <Image
-        width={42}
-        height={42}
-        className='chat-image'
-        src={
-          role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
-        }
-        alt={role}
-      />
-    </div>
-  );
-});

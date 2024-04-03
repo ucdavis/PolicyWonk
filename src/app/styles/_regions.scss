@@ -1,7 +1,22 @@
-
-img.chat-image {
+img.user-profile {
+    border-radius:4px;
+    margin-right:8px;
+}
+img.chat-portrait {
     border-radius:4px;
     box-shadow: $box-shadow;
+}
+.wonk-svg {
+  background-color:$primary-bg;
+  width:42px;
+  height:42px;
+  border-radius: 4px;
+  box-shadow: $box-shadow;
+  svg {
+    width:38px;
+    height:38px;
+    margin:2px 0 0 2px;
+  }
 }
 .external-links {
     a {
@@ -12,8 +27,8 @@ img.chat-image {
         }
     }
     .svg-inline--fa {
-    height:1rem;
-    vertical-align: -0.125em;
+        height:1rem;
+        vertical-align: -0.125em;
 }
 }
 .form-control:focus {
@@ -21,6 +36,21 @@ img.chat-image {
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(255, 204, 51, 0.25);
 }
-.form-control:focus-visible {
-    outline: 2px solid $primary-color;
+
+.home-message {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 550px;
+    padding-top:8%;
+    img {
+        width:75px;
+    }
+}
+.form-floating {
+    .wonk-input {
+        height:100px;
+    }
+}
+.login-card {
+    margin-top:35%;
 }

@@ -1,52 +1,50 @@
+$responsive-sidebar-sm: 150px;
+$responsive-sidebar-md: 250px;
+$responsive-sidebar-lg: 300px;
+$content-padding-value:40px 0;
 .wonk-wrapper {
   height:100vh;
+  width:100%;
   .wonk-container {
-  padding: 40px 0;
-  width: 96%;
-  max-width: 800px;
-  margin-left:440px;
+  padding: $content-padding-value;
+  max-width: 880px;
+  margin-left:$responsive-sidebar-sm;
+  padding-left:5%;
+  padding-right:5%;
   display: flex;
-  height:100%;
   flex-direction: column;
-  // @include breakpoint(sm) {
-  //   width: 92%;
-  // }
-  // @include breakpoint(md) {
-  //   width: 90%;
-  // }
-  // @include breakpoint(lg) {
-  //   width: 86%;
-  // }
+  height:100%;
+  @include breakpoint(md) {
+     margin-left:$responsive-sidebar-md;
+  }
+  @include breakpoint(lg) {
+    margin-left:$responsive-sidebar-lg;
+  }
   .wonk-top {
     margin-bottom:auto;
   }
  
 }
 }
-
 .sidebar-wrapper {
   background-color: $primary-bg;
   height:100vh;
-  width:400px;
+  width:$responsive-sidebar-sm;
   border-right:1px solid $borders;
   position: fixed;
+  @include breakpoint(md) {
+    width:$responsive-sidebar-md;
+  }
+    @include breakpoint(lg) {
+    width:$responsive-sidebar-lg;
+  }
   .sidebar-container {
     text-align: right;
-    padding:40px 0;
-    margin-right:40px;
+    padding:$content-padding-value;
+    margin-right:5%;
     display: flex;
     height:100%;
     flex-direction: column;
-        // max-width: 600px;
-    // @include breakpoint(sm) {
-    //   width: 92%;
-    // }
-    // @include breakpoint(md) {
-    //   width: 90%;
-    // }
-    // @include breakpoint(lg) {
-    //   width: 86%;
-    // }
     header {
       margin-bottom:auto;
     }
@@ -54,9 +52,6 @@
       p {
         color:$secondary-font;
       }
-      
     }
-
   }
-
 }
