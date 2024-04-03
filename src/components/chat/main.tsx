@@ -18,6 +18,7 @@ import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
+import Policywonksvg from './components/policywonksvg';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
@@ -139,6 +140,7 @@ const RolePortrait = React.memo(function RolePortrait({
 }) {
   return (
     <div className='role-portrait'>
+      <Policywonksvg />
       <Image
         width={42}
         height={42}
