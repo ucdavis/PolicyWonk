@@ -1,14 +1,13 @@
-import Image from 'next/image';
-
 import React from 'react';
 
-import SidebarLinks from '@/components/layout/sidebarLinks';
+import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
+import SidebarLinks from '@/components/layout/sidebarLinks';
 
 const Footer: React.FC = () => {
   return (
@@ -33,19 +32,15 @@ const UserNameDisplay: React.FC = async ({}) => {
   const session = (await auth()) as Session;
   return (
     <>
-      <div
-        className='
-  '
-      >
-        <p>
-          {/* <img
+      <p className='mb-0'>
+        <span className='me-1'>Logged in as:</span>
+        {/* <img
             className='user-profile'
             src='/media/ph-profile.svg'
             alt='profile-avatar'
           /> */}
-          {session?.user?.name}
-        </p>
-      </div>
+        {session?.user?.name}
+      </p>
     </>
   );
 };

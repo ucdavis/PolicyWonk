@@ -1,10 +1,7 @@
 import React from 'react';
 
-import {
-  faThumbsUp,
-  faThumbsDown,
-  faClipboardCheck,
-} from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
+import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { logReaction } from '@/services/loggingService';
