@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
         <Image src={Logo} alt='UC Davis logo greyscale' />
       </a>
       <p>
-        copyright 2024 code here
+        &copy; UC Regents
         <br />
         <span className='version-notice'>Policywonk v1.2.3.311</span>
       </p>
