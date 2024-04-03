@@ -16,8 +16,8 @@ export const Policywonksvg = () => (
           y2='50.5320012%'
           id='linearGradient-1'
         >
-          <stop stop-color='#FFBF00' offset='0%'></stop>
-          <stop stop-color='#C29307' offset='100%'></stop>
+          <stop stopColor='#FFBF00' offset='0%'></stop>
+          <stop stopColor='#C29307' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='2.84217094e-12%'
@@ -26,8 +26,8 @@ export const Policywonksvg = () => (
           y2='52.0953643%'
           id='linearGradient-2'
         >
-          <stop stop-color='#FFBF00' offset='0%'></stop>
-          <stop stop-color='#C29307' offset='100%'></stop>
+          <stop stopColor='#FFBF00' offset='0%'></stop>
+          <stop stopColor='#C29307' offset='100%'></stop>
         </linearGradient>
         <path
           d='M116.263829,12.4700645 C164.498931,12.4700645 211.488498,85.3471212 213.867272,140.795012 C214.937652,165.744984 216.949973,190.624102 219.904237,215.432368 L219.90409,215.432385 C222.291477,235.47453 207.979468,253.657258 187.937323,256.044645 C187.765221,256.065145 187.592975,256.084421 187.420598,256.102471 C163.290315,258.630371 139.58998,259.894428 116.319569,259.894428 C93.2274091,259.894428 70.1365244,258.649662 47.0469143,256.160131 L47.0468997,256.160266 C27.237699,254.025125 12.7889377,236.416607 14.5623362,216.571751 C16.7509691,192.092575 17.8452217,168.026247 17.8452217,144.372779 C17.8452217,92.2819462 68.0287278,12.4700645 116.263829,12.4700645 Z'
@@ -40,8 +40,8 @@ export const Policywonksvg = () => (
           y2='76.3780486%'
           id='linearGradient-5'
         >
-          <stop stop-color='#FFE599' offset='0%'></stop>
-          <stop stop-color='#FFD24C' offset='100%'></stop>
+          <stop stopColor='#FFE599' offset='0%'></stop>
+          <stop stopColor='#FFD24C' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='3.47691755%'
@@ -50,8 +50,8 @@ export const Policywonksvg = () => (
           y2='56.0217656%'
           id='linearGradient-6'
         >
-          <stop stop-color='#FFC519' offset='0%'></stop>
-          <stop stop-color='#C79A15' offset='100%'></stop>
+          <stop stopColor='#FFC519' offset='0%'></stop>
+          <stop stopColor='#C79A15' offset='100%'></stop>
         </linearGradient>
         <path
           d='M4.58093592,0 C1.639136,3.38087525 0.117944769,5.82154184 0.0173622231,7.32199978 C-0.201410405,10.5855792 1.71979311,13.0926396 1.70712696,16.0975364 C1.59582986,42.501475 1.33160383,62.4726196 10.6568178,69.5331965 C23.4503872,79.2198355 56.9784141,77.1033831 81.0810003,77.1033831 C105.228404,77.1033831 130.342684,79.2558923 143.165755,69.5331965 C150.014178,64.3405917 152.867578,51.2301892 154.022498,35.3323037 C154.501325,28.7410702 154.501325,17.6391059 154.022498,2.02641082 L4.58093592,0 Z'
@@ -64,8 +64,8 @@ export const Policywonksvg = () => (
           y2='56.0217656%'
           id='linearGradient-9'
         >
-          <stop stop-color='#FFC519' offset='0%'></stop>
-          <stop stop-color='#C79A15' offset='100%'></stop>
+          <stop stopColor='#FFC519' offset='0%'></stop>
+          <stop stopColor='#C79A15' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='3.47691755%'
@@ -74,8 +74,8 @@ export const Policywonksvg = () => (
           y2='56.0217656%'
           id='linearGradient-10'
         >
-          <stop stop-color='#FFC519' offset='0%'></stop>
-          <stop stop-color='#C79A15' offset='100%'></stop>
+          <stop stopColor='#FFC519' offset='0%'></stop>
+          <stop stopColor='#C79A15' offset='100%'></stop>
         </linearGradient>
         <path
           d='M0,0.95030198 C2.39054824,12.9975599 8.14411443,19.0211889 17.2606986,19.0211889 C26.3772827,19.0211889 33.0679486,12.6807926 37.3326963,0 C29.7992348,3.45294351 23.1523593,5.25272921 17.3920699,5.3993571 C11.6317805,5.54598499 5.83442388,4.06296662 0,0.95030198 Z'
