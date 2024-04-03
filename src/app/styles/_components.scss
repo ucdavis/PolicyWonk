@@ -23,10 +23,12 @@
 .btn-wonk {
    border-bottom:2px solid #fff;
    width:100%;
-   margin-right:2%;
    margin-bottom:1%;
    @include breakpoint(md) {
      width:48%;
+     &:nth-child(odd) {
+      margin-right:4%;
+     }
   }
   &:hover {
     border-bottom:2px solid $primary-color;

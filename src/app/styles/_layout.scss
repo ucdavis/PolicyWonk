@@ -19,6 +19,8 @@ $content-padding-value:40px 0;
   }
   @include breakpoint(lg) {
     margin-left:$responsive-sidebar-lg;
+    padding-left:2%;
+    padding-right:2%;
   }
   .wonk-top {
     margin-bottom:auto;
