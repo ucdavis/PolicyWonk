@@ -18,7 +18,7 @@ import ChatHeader from './chatHeader';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
-import Policywonksvg from './components/policywonksvg';
+import RolePortrait from './rolePortrait';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
@@ -95,6 +95,7 @@ const MainContent: React.FC = () => {
                       <RolePortrait
                         role={m.role}
                         roleDisplayName={roleDisplayName}
+                        isLoading={isLoading}
                       />
                     </div>
                     <div className='col-10 col-md-11'>
@@ -130,26 +131,3 @@ const MainContent: React.FC = () => {
 };
 
 export default MainContent;
-
-const RolePortrait = React.memo(function RolePortrait({
-  role,
-  roleDisplayName,
-}: {
-  role: string;
-  roleDisplayName: string;
-}) {
-  return (
-    <div className='role-portrait'>
-      <Policywonksvg />
-      <Image
-        width={42}
-        height={42}
-        className='chat-portrait'
-        src={
-          role === 'assistant' ? '/media/ph-robot.svg' : '/media/ph-profile.svg'
-        }
-        alt={roleDisplayName}
-      />
-    </div>
-  );
-});
