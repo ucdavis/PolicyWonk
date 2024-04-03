@@ -86,7 +86,6 @@ const MainContent: React.FC = () => {
             {messages // TODO: add suspense boundary and loading animation
               .filter((m) => m.role === 'assistant' || m.role === 'user')
               .map((m: Message) => {
-                // debugger;
                 const roleDisplayName =
                   m.role === 'user' ? 'You' : 'Policy Wonk';
                 return (
