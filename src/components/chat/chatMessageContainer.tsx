@@ -15,7 +15,6 @@ export const ChatMessageContainer = ({
   isLoading,
 }: ChatMessageContainerProps) => {
   const roleDisplayName = message.role === 'user' ? 'You' : 'Policy Wonk';
-  console.log(roleDisplayName, isLoading);
   return (
     <div className='row mb-3' key={message.id}>
       <div className='col-3 col-md-1 mb-2'>
