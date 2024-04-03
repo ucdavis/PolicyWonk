@@ -42,7 +42,7 @@ const MainContentRSC: React.FC<MainContentProps> = ({ chatId }) => {
 
   return (
     <div className='wonk-container'>
-      {messages.length ? (
+      {!messages.length ? (
         <>
           <WonkTop>
             <ChatHeader />

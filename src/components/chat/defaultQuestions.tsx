@@ -47,7 +47,7 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
               responseMessage,
             ]);
           }}
-          disabled={!allowSend}
+          // disabled={!allowSend}
         >
           {example}
         </button>
