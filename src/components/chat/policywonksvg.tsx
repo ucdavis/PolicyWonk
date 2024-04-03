@@ -1,13 +1,23 @@
-export const Policywonksvg = () => (
-  <div className='wonk-svg'>
+export const Policywonksvg = ({
+  className,
+  height,
+  width,
+  alt,
+}: {
+  className: string;
+  height: number;
+  width: number;
+  alt: string;
+}) => (
+  <div className={`wonk-svg ${className}`}>
     <svg
-      width='239px'
-      height='278px'
+      width={width}
+      height={height}
       viewBox='0 0 239 278'
       version='1.1'
       xmlns='http://www.w3.org/2000/svg'
     >
-      <title>policy-wonk</title>
+      <title>{alt}</title>
       <defs>
         <linearGradient
           x1='2.84217094e-12%'
@@ -82,13 +92,7 @@ export const Policywonksvg = () => (
           id='path-11'
         ></path>
       </defs>
-      <g
-        id='Main'
-        stroke='none'
-        stroke-width='1'
-        fill='none'
-        fillRule='evenodd'
-      >
+      <g id='Main' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='Artboard' transform='translate(-137, -116)'>
           <g id='robot' transform='translate(140.7701, 119)'>
             <g
@@ -340,9 +344,9 @@ export const Policywonksvg = () => (
               <g id='mouth' transform='translate(9.0443, 107.5731)'>
                 <mask id='mask-12' fill='white'></mask>
                 <path
-                  stroke-opacity='0.99'
+                  strokeOpacity='0.99'
                   stroke='#000000'
-                  stroke-width='2.19276392'
+                  strokeWidth='2.19276392'
                   d='M39.128059,-2.06679519 C38.8996737,-1.27590009 38.6476486,-0.470469078 38.3718821,0.34949434 C36.170051,6.89641473 33.3221261,11.7905708 29.8702842,15.061702 C26.3121479,18.4335628 22.1084452,20.1175709 17.2606986,20.1175709 C12.3729718,20.1175709 8.3965484,18.4866712 5.31525766,15.2607498 C2.32158093,12.1265549 0.17003259,7.44017368 -1.07541425,1.1636974 C-1.23185526,0.375307004 -1.36550357,-0.395354563 -1.47597559,-1.1477241 C-0.831323135,-0.758494112 -0.167299118,-0.381604266 0.516069902,-0.0170269526 C6.1679215,2.99823539 11.7824195,4.44541337 17.3641706,4.30333017 C23.0025332,4.15980592 29.5042956,2.3820669 36.8758719,-0.996676914 C37.6461441,-1.34972925 38.3969741,-1.70699811 39.128059,-2.06679519 Z'
                 ></path>
                 <path

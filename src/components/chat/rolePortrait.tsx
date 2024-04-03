@@ -14,8 +14,10 @@ export const WonkPortrait = React.memo(function WonkPortrait({
   return (
     <div className='role-portrait'>
       <Policywonksvg
-      // alt={roleDisplayName}
-      // className={`${isLoading ? 'wonk-portrait-loading' : ''}`}
+        width={42}
+        height={42}
+        alt={roleDisplayName}
+        className={`${isLoading ? 'wonk-portrait-loading' : ''} chat-portrait`}
       />
     </div>
   );
