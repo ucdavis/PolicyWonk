@@ -3,7 +3,6 @@ import React from 'react';
 
 import { useChat, Message } from 'ai/react';
 import { nanoid } from 'nanoid';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
@@ -15,10 +14,9 @@ import WonkTop from '../layout/wonkTop';
 
 import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
-import { ChatMessage } from './chatMessage';
+import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
-import RolePortrait from './rolePortrait';
 
 const MainContent: React.FC = () => {
   const router = useRouter();
@@ -87,24 +85,12 @@ const MainContent: React.FC = () => {
             {messages // TODO: add suspense boundary and loading animation
               .filter((m) => m.role === 'assistant' || m.role === 'user')
               .map((m: Message) => {
-                const roleDisplayName =
-                  m.role === 'user' ? 'You' : 'Policy Wonk';
                 return (
-                  <div className='row mb-3' key={m.id}>
-                    <div className='col-3 col-md-1 mb-2'>
-                      <RolePortrait
-                        role={m.role}
-                        roleDisplayName={roleDisplayName}
-                        isLoading={isLoading}
-                      />
-                    </div>
-                    <div className='col-10 col-md-11'>
-                      <p className='chat-name'>
-                        <strong>{`${roleDisplayName}: `}</strong>
-                      </p>
-                      <ChatMessage message={m} />
-                    </div>
-                  </div>
+                  <ChatMessageContainer
+                    isLoading={isLoading}
+                    key={m.id}
+                    message={m}
+                  />
                 );
               })}
             {messages.length > 2 &&
