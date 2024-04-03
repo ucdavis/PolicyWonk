@@ -12,6 +12,7 @@ $content-padding-value:40px 0;
   padding-right:5%;
   display: flex;
   height:100%;
+  width:100%;
   flex-direction: column;
   @include breakpoint(md) {
      margin-left:$responsive-sidebar-md;
