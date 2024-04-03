@@ -1,16 +1,19 @@
 import React from 'react';
 
+import Image from 'next/image';
+
+import Logo from '/public/media/policy-wonk.svg';
+
 import { signIn } from '@/auth';
 
 const Login: React.FC = () => {
   return (
     <>
-      <div className='col-10 login-card'>
-        <img
-          className='img-fluid mb-2'
-          width={55}
-          src='/media/policy-wonk.svg'
-          alt='cartoon robot'
+      <div className='home-message'>
+        <Image
+          className='img-fluid policy-png mb-4'
+          src={Logo}
+          alt='Aggie Gold Robot cartoon'
         />
         <h1>Welcome to Policy Wonk</h1>
         <p className='lede'>
