@@ -1,19 +1,25 @@
 'use client';
 import React from 'react';
 
-interface ChatBoxProps {
-  allowSend: boolean;
-  onQuestionSubmitted: (question: string) => void;
-  onNewMessage: () => void;
-}
+import { nanoid } from 'ai';
+import { useActions, useUIState } from 'ai/rsc';
+import { useFormState, useFormStatus } from 'react-dom';
 
-const ChatBox: React.FC<ChatBoxProps> = ({
-  allowSend,
-  onQuestionSubmitted,
-  onNewMessage,
-}) => {
-  const [message, setMessage] = React.useState('');
+import { AI } from '@/lib/actions';
+
+import { UserMessage } from './chatMessage';
+
+interface ChatBoxProps {}
+
+const ChatBox: React.FC<ChatBoxProps> = ({}) => {
+  const [input, setInput] = React.useState('');
+  const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // we aren't displaying messages, but we do need to set new ones
+  const [_, setMessages] = useUIState<typeof AI>();
+  // use a server action to submit
+  const { submitUserMessage } = useActions();
 
   // focus on the input when the component mounts
   React.useEffect(() => {
@@ -22,30 +28,41 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     }
   }, []);
 
-  function handleSubmit(
-    event:
-      | React.FormEvent<HTMLFormElement>
-      | React.KeyboardEvent<HTMLTextAreaElement>
-  ): void {
-    event.preventDefault();
-
-    if (!message) {
-      return;
-    }
-
-    setMessage('');
-
-    onQuestionSubmitted(message);
-  }
-
   return (
-    <form className='d-flex flex-column mt-3' onSubmit={handleSubmit}>
+    <form
+      className='d-flex flex-column mt-3'
+      onSubmit={async (e: any) => {
+        e.preventDefault();
+
+        // Blur focus on mobile
+        if (window.innerWidth < 600) {
+          e.target['message']?.blur();
+        }
+
+        const value = input.trim();
+        setInput('');
+        if (!value) return;
+
+        // Optimistically add user message UI
+        setMessages((currentMessages) => [
+          ...currentMessages,
+          {
+            id: nanoid(),
+            display: <UserMessage>{value}</UserMessage>,
+          },
+        ]);
+
+        // Submit and get response message
+        const responseMessage = await submitUserMessage(value);
+        setMessages((currentMessages) => [...currentMessages, responseMessage]);
+      }}
+    >
       <div className='input-group'>
         <button
           className='input-group-text btn btn-secondary'
           onClick={(e) => {
             e.preventDefault();
-            onNewMessage();
+            // onNewMessage();
           }}
           aria-label='Start a new conversation'
         >
@@ -59,33 +76,43 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             className='form-control'
             autoFocus
             placeholder='Message Policy Wonk'
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             spellCheck={false}
             autoComplete='off'
             autoCorrect='off'
             name='message'
             rows={1}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && allowSend) {
+              if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                handleSubmit(e);
+                formRef.current?.requestSubmit();
               }
             }}
           ></textarea>
           <label htmlFor='messageTextArea'>Message Policy Wonk</label>
         </div>
       </div>
-      <button
-        className='btn btn-primary mt-3'
-        disabled={!allowSend}
-        aria-label='Send message'
-        aria-disabled={!allowSend}
-      >
-        Send
-      </button>
+      <FormButton />
     </form>
   );
 };
 
 export default ChatBox;
+
+const FormButton = () => {
+  // to do useFormStatus() this has to be in a child component of the form
+  // we might not need to do this? i know we could do useFormState inside the ChatBox component
+  // but i am not sure how useAction and useFormState work together
+  const { pending } = useFormStatus();
+  return (
+    <button
+      className='btn btn-primary mt-3'
+      disabled={pending}
+      aria-label='Send message'
+      aria-disabled={pending}
+    >
+      Send
+    </button>
+  );
+};

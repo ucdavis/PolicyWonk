@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useChat, Message } from 'ai/react';
+import { useAIState, useUIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,46 +16,25 @@ import WonkTop from '../layout/wonkTop';
 
 import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
+import { ChatList } from './chatList';
 import { ChatMessage } from './chatMessage';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
-const MainContent: React.FC = () => {
+interface MainContentProps {
+  chatId: string;
+}
+const MainContentRSC: React.FC<MainContentProps> = ({ chatId }) => {
   const router = useRouter();
-
-  const chatId = React.useMemo(() => nanoid(), []);
-
-  const { messages, setMessages, reload, append, isLoading } = useChat({
-    api: '/api/chat',
-    id: chatId,
-  });
+  const [messages] = useUIState();
+  const [aiState] = useAIState();
 
   React.useEffect(() => {
-    const logAsyncMessages = async () => {
-      const relevantMessages = messages.filter(
-        (m) => m.role === 'assistant' || m.role === 'user'
-      );
-
-      await logMessages(chatId, relevantMessages);
-    };
-
-    if (!isLoading && messages.length > 2) {
-      logAsyncMessages();
+    const messagesLength = aiState.messages?.length;
+    if (messagesLength === 2) {
+      router.refresh();
     }
-  }, [messages, isLoading, chatId]);
-
-  const onQuestionSubmitted = async (question: string) => {
-    if (messages.length === 0) {
-      const newMessages = await getChatMessages(question);
-      setMessages(newMessages);
-      reload();
-    } else {
-      append({
-        role: 'user',
-        content: question,
-      });
-    }
-  };
+  }, [aiState.messages, router]);
 
   const onNewMessage = () => {
     router.push('/new');
@@ -62,46 +42,24 @@ const MainContent: React.FC = () => {
 
   return (
     <div className='wonk-container'>
-      {messages?.length === 0 && !isLoading ? (
+      {messages.length ? (
         <>
           <WonkTop>
             <ChatHeader />
           </WonkTop>
           <WonkBottom>
-            <DefaultQuestions
-              onQuestionSubmitted={onQuestionSubmitted}
-              allowSend={!isLoading}
-            />
-            <ChatBox
-              onQuestionSubmitted={onQuestionSubmitted}
-              allowSend={!isLoading && messages.length === 0}
-              onNewMessage={onNewMessage}
-            />
+            <DefaultQuestions />
+            <ChatBox />
             <Disclaimer />
           </WonkBottom>
         </>
       ) : (
         <>
           <WonkTop>
-            {messages // TODO: add suspense boundary and loading animation
-              .filter((m) => m.role === 'assistant' || m.role === 'user')
-              .map((m: Message) => (
-                <div className='row mb-3' key={m.id}>
-                  <div className='col-1'>
-                    <RolePortrait role={m.role} />
-                  </div>
-                  <div className='col-11'>
-                    <p className='chat-name'>
-                      <strong>{`${m.role}: `}</strong>
-                    </p>
-
-                    <ChatMessage message={m} />
-                  </div>
-                </div>
-              ))}
-            {messages.length > 2 &&
+            <ChatList messages={messages} />
+            {/* {messages.length > 2 &&
               messages[messages.length - 1].role === 'assistant' &&
-              !isLoading && <Feedback chatId={chatId} />}
+              !isLoading && <Feedback chatId={chatId} />} */}
           </WonkTop>
           <WonkBottom>
             <div className='d-flex flex-column'>
@@ -122,7 +80,7 @@ const MainContent: React.FC = () => {
   );
 };
 
-export default MainContent;
+export default MainContentRSC;
 
 const RolePortrait = React.memo(function RolePortrait({
   role,

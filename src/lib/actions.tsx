@@ -28,9 +28,11 @@ async function submitUserMessage(userInput: string) {
   // first get the state of our AI
   const aiState = getMutableAIState<typeof AI>();
 
+  // get the user message and our generated system message
   const initialMessages = await getChatMessages(userInput);
 
-  // Update the AI state with the new user message.
+  // Update the AI state
+  // different than just adding it below in ui, this is the actual AI state
   aiState.update({
     ...aiState.get(), // chat id
     messages: [...aiState.get().messages, ...initialMessages],
@@ -113,29 +115,27 @@ async function submitUserMessage(userInput: string) {
   });
 
   return {
-    id: Date.now(),
+    id: nanoid(),
     display: ui,
   };
 }
 
-export interface AIState {
+export type AIState = {
   chatId: string;
   messages: Message[];
-}
+};
 
-export interface UIState {
-  id: number;
+export type UIState = {
+  id: string;
   display: React.ReactNode;
-}
-[];
+}[];
 
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
   },
-  // Each state can be any shape of object, but for chat applications
-  // it makes sense to have an array of messages. Or you may prefer something like { id: number, messages: Message[] }
+  initialUIState: [],
   initialAIState: {
     chatId: nanoid(),
     messages: [],

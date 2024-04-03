@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 
 import { Message } from 'ai';
@@ -36,7 +37,21 @@ export function BotMessage({
 }) {
   const text = useStreamableText(content);
 
-  return <div className='bot-message'>{text}</div>;
+  return (
+    <div className='bot-message' style={{ color: 'aquamarine' }}>
+      <h3>Bot!</h3>
+      {text}
+    </div>
+  );
+}
+
+export function UserMessage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className='user-message' style={{ color: 'greenyellow' }}>
+      <h3>User!</h3>
+      {children}
+    </div>
+  );
 }
 
 export const useStreamableText = (
