@@ -41,3 +41,44 @@
 :focus-visible {
     outline: 2px solid $primary-color;
 }
+
+
+.wonk-portrait-loading {
+#antennae-keyframe {
+	animation: antennae 0.5s infinite;
+}
+@keyframes antennae {
+  0%, 100% {
+    transform: translate(32%,0%);
+  }
+  23% {
+    transform: translate(32%,3%);
+  }
+  
+}
+#eye-keyframe {
+  animation: eyepan 1s infinite;
+}
+@keyframes eyepan {
+  0%,100% {
+    transform: translate(7.5%,3.9%);
+  }
+    50% {
+      transform: translate(5%,3.9%);
+    }
+    
+}
+#eyelid {
+  animation: eyelid 1s infinite;
+  transform-origin:30px 50px;
+}
+ @keyframes eyelid {
+  0%,100% {
+    transform: rotate(0deg);
+  }
+   50% {
+     transform: rotate(-15deg);
+   }
+    
+}
+}

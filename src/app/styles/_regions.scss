@@ -6,6 +6,18 @@ img.chat-portrait {
     border-radius:4px;
     box-shadow: $box-shadow;
 }
+.wonk-svg {
+  background-color:$primary-bg;
+  width:42px;
+  height:42px;
+  border-radius: 4px;
+  box-shadow: $box-shadow;
+  svg {
+    width:38px;
+    height:38px;
+    margin:2px 0 0 2px;
+  }
+}
 .external-links {
     a {
         font-size:1.1rem;
