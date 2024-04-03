@@ -86,17 +86,18 @@ const MainContent: React.FC = () => {
             {messages // TODO: add suspense boundary and loading animation
               .filter((m) => m.role === 'assistant' || m.role === 'user')
               .map((m: Message) => {
+                // debugger;
                 const roleDisplayName =
                   m.role === 'user' ? 'You' : 'Policy Wonk';
                 return (
                   <div className='row mb-3' key={m.id}>
-                    <div className='col-1'>
+                    <div className='col-3 col-md-1 mb-2'>
                       <RolePortrait
                         role={m.role}
                         roleDisplayName={roleDisplayName}
                       />
                     </div>
-                    <div className='col-11'>
+                    <div className='col-10 col-md-11'>
                       <p className='chat-name'>
                         <strong>{`${roleDisplayName}: `}</strong>
                       </p>
