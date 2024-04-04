@@ -49,7 +49,7 @@ export const getChatMessages = async (query: string) => {
   return initialMessages;
 };
 
-const getEmbeddings = async (query: string) => {
+export const getEmbeddings = async (query: string) => {
   // get our embeddings
   const embeddings = await openai.embeddings.create({
     model: embeddingModel, // needs to be the same model as we used to index
@@ -59,7 +59,7 @@ const getEmbeddings = async (query: string) => {
   return embeddings;
 };
 
-const getSearchResults = async (
+export const getSearchResults = async (
   embeddings: OpenAI.Embeddings.CreateEmbeddingResponse
 ) => {
   const searchResultMaxSize = 5;
@@ -82,7 +82,9 @@ const getSearchResults = async (
   return searchResults;
 };
 
-const transformSearchResults = (searchResults: SearchResponse<PolicyIndex>) => {
+export const transformSearchResults = (
+  searchResults: SearchResponse<PolicyIndex>
+) => {
   // Each document should be delimited by triple quotes and then note the excerpt of the document
   const docTextArray = searchResults.hits.hits.map((hit: any) => {
     return `"""${hit._source.text}\n\n-from [${cleanupTitle(hit._source.metadata.title)}](${hit._source.metadata.url})"""`;

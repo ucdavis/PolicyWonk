@@ -1,6 +1,7 @@
 import { Message } from 'ai';
 import {
   createAI,
+  createStreamableUI,
   createStreamableValue,
   getMutableAIState,
   render,
@@ -10,11 +11,19 @@ import { OpenAI } from 'openai';
 import { z } from 'zod';
 
 import { BotMessage } from '@/components/chat/chatMessage';
-import { getChatMessages, getSystemMessage } from '@/services/chatService';
+import {
+  getChatMessages,
+  getEmbeddings,
+  getSearchResults,
+  getSystemMessage,
+  transformSearchResults,
+} from '@/services/chatService';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 // An example of a spinner component. You can also import your own components,
 // or 3rd party component libraries.
@@ -23,6 +32,101 @@ function Spinner() {
 }
 
 async function submitUserMessage(userInput: string) {
+  'use server';
+
+  // before we do anything, show loading ui
+  const ui = createStreamableUI(<Spinner />);
+  // first get the state of our AI
+  const aiState = getMutableAIState<typeof AI>();
+
+  // We need to wrap this in an async immediately invoked function to avoid blocking.
+  // Without it, the UI wouldn't render while the fetch or LLM call are in progress.
+  (async () => {
+    ui.update(<div>Fetching embeddings...</div>);
+    const embeddings = await getEmbeddings(userInput);
+    console.log('embeddings', embeddings);
+
+    ui.update(<div>Searching...</div>);
+    const searchResults = await getSearchResults(embeddings);
+    console.log('searchResults', searchResults);
+
+    const transformedResults = transformSearchResults(searchResults);
+    console.log('transformedResults', transformedResults);
+
+    const systemMessage = getSystemMessage(transformedResults);
+    console.log('systemMessage', systemMessage);
+
+    const initialMessages: Message[] = [
+      systemMessage, // system message with full document info
+      {
+        id: '2',
+        role: 'user',
+        content: userInput,
+      },
+    ];
+
+    // Update the AI state
+    aiState.update({
+      ...aiState.get(), // chat id
+      messages: [...aiState.get().messages, ...initialMessages],
+    });
+
+    let textStream:
+      | undefined
+      | ReturnType<typeof createStreamableValue<string>>;
+    let textNode: undefined | React.ReactNode;
+
+    // The `render()` creates a generated, streamable UI.
+    const ui2 = render({
+      model: llmModel,
+      provider: openai,
+      initial: <Spinner />,
+      messages: [
+        ...aiState.get().messages.map((m: any) => ({
+          role: m.role,
+          content: m.content,
+          name: m.name,
+        })),
+      ],
+      // `text` is called when an AI returns a text response (as opposed to a tool call).
+      // Its content is streamed from the LLM, so this function will be called
+      // multiple times with `content` being incremental.
+      text: ({ content, done, delta }) => {
+        if (!textStream) {
+          textStream = createStreamableValue('');
+          textNode = <BotMessage content={textStream.value} />;
+        }
+        if (done) {
+          textStream.done();
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'assistant',
+                content,
+              },
+            ],
+          });
+        } else {
+          textStream.update(delta);
+        }
+
+        return textNode;
+      },
+    });
+
+    ui.done(ui2);
+  })();
+
+  return {
+    id: nanoid(),
+    display: ui.value,
+  };
+}
+
+async function submitUserMessage2(userInput: string) {
   'use server';
 
   // first get the state of our AI
@@ -43,7 +147,7 @@ async function submitUserMessage(userInput: string) {
 
   // The `render()` creates a generated, streamable UI.
   const ui = render({
-    model: 'gpt-4-0125-preview',
+    model: llmModel,
     provider: openai,
     initial: <Spinner />,
     messages: [
