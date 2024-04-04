@@ -57,7 +57,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({}) => {
       }}
     >
       <div className='input-group'>
-        <button
+        {/* <button
           className='input-group-text btn btn-secondary'
           onClick={(e) => {
             e.preventDefault();
@@ -66,13 +66,13 @@ const ChatBox: React.FC<ChatBoxProps> = ({}) => {
           aria-label='Start a new conversation'
         >
           +
-        </button>
+        </button> */}
         <div className='form-floating'>
           <textarea
             id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
-            className='form-control'
+            className='form-control wonk-input'
             autoFocus
             placeholder='Message Policy Wonk'
             value={input}

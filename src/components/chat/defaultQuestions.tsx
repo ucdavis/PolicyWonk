@@ -19,12 +19,13 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   const { submitUserMessage } = useActions();
   const questions = [
-    'How many holidays are in march?',
-    'What are the official staff holidays?',
-    'What is the meal limit for a business lunch?',
     'Do I need approval to work from home?',
+    'What is extended leave?',
+    'What are the official campus holidays?',
+    'When must security updates be installed?',
   ];
   return (
+<<<<<<< HEAD
     <div className='input-group d-flex flex-wrap justify-content-between'>
       {questions.map((example, index) => (
         <button
@@ -46,6 +47,15 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
               ...currentMessages,
               responseMessage,
             ]);
+=======
+    <div className='d-grid d-md-block'>
+      {questions.map((question, index) => (
+        <button
+          key={index}
+          className='btn btn-wonk text-start color-secondary-font'
+          onClick={() => {
+            onQuestionSubmitted(question);
+>>>>>>> main
           }}
           // disabled={!allowSend}
         >

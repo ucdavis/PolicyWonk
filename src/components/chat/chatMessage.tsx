@@ -10,10 +10,12 @@ import { useStreamableText } from '@/lib/hooks/use-streamable-text';
 import { MemoizedReactMarkdown } from './markdown';
 
 interface ChatMessageProps {
-  message: Message;
+  content: string | StreamableValue<string>;
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ content }: ChatMessageProps) {
+  const text = useStreamableText(content);
+
   return (
     <div>
       <MemoizedReactMarkdown
@@ -24,34 +26,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
           ),
         }}
       >
-        {message.content}
+        {text}
       </MemoizedReactMarkdown>
-    </div>
-  );
-}
-
-export function BotMessage({
-  content,
-  className,
-}: {
-  content: string | StreamableValue<string>;
-  className?: string;
-}) {
-  const text = useStreamableText(content);
-
-  return (
-    <div className='bot-message' style={{ color: 'aquamarine' }}>
-      <h3>Bot!</h3>
-      {text}
-    </div>
-  );
-}
-
-export function UserMessage({ children }: { children: React.ReactNode }) {
-  return (
-    <div className='user-message' style={{ color: 'greenyellow' }}>
-      <h3>User!</h3>
-      {children}
     </div>
   );
 }

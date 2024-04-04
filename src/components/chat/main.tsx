@@ -4,7 +4,6 @@ import React from 'react';
 import { useChat, Message } from 'ai/react';
 import { useAIState, useUIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
@@ -16,15 +15,14 @@ import WonkTop from '../layout/wonkTop';
 
 import ChatBox from './chatBox';
 import ChatHeader from './chatHeader';
-import { ChatList } from './chatList';
-import { ChatMessage } from './chatMessage';
+import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
 interface MainContentProps {
   chatId: string;
 }
-const MainContentRSC: React.FC<MainContentProps> = ({ chatId }) => {
+const MainContent: React.FC<MainContentProps> = ({ chatId }) => {
   const router = useRouter();
   const [messages] = useUIState();
   const [aiState] = useAIState();
@@ -56,10 +54,11 @@ const MainContentRSC: React.FC<MainContentProps> = ({ chatId }) => {
       ) : (
         <>
           <WonkTop>
-            <ChatList messages={messages} />
-            {/* {messages.length > 2 &&
-              messages[messages.length - 1].role === 'assistant' &&
-              !isLoading && <Feedback chatId={chatId} />} */}
+            {messages // TODO: add suspense boundary and loading animation
+              .filter((m: any) => m.role === 'assistant' || m.role === 'user')
+              .map((m: Message) => {
+                return <div key={m.id}>{messages.display}</div>;
+              })}
           </WonkTop>
           <WonkBottom>
             <div className='d-flex flex-column'>
@@ -80,24 +79,4 @@ const MainContentRSC: React.FC<MainContentProps> = ({ chatId }) => {
   );
 };
 
-export default MainContentRSC;
-
-const RolePortrait = React.memo(function RolePortrait({
-  role,
-}: {
-  role: string;
-}) {
-  return (
-    <div className='role-portrait'>
-      <Image
-        width={42}
-        height={42}
-        className='chat-image'
-        src={
-          role === 'assistant' ? '/media/ph-robot.png' : '/media/ph-user.png'
-        }
-        alt={role}
-      />
-    </div>
-  );
-});
+export default MainContent;
