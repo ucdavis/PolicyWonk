@@ -4,7 +4,7 @@ import { Message } from 'ai';
 
 import { ChatMessage } from './chatMessage';
 import { WonkPortrait } from './rolePortrait';
-import { UserPortrait } from './UserPortrait';
+import { UserPortrait } from './userPortrait';
 
 interface ChatMessageContainerProps {
   message: Message;
