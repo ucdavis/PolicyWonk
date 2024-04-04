@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import { useRouter } from 'next/navigation';
 
 import { getChatMessages } from '@/services/chatService';
-import { logMessages } from '@/services/loggingService';
+import { saveChat } from '@/services/historyService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -29,16 +29,16 @@ const MainContent: React.FC = () => {
   });
 
   React.useEffect(() => {
-    const logAsyncMessages = async () => {
+    const onChatComplete = async () => {
       const relevantMessages = messages.filter(
         (m) => m.role === 'assistant' || m.role === 'user'
       );
 
-      await logMessages(chatId, relevantMessages);
+      await saveChat(chatId, relevantMessages);
     };
 
     if (!isLoading && messages.length > 2) {
-      logAsyncMessages();
+      onChatComplete();
     }
   }, [messages, isLoading, chatId]);
 
