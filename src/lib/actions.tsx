@@ -11,11 +11,7 @@ import {
 import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
-import { BotMessage } from '@/components/chat/chatMessage';
-import {
-  ChatMessageContainer,
-  WonkMessage,
-} from '@/components/chat/chatMessageContainer';
+import { WonkMessage } from '@/components/chat/chatMessage';
 import WonkLoader from '@/components/wonkLoader';
 
 import { AIState, UIState, PolicyIndex } from './types';
@@ -106,7 +102,7 @@ async function submitUserMessage(userInput: string) {
           textStream = createStreamableValue('');
           // and render it inside of this component
           textNode = (
-            <WonkMessage message={textStream.value} isLoading={true} />
+            <WonkMessage content={textStream.value} isLoading={!done} />
           );
         }
         if (done) {

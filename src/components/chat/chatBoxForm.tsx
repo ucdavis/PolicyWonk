@@ -8,9 +8,9 @@ import { AI } from '@/lib/actions';
 
 import { UserMessage } from './chatMessage';
 
-interface ChatBoxProps {}
+interface ChatBoxFormProps {}
 
-const ChatBox: React.FC<ChatBoxProps> = ({}) => {
+const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
   const [input, setInput] = React.useState('');
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
@@ -92,26 +92,11 @@ const ChatBox: React.FC<ChatBoxProps> = ({}) => {
           <label htmlFor='messageTextArea'>Message Policy Wonk</label>
         </div>
       </div>
-      <FormButton />
+      <button className='btn btn-primary mt-3' aria-label='Send message'>
+        Send
+      </button>{' '}
     </form>
   );
 };
 
-export default ChatBox;
-
-const FormButton = () => {
-  // to do useFormStatus() this has to be in a child component of the form
-  // we might not need to do this? i know we could do useFormState inside the ChatBox component
-  // but i am not sure how useAction and useFormState work together
-  const { pending } = useFormStatus();
-  return (
-    <button
-      className='btn btn-primary mt-3'
-      disabled={pending}
-      aria-label='Send message'
-      aria-disabled={pending}
-    >
-      Send
-    </button>
-  );
-};
+export default ChatBoxForm;

@@ -13,9 +13,8 @@ import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
-import ChatBox from './chatBox';
+import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
-import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
@@ -47,7 +46,7 @@ const MainContent: React.FC<MainContentProps> = ({ chatId }) => {
           </WonkTop>
           <WonkBottom>
             <DefaultQuestions />
-            <ChatBox />
+            <ChatBoxForm />
             <Disclaimer />
           </WonkBottom>
         </>
@@ -55,9 +54,8 @@ const MainContent: React.FC<MainContentProps> = ({ chatId }) => {
         <>
           <WonkTop>
             {messages // TODO: add suspense boundary and loading animation
-              .filter((m: any) => m.role === 'assistant' || m.role === 'user')
-              .map((m: Message) => {
-                return <div key={m.id}>{messages.display}</div>;
+              .map((m: any) => {
+                return <div key={m.id}>{m.display}</div>;
               })}
           </WonkTop>
           <WonkBottom>

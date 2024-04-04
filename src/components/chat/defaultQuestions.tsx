@@ -5,6 +5,8 @@ import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/actions';
 
+import { UserMessage } from './chatMessage';
+
 interface DefaultQuestionsProps {
   allowSend?: boolean;
   onQuestionSubmitted?: (question: string) => void;
@@ -25,41 +27,29 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
     'When must security updates be installed?',
   ];
   return (
-<<<<<<< HEAD
-    <div className='input-group d-flex flex-wrap justify-content-between'>
-      {questions.map((example, index) => (
-        <button
-          key={index}
-          className='form-control me-2 mb-2 btn btn-wonk text-start color-secondary-font'
-          style={{ flex: '0 0 48%' }} // i dont know the right way to flex and account for margin
-          onClick={async () => {
-            setMessages((currentMessages) => [
-              ...currentMessages,
-              {
-                id: nanoid(),
-                display: <div>{example}</div>,
-              },
-            ]);
-
-            const responseMessage = await submitUserMessage(example);
-
-            setMessages((currentMessages) => [
-              ...currentMessages,
-              responseMessage,
-            ]);
-=======
     <div className='d-grid d-md-block'>
       {questions.map((question, index) => (
         <button
           key={index}
           className='btn btn-wonk text-start color-secondary-font'
-          onClick={() => {
-            onQuestionSubmitted(question);
->>>>>>> main
+          onClick={async () => {
+            setMessages((currentMessages) => [
+              ...currentMessages,
+              {
+                id: nanoid(),
+                display: <UserMessage>{question}</UserMessage>,
+              },
+            ]);
+
+            const responseMessage = await submitUserMessage(question);
+
+            setMessages((currentMessages) => [
+              ...currentMessages,
+              responseMessage,
+            ]);
           }}
-          // disabled={!allowSend}
         >
-          {example}
+          {question}
         </button>
       ))}
     </div>
