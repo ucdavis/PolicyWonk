@@ -49,7 +49,7 @@ const MainContent = ({ chat }: MainContentProps) => {
 
       await saveChat(chatId, relevantMessages);
       router.push(`/chat/${chatId}`);
-      // router.refresh();
+      router.refresh();
     };
 
     if (!isLoading && messages.length > 2) {
