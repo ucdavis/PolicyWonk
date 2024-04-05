@@ -51,6 +51,8 @@ export const getChat = async (chatId: string) => {
 export const getChats = async () => {
   const session = (await auth()) as Session;
 
+  if (!session) return null;
+
   const chatsDb = await getChatsCollection();
 
   const chats = await chatsDb

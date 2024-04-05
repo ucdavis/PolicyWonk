@@ -5,6 +5,8 @@ import { getChats } from '@/services/historyService';
 const ChatHistory: React.FC = async () => {
   const chats = await getChats();
 
+  if (!chats) return null;
+
   return (
     <div className='container'>
       <h1>Chat History</h1>
