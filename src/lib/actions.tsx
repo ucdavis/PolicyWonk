@@ -1,5 +1,3 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
-import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import {
   createAI,
@@ -12,27 +10,18 @@ import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
 import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
+import {
+  getEmbeddings,
+  getSearchResults,
+  transformSearchResults,
+  getSystemMessage,
+} from '@/services/chatService';
 
-import { AIState, UIState, PolicyIndex } from './types';
+import { AIState, UIState } from './types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const embeddingModel =
-  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';
-
-// get my vector store
-const config: ClientOptions = {
-  node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
-  auth: {
-    username: process.env.ELASTIC_SEARCHER_USERNAME ?? 'elastic',
-    password: process.env.ELASTIC_SEARCHER_PASSWORD ?? 'changeme',
-  },
-};
-
-const searchClient: Client = new Client(config);
-
-const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
 const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
@@ -43,14 +32,15 @@ async function submitUserMessage(userInput: string) {
   const wonkMsgId = nanoid();
 
   // before we actually do anything, stream loading UI (for the chat window)
-  // might be better to add this on the client side so it is immediate (not sure how long the response will take)
+  // would be better to add this on the client side so it is immediate
+  // but putting it here for now
   const chatWindowUI = createStreamableUI(
     <UserMessage key={userMsgId}>{userInput}</UserMessage>
   );
 
   // and create the text stream for the response
   let textStream = createStreamableValue();
-  // wonk thoughts for fun, but also to show that we can update at any point :)
+  // wonk thoughts for fun, but also to show that we can update at any point
   let wonkThoughts = createStreamableValue(
     'Great question! Let me look that up for you.'
   );
@@ -101,11 +91,11 @@ async function submitUserMessage(userInput: string) {
     wonkThoughts.done();
 
     // The `render()` creates a generated, streamable UI.
-    // we are using this as a nested UI stream, see: https://sdk.vercel.ai/docs/concepts/ai-rsc#nested-ui-streaming
+    // this is the response itself. render returns a ReactNode (our textNode)
     const responseUI = render({
       model: llmModel,
       provider: openai,
-      initial: textNode, // TODO: fix this so the thinking animation doesn't reset
+      initial: textNode,
       messages: [
         ...aiState.get().messages.map((m: any) => ({
           role: m.role,
@@ -128,6 +118,8 @@ async function submitUserMessage(userInput: string) {
               wonkThoughts={wonkThoughts.value}
             />
           );
+          // finally, close out the initial UI stream
+          chatWindowUI.done(textNode);
           // and update the UI state with the final message
           aiState.done({
             ...aiState.get(),
@@ -148,9 +140,6 @@ async function submitUserMessage(userInput: string) {
         return textNode;
       },
     });
-
-    // finally, close out the initial UI stream
-    chatWindowUI.done(responseUI);
   })();
 
   return {
@@ -170,64 +159,3 @@ export const AI = createAI<AIState, UIState>({
     messages: [],
   },
 });
-
-export const getEmbeddings = async (query: string) => {
-  // get our embeddings
-  const embeddings = await openai.embeddings.create({
-    model: embeddingModel, // needs to be the same model as we used to index
-    input: query,
-  });
-
-  return embeddings;
-};
-
-export const getSearchResults = async (
-  embeddings: OpenAI.Embeddings.CreateEmbeddingResponse
-) => {
-  const searchResultMaxSize = 5;
-
-  // TODO: augment search w/ keyword search, or perhaps follow up questions?
-  // get our search results
-  const searchResults = await searchClient.search<PolicyIndex>({
-    index: indexName,
-    size: searchResultMaxSize,
-    body: {
-      knn: {
-        field: 'vector', // the field we want to search, created by PolicyAcquisition
-        query_vector: embeddings.data[0].embedding, // the query vector
-        k: searchResultMaxSize,
-        num_candidates: 200,
-      },
-    },
-  });
-
-  return searchResults;
-};
-
-export const transformSearchResults = (
-  searchResults: SearchResponse<PolicyIndex>
-) => {
-  // Each document should be delimited by triple quotes and then note the excerpt of the document
-  const docTextArray = searchResults.hits.hits.map((hit: any) => {
-    return `"""${hit._source.text}\n\n-from [${cleanupTitle(hit._source.metadata.title)}](${hit._source.metadata.url})"""`;
-  });
-
-  return docTextArray.join('\n\n');
-};
-
-const cleanupTitle = (title: string) => {
-  // replace any quotes
-  return title.replace(/"/g, '');
-};
-
-export const getSystemMessage = (docText: string) => {
-  return {
-    id: '1',
-    role: 'system',
-    content: `
-    You are a helpful assistant who is an expert in university policy at UC Davis. You will be provided with several documents each delimited by triple quotes and then asked a question.
-  Your task is to answer the question in nicely formatted markdown using only the provided documents and to cite the the documents used to answer the question. 
-  If the documents do not contain the information needed to answer this question then simply write: "Sorry, I wasn't able to find enough information to answer this question." 
-  If an answer to the question is provided, it must be annotated with a citation including the source URL and title. \n\n ${docText}`,
-  } as Message;
-};
