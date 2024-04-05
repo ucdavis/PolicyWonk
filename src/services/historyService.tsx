@@ -50,8 +50,7 @@ export const getChat = async (chatId: string) => {
 
 export const getChats = async () => {
   const session = (await auth()) as Session;
-
-  if (!session) return null;
+  if (!session) return <>Please log in to view your chat history</>;
 
   const chatsDb = await getChatsCollection();
 
@@ -60,7 +59,15 @@ export const getChats = async () => {
     .sort({ timestamp: -1 })
     .toArray();
 
-  return chats.map(unwrapChat);
+  return (
+    <ul className='list-group'>
+      {chats.map((chat) => (
+        <li className='list-group-item' key={chat.id}>
+          <a href={`/chat/${chat.id}`}>{chat.title}</a>
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 // save chats to db
