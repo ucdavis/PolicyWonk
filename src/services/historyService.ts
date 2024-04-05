@@ -12,6 +12,25 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
+let _mongoClient: MongoClient;
+
+// all of our chats are stored in the "policywonk" db in the "chats" collection
+async function getChatsCollection() {
+  if (_mongoClient) {
+    return _mongoClient.db('policywonk').collection<ChatSession>('chats');
+  }
+
+  // otherwise create a new one and make sure indexes are setup
+  _mongoClient = new MongoClient(mongoConnectionString);
+  const collection = _mongoClient
+    .db('policywonk')
+    .collection<ChatSession>('chats');
+
+  await collection.createIndex({ timestamp: -1 });
+
+  return collection;
+}
+
 function removeNonSerializableFields<T>(
   document: T | null | undefined
 ): Omit<T, '_id'> | null {
@@ -26,12 +45,9 @@ function removeNonSerializableFields<T>(
 export const getChat = async (chatId: string) => {
   const session = (await auth()) as Session;
 
-  const client = await MongoClient.connect(mongoConnectionString);
+  const chatsDb = await getChatsCollection();
 
-  var db = client.db('policywonk');
-  const chat = await db
-    .collection<ChatSession>('chats')
-    .findOne({ id: chatId, userId: session.user?.id });
+  const chat = chatsDb.findOne({ id: chatId, userId: session.user?.id });
 
   return removeNonSerializableFields(chat);
 };
@@ -39,12 +55,11 @@ export const getChat = async (chatId: string) => {
 export const getChats = async () => {
   const session = (await auth()) as Session;
 
-  const client = await MongoClient.connect(mongoConnectionString);
+  const chatsDb = await getChatsCollection();
 
-  var db = client.db('policywonk');
-  const chats = await db
-    .collection<ChatSession>('chats')
+  const chats = await chatsDb
     .find({ userId: session.user?.id })
+    .sort({ timestamp: -1 })
     .toArray();
 
   return chats;
@@ -64,22 +79,20 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
     llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
+    timestamp: Date.now(),
   };
 
-  const client = await MongoClient.connect(mongoConnectionString);
-
-  var db = client.db('policywonk');
-  await db.collection('chats').insertOne(chat);
+  const chatsDb = await getChatsCollection();
+  await chatsDb.insertOne(chat);
 
   // also log to elastic for now
   await logMessages(chatId, messages);
 };
 
 export const saveReaction = async (chatId: string, reaction: string) => {
-  const client = await MongoClient.connect(mongoConnectionString);
+  const chatsDb = await getChatsCollection();
 
-  var db = client.db('policywonk');
-  await db.collection('chats').updateOne(
+  await chatsDb.updateOne(
     { id: chatId },
     {
       $set: {

@@ -8,4 +8,5 @@ export type ChatSession = {
   user: string;
   userId: string;
   reaction?: string;
+  timestamp: number;
 };
