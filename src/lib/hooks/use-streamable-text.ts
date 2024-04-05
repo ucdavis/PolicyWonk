@@ -25,3 +25,27 @@ export const useStreamableText = (
 
   return rawContent;
 };
+
+export const useTempStreamableText = (
+  content: string | StreamableValue<string>
+) => {
+  const [rawContent, setRawContent] = useState(
+    typeof content === 'string' ? content : ''
+  );
+
+  useEffect(() => {
+    (async () => {
+      if (typeof content === 'object') {
+        let value = '';
+        for await (const delta of readStreamableValue(content)) {
+          console.log(delta);
+          if (typeof delta === 'string') {
+            setRawContent((value = delta)); // replace instead of add to
+          }
+        }
+      }
+    })();
+  }, [content]);
+
+  return rawContent;
+};

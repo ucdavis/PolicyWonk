@@ -1,10 +1,13 @@
 'use client';
 import React from 'react';
 
-import { StreamableValue } from 'ai/rsc';
+import { StreamableValue, readStreamableValue } from 'ai/rsc';
 import remarkGfm from 'remark-gfm';
 
-import { useStreamableText } from '@/lib/hooks/use-streamable-text';
+import {
+  useStreamableText,
+  useTempStreamableText,
+} from '@/lib/hooks/use-streamable-text';
 
 import { MemoizedReactMarkdown } from './markdown';
 import { UserPortrait, WonkPortrait } from './rolePortrait';
@@ -28,11 +31,14 @@ export const UserMessage = ({ children }: { children: React.ReactNode }) => {
 export const WonkMessage = ({
   content,
   isLoading,
+  wonkThoughts,
 }: {
   content: string | StreamableValue<string>;
   isLoading: boolean;
+  wonkThoughts: StreamableValue<string>;
 }) => {
   const text = useStreamableText(content);
+  const wonkText = useTempStreamableText(wonkThoughts);
 
   return (
     <div className='row mb-3'>
@@ -44,6 +50,7 @@ export const WonkMessage = ({
           <strong>Policy Wonk</strong>
         </p>
         <div>
+          {wonkText}
           <MemoizedReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -54,7 +61,7 @@ export const WonkMessage = ({
           >
             {text}
           </MemoizedReactMarkdown>
-        </div>{' '}
+        </div>
       </div>
     </div>
   );

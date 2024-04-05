@@ -5,19 +5,10 @@ import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/actions';
 
-import { UserMessage } from './chatMessage';
+interface DefaultQuestionsProps {}
 
-interface DefaultQuestionsProps {
-  allowSend?: boolean;
-  onQuestionSubmitted?: (question: string) => void;
-}
-
-const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
-  allowSend,
-  onQuestionSubmitted,
-}) => {
-  const [aiState] = useAIState();
-  const [messages, setMessages] = useUIState<typeof AI>();
+const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({}) => {
+  const [_, setMessages] = useUIState<typeof AI>();
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   const { submitUserMessage } = useActions();
   const questions = [
@@ -33,14 +24,6 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
           key={index}
           className='btn btn-wonk text-start color-secondary-font'
           onClick={async () => {
-            setMessages((currentMessages) => [
-              ...currentMessages,
-              {
-                id: nanoid(),
-                display: <UserMessage>{question}</UserMessage>,
-              },
-            ]);
-
             const responseMessage = await submitUserMessage(question);
 
             setMessages((currentMessages) => [

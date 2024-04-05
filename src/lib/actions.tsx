@@ -11,8 +11,7 @@ import {
 import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
-import { WonkMessage } from '@/components/chat/chatMessage';
-import WonkLoader from '@/components/wonkLoader';
+import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
 
 import { AIState, UIState, PolicyIndex } from './types';
 
@@ -40,8 +39,31 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 async function submitUserMessage(userInput: string) {
   'use server';
 
+  const userMsgId = nanoid();
+  const wonkMsgId = nanoid();
+
   // before we actually do anything, stream loading UI (for the chat window)
-  const chatWindowUI = createStreamableUI(<WonkLoader />);
+  // might be better to add this on the client side so it is immediate (not sure how long the response will take)
+  const chatWindowUI = createStreamableUI(
+    <UserMessage key={userMsgId}>{userInput}</UserMessage>
+  );
+
+  // and create the text stream for the response
+  let textStream = createStreamableValue();
+  // wonk thoughts for fun, but also to show that we can update at any point :)
+  let wonkThoughts = createStreamableValue(
+    'Great question! Let me look that up for you.'
+  );
+
+  let textNode: React.ReactNode = (
+    <WonkMessage
+      key={wonkMsgId}
+      content={textStream.value}
+      wonkThoughts={wonkThoughts.value}
+      isLoading={true}
+    />
+  );
+  chatWindowUI.append(textNode);
 
   // then get the state of our UI
   // provided by <AI> in the page.tsx
@@ -50,10 +72,10 @@ async function submitUserMessage(userInput: string) {
   // then start our async process
   // this is an immediately invoked function expression (IIFE) so that the above code is not blocked
   (async () => {
-    chatWindowUI.update(<h1>Fetching embeddings...</h1>);
+    wonkThoughts.update('Getting embeddings...');
     const embeddings = await getEmbeddings(userInput);
 
-    chatWindowUI.update(<h1>Searching...</h1>);
+    wonkThoughts.update('Searching for relevant documents...');
     const searchResults = await getSearchResults(embeddings);
 
     const transformedResults = transformSearchResults(searchResults);
@@ -63,7 +85,7 @@ async function submitUserMessage(userInput: string) {
     const initialMessages: Message[] = [
       systemMessage, // system message with full document info
       {
-        id: '2',
+        id: userMsgId,
         role: 'user',
         content: userInput,
       },
@@ -71,21 +93,19 @@ async function submitUserMessage(userInput: string) {
 
     // Update the AI state
     aiState.update({
-      ...aiState.get(), // chat id
+      ...aiState.get(), // chat id, from initial state
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
-    let textStream:
-      | undefined
-      | ReturnType<typeof createStreamableValue<string>>;
-    let textNode: undefined | React.ReactNode;
+    wonkThoughts.update('Aha! Got it! :)');
+    wonkThoughts.done();
 
     // The `render()` creates a generated, streamable UI.
     // we are using this as a nested UI stream, see: https://sdk.vercel.ai/docs/concepts/ai-rsc#nested-ui-streaming
     const responseUI = render({
       model: llmModel,
       provider: openai,
-      initial: <h1>Responding...</h1>,
+      initial: textNode, // TODO: fix this so the thinking animation doesn't reset
       messages: [
         ...aiState.get().messages.map((m: any) => ({
           role: m.role,
@@ -97,24 +117,24 @@ async function submitUserMessage(userInput: string) {
       // Its content is streamed from the LLM, so this function will be called
       // multiple times with `content` being incremental. `delta` is the new text to append.
       text: ({ content, done, delta }) => {
-        if (!textStream) {
-          // start streaming the response text
-          textStream = createStreamableValue('');
-          // and render it inside of this component
-          textNode = (
-            <WonkMessage content={textStream.value} isLoading={!done} />
-          );
-        }
         if (done) {
           // once we're done, close out all our streams
           textStream.done();
+          textNode = (
+            <WonkMessage
+              key={wonkMsgId}
+              content={content}
+              isLoading={false}
+              wonkThoughts={wonkThoughts.value}
+            />
+          );
           // and update the UI state with the final message
           aiState.done({
             ...aiState.get(),
             messages: [
               ...aiState.get().messages,
               {
-                id: nanoid(),
+                id: wonkMsgId,
                 role: 'assistant',
                 content,
               },
