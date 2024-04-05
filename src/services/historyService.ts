@@ -12,6 +12,17 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
+function removeNonSerializableFields<T>(
+  document: T | null | undefined
+): Omit<T, '_id'> | null {
+  if (!document) {
+    return null;
+  }
+
+  const { _id, ...serializableDocument } = document as any;
+  return serializableDocument;
+}
+
 export const getChat = async (chatId: string) => {
   const session = (await auth()) as Session;
 
@@ -22,7 +33,7 @@ export const getChat = async (chatId: string) => {
     .collection<ChatSession>('chats')
     .findOne({ id: chatId, userId: session.user?.id });
 
-  return chat;
+  return removeNonSerializableFields(chat);
 };
 
 export const getChats = async () => {
