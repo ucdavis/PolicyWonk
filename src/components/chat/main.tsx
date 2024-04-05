@@ -5,6 +5,7 @@ import { useChat, Message } from 'ai/react';
 import { nanoid } from 'nanoid';
 import { useRouter } from 'next/navigation';
 
+import { ChatSession } from '@/models/chat';
 import { getChatMessages } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
@@ -18,7 +19,11 @@ import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
-const MainContent: React.FC = () => {
+type MainContentProps = {
+  chat?: ChatSession;
+};
+
+const MainContent: React.FC = ({ chat }: MainContentProps) => {
   const router = useRouter();
 
   const chatId = React.useMemo(() => nanoid(), []);
@@ -27,6 +32,13 @@ const MainContent: React.FC = () => {
     api: '/api/chat',
     id: chatId,
   });
+
+  // if previous chat is provided, set messages
+  React.useEffect(() => {
+    if (chat) {
+      setMessages(chat.messages);
+    }
+  }, [chat, setMessages]);
 
   React.useEffect(() => {
     const onChatComplete = async () => {

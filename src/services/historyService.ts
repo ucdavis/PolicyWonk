@@ -12,6 +12,19 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
+export const getChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
+
+  const client = await MongoClient.connect(mongoConnectionString);
+
+  var db = client.db('policywonk');
+  const chat = await db
+    .collection<ChatSession>('chats')
+    .findOne({ id: chatId, userId: session.user?.id });
+
+  return chat;
+};
+
 export const getChats = async () => {
   const session = (await auth()) as Session;
 
