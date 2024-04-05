@@ -1,6 +1,6 @@
 'use server';
 import { Message } from 'ai';
-import { MongoClient } from 'mongodb';
+import { MongoClient, WithId } from 'mongodb';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
@@ -31,15 +31,11 @@ async function getChatsCollection() {
   return collection;
 }
 
-function removeNonSerializableFields<T>(
-  document: T | null | undefined
-): Omit<T, '_id'> | null {
-  if (!document) {
-    return null;
-  }
+// mongo adds an unserilizable _id field to all objects, so we need to unwrap it
+function unwrapChat(chatWithId: WithId<ChatSession>): ChatSession {
+  const { _id, ...chat } = chatWithId;
 
-  const { _id, ...serializableDocument } = document as any;
-  return serializableDocument;
+  return chat;
 }
 
 export const getChat = async (chatId: string) => {
@@ -47,9 +43,9 @@ export const getChat = async (chatId: string) => {
 
   const chatsDb = await getChatsCollection();
 
-  const chat = chatsDb.findOne({ id: chatId, userId: session.user?.id });
+  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
 
-  return removeNonSerializableFields(chat);
+  return chat ? unwrapChat(chat) : null;
 };
 
 export const getChats = async () => {
@@ -62,7 +58,7 @@ export const getChats = async () => {
     .sort({ timestamp: -1 })
     .toArray();
 
-  return chats;
+  return chats.map(unwrapChat);
 };
 
 // save chats to db

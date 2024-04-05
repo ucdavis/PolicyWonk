@@ -20,10 +20,10 @@ import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
 type MainContentProps = {
-  chat?: ChatSession;
+  chat: ChatSession | null;
 };
 
-const MainContent: React.FC = ({ chat }: MainContentProps) => {
+const MainContent = ({ chat }: MainContentProps) => {
   const router = useRouter();
 
   const chatId = React.useMemo(() => nanoid(), []);
@@ -48,7 +48,8 @@ const MainContent: React.FC = ({ chat }: MainContentProps) => {
       );
 
       await saveChat(chatId, relevantMessages);
-      router.refresh();
+      router.push(`/chat/${chatId}`);
+      // router.refresh();
     };
 
     if (!isLoading && messages.length > 2) {
@@ -107,7 +108,7 @@ const MainContent: React.FC = ({ chat }: MainContentProps) => {
                   />
                 );
               })}
-            {messages.length > 2 &&
+            {messages.length > 1 &&
               messages[messages.length - 1].role === 'assistant' &&
               !isLoading && <Feedback chatId={chatId} />}
           </WonkTop>

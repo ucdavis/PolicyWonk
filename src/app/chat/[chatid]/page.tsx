@@ -13,7 +13,7 @@ type HomePageProps = {
   };
 };
 
-const ChatPage: React.FC = async ({ params: { chatid } }: HomePageProps) => {
+const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   const session = await auth();
 
   if (session?.user) {
