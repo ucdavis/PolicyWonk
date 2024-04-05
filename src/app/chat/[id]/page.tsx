@@ -29,6 +29,7 @@ export interface ChatPageProps {
 //   };
 // }
 
+// TODO: link to stored chat page
 export default async function ChatPage({ params }: ChatPageProps) {
   return <div></div>;
   // const session = (await auth()) as Session;
