@@ -5,8 +5,9 @@ import { useChat, Message } from 'ai/react';
 import { nanoid } from 'nanoid';
 import { useRouter } from 'next/navigation';
 
+import { ChatSession } from '@/models/chat';
 import { getChatMessages } from '@/services/chatService';
-import { logMessages } from '@/services/loggingService';
+import { saveChat } from '@/services/historyService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -18,7 +19,11 @@ import { ChatMessageContainer } from './chatMessageContainer';
 import DefaultQuestions from './defaultQuestions';
 import Feedback from './feedback';
 
-const MainContent: React.FC = () => {
+type MainContentProps = {
+  chat: ChatSession | null;
+};
+
+const MainContent = ({ chat }: MainContentProps) => {
   const router = useRouter();
 
   const chatId = React.useMemo(() => nanoid(), []);
@@ -28,19 +33,29 @@ const MainContent: React.FC = () => {
     id: chatId,
   });
 
+  // if previous chat is provided, set messages
   React.useEffect(() => {
-    const logAsyncMessages = async () => {
+    if (chat) {
+      setMessages(chat.messages);
+    }
+  }, [chat, setMessages]);
+
+  // save chat to history when chat is complete
+  React.useEffect(() => {
+    const onChatComplete = async () => {
       const relevantMessages = messages.filter(
         (m) => m.role === 'assistant' || m.role === 'user'
       );
 
-      await logMessages(chatId, relevantMessages);
+      await saveChat(chatId, relevantMessages);
+      router.push(`/chat/${chatId}`);
+      router.refresh();
     };
 
     if (!isLoading && messages.length > 2) {
-      logAsyncMessages();
+      onChatComplete();
     }
-  }, [messages, isLoading, chatId]);
+  }, [messages, isLoading, chatId, router]);
 
   const onQuestionSubmitted = async (question: string) => {
     if (messages.length === 0) {
@@ -93,7 +108,7 @@ const MainContent: React.FC = () => {
                   />
                 );
               })}
-            {messages.length > 2 &&
+            {messages.length > 1 &&
               messages[messages.length - 1].role === 'assistant' &&
               !isLoading && <Feedback chatId={chatId} />}
           </WonkTop>

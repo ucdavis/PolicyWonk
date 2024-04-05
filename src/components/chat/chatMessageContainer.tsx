@@ -3,7 +3,8 @@ import React from 'react';
 import { Message } from 'ai';
 
 import { ChatMessage } from './chatMessage';
-import { UserPortrait, WonkPortrait } from './rolePortrait';
+import { WonkPortrait } from './rolePortrait';
+import { UserPortrait } from './userPortrait';
 
 interface ChatMessageContainerProps {
   message: Message;
@@ -19,7 +20,7 @@ export const ChatMessageContainer = ({
     <div className='row mb-3' key={message.id}>
       <div className='col-3 col-md-1 mb-2'>
         {message.role === 'user' ? (
-          <UserPortrait roleDisplayName={roleDisplayName} />
+          <UserPortrait />
         ) : (
           <WonkPortrait
             roleDisplayName={roleDisplayName}

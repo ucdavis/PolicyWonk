@@ -4,7 +4,7 @@ import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { logReaction } from '@/services/loggingService';
+import { saveReaction } from '@/services/historyService';
 
 type FeedbackProps = {
   chatId: string;
@@ -15,7 +15,7 @@ const Feedback = ({ chatId }: FeedbackProps) => {
 
   const onFeedback = async (feedback: string) => {
     setFeedbackSent(true);
-    await logReaction(chatId, feedback);
+    await saveReaction(chatId, feedback);
   };
 
   if (feedbackSent) {

@@ -2,6 +2,8 @@ import React from 'react';
 
 import Link from 'next/link';
 
+import ChatHistory from '../chat/chatHistory';
+
 import Footer from './footer';
 
 const Sidebar: React.FC = () => {
@@ -14,7 +16,9 @@ const Sidebar: React.FC = () => {
             <span className='subtitle'>Your UC Policy expert</span>
           </Link>
         </h1>
-        <div></div>
+        <div>
+          <ChatHistory />
+        </div>
       </header>
       <Footer />
     </div>

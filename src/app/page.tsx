@@ -1,9 +1,7 @@
-import React from 'react';
+import { redirect } from 'next/navigation';
 
-import MainContent from '@/components/chat/main';
-
-const HomePage: React.FC = () => {
-  return <MainContent />;
+const RedirectComponent: React.FC = () => {
+  redirect('/chat/new');
 };
 
-export default HomePage;
+export default RedirectComponent;
