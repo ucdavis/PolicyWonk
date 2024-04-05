@@ -40,6 +40,7 @@ const MainContent: React.FC = ({ chat }: MainContentProps) => {
     }
   }, [chat, setMessages]);
 
+  // save chat to history when chat is complete
   React.useEffect(() => {
     const onChatComplete = async () => {
       const relevantMessages = messages.filter(
@@ -47,12 +48,13 @@ const MainContent: React.FC = ({ chat }: MainContentProps) => {
       );
 
       await saveChat(chatId, relevantMessages);
+      router.refresh();
     };
 
     if (!isLoading && messages.length > 2) {
       onChatComplete();
     }
-  }, [messages, isLoading, chatId]);
+  }, [messages, isLoading, chatId, router]);
 
   const onQuestionSubmitted = async (question: string) => {
     if (messages.length === 0) {
