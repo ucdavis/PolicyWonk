@@ -1,3 +1,4 @@
+'use server';
 import React from 'react';
 
 import { getChats } from '@/services/historyService';
@@ -8,13 +9,7 @@ const ChatHistory: React.FC = async () => {
   return (
     <div className='container'>
       <h1>Chat History</h1>
-      <ul className='list-group'>
-        {chats.map((chat) => (
-          <li className='list-group-item' key={chat.id}>
-            <a href={`/chat/${chat.id}`}>{chat.title}</a>
-          </li>
-        ))}
-      </ul>
+      {chats}
     </div>
   );
 };
