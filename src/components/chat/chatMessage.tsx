@@ -50,17 +50,20 @@ export const WonkMessage = ({
           <strong>Policy Wonk</strong>
         </p>
         <div>
-          {wonkText}
-          <MemoizedReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: ({ node, ...props }) => (
-                <a {...props} target='_blank' rel='noopener noreferrer' />
-              ),
-            }}
-          >
-            {text}
-          </MemoizedReactMarkdown>
+          {text ? (
+            <MemoizedReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ node, ...props }) => (
+                  <a {...props} target='_blank' rel='noopener noreferrer' />
+                ),
+              }}
+            >
+              {text}
+            </MemoizedReactMarkdown>
+          ) : (
+            wonkText
+          )}
         </div>
       </div>
     </div>

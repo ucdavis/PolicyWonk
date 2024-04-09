@@ -2,7 +2,6 @@ import React from 'react';
 
 import { nanoid } from 'ai';
 import { useActions, useUIState } from 'ai/rsc';
-import { useFormState, useFormStatus } from 'react-dom';
 
 import { AI } from '@/lib/actions';
 
@@ -16,7 +15,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
   // we aren't displaying messages, but we do need to set new ones
-  const [_, setMessages] = useUIState<typeof AI>();
+  const [_, setMessagesUI] = useUIState<typeof AI>();
   // use a server action to submit
   const { submitUserMessage } = useActions();
 
@@ -29,21 +28,17 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
 
   return (
     <form
+      ref={formRef}
       className='d-flex flex-column mt-3'
       onSubmit={async (e: any) => {
         e.preventDefault();
-
-        // Blur focus on mobile
-        if (window.innerWidth < 600) {
-          e.target['message']?.blur();
-        }
 
         const value = input.trim();
         setInput('');
         if (!value) return;
 
         // Optimistically add user message UI
-        setMessages((currentMessages) => [
+        setMessagesUI((currentMessages) => [
           ...currentMessages,
           {
             id: nanoid(),
@@ -53,7 +48,10 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
 
         // Submit and get response message
         const responseMessage = await submitUserMessage(value);
-        setMessages((currentMessages) => [...currentMessages, responseMessage]);
+        setMessagesUI((currentMessages) => [
+          ...currentMessages,
+          responseMessage,
+        ]);
       }}
     >
       <div className='input-group'>

@@ -34,9 +34,7 @@ async function submitUserMessage(userInput: string) {
   // before we actually do anything, stream loading UI (for the chat window)
   // would be better to add this on the client side so it is immediate
   // but putting it here for now
-  const chatWindowUI = createStreamableUI(
-    <UserMessage key={userMsgId}>{userInput}</UserMessage>
-  );
+  const chatWindowUI = createStreamableUI();
 
   // and create the text stream for the response
   let textStream = createStreamableValue();
@@ -53,7 +51,7 @@ async function submitUserMessage(userInput: string) {
       isLoading={true}
     />
   );
-  chatWindowUI.append(textNode);
+  chatWindowUI.update(textNode);
 
   // then get the state of our UI
   // provided by <AI> in the page.tsx
@@ -87,8 +85,7 @@ async function submitUserMessage(userInput: string) {
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
-    wonkThoughts.update('Aha! Got it! :)');
-    wonkThoughts.done();
+    wonkThoughts.done('Aha! Got it! :)'); // chatMessage component controls when to stop showing this message
 
     // The `render()` creates a generated, streamable UI.
     // this is the response itself. render returns a ReactNode (our textNode)
