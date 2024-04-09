@@ -9,15 +9,15 @@ import {
 import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
-import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
+import { WonkMessage } from '@/components/chat/chatMessage';
+import Feedback from '@/components/chat/feedback';
+import { ChatSession, UIState } from '@/models/chat';
 import {
   getEmbeddings,
   getSearchResults,
   transformSearchResults,
   getSystemMessage,
 } from '@/services/chatService';
-
-import { AIState, UIState } from './types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -28,13 +28,18 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 async function submitUserMessage(userInput: string) {
   'use server';
 
-  const userMsgId = nanoid();
-  const wonkMsgId = nanoid();
+  // then get the state of our UI
+  // provided by <AI> in the page.tsx
+  const aiState = getMutableAIState<typeof AI>();
 
   // before we actually do anything, stream loading UI (for the chat window)
   // would be better to add this on the client side so it is immediate
   // but putting it here for now
   const chatWindowUI = createStreamableUI();
+
+  const chatId = aiState.get().id; // provided on the page.tsx <AI> provider
+  const userMsgId = nanoid();
+  const wonkMsgId = nanoid();
 
   // and create the text stream for the response
   let textStream = createStreamableValue();
@@ -52,10 +57,6 @@ async function submitUserMessage(userInput: string) {
     />
   );
   chatWindowUI.update(textNode);
-
-  // then get the state of our UI
-  // provided by <AI> in the page.tsx
-  const aiState = getMutableAIState<typeof AI>();
 
   // then start our async process
   // this is an immediately invoked function expression (IIFE) so that the above code is not blocked
@@ -108,12 +109,15 @@ async function submitUserMessage(userInput: string) {
           // once we're done, close out all our streams
           textStream.done();
           textNode = (
-            <WonkMessage
-              key={wonkMsgId}
-              content={content}
-              isLoading={false}
-              wonkThoughts={wonkThoughts.value}
-            />
+            <>
+              <WonkMessage
+                key={wonkMsgId}
+                content={content}
+                isLoading={false}
+                wonkThoughts={wonkThoughts.value}
+              />
+              <Feedback chatId={chatId} />
+            </>
           );
           // finally, close out the initial UI stream
           chatWindowUI.done(textNode);
@@ -146,13 +150,19 @@ async function submitUserMessage(userInput: string) {
 }
 
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
-export const AI = createAI<AIState, UIState>({
+export const AI = createAI<ChatSession, UIState>({
   actions: {
     submitUserMessage,
   },
   initialUIState: [],
   initialAIState: {
-    chatId: nanoid(),
+    id: nanoid(),
     messages: [],
+    title: '',
+    llmModel: llmModel,
+    user: '',
+    userId: '',
+    reaction: undefined,
+    timestamp: Date.now(),
   },
 });

@@ -1,10 +1,14 @@
 'use client';
 import React from 'react';
 
+import { nanoid } from 'ai';
+import { useChat } from 'ai/react';
 import { useAIState, useUIState } from 'ai/rsc';
 import { useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
+import { ChatSession } from '@/models/chat';
+import { saveChat } from '@/services/historyService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -14,21 +18,67 @@ import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
 import DefaultQuestions from './defaultQuestions';
 
-interface MainContentProps {
-  chatId: string;
-}
-const MainContent: React.FC<MainContentProps> = ({ chatId }) => {
-  const router = useRouter();
-  const [messagesUI, _] = useUIState<typeof AI>();
-  // for when we want the chat history to refresh
-  // const [aiState] = useAIState();
+type MainContentProps = {
+  chat: ChatSession | undefined;
+};
 
-  // React.useEffect(() => {
-  //   const messagesLength = aiState.messages?.length;
-  //   if (messagesLength === 2) {
-  //     router.refresh();
+const MainContent = ({ chat }: MainContentProps) => {
+  const router = useRouter();
+
+  // for when we want the chat history to refresh
+  const [aiState] = useAIState<typeof AI>();
+  const [messagesUI, setMessagesUI] = useUIState<typeof AI>();
+
+  const chatId = React.useMemo(() => nanoid(), []);
+
+  const { messages, setMessages, reload, append, isLoading } = useChat({
+    api: '/api/chat',
+    id: chatId,
+  });
+
+  // if previous chat is provided, set messages
+  React.useEffect(() => {
+    if (chat) {
+      setMessages(chat.messages);
+    }
+  }, [chat, setMessages]);
+
+  React.useEffect(() => {
+    const messagesLength = aiState.messages?.length;
+    if (messagesLength === 2) {
+      router.refresh();
+    }
+  }, [aiState.messages, router]);
+
+  // save chat to history when chat is complete
+  React.useEffect(() => {
+    const onChatComplete = async () => {
+      const relevantMessages = messages.filter(
+        (m) => m.role === 'assistant' || m.role === 'user'
+      );
+
+      await saveChat(chatId, relevantMessages);
+      router.push(`/chat/${chatId}`);
+      router.refresh();
+    };
+
+    if (!isLoading && messages.length > 2) {
+      onChatComplete();
+    }
+  }, [messages, isLoading, chatId, router]);
+
+  // const onQuestionSubmitted = async (question: string) => {
+  //   if (messages.length === 0) {
+  //     const newMessages = await getChatMessages(question);
+  //     setMessages(newMessages);
+  //     reload();
+  //   } else {
+  //     append({
+  //       role: 'user',
+  //       content: question,
+  //     });
   //   }
-  // }, [aiState.messages, router]);
+  // };
 
   const onNewMessage = () => {
     router.push('/new');

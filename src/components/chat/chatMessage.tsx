@@ -10,7 +10,8 @@ import {
 } from '@/lib/hooks/use-streamable-text';
 
 import { MemoizedReactMarkdown } from './markdown';
-import { UserPortrait, WonkPortrait } from './rolePortrait';
+import { WonkPortrait } from './rolePortrait';
+import { UserPortrait } from './userPortrait';
 
 export const UserMessage = ({ children }: { children: React.ReactNode }) => {
   return (

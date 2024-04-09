@@ -3,7 +3,7 @@ import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
 
-import { PolicyIndex } from '@/lib/types';
+import { PolicyIndex } from '@/models/chat';
 
 const embeddingModel =
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';

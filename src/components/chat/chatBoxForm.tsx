@@ -3,7 +3,7 @@ import React from 'react';
 import { nanoid } from 'ai';
 import { useActions, useUIState } from 'ai/rsc';
 
-import { AI } from '@/lib/actions';
+import { type AI } from '@/lib/actions';
 
 import { UserMessage } from './chatMessage';
 

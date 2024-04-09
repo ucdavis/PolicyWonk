@@ -1,8 +1,14 @@
 import { Message } from 'ai';
 
-export type AIState = {
-  chatId: string;
+export type ChatSession = {
+  id: string;
+  title: string;
   messages: Message[];
+  llmModel: string;
+  user: string;
+  userId: string;
+  reaction?: string;
+  timestamp: number;
 };
 
 export type UIState = {
