@@ -4,11 +4,11 @@ import { MongoClient, WithId } from 'mongodb';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { ChatSession } from '@/models/chat';
+import { ChatHistory, defaultLlmModel } from '@/models/chat';
 
 import { logMessages, logReaction } from './loggingService';
 
-const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
+const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
@@ -17,14 +17,14 @@ let _mongoClient: MongoClient;
 // all of our chats are stored in the "policywonk" db in the "chats" collection
 async function getChatsCollection() {
   if (_mongoClient) {
-    return _mongoClient.db('policywonk').collection<ChatSession>('chats');
+    return _mongoClient.db('policywonk').collection<ChatHistory>('chats');
   }
 
   // otherwise create a new one and make sure indexes are setup
   _mongoClient = new MongoClient(mongoConnectionString);
   const collection = _mongoClient
     .db('policywonk')
-    .collection<ChatSession>('chats');
+    .collection<ChatHistory>('chats');
 
   await collection.createIndex({ timestamp: -1 });
 
@@ -32,7 +32,7 @@ async function getChatsCollection() {
 }
 
 // mongo adds an unserilizable _id field to all objects, so we need to unwrap it
-function unwrapChat(chatWithId: WithId<ChatSession>): ChatSession {
+function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
   const { _id, ...chat } = chatWithId;
 
   return chat;
@@ -45,7 +45,7 @@ export const getChat = async (chatId: string) => {
 
   const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
 
-  return chat ? unwrapChat(chat) : undefined;
+  return chat ? unwrapChat(chat) : null;
 };
 
 export const getChats = async () => {
@@ -77,7 +77,7 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
-  const chat: ChatSession = {
+  const chat: ChatHistory = {
     id: chatId,
     title,
     messages,

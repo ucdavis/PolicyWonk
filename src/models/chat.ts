@@ -1,6 +1,8 @@
 import { Message } from 'ai';
 
-export type ChatSession = {
+export const defaultLlmModel = 'gpt-3.5-turbo';
+
+export type ChatHistory = {
   id: string;
   title: string;
   messages: Message[];

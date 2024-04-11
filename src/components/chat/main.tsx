@@ -1,14 +1,10 @@
 'use client';
 import React from 'react';
 
-import { nanoid } from 'ai';
-import { useChat } from 'ai/react';
 import { useAIState, useUIState } from 'ai/rsc';
 import { useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
-import { ChatSession } from '@/models/chat';
-import { saveChat } from '@/services/historyService';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -18,30 +14,12 @@ import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
 import DefaultQuestions from './defaultQuestions';
 
-type MainContentProps = {
-  chat: ChatSession | undefined;
-};
-
-const MainContent = ({ chat }: MainContentProps) => {
+const MainContent = () => {
   const router = useRouter();
 
   // for when we want the chat history to refresh
   const [aiState] = useAIState<typeof AI>();
   const [messagesUI, setMessagesUI] = useUIState<typeof AI>();
-
-  const chatId = React.useMemo(() => nanoid(), []);
-
-  const { messages, setMessages, reload, append, isLoading } = useChat({
-    api: '/api/chat',
-    id: chatId,
-  });
-
-  // if previous chat is provided, set messages
-  React.useEffect(() => {
-    if (chat) {
-      setMessages(chat.messages);
-    }
-  }, [chat, setMessages]);
 
   React.useEffect(() => {
     const messagesLength = aiState.messages?.length;
@@ -49,36 +27,6 @@ const MainContent = ({ chat }: MainContentProps) => {
       router.refresh();
     }
   }, [aiState.messages, router]);
-
-  // save chat to history when chat is complete
-  React.useEffect(() => {
-    const onChatComplete = async () => {
-      const relevantMessages = messages.filter(
-        (m) => m.role === 'assistant' || m.role === 'user'
-      );
-
-      await saveChat(chatId, relevantMessages);
-      router.push(`/chat/${chatId}`);
-      router.refresh();
-    };
-
-    if (!isLoading && messages.length > 2) {
-      onChatComplete();
-    }
-  }, [messages, isLoading, chatId, router]);
-
-  // const onQuestionSubmitted = async (question: string) => {
-  //   if (messages.length === 0) {
-  //     const newMessages = await getChatMessages(question);
-  //     setMessages(newMessages);
-  //     reload();
-  //   } else {
-  //     append({
-  //       role: 'user',
-  //       content: question,
-  //     });
-  //   }
-  // };
 
   const onNewMessage = () => {
     router.push('/new');

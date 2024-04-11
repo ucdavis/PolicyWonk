@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';

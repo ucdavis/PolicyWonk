@@ -1,5 +1,6 @@
 import { Message } from 'ai';
 import {
+  StreamableValue,
   createAI,
   createStreamableUI,
   createStreamableValue,
@@ -9,21 +10,22 @@ import {
 import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
-import { WonkMessage } from '@/components/chat/chatMessage';
+import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
 import Feedback from '@/components/chat/feedback';
-import { ChatSession, UIState } from '@/models/chat';
+import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
 import {
   getEmbeddings,
   getSearchResults,
   transformSearchResults,
   getSystemMessage,
 } from '@/services/chatService';
+import { saveChat } from '@/services/historyService';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
+const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
 
 async function submitUserMessage(userInput: string) {
   'use server';
@@ -33,8 +35,7 @@ async function submitUserMessage(userInput: string) {
   const aiState = getMutableAIState<typeof AI>();
 
   // before we actually do anything, stream loading UI (for the chat window)
-  // would be better to add this on the client side so it is immediate
-  // but putting it here for now
+  // user message is added on client
   const chatWindowUI = createStreamableUI();
 
   const chatId = aiState.get().id; // provided on the page.tsx <AI> provider
@@ -106,22 +107,21 @@ async function submitUserMessage(userInput: string) {
       // multiple times with `content` being incremental. `delta` is the new text to append.
       text: ({ content, done, delta }) => {
         if (done) {
-          // once we're done, close out all our streams
           textStream.done();
-          textNode = (
+          const finalNode = (
             <>
               <WonkMessage
                 key={wonkMsgId}
                 content={content}
                 isLoading={false}
-                wonkThoughts={wonkThoughts.value}
+                wonkThoughts={''}
               />
               <Feedback chatId={chatId} />
             </>
           );
-          // finally, close out the initial UI stream
-          chatWindowUI.done(textNode);
-          // and update the UI state with the final message
+          // finally, close out the initial UI stream with the final node
+          chatWindowUI.done(finalNode);
+          // and update the AI state with the final message
           aiState.done({
             ...aiState.get(),
             messages: [
@@ -133,6 +133,11 @@ async function submitUserMessage(userInput: string) {
               },
             ],
           });
+          // TODO: use onSetAIState when it is no longer unstable
+          (async () => {
+            // save the chat to the db
+            await saveChat(chatId, aiState.get().messages);
+          })();
         } else {
           textStream.update(delta);
         }
@@ -150,7 +155,7 @@ async function submitUserMessage(userInput: string) {
 }
 
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
-export const AI = createAI<ChatSession, UIState>({
+export const AI = createAI<ChatHistory, UIState>({
   actions: {
     submitUserMessage,
   },
@@ -165,4 +170,25 @@ export const AI = createAI<ChatSession, UIState>({
     reaction: undefined,
     timestamp: Date.now(),
   },
+  // TODO: use onSetAIState when it is no longer unstable
+  // then we can automatically save the chat to the db whenever the state changes
+  // TODO: also, onGetUIState
 });
+
+export const getUIStateFromAIState = (aiState: ChatHistory) => {
+  return aiState.messages
+    .filter((message) => message.role !== 'system')
+    .map((message: Message, index) => ({
+      id: message.id,
+      display:
+        message.role === 'user' ? (
+          <UserMessage>{message.content}</UserMessage>
+        ) : (
+          <WonkMessage
+            content={message.content}
+            isLoading={false}
+            wonkThoughts={''}
+          />
+        ),
+    }));
+};

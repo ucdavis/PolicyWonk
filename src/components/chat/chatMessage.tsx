@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { StreamableValue, readStreamableValue } from 'ai/rsc';
+import { StreamableValue } from 'ai/rsc';
 import remarkGfm from 'remark-gfm';
 
 import {
@@ -36,7 +36,7 @@ export const WonkMessage = ({
 }: {
   content: string | StreamableValue<string>;
   isLoading: boolean;
-  wonkThoughts: StreamableValue<string>;
+  wonkThoughts: StreamableValue<string> | string;
 }) => {
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
