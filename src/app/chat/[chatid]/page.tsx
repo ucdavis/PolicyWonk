@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { nanoid } from 'nanoid';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 

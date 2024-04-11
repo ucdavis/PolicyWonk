@@ -19,7 +19,7 @@ const MainContent = () => {
 
   // for when we want the chat history to refresh
   const [aiState] = useAIState<typeof AI>();
-  const [messagesUI, setMessagesUI] = useUIState<typeof AI>();
+  const [messagesUI, _] = useUIState<typeof AI>();
 
   React.useEffect(() => {
     const messagesLength = aiState.messages?.length;
