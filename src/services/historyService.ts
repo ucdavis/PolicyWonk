@@ -48,26 +48,15 @@ export const getChat = async (chatId: string) => {
   return chat ? unwrapChat(chat) : null;
 };
 
-export const getChats = async () => {
-  const session = (await auth()) as Session;
-  if (!session) return <>Please log in to view your chat history</>;
-
+export const getChats = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 
   const chats = await chatsDb
-    .find({ userId: session.user?.id })
+    .find({ userId: userId })
     .sort({ timestamp: -1 })
     .toArray();
 
-  return (
-    <ul className='list-group'>
-      {chats.map((chat) => (
-        <li className='list-group-item' key={chat.id}>
-          <a href={`/chat/${chat.id}`}>{chat.title}</a>
-        </li>
-      ))}
-    </ul>
-  );
+  return chats;
 };
 
 // save chats to db

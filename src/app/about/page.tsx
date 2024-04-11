@@ -47,8 +47,9 @@ const AboutPage = () => {
         <h3>How to Get Started?</h3>
         <p>
           To interact with PolicyWonk, simply start a chat with{' '}
-          <Link href='/new'>Policy Wonk</Link> and ask it any policy-related
-          question. For example: <code>What are the official holidays?</code>
+          <Link href='/chat/new'>Policy Wonk</Link> and ask it any
+          policy-related question. For example:{' '}
+          <code>What are the official holidays?</code>
         </p>
 
         <h4>Sources:</h4>

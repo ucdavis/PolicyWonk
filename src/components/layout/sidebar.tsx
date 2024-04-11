@@ -11,13 +11,17 @@ const Sidebar: React.FC = () => {
     <div className='sidebar-container'>
       <header>
         <h1 className='logo'>
-          <Link href='/new'>
+          <Link href='/chat/new'>
             Policy Wonk <br />
             <span className='subtitle'>Your UC Policy expert</span>
           </Link>
         </h1>
         <div>
-          <ChatHistory />
+          <React.Suspense // since ChatHistory is an async component, this will automatically resolve
+            fallback={<div className='container'>Loading...</div>}
+          >
+            <ChatHistory />
+          </React.Suspense>
         </div>
       </header>
       <Footer />

@@ -8,8 +8,10 @@ import {
   render,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
+import { Session } from 'next-auth';
 import { OpenAI } from 'openai';
 
+import { auth } from '@/auth';
 import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
 import Feedback from '@/components/chat/feedback';
 import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
@@ -19,7 +21,7 @@ import {
   transformSearchResults,
   getSystemMessage,
 } from '@/services/chatService';
-import { saveChat } from '@/services/historyService';
+import { getChats, saveChat } from '@/services/historyService';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

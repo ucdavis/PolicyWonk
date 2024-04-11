@@ -29,7 +29,7 @@ const MainContent = () => {
   }, [aiState.messages, router]);
 
   const onNewMessage = () => {
-    router.push('/new');
+    router.push('/chat/new');
   };
 
   return (
