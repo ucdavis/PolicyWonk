@@ -48,11 +48,15 @@ export const getChat = async (chatId: string) => {
   return chat ? unwrapChat(chat) : null;
 };
 
-export const getChats = async (userId: string) => {
+export const getChatHistory = async () => {
+  const session = (await auth()) as Session;
+  const userId = session.user?.id;
+
   const chatsDb = await getChatsCollection();
 
   const chats = await chatsDb
     .find({ userId: userId })
+    .project({ messages: 0 }) // we don't need messages for the history
     .sort({ timestamp: -1 })
     .toArray();
 

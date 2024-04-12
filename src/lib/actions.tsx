@@ -21,7 +21,7 @@ import {
   transformSearchResults,
   getSystemMessage,
 } from '@/services/chatService';
-import { getChats, saveChat } from '@/services/historyService';
+import { getChatHistory, saveChat } from '@/services/historyService';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

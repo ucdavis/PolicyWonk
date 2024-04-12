@@ -4,16 +4,15 @@ import React from 'react';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { getChats } from '@/services/historyService';
+import { getChatHistory } from '@/services/historyService';
 
 const ChatHistory: React.FC = async () => {
   const session = (await auth()) as Session;
-  console.log(session);
   if (!session?.user?.id) {
     return <>No Session</>;
   }
 
-  const chats = await getChats(session.user.id);
+  const chats = await getChatHistory();
 
   return (
     <div className='container'>
