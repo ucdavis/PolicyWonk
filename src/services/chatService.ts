@@ -33,7 +33,7 @@ export const getChatMessages = async (query: string) => {
 
   const searchResults = await getSearchResults(embeddings);
 
-  const transformedResults = transformSearchResults(searchResults);
+  const transformedResults = expandedTransformSearchResults(searchResults);
 
   const systemMessage = getSystemMessage(transformedResults);
 
@@ -82,13 +82,19 @@ const getSearchResults = async (
   return searchResults;
 };
 
-const transformSearchResults = (searchResults: SearchResponse<PolicyIndex>) => {
-  // Each document should be delimited by triple quotes and then note the excerpt of the document
-  const docTextArray = searchResults.hits.hits.map((hit: any) => {
-    return `"""${hit._source.text}\n\n-from [${cleanupTitle(hit._source.metadata.title)}](${hit._source.metadata.url})"""`;
-  });
+const expandedTransformSearchResults = (
+  searchResults: SearchResponse<PolicyIndex>
+) => {
+  // doc format
+  //   Document: 0
+  // title: Tall penguins
+  // text: Emperor penguins are the tallest growing up to 122 cm in height.
 
-  return docTextArray.join('\n\n');
+  return searchResults.hits.hits
+    .map((hit: any, i: number) => {
+      return `\nDocument: ${i}\ntitle: ${cleanupTitle(hit._source.metadata.title)}\nurl: ${hit._source.metadata.url}\ntext: ${hit._source.text}`;
+    })
+    .join('\n\n');
 };
 
 const cleanupTitle = (title: string) => {
@@ -101,10 +107,25 @@ const getSystemMessage = (docText: string) => {
     id: '1',
     role: 'system',
     content: `
-    You are a helpful assistant who is an expert in university policy at UC Davis. You will be provided with several documents each delimited by triple quotes and then asked a question.
-  Your task is to answer the question in nicely formatted markdown using only the provided documents and to cite the the documents used to answer the question. 
-  If the documents do not contain the information needed to answer this question then simply write: "Sorry, I wasn't able to find enough information to answer this question." 
-  If an answer to the question is provided, it must be annotated with a citation including the source URL and title. \n\n ${docText}`,
+    ## Basic Rules
+You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, you cite your sources in your answers, according to the provided instructions. Always respond in well-formatted markdown.
+
+# User Preamble
+## Task and Context
+You help people answer their policy questions interactively. You should focus on serving the user's needs as best you can.
+
+## Style Guide
+Unless the user asks for a different style of answer, you should answer in full sentences, using proper grammar and spelling.
+
+## Document context
+<documents>
+${docText}
+</documents>
+
+Carefully perform the following instructions, in order, starting each with a new line.
+Write a response to the user's last input in high quality natural english. Use the symbols [^doctitle] to indicate when a fact comes from a document in the search result, e.g ""my fact [^doc1]"" for a fact from document "doc1".
+Finally, Write 'Citation(s):' followed the citations for the facts you used in your response. Use the same symbols [^doctitle]: to indicate which document the fact came from, e.g. ""[^doc1]: [doc1](document url)"" for a fact from document "doc1". Do not put the citations in a list ('-') format.
+`,
   } as Message;
 };
 

@@ -13,9 +13,14 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <MemoizedReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          a: ({ node, ...props }) => (
-            <a {...props} target='_blank' rel='noopener noreferrer' />
-          ),
+          a: ({ node, ...props }) => {
+            // open links in new tab but not for internal links
+            if (props.href?.startsWith('http')) {
+              return <a {...props} target='_blank' rel='noopener noreferrer' />;
+            } else {
+              return <a {...props} />;
+            }
+          },
         }}
       >
         {message.content}
