@@ -5,6 +5,8 @@ import { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { getChatHistory } from '@/services/historyService';
 
+import ChatHistoryList from './chatHistoryList';
+
 const loadChatHistory = React.cache(async (userId: string) => {
   console.log('loading chat history');
   return await getChatHistory(userId);
@@ -22,17 +24,7 @@ const ChatHistory: React.FC = async () => {
   return (
     <>
       <h1>Chat History</h1>
-      {chats?.length ? (
-        <ul className='list-group'>
-          {chats.map((chat) => (
-            <li className='list-group-item' key={chat.id}>
-              <a href={`/chat/${chat.id}`}>{chat.title}</a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <>No chat history</>
-      )}
+      {chats?.length ? <ChatHistoryList chats={chats} /> : <>No chat history</>}
     </>
   );
 };
