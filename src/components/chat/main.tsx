@@ -5,6 +5,7 @@ import { useAIState, useUIState } from 'ai/rsc';
 import { useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
+import { answerLimit } from '@/models/chat';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -22,8 +23,11 @@ const MainContent = () => {
   const [messagesUI, _] = useUIState<typeof AI>();
 
   React.useEffect(() => {
-    const messagesLength = aiState.messages?.length;
-    if (messagesLength === 2) {
+    const messagesLength = aiState.messages?.filter(
+      (m) => m.role !== 'assistant'
+    ).length;
+    console.log('aiState.messages', aiState.messages);
+    if (messagesLength === answerLimit) {
       router.refresh();
     }
   }, [aiState.messages, router]);
@@ -33,7 +37,7 @@ const MainContent = () => {
   };
 
   return (
-    <div className='wonk-container'>
+    <>
       {!messagesUI.length ? (
         <>
           <WonkTop>
@@ -69,7 +73,7 @@ const MainContent = () => {
           </WonkBottom>
         </>
       )}
-    </div>
+    </>
   );
 };
 

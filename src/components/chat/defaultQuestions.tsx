@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { useActions, useUIState } from 'ai/rsc';
