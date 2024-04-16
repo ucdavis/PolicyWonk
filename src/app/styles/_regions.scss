@@ -54,3 +54,33 @@ img.chat-portrait {
 .login-card {
     margin-top:35%;
 }
+// chat history
+
+.history-wrapper {
+    margin-top:15%;
+    h2 {
+        font-size:0.9rem;
+        text-transform: uppercase;
+        color:$secondary-font;
+        
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .history-list {
+        list-style: none;
+    
+        .history-list-group-item a {
+            font-size:1rem;
+            color:$primary-font;
+            text-decoration: none;
+            margin-bottom:4px;
+           white-space: nowrap;
+            
+            &:hover {
+                color:$secondary-color;
+            
+            }
+        }
+    }
+
+}

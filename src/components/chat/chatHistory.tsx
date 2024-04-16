@@ -21,18 +21,20 @@ const ChatHistory: React.FC = async () => {
 
   return (
     <>
-      <h1>Chat History</h1>
-      {chats?.length ? (
-        <ul className='list-group'>
-          {chats.map((chat) => (
-            <li className='list-group-item' key={chat.id}>
-              <a href={`/chat/${chat.id}`}>{chat.title}</a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <>No chat history</>
-      )}
+      <div className='history-wrapper'>
+        <h2>Chat History</h2>
+        {chats?.length ? (
+          <ul className='history-list'>
+            {chats.map((chat) => (
+              <li className='history-list-group-item' key={chat.id}>
+                <a href={`/chat/${chat.id}`}>{chat.title}</a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>No chat history</>
+        )}
+      </div>
     </>
   );
 };
