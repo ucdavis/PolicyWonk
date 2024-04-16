@@ -43,7 +43,7 @@ export const getChat = async (chatId: string, userId: string) => {
 
   const chat = await chatsDb.findOne({ id: chatId, userId: userId });
 
-  // TODO: skip pulling system message
+  // TODO: skip pulling system message to begin with
   if (chat?.messages[0]?.role === 'system') {
     console.log('skipping system message');
     chat?.messages.splice(0, 1);
@@ -55,11 +55,11 @@ export const getChat = async (chatId: string, userId: string) => {
 export const getChatHistory = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chats = await chatsDb
+  const chats = (await chatsDb
     .find({ userId: userId })
-    .project({ messages: 0 }) // we don't need messages for the history
+    .project({ messages: 0, _id: 0 }) // we don't need messages for the history + unwrap chats
     .sort({ timestamp: -1 })
-    .toArray();
+    .toArray()) as ChatHistory[];
 
   return chats;
 };

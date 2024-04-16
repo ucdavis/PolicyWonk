@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 
 import ChatHistory from '../chat/chatHistory';
+import ChatHistoryLoader from '../loading/chatHistoryLoader';
 
 import Footer from './footer';
 
@@ -16,9 +17,9 @@ const Sidebar: React.FC = () => {
             <span className='subtitle'>Your UC Policy expert</span>
           </Link>
         </h1>
-        <div>
+        <div className='container'>
           <React.Suspense // since ChatHistory is an async component, this will automatically resolve
-            fallback={<div className='container'>Loading...</div>}
+            fallback={<ChatHistoryLoader />}
           >
             <ChatHistory />
           </React.Suspense>
