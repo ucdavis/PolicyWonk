@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 import { ChatHistory } from '@/models/chat';
 
@@ -15,7 +16,7 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
 
   return (
     <ul className='list-group'>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {chats.map((chat) => (
           <motion.li
             className='list-group-item'
@@ -28,7 +29,7 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
               ease: 'easeIn',
             }}
           >
-            <a href={`/chat/${chat.id}`}>{chat.title}</a>
+            <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
           </motion.li>
         ))}
       </AnimatePresence>

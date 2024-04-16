@@ -9,6 +9,7 @@ import {
   useTempStreamableText,
 } from '@/lib/hooks/use-streamable-text';
 
+import Feedback from './feedback';
 import { MemoizedReactMarkdown } from './markdown';
 import { WonkPortrait } from './rolePortrait';
 import { UserPortrait } from './userPortrait';
@@ -30,10 +31,12 @@ export const UserMessage = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const WonkMessage = ({
+  chatId,
   content,
   isLoading,
   wonkThoughts,
 }: {
+  chatId: string;
   content: string | StreamableValue<string>;
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
@@ -67,6 +70,8 @@ export const WonkMessage = ({
           )}
         </div>
       </div>
+      {/* TODO: have feedback not take a sec to load when refreshing? and UCD logo? */}
+      {!isLoading && <Feedback chatId={chatId} />}
     </div>
   );
 };

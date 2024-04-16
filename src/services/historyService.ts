@@ -45,7 +45,6 @@ export const getChat = async (chatId: string, userId: string) => {
 
   // TODO: skip pulling system message to begin with
   if (chat?.messages[0]?.role === 'system') {
-    console.log('skipping system message');
     chat?.messages.splice(0, 1);
   }
 
