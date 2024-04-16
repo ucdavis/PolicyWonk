@@ -66,23 +66,33 @@ img.chat-portrait {
        
     }
     .history-list {
-        list-style: none;
         overflow: hidden;
-        text-overflow: ellipsis ellipsis;
+        text-overflow: ellipsis;
         white-space: nowrap;
-    
-        .history-list-group-item a {
+        .history-list-group-item {
+            padding:4px 0;
+            list-style: none;
+            &.active {
+                list-style: disc;
+                color:$secondary-color;
+                a {
+                    color:$secondary-color;
+                border-color:$secondary-color;
+                }
+            }
+            a {
             font-size:1rem;
             color:$primary-font;
             text-decoration: none;
             margin-bottom:4px;
-           
-            
+            border-right:2px solid $primary-bg;
+            }
             &:hover {
                 color:$secondary-color;
             
             }
         }
+        
     }
 
 }
