@@ -5,7 +5,6 @@ import { useAIState, useUIState } from 'ai/rsc';
 import { useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
-import { answerLimit } from '@/models/chat';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
@@ -18,20 +17,21 @@ import DefaultQuestions from './defaultQuestions';
 const MainContent = () => {
   const router = useRouter();
 
-  // for when we want the chat history to refresh
   const [aiState] = useAIState<typeof AI>();
   const [messagesUI, _] = useUIState<typeof AI>();
 
   React.useEffect(() => {
-    const messagesLength = aiState.messages?.filter(
-      (m) => m.role !== 'assistant'
-    ).length;
-    console.log('aiState.messages', aiState.messages);
-    if (messagesLength === answerLimit) {
+    if (
+      // on first response from AI
+      aiState.messages.filter((m) => m.role === 'assistant').length === 1
+    ) {
+      // reloads the sidebar, which repulls from the db now that the chat has been saved
+      // TODO: i'd like to refresh when the user submits a message, not once the answer is done
       router.refresh();
     }
   }, [aiState.messages, router]);
 
+  // TODO: i'd like to update the url to /chat/id once the chat is saved
   const onNewMessage = () => {
     router.push('/chat/new');
   };

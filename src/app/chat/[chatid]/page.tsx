@@ -8,6 +8,7 @@ import { SessionProvider } from 'next-auth/react';
 
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
+import NotAuthorized from '@/components/layout/not-authorized';
 import { AI, getUIStateFromAIState } from '@/lib/actions';
 import { ChatHistory, defaultLlmModel } from '@/models/chat';
 import { getChat } from '@/services/historyService';
@@ -21,9 +22,14 @@ type HomePageProps = {
 const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   const session = (await auth()) as Session;
 
-  // TODO: throw errors in getChat??
+  // middleware should take care of this
+  if (!session?.user?.id) {
+    return null;
+  }
   const chat: ChatHistory | null =
-    chatid !== 'new' ? await getChat(chatid) : newChatSession(session);
+    chatid !== 'new'
+      ? await getChat(chatid, session.user.id)
+      : newChatSession(session);
 
   // if getChat returns null
   // will happen if the user is at an /chat/{id} that is not /chat/new
@@ -32,9 +38,9 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
     return notFound();
   }
 
-  // if (chat.userId !== session.user?.id) {
-  //   return notFound();
-  // }
+  if (chat.userId !== session.user?.id) {
+    return <NotAuthorized />;
+  }
 
   if (session?.user) {
     // filter out sensitive data before passing to client.

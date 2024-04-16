@@ -1,6 +1,5 @@
 import { Message } from 'ai';
 import {
-  StreamableValue,
   createAI,
   createStreamableUI,
   createStreamableValue,
@@ -8,10 +7,8 @@ import {
   render,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
-import { Session } from 'next-auth';
 import { OpenAI } from 'openai';
 
-import { auth } from '@/auth';
 import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
 import Feedback from '@/components/chat/feedback';
 import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
@@ -21,7 +18,7 @@ import {
   transformSearchResults,
   getSystemMessage,
 } from '@/services/chatService';
-import { getChatHistory, saveChat } from '@/services/historyService';
+import { saveChat } from '@/services/historyService';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -32,7 +29,6 @@ const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
 async function submitUserMessage(userInput: string) {
   'use server';
 
-  // then get the state of our UI
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
 
@@ -53,7 +49,6 @@ async function submitUserMessage(userInput: string) {
 
   let textNode: React.ReactNode = (
     <WonkMessage
-      key={wonkMsgId}
       content={textStream.value}
       wonkThoughts={wonkThoughts.value}
       isLoading={true}

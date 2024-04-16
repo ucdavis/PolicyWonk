@@ -38,20 +38,21 @@ function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
   return chat;
 }
 
-export const getChat = async (chatId: string) => {
-  const session = (await auth()) as Session;
-
+export const getChat = async (chatId: string, userId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
+  const chat = await chatsDb.findOne({ id: chatId, userId: userId });
 
-  return chat ? unwrapChat(chat) : null;
+  // TODO: skip pulling system message
+  if (chat?.messages[0]?.role === 'system') {
+    console.log('skipping system message');
+    chat?.messages.splice(0, 1);
+  }
+
+  return chat && chat.userId === userId ? unwrapChat(chat) : null;
 };
 
-export const getChatHistory = async () => {
-  const session = (await auth()) as Session;
-  const userId = session.user?.id;
-
+export const getChatHistory = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 
   const chats = await chatsDb
@@ -66,7 +67,6 @@ export const getChatHistory = async () => {
 // save chats to db
 export const saveChat = async (chatId: string, messages: Message[]) => {
   const session = (await auth()) as Session;
-
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';

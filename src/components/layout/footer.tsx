@@ -29,6 +29,7 @@ const Footer: React.FC = () => {
 export default Footer;
 
 const UserNameDisplay: React.FC = async ({}) => {
+  // TODO: move session() up
   const session = (await auth()) as Session;
 
   if (!session) {

@@ -1,4 +1,3 @@
-'use server';
 import React from 'react';
 
 import { Session } from 'next-auth';
@@ -6,13 +5,17 @@ import { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { getChatHistory } from '@/services/historyService';
 
+const loadChatHistory = React.cache(async (userId: string) => {
+  return await getChatHistory(userId);
+});
+
 const ChatHistory: React.FC = async () => {
   const session = (await auth()) as Session;
   if (!session?.user?.id) {
     return <>No Session</>;
   }
 
-  const chats = await getChatHistory();
+  const chats = await loadChatHistory(session.user.id);
 
   return (
     <div className='container'>
