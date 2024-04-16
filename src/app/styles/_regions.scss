@@ -66,31 +66,48 @@ img.chat-portrait {
        
     }
     .history-list {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        
         .history-list-group-item {
             padding:4px 0;
             list-style: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-left:12px;
             &.active {
-                list-style: disc;
-                color:$secondary-color;
+                padding-left:0px;
                 a {
                     color:$secondary-color;
-                border-color:$secondary-color;
+                   
+                    &:before {
+                    content:"\A";
+                    width:6px;
+                    height:6px;
+                    margin-bottom:2px;
+                    border-radius:50%;
+                    background: $secondary-color;
+                    display:inline-block;
+                    margin-right:6px;
+                }
                 }
             }
             a {
-            font-size:1rem;
-            color:$primary-font;
-            text-decoration: none;
-            margin-bottom:4px;
-            border-right:2px solid $primary-bg;
-            }
-            &:hover {
+                font-size:0.8rem;
+                color:$primary-font;
+                text-decoration: none;
+                margin-bottom:4px;
+                @include breakpoint(md) {
+                    font-size:0.9rem;
+                }
+                @include breakpoint(lg) {
+                    font-size:1rem;
+                }
+               &:hover {
                 color:$secondary-color;
             
             }
+            }
+            
         }
         
     }
