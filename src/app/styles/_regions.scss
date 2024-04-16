@@ -63,18 +63,20 @@ img.chat-portrait {
         text-transform: uppercase;
         color:$secondary-font;
         
-        overflow: hidden;
-        text-overflow: ellipsis;
+       
     }
     .history-list {
         list-style: none;
+        overflow: hidden;
+        text-overflow: ellipsis ellipsis;
+        white-space: nowrap;
     
         .history-list-group-item a {
             font-size:1rem;
             color:$primary-font;
             text-decoration: none;
             margin-bottom:4px;
-           white-space: nowrap;
+           
             
             &:hover {
                 color:$secondary-color;
