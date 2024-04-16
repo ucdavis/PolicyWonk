@@ -90,9 +90,38 @@ const expandedTransformSearchResults = (
   // title: Tall penguins
   // text: Emperor penguins are the tallest growing up to 122 cm in height.
 
-  return searchResults.hits.hits
-    .map((hit: any, i: number) => {
-      return `\nDocument: ${i}\ntitle: ${cleanupTitle(hit._source.metadata.title)}\nurl: ${hit._source.metadata.url}\ntext: ${hit._source.text}`;
+  // For now, if the same document is returned >1, we'll just concatenate the text. This way we only get a single reference per document.
+  // eventually we might want to keep them as separate references w/ different line number ranges, or pull in full or expanded text
+
+  // get all docs -- source should never be undefined but we'll filter just in case
+  const allResults: PolicyIndex[] = searchResults.hits.hits
+    .map((h) => h._source)
+    .filter((r): r is PolicyIndex => r !== undefined);
+
+  const resultMap: Map<string, PolicyIndex> = new Map();
+
+  allResults.forEach((result) => {
+    const {
+      metadata: { hash },
+      text,
+    } = result;
+
+    if (resultMap.has(hash)) {
+      // If hash is already in the Map, concat the new text to the existing text.
+      const existingEntry = resultMap.get(hash)!;
+      existingEntry.text += `\n\n${text}`;
+    } else {
+      // Else, just add the new entry to the Map.
+      resultMap.set(hash, { ...result });
+    }
+  });
+
+  const uniqueResults: PolicyIndex[] = Array.from(resultMap.values());
+
+  // format the results
+  return uniqueResults
+    .map((hit: PolicyIndex, i: number) => {
+      return `\nDocument: ${i}\ntitle: ${cleanupTitle(hit.metadata.title)}\nurl: ${hit.metadata.url}\ntext: ${hit.text}`;
     })
     .join('\n\n');
 };
