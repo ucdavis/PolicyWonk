@@ -4,7 +4,6 @@ import React from 'react';
 import { nanoid } from 'nanoid';
 import { notFound } from 'next/navigation';
 import { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
 
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
@@ -52,11 +51,9 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   }
 
   return (
-    <SessionProvider session={session}>
-      <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
-        <MainContent />
-      </AI>
-    </SessionProvider>
+    <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
+      <MainContent />
+    </AI>
   );
 };
 
