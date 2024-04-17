@@ -24,8 +24,14 @@ const ChatHistory: React.FC = async () => {
 
   return (
     <>
-      <h1>Chat History</h1>
-      {chats?.length ? <ChatHistoryList chats={chats} /> : <>No chat history</>}
+      <div className='history-wrapper'>
+        <h2>Chat History</h2>
+        {chats?.length ? (
+          <ChatHistoryList chats={chats} />
+        ) : (
+          <>No chat history</>
+        )}
+      </div>
     </>
   );
 };
