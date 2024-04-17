@@ -1,4 +1,5 @@
 import { Message } from 'ai';
+import Link from 'next/link';
 import remarkGfm from 'remark-gfm';
 
 import { MemoizedReactMarkdown } from './markdown';
@@ -18,7 +19,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             if (props.href?.startsWith('http')) {
               return <a {...props} target='_blank' rel='noopener noreferrer' />;
             } else {
-              return <a {...props} />;
+              return <Link {...props} href={props.href || '#'} />;
             }
           },
         }}
