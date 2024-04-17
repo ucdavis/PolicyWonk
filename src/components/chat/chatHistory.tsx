@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Link from 'next/link';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
@@ -8,7 +9,7 @@ import { getChatHistory } from '@/services/historyService';
 import ChatHistoryList from './chatHistoryList';
 
 const loadChatHistory = React.cache(async (userId: string) => {
-  console.log('loading chat history');
+  console.log('loading chat history', userId);
   return await getChatHistory(userId);
 });
 

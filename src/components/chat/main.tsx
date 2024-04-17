@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { useAIState, useUIState } from 'ai/rsc';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 
@@ -16,20 +16,22 @@ import DefaultQuestions from './defaultQuestions';
 
 const MainContent = () => {
   const router = useRouter();
-
+  const pathname = usePathname();
   const [aiState] = useAIState<typeof AI>();
   const [messagesUI, _] = useUIState<typeof AI>();
 
   React.useEffect(() => {
     if (
       // on first response from AI
-      aiState.messages.filter((m) => m.role === 'assistant').length === 1
+      aiState.messages.filter((m) => m.role === 'assistant').length === 1 &&
+      pathname === '/chat/new'
     ) {
       // reloads the sidebar, which repulls from the db now that the chat has been saved
       // TODO: i'd like to refresh when the user submits a message, not once the answer is done
       router.refresh();
+      window.history.pushState({}, '', `/chat/${aiState.id}`);
     }
-  }, [aiState.messages, router]);
+  }, [aiState.messages, router, aiState.id, pathname]);
 
   // TODO: i'd like to update the url to /chat/id once the chat is saved
   const onNewMessage = () => {

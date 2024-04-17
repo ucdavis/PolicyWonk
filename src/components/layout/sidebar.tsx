@@ -3,7 +3,6 @@ import React from 'react';
 import Link from 'next/link';
 
 import ChatHistory from '../chat/chatHistory';
-import ChatHistoryLoader from '../loading/chatHistoryLoader';
 
 import Footer from './footer';
 

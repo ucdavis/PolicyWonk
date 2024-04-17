@@ -49,6 +49,7 @@ async function submitUserMessage(userInput: string) {
 
   let textNode: React.ReactNode = (
     <WonkMessage
+      chatId={chatId}
       content={textStream.value}
       wonkThoughts={wonkThoughts.value}
       isLoading={true}
@@ -106,15 +107,13 @@ async function submitUserMessage(userInput: string) {
         if (done) {
           textStream.done();
           const finalNode = (
-            <>
-              <WonkMessage
-                key={wonkMsgId}
-                content={content}
-                isLoading={false}
-                wonkThoughts={''}
-              />
-              <Feedback chatId={chatId} />
-            </>
+            <WonkMessage
+              chatId={chatId}
+              key={wonkMsgId}
+              content={content}
+              isLoading={false}
+              wonkThoughts={''}
+            />
           );
           // finally, close out the initial UI stream with the final node
           chatWindowUI.done(finalNode);
@@ -182,6 +181,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
           <UserMessage>{message.content}</UserMessage>
         ) : (
           <WonkMessage
+            chatId={aiState.id}
             content={message.content}
             isLoading={false}
             wonkThoughts={''}
