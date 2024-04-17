@@ -16,12 +16,7 @@ const Sidebar: React.FC = () => {
             <span className='subtitle'>Your UC Policy expert</span>
           </Link>
         </h1>
-
-        <React.Suspense // since ChatHistory is an async component, this will automatically resolve
-          fallback={<ChatHistoryLoader />}
-        >
-          <ChatHistory />
-        </React.Suspense>
+        <ChatHistory />
       </header>
       <Footer />
     </div>

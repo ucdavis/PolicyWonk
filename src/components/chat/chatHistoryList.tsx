@@ -18,18 +18,17 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
 
   return (
     <ul className='history-list'>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {chats.map((chat) => (
           <motion.li
             className={`history-list-group-item ${pathname === `/chat/${chat.id}` ? 'active' : ''}`}
             key={chat.id}
-            // TODO: don't animate on initial render of list, but still animate when adding new chats
-            // initial={{ height: 0, opacity: 0 }}
-            // animate={{ height: 'auto', opacity: 1 }}
-            // transition={{
-            //   duration: 0.25,
-            //   ease: 'easeIn',
-            // }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            transition={{
+              duration: 0.3,
+              ease: 'easeIn',
+            }}
           >
             <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
           </motion.li>
