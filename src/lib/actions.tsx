@@ -10,7 +10,6 @@ import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
 
 import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
-import Feedback from '@/components/chat/feedback';
 import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
 import {
   getEmbeddings,

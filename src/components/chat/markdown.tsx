@@ -1,6 +1,9 @@
 import { FC, memo } from 'react';
 
-import ReactMarkdown, { Options } from 'react-markdown';
+import dynamic from 'next/dynamic';
+import { Options } from 'react-markdown';
+
+const ReactMarkdown = dynamic(() => import('react-markdown'));
 
 export const MemoizedReactMarkdown: FC<Options> = memo(
   ReactMarkdown,
