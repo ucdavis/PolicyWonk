@@ -35,10 +35,9 @@ export const useTempStreamableText = (
   useEffect(() => {
     (async () => {
       if (typeof content === 'object') {
-        let value = '';
         for await (const delta of readStreamableValue(content)) {
           if (typeof delta === 'string') {
-            setRawContent((value = delta)); // replace instead of add to
+            setRawContent(delta); // replace instead of add to
           }
         }
       }

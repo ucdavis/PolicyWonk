@@ -1,6 +1,4 @@
 'use client';
-import path from 'path';
-
 import React from 'react';
 
 import { useAIState, useUIState } from 'ai/rsc';
@@ -32,16 +30,12 @@ const MainContent = () => {
 
       // reloads the sidebar, which repulls from the db now that the chat has been saved
       router.refresh();
-    }
-
-    // once the chat is saved (and aiState is updated), update the url
-    if (pathname === '/chat/new' && aiState.messages.length > 0) {
       window.history.pushState({}, '', `/chat/${aiState.id}`);
     }
   }, [aiState.messages, router, aiState.id, pathname]);
 
   const onNewMessage = () => {
-    router.push('/chat/new');
+    router.push('/');
   };
 
   return (
