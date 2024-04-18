@@ -43,12 +43,17 @@ export const getChat = async (chatId: string, userId: string) => {
 
   const chat = await chatsDb.findOne({ id: chatId, userId: userId });
 
-  // TODO: skip pulling system message to begin with
-  if (chat?.messages[0]?.role === 'system') {
-    chat?.messages.splice(0, 1);
+  if (!chat) {
+    return null;
+  }
+  if (chat.userId !== userId) {
+    return null;
   }
 
-  return chat && chat.userId === userId ? unwrapChat(chat) : null;
+  // TODO: skip pulling system message to begin with
+  chat.messages = chat.messages.filter((m) => m.role !== 'system');
+
+  return unwrapChat(chat);
 };
 
 export const getChatHistory = async (userId: string) => {
