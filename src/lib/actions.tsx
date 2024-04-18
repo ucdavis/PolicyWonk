@@ -14,8 +14,8 @@ import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
 import {
   getEmbeddings,
   getSearchResults,
-  transformSearchResults,
   getSystemMessage,
+  expandedTransformSearchResults,
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
@@ -65,7 +65,7 @@ async function submitUserMessage(userInput: string) {
     wonkThoughts.update('Searching for relevant documents...');
     const searchResults = await getSearchResults(embeddings);
 
-    const transformedResults = transformSearchResults(searchResults);
+    const transformedResults = expandedTransformSearchResults(searchResults);
 
     const systemMessage = getSystemMessage(transformedResults);
 

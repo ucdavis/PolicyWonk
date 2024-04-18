@@ -58,15 +58,48 @@ export const getSearchResults = async (
   return searchResults;
 };
 
-export const transformSearchResults = (
+export const expandedTransformSearchResults = (
   searchResults: SearchResponse<PolicyIndex>
 ) => {
-  // Each document should be delimited by triple quotes and then note the excerpt of the document
-  const docTextArray = searchResults.hits.hits.map((hit: any) => {
-    return `"""${hit._source.text}\n\n-from [${cleanupTitle(hit._source.metadata.title)}](${hit._source.metadata.url})"""`;
+  // doc format
+  //   Document: 0
+  // title: Tall penguins
+  // text: Emperor penguins are the tallest growing up to 122 cm in height.
+
+  // For now, if the same document is returned >1, we'll just concatenate the text. This way we only get a single reference per document.
+  // eventually we might want to keep them as separate references w/ different line number ranges, or pull in full or expanded text
+
+  // get all docs -- source should never be undefined but we'll filter just in case
+  const allResults: PolicyIndex[] = searchResults.hits.hits
+    .map((h) => h._source)
+    .filter((r): r is PolicyIndex => r !== undefined);
+
+  const resultMap: Map<string, PolicyIndex> = new Map();
+
+  allResults.forEach((result) => {
+    const {
+      metadata: { hash },
+      text,
+    } = result;
+
+    if (resultMap.has(hash)) {
+      // If hash is already in the Map, concat the new text to the existing text.
+      const existingEntry = resultMap.get(hash)!;
+      existingEntry.text += `\n\n${text}`;
+    } else {
+      // Else, just add the new entry to the Map.
+      resultMap.set(hash, { ...result });
+    }
   });
 
-  return docTextArray.join('\n\n');
+  const uniqueResults: PolicyIndex[] = Array.from(resultMap.values());
+
+  // format the results
+  return uniqueResults
+    .map((hit: PolicyIndex, i: number) => {
+      return `\nDocument: ${i}\ntitle: ${cleanupTitle(hit.metadata.title)}\nurl: ${hit.metadata.url}\ntext: ${hit.text}`;
+    })
+    .join('\n\n');
 };
 
 const cleanupTitle = (title: string) => {
@@ -79,9 +112,24 @@ export const getSystemMessage = (docText: string) => {
     id: '1',
     role: 'system',
     content: `
-    You are a helpful assistant who is an expert in university policy at UC Davis. You will be provided with several documents each delimited by triple quotes and then asked a question.
-  Your task is to answer the question in nicely formatted markdown using only the provided documents and to cite the the documents used to answer the question. 
-  If the documents do not contain the information needed to answer this question then simply write: "Sorry, I wasn't able to find enough information to answer this question." 
-  If an answer to the question is provided, it must be annotated with a citation including the source URL and title. \n\n ${docText}`,
+    ## Basic Rules
+You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, you cite your sources in your answers, according to the provided instructions. Always respond in well-formatted markdown.
+
+# User Preamble
+## Task and Context
+You help people answer their policy questions interactively. You should focus on serving the user's needs as best you can.
+
+## Style Guide
+Unless the user asks for a different style of answer, you should answer in full sentences, using proper grammar and spelling.
+
+## Document context
+<documents>
+${docText}
+</documents>
+
+Carefully perform the following instructions, in order, starting each with a new line.
+Write a response to the user's last input in high quality natural english. Use the symbols [^doctitle] to indicate when a fact comes from a document in the search result, e.g ""my fact [^doc1]"" for a fact from document "doc1".
+Finally, Write 'Citation(s):' followed the citations for the facts you used in your response. Use the same symbols [^doctitle]: to indicate which document the fact came from, e.g. ""[^doc1]: [doc1](document url)"" for a fact from document "doc1". Do not put the citations in a list ('-') format.
+`,
   } as Message;
 };
