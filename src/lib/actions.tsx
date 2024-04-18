@@ -88,7 +88,7 @@ async function submitUserMessage(userInput: string) {
 
     // The `render()` creates a generated, streamable UI.
     // this is the response itself. render returns a ReactNode (our textNode)
-    const responseUI = render({
+    render({
       model: llmModel,
       provider: openai,
       initial: textNode,

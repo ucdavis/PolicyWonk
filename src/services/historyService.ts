@@ -87,17 +87,20 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
 };
 
 export const saveReaction = async (chatId: string, reaction: string) => {
+  const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  await chatsDb.updateOne(
-    { id: chatId },
+  const res = await chatsDb.updateOne(
+    { id: chatId, userId: session.user?.id },
     {
       $set: {
         reaction,
       },
     }
   );
-
+  if (res.modifiedCount === 0) {
+    return;
+  }
   // also log to elastic for now
   await logReaction(chatId, reaction);
 };
