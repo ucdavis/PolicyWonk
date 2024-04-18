@@ -46,9 +46,6 @@ export const getChat = async (chatId: string, userId: string) => {
   if (!chat) {
     return null;
   }
-  if (chat.userId !== userId) {
-    return null;
-  }
 
   // TODO: skip pulling system message to begin with
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
@@ -69,6 +66,7 @@ export const getChatHistory = async (userId: string) => {
 };
 
 // save chats to db
+// TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
 export const saveChat = async (chatId: string, messages: Message[]) => {
   const session = (await auth()) as Session;
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
