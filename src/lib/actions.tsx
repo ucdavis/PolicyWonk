@@ -7,26 +7,24 @@ import {
   render,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
-import { OpenAI } from 'openai';
+import { Session } from 'next-auth';
 
-import { UserMessage, WonkMessage } from '@/components/chat/chatMessage';
-import { ChatHistory, UIState, defaultLlmModel } from '@/models/chat';
+import { UserMessage } from '@/components/chat/userMessage';
+import { WonkMessage } from '@/components/chat/wonkMessage';
+import { ChatHistory, UIState } from '@/models/chat';
 import {
   getEmbeddings,
   getSearchResults,
   getSystemMessage,
   expandedTransformSearchResults,
+  openai,
+  llmModel,
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
-
 async function submitUserMessage(userInput: string) {
-  'use server';
+  'use server'; // use server is inside of the function because only this server action
+  // is async. we want to run createAI on the client
 
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
@@ -56,6 +54,7 @@ async function submitUserMessage(userInput: string) {
   );
   chatWindowUI.update(textNode);
 
+  // TODO: move into separate function
   // then start our async process
   // this is an immediately invoked function expression (IIFE) so that the above code is not blocked
   (async () => {
@@ -143,11 +142,25 @@ async function submitUserMessage(userInput: string) {
     });
   })();
 
+  // TODO: type this
   return {
     id: nanoid(),
     display: chatWindowUI.value,
   };
 }
+
+export const newChatSession = (session: Session) => {
+  const chat: ChatHistory = {
+    id: nanoid(),
+    title: 'Unknown Title',
+    messages: [],
+    llmModel,
+    user: session.user?.name ?? 'Unknown User',
+    userId: session.user?.id ?? 'Unknown User',
+    timestamp: Date.now(),
+  };
+  return chat;
+};
 
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<ChatHistory, UIState>({

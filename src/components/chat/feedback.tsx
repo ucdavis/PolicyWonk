@@ -11,6 +11,7 @@ type FeedbackProps = {
   chatId: string;
 };
 
+// TODO: why does it take a moment for icons to load on page refresh?
 const Feedback = ({ chatId }: FeedbackProps) => {
   const [feedbackSent, setFeedbackSent] = React.useState(false);
 

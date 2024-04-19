@@ -1,9 +1,16 @@
+'server only';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
 
 import { PolicyIndex } from '@/models/chat';
+
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 const embeddingModel =
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';
@@ -20,10 +27,6 @@ const config: ClientOptions = {
 const searchClient: Client = new Client(config);
 
 const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export const getEmbeddings = async (query: string) => {
   // get our embeddings

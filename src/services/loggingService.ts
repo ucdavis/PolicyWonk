@@ -4,9 +4,8 @@ import { Message } from 'ai';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { defaultLlmModel } from '@/models/chat';
 
-const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
+import { llmModel } from './chatService';
 
 // get my vector store
 const config: ClientOptions = {

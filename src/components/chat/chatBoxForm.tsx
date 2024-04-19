@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { nanoid } from 'ai';
@@ -5,7 +6,7 @@ import { useActions, useUIState } from 'ai/rsc';
 
 import { type AI } from '@/lib/actions';
 
-import { UserMessage } from './chatMessage';
+import { UserMessage } from './userMessage';
 
 interface ChatBoxFormProps {}
 
@@ -31,6 +32,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
       ref={formRef}
       className='d-flex flex-column mt-3'
       onSubmit={async (e: any) => {
+        // can you pull this out? how does this work with server actions?
         e.preventDefault();
 
         const value = input.trim();

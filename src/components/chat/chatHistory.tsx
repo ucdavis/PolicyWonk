@@ -1,3 +1,4 @@
+'use server'; // since this is async
 import React from 'react';
 
 import { Session } from 'next-auth';

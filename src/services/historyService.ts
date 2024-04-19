@@ -4,15 +4,15 @@ import { MongoClient, WithId } from 'mongodb';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { ChatHistory, defaultLlmModel } from '@/models/chat';
+import { ChatHistory } from '@/models/chat';
 
+import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
-
-const llmModel = process.env.OPENAI_LLM_MODEL ?? defaultLlmModel;
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
 let _mongoClient: MongoClient;
+// TODO: separate out into actions and service
 
 // all of our chats are stored in the "policywonk" db in the "chats" collection
 async function getChatsCollection() {

@@ -1,4 +1,4 @@
-'use client';
+'use client'; // for React.memo
 import React from 'react';
 
 import Image from 'next/image';

@@ -1,4 +1,4 @@
-'use server'; // since we are doing process.env
+'use server'; // since this is an async component
 import React from 'react';
 
 import { nanoid } from 'nanoid';
@@ -9,7 +9,8 @@ import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import NotAuthorized from '@/components/layout/not-authorized';
 import { AI, getUIStateFromAIState } from '@/lib/actions';
-import { ChatHistory, defaultLlmModel } from '@/models/chat';
+import { ChatHistory } from '@/models/chat';
+import { llmModel } from '@/services/chatService';
 import { getChat } from '@/services/historyService';
 
 type HomePageProps = {
@@ -17,7 +18,7 @@ type HomePageProps = {
     chatid: string;
   };
 };
-
+// TODO: loading animation when chatId changes
 const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   const session = (await auth()) as Session;
 
@@ -41,15 +42,6 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
     return <NotAuthorized />;
   }
 
-  if (session?.user) {
-    // filter out sensitive data before passing to client.
-    session.user = {
-      name: session.user.name,
-      email: session.user.email,
-      image: session.user.image,
-    };
-  }
-
   return (
     <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
       <MainContent />
@@ -59,12 +51,13 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
 
 export default ChatPage;
 
+// TODO: move this into a server-only file
 const newChatSession = (session: Session) => {
   const chat: ChatHistory = {
     id: nanoid(),
     title: 'Unknown Title',
     messages: [],
-    llmModel: process.env.OPENAI_LLM_MODEL ?? defaultLlmModel,
+    llmModel: llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
     timestamp: Date.now(),

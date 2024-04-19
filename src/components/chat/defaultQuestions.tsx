@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/actions';
 
-import { UserMessage } from './chatMessage';
+import { UserMessage } from './userMessage';
 
 interface DefaultQuestionsProps {}
 
@@ -27,6 +27,7 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({}) => {
           key={index}
           className='btn btn-wonk text-start color-secondary-font'
           onClick={async () => {
+            // TODO: move out into separate function
             // Optimistically add user message UI
             setMessagesUI((currentMessages) => [
               ...currentMessages,
