@@ -7,7 +7,6 @@ import {
   render,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
-import { Session } from 'next-auth';
 
 import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/wonkMessage';
@@ -148,19 +147,6 @@ async function submitUserMessage(userInput: string) {
     display: chatWindowUI.value,
   };
 }
-
-export const newChatSession = (session: Session) => {
-  const chat: ChatHistory = {
-    id: nanoid(),
-    title: 'Unknown Title',
-    messages: [],
-    llmModel,
-    user: session.user?.name ?? 'Unknown User',
-    userId: session.user?.id ?? 'Unknown User',
-    timestamp: Date.now(),
-  };
-  return chat;
-};
 
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<ChatHistory, UIState>({
