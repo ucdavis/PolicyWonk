@@ -1,14 +1,19 @@
-'use server';
+'server only';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
 
+import { PolicyIndex } from '@/models/chat';
+
+export const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
+
 const embeddingModel =
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';
-
-// API key is stored in env
-const openai = new OpenAI();
 
 // get my vector store
 const config: ClientOptions = {
@@ -23,33 +28,7 @@ const searchClient: Client = new Client(config);
 
 const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
-export const getChatMessages = async (query: string) => {
-  // Perform our RAG pipeline and send the message to the server so it can generate a response
-  // 1. get embeddings
-  // 2. get search results from elastic
-  // 3. generate a LLM message
-  // 4. return the message
-  const embeddings = await getEmbeddings(query);
-
-  const searchResults = await getSearchResults(embeddings);
-
-  const transformedResults = expandedTransformSearchResults(searchResults);
-
-  const systemMessage = getSystemMessage(transformedResults);
-
-  const initialMessages: Message[] = [
-    systemMessage, // system message with full document info
-    {
-      id: '2',
-      role: 'user',
-      content: query,
-    },
-  ];
-
-  return initialMessages;
-};
-
-const getEmbeddings = async (query: string) => {
+export const getEmbeddings = async (query: string) => {
   // get our embeddings
   const embeddings = await openai.embeddings.create({
     model: embeddingModel, // needs to be the same model as we used to index
@@ -59,7 +38,7 @@ const getEmbeddings = async (query: string) => {
   return embeddings;
 };
 
-const getSearchResults = async (
+export const getSearchResults = async (
   embeddings: OpenAI.Embeddings.CreateEmbeddingResponse
 ) => {
   const searchResultMaxSize = 5;
@@ -82,7 +61,7 @@ const getSearchResults = async (
   return searchResults;
 };
 
-const expandedTransformSearchResults = (
+export const expandedTransformSearchResults = (
   searchResults: SearchResponse<PolicyIndex>
 ) => {
   // doc format
@@ -131,7 +110,7 @@ const cleanupTitle = (title: string) => {
   return title.replace(/"/g, '');
 };
 
-const getSystemMessage = (docText: string) => {
+export const getSystemMessage = (docText: string) => {
   return {
     id: '1',
     role: 'system',
@@ -156,24 +135,4 @@ Write a response to the user's last input in high quality natural english. Use t
 Finally, Write 'Citation(s):' followed the citations for the facts you used in your response. Use the same symbols [^doctitle]: to indicate which document the fact came from, e.g. ""[^doc1]: [doc1](document url)"" for a fact from document "doc1". Do not put the citations in a list ('-') format.
 `,
   } as Message;
-};
-
-type PolicyIndex = {
-  text: string;
-  metadata: PolicyMetadata;
-  vector: number[];
-};
-
-type PolicyMetadata = {
-  title: string;
-  filename: string;
-  effective_date: string;
-  issuance_date: string;
-  url: string;
-  responsible_office: string | null;
-  keywords: string[];
-  classifications: string[];
-  subject_areas: string[];
-  hash: string;
-  scope: string;
 };

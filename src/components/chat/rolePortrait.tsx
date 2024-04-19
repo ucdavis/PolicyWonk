@@ -1,12 +1,11 @@
+'use client';
 import React from 'react';
 
 import Policywonksvg from './policywonksvg';
 
 export const WonkPortrait = React.memo(function WonkPortrait({
-  roleDisplayName,
   isLoading,
 }: {
-  roleDisplayName: string;
   isLoading?: boolean;
 }) {
   return (
@@ -14,7 +13,7 @@ export const WonkPortrait = React.memo(function WonkPortrait({
       <Policywonksvg
         width={42}
         height={42}
-        alt={roleDisplayName}
+        alt={'Policy Wonk portrait'}
         className={`${isLoading ? 'wonk-portrait-loading' : ''} chat-portrait`}
       />
     </div>

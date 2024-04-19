@@ -4,27 +4,27 @@ import { MongoClient, WithId } from 'mongodb';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { ChatSession } from '@/models/chat';
+import { ChatHistory } from '@/models/chat';
 
+import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
-
-const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
 
 let _mongoClient: MongoClient;
+// TODO: separate out into actions and service
 
 // all of our chats are stored in the "policywonk" db in the "chats" collection
 async function getChatsCollection() {
   if (_mongoClient) {
-    return _mongoClient.db('policywonk').collection<ChatSession>('chats');
+    return _mongoClient.db('policywonk').collection<ChatHistory>('chats');
   }
 
   // otherwise create a new one and make sure indexes are setup
   _mongoClient = new MongoClient(mongoConnectionString);
   const collection = _mongoClient
     .db('policywonk')
-    .collection<ChatSession>('chats');
+    .collection<ChatHistory>('chats');
 
   await collection.createIndex({ timestamp: -1 });
 
@@ -32,52 +32,47 @@ async function getChatsCollection() {
 }
 
 // mongo adds an unserilizable _id field to all objects, so we need to unwrap it
-function unwrapChat(chatWithId: WithId<ChatSession>): ChatSession {
+function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
   const { _id, ...chat } = chatWithId;
 
   return chat;
 }
 
-export const getChat = async (chatId: string) => {
-  const session = (await auth()) as Session;
-
+export const getChat = async (chatId: string, userId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
+  const chat = await chatsDb.findOne({ id: chatId, userId: userId });
 
-  return chat ? unwrapChat(chat) : null;
+  if (!chat) {
+    return null;
+  }
+
+  // TODO: skip pulling system message to begin with
+  chat.messages = chat.messages.filter((m) => m.role !== 'system');
+
+  return unwrapChat(chat);
 };
 
-export const getChats = async () => {
-  const session = (await auth()) as Session;
-  if (!session) return <>Please log in to view your chat history</>;
-
+export const getChatHistory = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chats = await chatsDb
-    .find({ userId: session.user?.id })
+  const chats = (await chatsDb
+    .find({ userId: userId })
+    .project({ messages: 0, _id: 0 }) // we don't need messages for the history + unwrap chats
     .sort({ timestamp: -1 })
-    .toArray();
+    .toArray()) as ChatHistory[];
 
-  return (
-    <ul className='list-group'>
-      {chats.map((chat) => (
-        <li className='list-group-item' key={chat.id}>
-          <a href={`/chat/${chat.id}`}>{chat.title}</a>
-        </li>
-      ))}
-    </ul>
-  );
+  return chats;
 };
 
 // save chats to db
+// TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
 export const saveChat = async (chatId: string, messages: Message[]) => {
   const session = (await auth()) as Session;
-
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
-  const chat: ChatSession = {
+  const chat: ChatHistory = {
     id: chatId,
     title,
     messages,
@@ -95,17 +90,20 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
 };
 
 export const saveReaction = async (chatId: string, reaction: string) => {
+  const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  await chatsDb.updateOne(
-    { id: chatId },
+  const res = await chatsDb.updateOne(
+    { id: chatId, userId: session.user?.id },
     {
       $set: {
         reaction,
       },
     }
   );
-
+  if (res.modifiedCount === 0) {
+    return;
+  }
   // also log to elastic for now
   await logReaction(chatId, reaction);
 };

@@ -1,14 +1,19 @@
+'use client';
 import React from 'react';
 
-interface DefaultQuestionsProps {
-  allowSend: boolean;
-  onQuestionSubmitted: (question: string) => void;
-}
+import { useActions, useUIState } from 'ai/rsc';
+import { nanoid } from 'nanoid';
 
-const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
-  allowSend,
-  onQuestionSubmitted,
-}) => {
+import { AI } from '@/lib/actions';
+
+import { UserMessage } from './userMessage';
+
+interface DefaultQuestionsProps {}
+
+const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({}) => {
+  const [_, setMessagesUI] = useUIState<typeof AI>();
+  // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
+  const { submitUserMessage } = useActions();
   const questions = [
     'Do I need approval to work from home?',
     'What is extended leave?',
@@ -21,10 +26,24 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
         <button
           key={index}
           className='btn btn-wonk text-start color-secondary-font'
-          onClick={() => {
-            onQuestionSubmitted(question);
+          onClick={async () => {
+            // TODO: move out into separate function
+            // Optimistically add user message UI
+            setMessagesUI((currentMessages) => [
+              ...currentMessages,
+              {
+                id: nanoid(),
+                display: <UserMessage>{question}</UserMessage>,
+              },
+            ]);
+
+            const responseMessage = await submitUserMessage(question);
+
+            setMessagesUI((currentMessages) => [
+              ...currentMessages,
+              responseMessage,
+            ]);
           }}
-          disabled={!allowSend}
         >
           {question}
         </button>

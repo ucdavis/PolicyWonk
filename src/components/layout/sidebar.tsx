@@ -11,14 +11,12 @@ const Sidebar: React.FC = () => {
     <div className='sidebar-container'>
       <header>
         <h1 className='logo'>
-          <Link href='/new'>
+          <Link href='/'>
             Policy Wonk <br />
             <span className='subtitle'>Your UC Policy expert</span>
           </Link>
         </h1>
-        <div>
-          <ChatHistory />
-        </div>
+        <ChatHistory />
       </header>
       <Footer />
     </div>

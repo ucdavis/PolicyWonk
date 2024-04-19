@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
@@ -10,6 +11,7 @@ type FeedbackProps = {
   chatId: string;
 };
 
+// TODO: why does it take a moment for icons to load on page refresh?
 const Feedback = ({ chatId }: FeedbackProps) => {
   const [feedbackSent, setFeedbackSent] = React.useState(false);
 

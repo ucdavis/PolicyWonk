@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
+import Providers from '@/components/layout/providers';
 import Sidebar from '@/components/layout/sidebar';
 
 export const metadata: Metadata = {
@@ -30,10 +31,14 @@ export default function RootLayout({
       </head>
       <body>
         <main className='d-flex'>
-          <div className='sidebar-wrapper'>
-            <Sidebar />
-          </div>
-          <div className='wonk-wrapper'>{children}</div>
+          <Providers>
+            <div className='sidebar-wrapper'>
+              <Sidebar />
+            </div>
+            <div className='wonk-wrapper'>
+              <div className='wonk-container'>{children}</div>
+            </div>
+          </Providers>
         </main>
       </body>
     </html>
