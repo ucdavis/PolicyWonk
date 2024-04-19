@@ -62,11 +62,10 @@ img.chat-portrait {
         font-size:0.9rem;
         text-transform: uppercase;
         color:$secondary-font;
-        
-       
     }
     .history-list {
-        
+        max-height:530px;
+        overflow-y: scroll;
         .history-list-group-item {
             padding:4px 0;
             list-style: none;
