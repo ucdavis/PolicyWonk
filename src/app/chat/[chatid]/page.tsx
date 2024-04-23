@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { nanoid } from 'nanoid';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
@@ -22,10 +22,11 @@ type HomePageProps = {
 const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   const session = (await auth()) as Session;
 
-  // middleware should take care of this
+  // middleware should take care of this, but if it doesn't then redirect to login
   if (!session?.user?.id) {
-    return null;
+    redirect('/auth/login');
   }
+
   const chat: ChatHistory | null =
     chatid !== 'new'
       ? await getChat(chatid, session.user.id)
