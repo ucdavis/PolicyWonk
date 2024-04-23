@@ -36,11 +36,13 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
               ease: 'easeIn',
             }}
           >
-            <FontAwesomeIcon
-              icon={faComment}
-              className={`history-icon ${isActive(chat.id) ? 'active' : ''}`}
-            />
-            <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+            <Link href={`/chat/${chat.id}`}>
+              <FontAwesomeIcon
+                icon={faComment}
+                className={`history-icon ${isActive(chat.id) ? 'active' : ''}`}
+              />
+              {chat.title}
+            </Link>
             <div className='history-fade'></div>
           </motion.li>
         ))}
