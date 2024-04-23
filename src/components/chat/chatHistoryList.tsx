@@ -31,6 +31,7 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
             }}
           >
             <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+            <div className='history-fade'></div>
           </motion.li>
         ))}
       </AnimatePresence>

@@ -70,9 +70,9 @@ img.chat-portrait {
             padding:4px 0;
             list-style: none;
             overflow: hidden;
-            text-overflow: ellipsis;
             white-space: nowrap;
             padding-left:12px;
+            position: relative;
             &.active {
                 padding-left:0px;
                 a {
@@ -106,9 +106,42 @@ img.chat-portrait {
             
             }
             }
+
+            div.history-fade {
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 20px;
+                height: 100%;
+                border-radius: 5px;
+                background: linear-gradient(to left, $primary-bg 0%, transparentize($primary-bg, 1.0) 100%);
+            }
             
         }
         
     }
 
+}
+
+// scrollbars
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+:hover::-webkit-scrollbar-thumb {
+    background-color: #ececf1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #fefefef6;
+    border-radius: 5px;
 }
