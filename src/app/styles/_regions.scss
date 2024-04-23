@@ -67,12 +67,12 @@ img.chat-portrait {
         max-height:530px;
         overflow-y: scroll;
         width: calc(100% + 12px);
+        padding-inline-start: 20px;
         .history-list-group-item {
             padding:4px 0;
             list-style: none;
             overflow: hidden;
             white-space: nowrap;
-            padding-left:12px;
             position: relative;
             text-align: left;
             
@@ -95,6 +95,14 @@ img.chat-portrait {
 
             .history-icon {
                 margin-right: 4px;
+                width: 16px;
+                height: 16px;
+                color: $secondary-color;
+                visibility: hidden;
+            }
+            
+            .history-icon.active {
+                visibility: visible;
             }
 
             div.history-fade {
