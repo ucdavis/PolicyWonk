@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 
-import { faComment } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -36,13 +34,7 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
               ease: 'easeIn',
             }}
           >
-            <Link href={`/chat/${chat.id}`}>
-              <FontAwesomeIcon
-                icon={faComment}
-                className={`history-icon ${isActive(chat.id) ? 'active' : ''}`}
-              />
-              {chat.title}
-            </Link>
+            <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
             <div className='history-fade'></div>
           </motion.li>
         ))}

@@ -66,18 +66,24 @@ img.chat-portrait {
     .history-list {
         max-height:530px;
         overflow-y: scroll;
-        width: calc(100% + 12px);
-        padding-inline-start: 20px;
+        width: calc(100% + 15px);
+        padding:0;
         .history-list-group-item {
-            padding:4px 0;
             list-style: none;
             overflow: hidden;
             white-space: nowrap;
             position: relative;
             text-align: left;
-            
+            &:hover {
+                background-color:#FFECB2;
+            }
+            &.active {
+                background-color:#FFD966;
+            }
             a {
                 font-size:0.8rem;
+                padding:6px 10px;
+                display:block;
                 color:$primary-font;
                 text-decoration: none;
                 margin-bottom:4px;
@@ -87,21 +93,6 @@ img.chat-portrait {
                 @include breakpoint(lg) {
                     font-size:1rem;
                 }
-               &:hover {
-                color:$secondary-color;
-            
-            }
-            }
-
-            .history-icon {
-                margin-right: 4px;
-                width: 16px;
-                height: 16px;
-                visibility: hidden;
-            }
-            
-            .history-icon.active {
-                visibility: visible;
             }
 
             div.history-fade {
@@ -110,7 +101,6 @@ img.chat-portrait {
                 top: 0;
                 width: 20px;
                 height: 100%;
-                border-radius: 5px;
                 background: linear-gradient(to left, $primary-bg 0%, transparentize($primary-bg, 1.0) 100%);
             }
             
