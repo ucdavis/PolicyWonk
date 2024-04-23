@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,12 +18,16 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
   const pathname = usePathname();
   if (!chats) return null;
 
+  const isActive = (chatId: string) => {
+    return pathname.includes(chatId);
+  };
+
   return (
     <ul className='history-list'>
       <AnimatePresence initial={false}>
         {chats.map((chat) => (
           <motion.li
-            className={`history-list-group-item ${pathname === `/chat/${chat.id}` ? 'active' : ''}`}
+            className={`history-list-group-item ${isActive(chat.id) ? 'active' : ''}`}
             key={chat.id}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -30,6 +36,9 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
               ease: 'easeIn',
             }}
           >
+            {isActive(chat.id) && (
+              <FontAwesomeIcon icon={faComment} className='history-icon' />
+            )}
             <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
             <div className='history-fade'></div>
           </motion.li>

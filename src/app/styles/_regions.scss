@@ -75,23 +75,7 @@ img.chat-portrait {
             padding-left:12px;
             position: relative;
             text-align: left;
-            &.active {
-                padding-left:0px;
-                a {
-                    color:$secondary-color;
-                   
-                    &:before {
-                    content:"\A";
-                    width:6px;
-                    height:6px;
-                    margin-bottom:2px;
-                    border-radius:50%;
-                    background: $secondary-color;
-                    display:inline-block;
-                    margin-right:6px;
-                }
-                }
-            }
+            
             a {
                 font-size:0.8rem;
                 color:$primary-font;
@@ -107,6 +91,10 @@ img.chat-portrait {
                 color:$secondary-color;
             
             }
+            }
+
+            .history-icon {
+                margin-right: 4px;
             }
 
             div.history-fade {
