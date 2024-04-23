@@ -66,6 +66,7 @@ img.chat-portrait {
     .history-list {
         max-height:530px;
         overflow-y: scroll;
+        width: calc(100% + 12px);
         .history-list-group-item {
             padding:4px 0;
             list-style: none;
@@ -73,6 +74,7 @@ img.chat-portrait {
             white-space: nowrap;
             padding-left:12px;
             position: relative;
+            text-align: left;
             &.active {
                 padding-left:0px;
                 a {
