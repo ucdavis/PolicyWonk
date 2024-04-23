@@ -43,6 +43,15 @@ export const getSearchResults = async (
 ) => {
   const searchResultMaxSize = 5;
 
+  // scopes for our "all" search
+  const allowedScopes = [
+    'ucop',
+    'ucdppm',
+    'ucdppsm',
+    'ucddelegation',
+    'ucdinterim',
+  ];
+
   // TODO: augment search w/ keyword search, or perhaps follow up questions?
   // get our search results
   const searchResults = await searchClient.search<PolicyIndex>({
@@ -54,9 +63,17 @@ export const getSearchResults = async (
         query_vector: embeddings.data[0].embedding, // the query vector
         k: searchResultMaxSize,
         num_candidates: 200,
+        filter: {
+          // pre-filter before knn
+          terms: {
+            'metadata.scope.keyword': allowedScopes,
+          },
+        },
       },
     },
   });
+
+  // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
 
   return searchResults;
 };
