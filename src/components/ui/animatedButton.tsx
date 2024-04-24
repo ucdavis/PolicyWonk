@@ -3,7 +3,6 @@ import React from 'react';
 import { Variants, motion } from 'framer-motion';
 
 interface AnimatedButtonProps {
-  id?: string;
   disabled?: boolean;
   displayBeforeClick: React.ReactNode;
   displayAfterClick?: React.ReactNode;
@@ -12,7 +11,7 @@ interface AnimatedButtonProps {
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
-  id,
+  disabled,
   displayBeforeClick,
   displayAfterClick,
   onClick,
@@ -37,12 +36,12 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     },
     selected: {
       scale: 1.2,
-      // opacity: 0.5,
-      color: ['var(--secondary-color)'],
+      color: 'var(--secondary-color)',
     },
   };
 
   const handleClick = () => {
+    if (disabled) return;
     setHasClicked(true);
     onClick();
   };
@@ -60,13 +59,13 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   return (
     <motion.button
-      id={id}
       className='btn-feedback me-1'
       onClick={handleClick}
       onMouseEnter={handleHover}
       variants={defaultVariants}
-      whileHover='hover'
-      whileTap='tap'
+      whileHover={disabled ? ['disabled', 'hover'] : 'hover'}
+      whileTap={disabled ? ['disabled', 'tap'] : 'tap'}
+      disabled={disabled}
       onTapStart={() => setIsTapped(true)}
       onTap={() => setIsTapped(false)}
       onTapCancel={() => setIsTapped(false)}

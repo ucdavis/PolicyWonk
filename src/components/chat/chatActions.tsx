@@ -1,19 +1,14 @@
 'use client';
 import React from 'react';
 
-import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
-import {
-  faThumbsUp as faThumbsUpSolid,
-  faThumbsDown as faThumbsDownSolid,
-  faClipboardCheck,
-} from '@fortawesome/free-solid-svg-icons';
+import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Variants, motion } from 'framer-motion';
 
 import { saveReaction } from '@/services/historyService';
 
-import AnimatedButton from '../animatedButton';
-import CopyToClipboardButton from '../CopyToClipboardButton';
+import CopyToClipboardButton from '../ui/copyToClipboardButton';
+
+import FeedbackButtons from './feedbackButtons';
 
 interface ChatActionsProps {
   chatId: string;
@@ -29,47 +24,18 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
 
   const onFeedback = async (feedback: 'thumbs_up' | 'thumbs_down') => {
     setFeedbackSent(feedback);
-    await saveReaction(chatId, feedback);
+    // await saveReaction(chatId, feedback);
   };
 
-  const disableFeedback = feedbackSent !== null;
   return (
     <>
       <div className='row mb-3'>
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
-          <CopyToClipboardButton
-            id={chatId}
-            value={content}
-            className='btn-feedback me-1'
-          />
-          <AnimatedButton
-            id={chatId}
-            displayBeforeClick={
-              <FontAwesomeIcon title='Thumbs up' icon={faThumbsUp} />
-            }
-            displayAfterClick={
-              <FontAwesomeIcon
-                title='Thumbs up submitted'
-                icon={faThumbsUpSolid}
-              />
-            }
-            onClick={() => onFeedback('thumbs_up')}
-            disabled={disableFeedback}
-          />
-          <AnimatedButton
-            id={chatId}
-            displayBeforeClick={
-              <FontAwesomeIcon title='Thumbs down' icon={faThumbsDown} />
-            }
-            displayAfterClick={
-              <FontAwesomeIcon
-                title='Thumbs down submitted'
-                icon={faThumbsDownSolid}
-              />
-            }
-            onClick={() => onFeedback('thumbs_down')}
-            disabled={disableFeedback}
+          <CopyToClipboardButton id={chatId} value={content} />
+          <FeedbackButtons
+            onFeedback={onFeedback}
+            disableFeedback={feedbackSent !== null}
           />
         </div>
       </div>
