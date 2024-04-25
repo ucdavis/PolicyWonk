@@ -3,8 +3,11 @@ import React from 'react';
 
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAIState } from 'ai/rsc';
 import { motion } from 'framer-motion';
 
+import { AI } from '@/lib/actions';
+import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
@@ -17,15 +20,21 @@ interface ChatActionsProps {
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
+  const [aiState] = useAIState<typeof AI>();
+  const savedFeedback = aiState.reaction;
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
-  const [feedbackSent, setFeedbackSent] = React.useState<
-    null | 'thumbs_up' | 'thumbs_down'
-  >(null);
+  const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(null);
 
-  const onFeedback = async (feedback: 'thumbs_up' | 'thumbs_down') => {
+  React.useEffect(() => {
+    if (!feedbackSent && savedFeedback) {
+      setFeedbackSent(savedFeedback);
+    }
+  }, []);
+
+  const onFeedback = async (feedback: Feedback) => {
     setFeedbackSent(feedback);
-    // await saveReaction(chatId, feedback);
+    await saveReaction(chatId, feedback);
   };
 
   return (
@@ -44,7 +53,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
       {feedbackSent && (
         <motion.div
           className='row mb-3'
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
         >
           <div className='col-1'>{/* empty */}</div>

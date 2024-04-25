@@ -7,11 +7,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { Feedback } from '@/models/chat';
+
 import AnimatedButton from '../ui/animatedButton';
 
 interface FeedbackButtonsProps {
-  feedback: 'thumbs_up' | 'thumbs_down' | null;
-  onFeedback: (feedback: 'thumbs_up' | 'thumbs_down') => void;
+  feedback: Feedback | null;
+  onFeedback: (feedback: Feedback) => void;
   disableFeedback: boolean;
 }
 

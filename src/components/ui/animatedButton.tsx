@@ -77,6 +77,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onTapStart={() => handleTap(true)}
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
+      initial={false}
       animate={
         selected
           ? disabled
@@ -85,7 +86,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
           : 'default'
       }
     >
-      {(isTapped || hasClicked) && !!displayOnClick
+      {(isTapped || hasClicked || selected) && !!displayOnClick
         ? displayOnClick
         : displayBeforeClick}
     </motion.button>
