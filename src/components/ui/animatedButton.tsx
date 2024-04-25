@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { Variants, motion } from 'framer-motion';
@@ -5,17 +6,19 @@ import { Variants, motion } from 'framer-motion';
 interface AnimatedButtonProps {
   disabled?: boolean;
   displayBeforeClick: React.ReactNode;
-  displayAfterClick?: React.ReactNode;
+  displayOnClick?: React.ReactNode;
   onClick: () => void;
   clearOnHover?: boolean;
+  selected?: boolean;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   disabled,
   displayBeforeClick,
-  displayAfterClick,
+  displayOnClick,
   onClick,
   clearOnHover = false,
+  selected = false,
 }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
@@ -28,7 +31,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     },
     disabled: {
       opacity: 0.5,
-      color: 'var(--secondary-color)',
+      transition: { type: 'spring', stiffness: 600, damping: 30 },
     },
     tap: {
       scale: 0.8,
@@ -52,6 +55,11 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     }
   };
 
+  const handleTap = (isTapped: boolean) => {
+    if (disabled) return;
+    setIsTapped(isTapped);
+  };
+
   const clear = () => {
     setHasClicked(false);
     setIsTapped(false);
@@ -63,15 +71,22 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onClick={handleClick}
       onMouseEnter={handleHover}
       variants={defaultVariants}
-      whileHover={disabled ? ['disabled', 'hover'] : 'hover'}
-      whileTap={disabled ? ['disabled', 'tap'] : 'tap'}
+      whileHover={disabled ? ['hover', 'disabled'] : 'hover'}
+      whileTap={disabled ? ['tap', 'disabled'] : 'tap'}
       disabled={disabled}
-      onTapStart={() => setIsTapped(true)}
-      onTap={() => setIsTapped(false)}
-      onTapCancel={() => setIsTapped(false)}
+      onTapStart={() => handleTap(true)}
+      onTap={() => handleTap(false)}
+      onTapCancel={() => handleTap(false)}
+      animate={
+        selected
+          ? disabled
+            ? ['selected', 'disabled']
+            : 'selected'
+          : 'default'
+      }
     >
-      {(hasClicked || isTapped) && !!displayAfterClick
-        ? displayAfterClick
+      {(isTapped || hasClicked) && !!displayOnClick
+        ? displayOnClick
         : displayBeforeClick}
     </motion.button>
   );

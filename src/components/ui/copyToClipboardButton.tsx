@@ -21,7 +21,7 @@ const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={<FontAwesomeIcon icon={faCopy} />}
-      displayAfterClick={<FontAwesomeIcon icon={faCopySolid} />}
+      displayOnClick={<FontAwesomeIcon icon={faCopySolid} />}
       onClick={handleCopy}
       clearOnHover={true}
     />

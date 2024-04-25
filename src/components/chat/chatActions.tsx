@@ -34,6 +34,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
         <div className='col-11'>
           <CopyToClipboardButton id={chatId} value={content} />
           <FeedbackButtons
+            feedback={feedbackSent}
             onFeedback={onFeedback}
             disableFeedback={feedbackSent !== null}
           />

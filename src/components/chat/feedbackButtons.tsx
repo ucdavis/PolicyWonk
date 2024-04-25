@@ -10,11 +10,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AnimatedButton from '../ui/animatedButton';
 
 interface FeedbackButtonsProps {
+  feedback: 'thumbs_up' | 'thumbs_down' | null;
   onFeedback: (feedback: 'thumbs_up' | 'thumbs_down') => void;
   disableFeedback: boolean;
 }
 
 const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
+  feedback,
   onFeedback,
   disableFeedback,
 }) => {
@@ -22,15 +24,17 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
     <>
       <AnimatedButton
         displayBeforeClick={<FontAwesomeIcon icon={faThumbsUp} />}
-        displayAfterClick={<FontAwesomeIcon icon={faThumbsUpSolid} />}
+        displayOnClick={<FontAwesomeIcon icon={faThumbsUpSolid} />}
         onClick={() => onFeedback('thumbs_up')}
         disabled={disableFeedback}
+        selected={feedback === 'thumbs_up'}
       />
       <AnimatedButton
         displayBeforeClick={<FontAwesomeIcon icon={faThumbsDown} />}
-        displayAfterClick={<FontAwesomeIcon icon={faThumbsDownSolid} />}
+        displayOnClick={<FontAwesomeIcon icon={faThumbsDownSolid} />}
         onClick={() => onFeedback('thumbs_down')}
         disabled={disableFeedback}
+        selected={feedback === 'thumbs_down'}
       />
     </>
   );
