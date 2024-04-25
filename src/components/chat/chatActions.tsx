@@ -3,6 +3,7 @@ import React from 'react';
 
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { motion } from 'framer-motion';
 
 import { saveReaction } from '@/services/historyService';
 
@@ -41,7 +42,11 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
         </div>
       </div>
       {feedbackSent && (
-        <div className='row mb-3'>
+        <motion.div
+          className='row mb-3'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
           <div className='col-1'>{/* empty */}</div>
           <div className='col-11'>
             <div
@@ -55,7 +60,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, content }) => {
             </div>
             <div></div>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );
