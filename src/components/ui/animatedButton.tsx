@@ -39,7 +39,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     },
     selected: {
       scale: 1.2,
-      color: 'var(--secondary-color)',
+      opacity: 1,
+      color: 'var(--primary-color)',
     },
   };
 
@@ -65,6 +66,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsTapped(false);
   };
 
+  // TODO: make disabled not animate hover
   return (
     <motion.button
       className='btn-feedback me-1'
@@ -79,11 +81,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onTapCancel={() => handleTap(false)}
       initial={false}
       animate={
-        selected
-          ? disabled
-            ? ['selected', 'disabled']
-            : 'selected'
-          : 'default'
+        selected ? (disabled ? ['tap', 'selected'] : 'selected') : 'default'
       }
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick

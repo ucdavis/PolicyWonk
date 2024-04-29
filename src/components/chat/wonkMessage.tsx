@@ -9,6 +9,7 @@ import {
   useStreamableText,
   useTempStreamableText,
 } from '@/lib/hooks/use-streamable-text';
+import { Feedback } from '@/models/chat';
 
 import ChatActions from './chatActions';
 import { MemoizedReactMarkdown } from './markdown';
@@ -19,11 +20,13 @@ export const WonkMessage = ({
   content,
   isLoading,
   wonkThoughts,
+  feedback,
 }: {
   chatId: string;
   content: string | StreamableValue<string>;
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
+  feedback?: Feedback;
 }) => {
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
@@ -61,7 +64,9 @@ export const WonkMessage = ({
           )}
         </div>
       </div>
-      {!isLoading && <ChatActions chatId={chatId} content={text} />}
+      {!isLoading && (
+        <ChatActions chatId={chatId} content={text} feedback={feedback} />
+      )}
     </div>
   );
 };
