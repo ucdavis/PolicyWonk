@@ -13,36 +13,16 @@ interface AnimatedButtonProps {
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
-  disabled,
   displayBeforeClick,
   displayOnClick,
   onClick,
+  disabled = false,
   clearOnHover = false,
   selected = false,
 }) => {
-  const [hasClicked, setHasClicked] = React.useState<boolean>(false);
+  const [hasClicked, setHasClicked] = React.useState<boolean>(selected);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
-
-  const defaultVariants: Variants = {
-    hover: {
-      scale: 1.2,
-      transition: { type: 'spring', stiffness: 400, damping: 10 },
-      color: 'var(--secondary-color)',
-    },
-    disabled: {
-      opacity: 0.5,
-      transition: { type: 'spring', stiffness: 600, damping: 30 },
-    },
-    tap: {
-      scale: 0.8,
-      color: 'var(--primary-color)',
-    },
-    selected: {
-      scale: 1.2,
-      opacity: 1,
-      color: 'var(--primary-color)',
-    },
-  };
+  const [isHovered, setIsHovered] = React.useState<boolean>(false);
 
   const handleClick = () => {
     if (disabled) return;
@@ -50,15 +30,16 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     onClick();
   };
 
-  const handleHover = () => {
-    if (clearOnHover) {
+  const handleHover = (hovered: boolean) => {
+    if (clearOnHover && hovered) {
       clear();
     }
+    setIsHovered(hovered);
   };
 
-  const handleTap = (isTapped: boolean) => {
+  const handleTap = (tapped: boolean) => {
     if (disabled) return;
-    setIsTapped(isTapped);
+    setIsTapped(tapped);
   };
 
   const clear = () => {
@@ -66,23 +47,40 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsTapped(false);
   };
 
-  // TODO: make disabled not animate hover
+  const defaultVariants: Variants = {
+    selected: {
+      scale: 1.2,
+      opacity: 1,
+      color: 'var(--primary-color)',
+    },
+    hover: {
+      scale: 1.2,
+      transition: { type: 'spring', stiffness: 400, damping: 10 },
+      color: 'var(--secondary-color)',
+    },
+    disabledHover: {
+      opacity: 0.5,
+    },
+    tap: {
+      scale: 0.8,
+      color: 'var(--primary-color)',
+    },
+  };
   return (
     <motion.button
       className='btn-feedback me-1'
       onClick={handleClick}
-      onMouseEnter={handleHover}
+      onMouseEnter={() => handleHover(true)}
+      onHoverEnd={() => handleHover(false)}
       variants={defaultVariants}
-      whileHover={disabled ? ['hover', 'disabled'] : 'hover'}
-      whileTap={disabled ? ['tap', 'disabled'] : 'tap'}
+      whileHover={isHovered ? 'hover' : 'disabledHover'}
+      whileTap={isTapped ? 'tap' : {}}
       disabled={disabled}
       onTapStart={() => handleTap(true)}
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
       initial={false}
-      animate={
-        selected ? (disabled ? ['tap', 'selected'] : 'selected') : 'default'
-      }
+      animate={selected ? 'selected' : {}}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick
         ? displayOnClick

@@ -4,7 +4,7 @@
 $primary-color: #FFCC33;
 $secondary-color: #003A5D;
 
-// is there a better way to be able to use these variables inside react? i'm using it in chatActions.tsx
+// TODO: is there a better way to be able to use these variables inside react? used in chatActions.tsx
 :root {
   --primary-color: #{$primary-color};
   --secondary-color: #{$secondary-color};
