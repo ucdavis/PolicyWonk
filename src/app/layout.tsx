@@ -1,3 +1,8 @@
+// to fix large icons on first load
+// see: https://docs.fontawesome.com/web/use-with/react/use-with & https://github.com/FortAwesome/react-fontawesome/issues/134
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css'; // Import the CSS
+config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 import type { Metadata } from 'next';
 
 import './styles/main.scss';

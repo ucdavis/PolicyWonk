@@ -7,9 +7,11 @@ export type ChatHistory = {
   llmModel: string;
   user: string;
   userId: string;
-  reaction?: string;
+  reaction?: Feedback;
   timestamp: number;
 };
+
+export type Feedback = 'thumbs_up' | 'thumbs_down';
 
 export type UIState = {
   id: string;

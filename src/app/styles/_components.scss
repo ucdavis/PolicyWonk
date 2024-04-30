@@ -16,9 +16,10 @@
   background-color: rgba(255,255,255,0.99999);
   color:$tertiary-font;
   font-size:1.4rem;
-  &:hover {
-    color:$secondary-color;
-  }
+  // moved this to chatActions.tsx
+  // &:hover {
+  //   color:$secondary-color;
+  // }
 }
 .btn-wonk {
    border-bottom:2px solid #fff;

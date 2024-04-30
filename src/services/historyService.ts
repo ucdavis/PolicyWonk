@@ -4,7 +4,7 @@ import { MongoClient, WithId } from 'mongodb';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { ChatHistory } from '@/models/chat';
+import { ChatHistory, Feedback } from '@/models/chat';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
@@ -89,7 +89,7 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
   await logMessages(chatId, messages);
 };
 
-export const saveReaction = async (chatId: string, reaction: string) => {
+export const saveReaction = async (chatId: string, reaction: Feedback) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
