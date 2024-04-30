@@ -28,7 +28,6 @@ const ChatActions: React.FC<ChatActionsProps> = ({
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
   const [aiState] = useAIState<typeof AI>();
-  aiState;
   const aiFeedback = aiState.reaction;
   const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
     feedback ?? aiFeedback ?? null
