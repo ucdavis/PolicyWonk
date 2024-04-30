@@ -8,7 +8,7 @@ Welcome to **PolicyWonk**, your app for navigating the complex maze of UCOP (Uni
 - **Simple to Use**: Designed with user-friendliness in mind, PolicyWonk makes navigating policies as straightforward as chatting with a friend. 🤝
 
 ## How to Get Started?
-https://policywonk.ucdavis.edu
+[PolicyWonk Website](https://policywonk.ucdavis.edu)
 
 ## Sources:
 See [UC Davis Policy Documents Repository](https://github.com/ucdavis/policy) for the full list of policies and procedures available ("ucdavis" github team member access required).
