@@ -18,12 +18,14 @@ interface ChatActionsProps {
   chatId: string;
   content: string;
   feedback?: Feedback;
+  shared?: boolean;
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({
   chatId,
   content,
   feedback,
+  shared,
 }) => {
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
@@ -44,14 +46,16 @@ const ChatActions: React.FC<ChatActionsProps> = ({
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
           <CopyToClipboardButton id={chatId} value={content} />
-          <FeedbackButtons
-            feedback={feedbackSent}
-            onFeedback={onFeedback}
-            disableFeedback={feedbackSent !== null}
-          />
+          {!shared && (
+            <FeedbackButtons
+              feedback={feedbackSent}
+              onFeedback={onFeedback}
+              disableFeedback={feedbackSent !== null}
+            />
+          )}
         </div>
       </div>
-      {feedbackSent && (
+      {!shared && feedbackSent && (
         <motion.div
           className='row mb-3'
           initial={false}

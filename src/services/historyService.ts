@@ -53,6 +53,21 @@ export const getChat = async (chatId: string, userId: string) => {
   return unwrapChat(chat);
 };
 
+export const getSharedChat = async (chatId: string) => {
+  const chatsDb = await getChatsCollection();
+
+  const chat = await chatsDb.findOne({ id: chatId });
+
+  if (!chat) {
+    return null;
+  }
+
+  // TODO: skip pulling system message to begin with
+  chat.messages = chat.messages.filter((m) => m.role !== 'system');
+
+  return unwrapChat(chat);
+};
+
 export const getChatHistory = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 

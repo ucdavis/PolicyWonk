@@ -14,7 +14,7 @@ import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
 import DefaultQuestions from './defaultQuestions';
 
-const MainContent = () => {
+const MainContent = ({ shared }: { shared?: boolean }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [aiState] = useAIState<typeof AI>();

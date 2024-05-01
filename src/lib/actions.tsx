@@ -176,7 +176,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
       id: message.id,
       display:
         message.role === 'user' ? (
-          <UserMessage>{message.content}</UserMessage>
+          <UserMessage user={aiState.user}>{message.content}</UserMessage>
         ) : (
           <WonkMessage
             chatId={aiState.id}
@@ -184,6 +184,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
             isLoading={false}
             wonkThoughts={''}
             feedback={aiState.reaction}
+            shared={true}
           />
         ),
     }));
