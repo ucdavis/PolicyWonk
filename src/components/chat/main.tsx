@@ -13,6 +13,7 @@ import WonkTop from '../layout/wonkTop';
 import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
 import DefaultQuestions from './defaultQuestions';
+import Focus from './focusBar';
 
 const MainContent = () => {
   const router = useRouter();
@@ -47,6 +48,7 @@ const MainContent = () => {
           </WonkTop>
           <WonkBottom>
             <DefaultQuestions />
+            <Focus />
             <ChatBoxForm />
             <Disclaimer />
           </WonkBottom>
