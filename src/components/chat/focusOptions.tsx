@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
-import { Focus } from './focusBar';
+import { Focus } from '@/models/focus';
 
 interface FocusOptionsProps {
   open: boolean;

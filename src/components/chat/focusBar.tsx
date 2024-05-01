@@ -3,27 +3,9 @@ import React from 'react';
 
 import { Button } from 'reactstrap';
 
+import { Focus, focuses } from '@/models/focus';
+
 import FocusOptions from './focusOptions';
-
-export type Focus = {
-  name: string;
-  description: string;
-};
-
-const focuses: Focus[] = [
-  {
-    name: 'core',
-    description: 'UCOP & Ellucid Policies (ppm, ppsm, delegations)',
-  },
-  {
-    name: 'apm',
-    description: 'Academic Personnel Manual',
-  },
-  {
-    name: 'unions',
-    description: 'UCOP Union Contracts',
-  },
-];
 
 const FocusBar: React.FC = () => {
   const [open, setOpen] = React.useState(false);
