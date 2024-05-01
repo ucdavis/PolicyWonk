@@ -10,6 +10,8 @@ import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
+const mongoDbName = process.env.MONGO_DB ?? 'policywonk';
+const mongoCollectionName = process.env.MONGO_COLLECTION ?? 'chats';
 
 let _mongoClient: MongoClient;
 // TODO: separate out into actions and service
@@ -17,14 +19,16 @@ let _mongoClient: MongoClient;
 // all of our chats are stored in the "policywonk" db in the "chats" collection
 async function getChatsCollection() {
   if (_mongoClient) {
-    return _mongoClient.db('policywonk').collection<ChatHistory>('chats');
+    return _mongoClient
+      .db(mongoDbName)
+      .collection<ChatHistory>(mongoCollectionName);
   }
 
   // otherwise create a new one and make sure indexes are setup
   _mongoClient = new MongoClient(mongoConnectionString);
   const collection = _mongoClient
-    .db('policywonk')
-    .collection<ChatHistory>('chats');
+    .db(mongoDbName)
+    .collection<ChatHistory>(mongoCollectionName);
 
   await collection.createIndex({ timestamp: -1 });
 

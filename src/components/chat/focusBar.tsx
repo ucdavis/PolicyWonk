@@ -7,9 +7,14 @@ import { Focus, focuses } from '@/models/focus';
 
 import FocusOptions from './focusOptions';
 
-const FocusBar: React.FC = () => {
+interface FocusBarProps {
+  focus: Focus; // currently selected focus
+  options: Focus[]; // available focus options
+  onSelection: (selection: Focus) => void;
+}
+
+const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
   const [open, setOpen] = React.useState(false);
-  const [focus, setFocus] = React.useState<Focus>(focuses[0]);
 
   const onFocusSelection = (selection?: Focus) => {
     // on any selection we close the modal
@@ -17,7 +22,7 @@ const FocusBar: React.FC = () => {
 
     // if a selection was made, we can do something with it
     if (selection) {
-      setFocus(selection);
+      onSelection(selection);
     }
   };
 

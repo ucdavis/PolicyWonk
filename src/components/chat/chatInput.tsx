@@ -4,7 +4,8 @@ import React from 'react';
 import { useUIState, useActions } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
-import { AI } from '@/lib/actions';
+import { AI, Actions } from '@/lib/actions';
+import { focuses } from '@/models/focus';
 
 import ChatBoxForm from './chatBoxForm';
 import DefaultQuestions from './defaultQuestions';
@@ -14,9 +15,12 @@ import { UserMessage } from './userMessage';
 // Container for all of components that can be used to send messages to the chat
 // Will send the actual message to the chatAI system
 const ChatInput = () => {
+  const [focus, setFocus] = React.useState(focuses[0]);
+
   const [_, setMessagesUI] = useUIState<typeof AI>();
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
-  const { submitUserMessage } = useActions();
+  // as Actions maybe a little hack but it lets us strongly type the actions
+  const { submitUserMessage } = useActions() as Actions;
 
   const onQuestionSubmit = async (question: string) => {
     // Optimistically add user message UI
@@ -28,14 +32,14 @@ const ChatInput = () => {
       },
     ]);
 
-    const responseMessage = await submitUserMessage(question);
+    const responseMessage = await submitUserMessage(question, focus);
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };
   return (
     <>
       <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
-      <FocusBar />
+      <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </>
   );

@@ -11,6 +11,7 @@ import { nanoid } from 'nanoid';
 import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/wonkMessage';
 import { ChatHistory, UIState } from '@/models/chat';
+import { Focus } from '@/models/focus';
 import {
   getEmbeddings,
   getSearchResults,
@@ -21,7 +22,8 @@ import {
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
-async function submitUserMessage(userInput: string) {
+// TODO: use focus to determine which policy to search
+async function submitUserMessage(userInput: string, focus: Focus) {
   'use server'; // use server is inside of the function because only this server action
   // is async. we want to run createAI on the client
 
@@ -188,3 +190,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
         ),
     }));
 };
+
+export interface Actions {
+  submitUserMessage: typeof submitUserMessage;
+}
