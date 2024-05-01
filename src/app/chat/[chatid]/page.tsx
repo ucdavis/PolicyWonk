@@ -10,6 +10,7 @@ import MainContent from '@/components/chat/main';
 import NotAuthorized from '@/components/layout/not-authorized';
 import { AI, getUIStateFromAIState } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
+import { focuses } from '@/models/focus';
 import { llmModel } from '@/services/chatService';
 import { getChat } from '@/services/historyService';
 
@@ -58,6 +59,7 @@ const newChatSession = (session: Session) => {
     id: nanoid(),
     title: 'Unknown Title',
     messages: [],
+    focus: focuses[0],
     llmModel: llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
