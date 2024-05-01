@@ -35,7 +35,7 @@ const FocusBar: React.FC = () => {
 
     // if a selection was made, we can do something with it
     if (selection) {
-      console.log('selected', selection);
+      setFocus(selection);
     }
   };
 
