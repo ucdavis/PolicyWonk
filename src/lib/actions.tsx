@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid';
 import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/wonkMessage';
 import { ChatHistory, UIState } from '@/models/chat';
-import { Focus } from '@/models/focus';
+import { Focus, focuses } from '@/models/focus';
 import {
   getEmbeddings,
   getSearchResults,
@@ -131,7 +131,7 @@ async function submitUserMessage(userInput: string, focus: Focus) {
           // TODO: use onSetAIState when it is no longer unstable
           (async () => {
             // save the chat to the db
-            await saveChat(chatId, aiState.get().messages);
+            await saveChat(chatId, aiState.get().messages, focus);
           })();
         } else {
           textStream.update(delta);
@@ -160,6 +160,7 @@ export const AI = createAI<ChatHistory, UIState>({
     id: nanoid(),
     messages: [],
     title: '',
+    focus: focuses[0],
     llmModel: llmModel,
     user: '',
     userId: '',

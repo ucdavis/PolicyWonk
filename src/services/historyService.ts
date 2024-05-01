@@ -5,6 +5,7 @@ import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
 import { ChatHistory, Feedback } from '@/models/chat';
+import { Focus } from '@/models/focus';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
@@ -71,7 +72,11 @@ export const getChatHistory = async (userId: string) => {
 
 // save chats to db
 // TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
-export const saveChat = async (chatId: string, messages: Message[]) => {
+export const saveChat = async (
+  chatId: string,
+  messages: Message[],
+  focus: Focus
+) => {
   const session = (await auth()) as Session;
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
@@ -80,6 +85,7 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
     id: chatId,
     title,
     messages,
+    focus,
     llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
