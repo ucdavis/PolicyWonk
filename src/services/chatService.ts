@@ -5,6 +5,7 @@ import { Message } from 'ai';
 import OpenAI from 'openai';
 
 import { PolicyIndex } from '@/models/chat';
+import { Focus } from '@/models/focus';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -38,21 +39,51 @@ export const getEmbeddings = async (query: string) => {
   return embeddings;
 };
 
+const generateFilter = (focus: Focus) => {
+  if (focus.name === 'core') {
+    const allowedScopes: string[] = [
+      'ucop',
+      'ucdppm',
+      'ucdppsm',
+      'ucddelegation',
+      'ucdinterim',
+    ];
+
+    return {
+      terms: {
+        'metadata.scope.keyword': allowedScopes,
+      },
+    };
+  } else if (focus.name === 'apm') {
+    return {
+      terms: {
+        'metadata.scope.keyword': ['ucdapm'],
+      },
+    };
+  } else if (focus.name === 'unions') {
+    // TODO: add union scopes and read variant
+    return {
+      terms: {
+        'metadata.scope.keyword': [],
+      },
+    };
+  } else {
+    // match nothing since we don't know what to do
+    return {
+      match_none: {},
+    };
+  }
+};
+
 export const getSearchResults = async (
-  embeddings: OpenAI.Embeddings.CreateEmbeddingResponse
+  embeddings: OpenAI.Embeddings.CreateEmbeddingResponse,
+  focus: Focus
 ) => {
   const searchResultMaxSize = 5;
 
-  // scopes for our "all" search
-  const allowedScopes = [
-    'ucop',
-    'ucdppm',
-    'ucdppsm',
-    'ucddelegation',
-    'ucdinterim',
-  ];
+  const filter = generateFilter(focus);
 
-  // TODO: augment search w/ keyword search, or perhaps follow up questions?
+  // TODO: augment search w/ keyword search?
   // get our search results
   const searchResults = await searchClient.search<PolicyIndex>({
     index: indexName,
@@ -63,12 +94,7 @@ export const getSearchResults = async (
         query_vector: embeddings.data[0].embedding, // the query vector
         k: searchResultMaxSize,
         num_candidates: 200,
-        filter: {
-          // pre-filter before knn
-          terms: {
-            'metadata.scope.keyword': allowedScopes,
-          },
-        },
+        filter,
       },
     },
   });

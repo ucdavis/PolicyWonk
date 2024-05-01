@@ -22,7 +22,6 @@ import {
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
-// TODO: use focus to determine which policy to search
 async function submitUserMessage(userInput: string, focus: Focus) {
   'use server'; // use server is inside of the function because only this server action
   // is async. we want to run createAI on the client
@@ -63,7 +62,7 @@ async function submitUserMessage(userInput: string, focus: Focus) {
     const embeddings = await getEmbeddings(userInput);
 
     wonkThoughts.update('Searching for relevant documents...');
-    const searchResults = await getSearchResults(embeddings);
+    const searchResults = await getSearchResults(embeddings, focus);
 
     const transformedResults = expandedTransformSearchResults(searchResults);
 

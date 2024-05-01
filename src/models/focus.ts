@@ -1,5 +1,5 @@
 export type Focus = {
-  name: string;
+  name: 'core' | 'apm' | 'unions';
   description: string;
 };
 
