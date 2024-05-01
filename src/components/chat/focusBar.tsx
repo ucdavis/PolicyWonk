@@ -36,6 +36,7 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
       </div>
 
       <FocusOptions
+        focus={focus}
         open={open}
         onSelection={onFocusSelection}
         options={focuses}

@@ -1,5 +1,8 @@
+export type FocusName = 'core' | 'apm' | 'unions';
+
 export type Focus = {
-  name: 'core' | 'apm' | 'unions';
+  name: FocusName;
+  subFocus?: string; // optional detail for specific focus types
   description: string;
 };
 
