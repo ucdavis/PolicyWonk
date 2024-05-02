@@ -86,12 +86,10 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
   };
 
   return (
-    <div>
-      <Modal isOpen={open} toggle={onClose} centered>
-        <ModalHeader toggle={onClose}>Focus Options</ModalHeader>
-        <ModalBody>{renderBody()}</ModalBody>
-      </Modal>
-    </div>
+    <Modal isOpen={open} toggle={onClose} centered>
+      <ModalHeader toggle={onClose}>Focus Options</ModalHeader>
+      <ModalBody>{renderBody()}</ModalBody>
+    </Modal>
   );
 };
 
