@@ -9,23 +9,26 @@ import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 import { Feedback } from '@/models/chat';
-import { saveReaction } from '@/services/historyService';
+import { saveReaction, shareChat } from '@/services/historyService';
 
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
+import FeedbackBar from './feedbackBar';
 import FeedbackButtons from './feedbackButtons';
-import ShareButtons from './shareButton';
+import ShareButton from './shareButton';
 
 interface ChatActionsProps {
   chatId: string;
   content: string;
   feedback?: Feedback;
+  shareId?: string;
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({
   chatId,
   content,
   feedback,
+  shareId,
 }) => {
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
@@ -42,6 +45,13 @@ const ChatActions: React.FC<ChatActionsProps> = ({
     await saveReaction(chatId, feedback);
   };
 
+  const onShare = async (chatId: string) => {
+    const shareId = await shareChat(chatId);
+    if (!shareId) return; // TODO: handle error sharing
+    navigator.clipboard.writeText(`${window.location.origin}/share/${shareId}`);
+    // TODO: toast?
+  };
+
   return (
     <>
       <div className='row mb-3'>
@@ -55,36 +65,12 @@ const ChatActions: React.FC<ChatActionsProps> = ({
                 onFeedback={onFeedback}
                 disableFeedback={feedbackSent !== null}
               />
-              <ShareButtons
-                chatId={chatId}
-                shareId={chatId}
-                onShare={() => {}}
-              />
+              <ShareButton chatId={chatId} shareId={chatId} onShare={onShare} />
             </>
           )}
         </div>
       </div>
-      {!shared && feedbackSent && (
-        <motion.div
-          className='row mb-3'
-          initial={false}
-          animate={{ opacity: 1 }}
-        >
-          <div className='col-1'>{/* empty */}</div>
-          <div className='col-11'>
-            <div
-              className='alert alert-success d-flex align-items-center'
-              role='alert'
-            >
-              <div className='me-2'>
-                <FontAwesomeIcon icon={faClipboardCheck} />
-              </div>
-              <div>Thank you for your feedback!</div>
-            </div>
-            <div></div>
-          </div>
-        </motion.div>
-      )}
+      {!shared && feedbackSent && <FeedbackBar />}
     </>
   );
 };

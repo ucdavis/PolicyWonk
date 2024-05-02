@@ -1,6 +1,7 @@
 'use server';
 import { Message } from 'ai';
 import { MongoClient, WithId } from 'mongodb';
+import { nanoid } from 'nanoid';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
@@ -53,10 +54,10 @@ export const getChat = async (chatId: string, userId: string) => {
   return unwrapChat(chat);
 };
 
-export const getSharedChat = async (chatId: string) => {
+export const getSharedChat = async (shareId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ id: chatId });
+  const chat = await chatsDb.findOne({ shareId: shareId });
 
   if (!chat) {
     return null;
@@ -121,4 +122,32 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
   }
   // also log to elastic for now
   await logReaction(chatId, reaction);
+};
+
+export const shareChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
+
+  if (!chat) {
+    return;
+  }
+  if (chat.shareId) {
+    return chat.shareId;
+  }
+  const shareId = nanoid();
+  const res = await chatsDb.updateOne(
+    { id: chatId, userId: session.user?.id },
+    {
+      $set: {
+        shareId,
+      },
+    }
+  );
+  if (res.modifiedCount === 0) {
+    return;
+  }
+
+  return shareId;
 };
