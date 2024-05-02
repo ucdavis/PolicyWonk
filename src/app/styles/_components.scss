@@ -15,15 +15,27 @@
 
 .btn-feedback {
   border: none;
-  background-color: rgba(255, 255, 255, 0.99999);
+  background-color: rgba(255, 255, 255, 0.000001);
   color: $tertiary-font;
   font-size: 1.4rem;
-  // moved this to chatActions.tsx
-  // &:hover {
-  //   color:$secondary-color;
-  // }
 }
-
+.btn-link {
+  border:none;
+  box-shadow:none;
+  color:$secondary-font;
+  &:hover {
+    color: $secondary-color;
+    background-color: rgba(255,255,255,0.000001);
+  }
+  &:active {
+    color: $secondary-color !important;
+    background-color: rgba(255,255,255,0.000001) !important;
+  }
+  &:focus-visible {
+    color: $secondary-color !important;
+    background-color: rgba(255,255,255,0.000001) !important;
+  }
+}
 .btn-wonk {
   border-bottom: 2px solid #fff;
   width: 100%;
@@ -126,4 +138,8 @@
 .selected-focus {
   border: 2px solid $secondary-color;
   box-shadow: 0 0 10px $secondary-color;
+}
+
+.focus-bar {
+  cursor: pointer;
 }

@@ -64,9 +64,9 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     } else {
       return (
         <div className='container py-2'>
-          <div className='row g-4'>
+          <div className='row'>
             {options.map((option) => (
-              <div className='col-md-4 col-lg-3' key={option.name}>
+              <div className='col' key={option.name}>
                 <div
                   className={`card h-100 focus-card ${option.name === focus.name ? 'selected-focus' : ''}`}
                   style={{ cursor: 'pointer' }}
@@ -86,12 +86,10 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
   };
 
   return (
-    <div>
-      <Modal isOpen={open} toggle={onClose} centered>
-        <ModalHeader toggle={onClose}>Focus Options</ModalHeader>
-        <ModalBody>{renderBody()}</ModalBody>
-      </Modal>
-    </div>
+    <Modal isOpen={open} toggle={onClose} centered>
+      <ModalHeader toggle={onClose}>Focus Options</ModalHeader>
+      <ModalBody>{renderBody()}</ModalBody>
+    </Modal>
   );
 };
 
