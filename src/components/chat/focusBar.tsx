@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 
-import { Button } from 'reactstrap';
-
 import { Focus, focuses } from '@/models/focus';
 
 import FocusOptions from './focusOptions';
