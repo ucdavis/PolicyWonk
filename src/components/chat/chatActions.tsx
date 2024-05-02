@@ -5,6 +5,7 @@ import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState } from 'ai/rsc';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 import { Feedback } from '@/models/chat';
@@ -13,19 +14,18 @@ import { saveReaction } from '@/services/historyService';
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
 import FeedbackButtons from './feedbackButtons';
+import ShareButtons from './shareButton';
 
 interface ChatActionsProps {
   chatId: string;
   content: string;
   feedback?: Feedback;
-  shared?: boolean;
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({
   chatId,
   content,
   feedback,
-  shared,
 }) => {
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
@@ -34,6 +34,8 @@ const ChatActions: React.FC<ChatActionsProps> = ({
   const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
     feedback ?? aiFeedback ?? null
   );
+  const pathname = usePathname();
+  const shared = pathname.includes('/share/');
 
   const onFeedback = async (feedback: Feedback) => {
     setFeedbackSent(feedback);
@@ -47,11 +49,18 @@ const ChatActions: React.FC<ChatActionsProps> = ({
         <div className='col-11'>
           <CopyToClipboardButton id={chatId} value={content} />
           {!shared && (
-            <FeedbackButtons
-              feedback={feedbackSent}
-              onFeedback={onFeedback}
-              disableFeedback={feedbackSent !== null}
-            />
+            <>
+              <FeedbackButtons
+                feedback={feedbackSent}
+                onFeedback={onFeedback}
+                disableFeedback={feedbackSent !== null}
+              />
+              <ShareButtons
+                chatId={chatId}
+                shareId={chatId}
+                onShare={() => {}}
+              />
+            </>
           )}
         </div>
       </div>

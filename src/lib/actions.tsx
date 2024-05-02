@@ -184,7 +184,6 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
             isLoading={false}
             wonkThoughts={''}
             feedback={aiState.reaction}
-            shared={true}
           />
         ),
     }));
