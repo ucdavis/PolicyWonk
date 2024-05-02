@@ -28,9 +28,11 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
 
   return (
     <>
-      <div className='border'>
-        <div className='d-flex justify-content-between align-items-center p-2'>
-          <Button onClick={() => setOpen(true)}>Focus: {focus.name}</Button>
+      <div className='focus-bar mt-4'>
+        <div className='d-flex justify-content-start align-items-center'>
+          <Button color='link' onClick={() => setOpen(true)}>
+            Focus: {focus.name}
+          </Button>
           <span className='text-muted small'>{focus.description}</span>
         </div>
       </div>
