@@ -1,11 +1,15 @@
 'server only';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
-import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
+import {
+  KnnQuery,
+  QueryDslQueryContainer,
+  SearchResponse,
+} from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
 
 import { PolicyIndex } from '@/models/chat';
-import { Focus } from '@/models/focus';
+import { Focus, FocusScope, unions } from '@/models/focus';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -39,9 +43,13 @@ export const getEmbeddings = async (query: string) => {
   return embeddings;
 };
 
-const generateFilter = (focus: Focus) => {
+const generateFilter = (
+  focus: Focus
+): QueryDslQueryContainer | QueryDslQueryContainer[] => {
+  let allowedScopes: FocusScope[] = [];
+
   if (focus.name === 'core') {
-    const allowedScopes: string[] = [
+    allowedScopes = [
       'ucop',
       'ucdppm',
       'ucdppsm',
@@ -55,24 +63,48 @@ const generateFilter = (focus: Focus) => {
       },
     };
   } else if (focus.name === 'apm') {
+    allowedScopes = ['ucdapm'];
+
     return {
       terms: {
-        'metadata.scope.keyword': ['ucdapm'],
+        'metadata.scope.keyword': allowedScopes,
       },
     };
   } else if (focus.name === 'unions') {
-    // TODO: add union scopes and read variant
-    return {
-      terms: {
-        'metadata.scope.keyword': [],
-      },
-    };
-  } else {
-    // match nothing since we don't know what to do
-    return {
-      match_none: {},
-    };
+    allowedScopes = ['collective_bargaining_contracts'];
+
+    // for unions we need to read the subfocus
+    if (focus.subFocus) {
+      // we could add more scopes here if we wanted to filter further
+      // but for now we'll just match the subfocus
+
+      // TODO: right now our subfocus is the union key. our index will eventually store that, but only stores the value for now
+      // so we'll need to map the key to the value
+      const unionName = unions.find((u) => u.key === focus.subFocus)?.value;
+
+      return {
+        bool: {
+          must: [
+            {
+              terms: {
+                'metadata.subject_areas.keyword': [unionName ?? ''],
+              },
+            },
+            {
+              terms: {
+                'metadata.scope.keyword': allowedScopes,
+              },
+            },
+          ],
+        },
+      };
+    }
   }
+
+  // match nothing since we don't know what to do
+  return {
+    match_none: {},
+  };
 };
 
 export const getSearchResults = async (
@@ -85,17 +117,20 @@ export const getSearchResults = async (
 
   // TODO: augment search w/ keyword search?
   // get our search results
+
+  const knnQuery: KnnQuery = {
+    field: 'vector', // the field we want to search, created by PolicyAcquisition
+    query_vector: embeddings.data[0].embedding, // the query vector
+    k: searchResultMaxSize,
+    num_candidates: 200,
+    filter,
+  };
+
   const searchResults = await searchClient.search<PolicyIndex>({
     index: indexName,
     size: searchResultMaxSize,
     body: {
-      knn: {
-        field: 'vector', // the field we want to search, created by PolicyAcquisition
-        query_vector: embeddings.data[0].embedding, // the query vector
-        k: searchResultMaxSize,
-        num_candidates: 200,
-        filter,
-      },
+      knn: knnQuery,
     },
   });
 
