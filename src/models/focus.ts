@@ -32,7 +32,7 @@ export const focuses: Focus[] = [
   },
 ];
 
-type Union = {
+export type Union = {
   key: string;
   value: string;
 };

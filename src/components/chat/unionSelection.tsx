@@ -1,15 +1,16 @@
 import React from 'react';
 
-import { Focus, FocusName, unions } from '@/models/focus';
+import { Focus, FocusName, Union, unions } from '@/models/focus';
 
 interface UnionSelectionProps {
   focus: Focus;
-  onSelection: (type: FocusName, subFocus: string) => void;
+  onSelection: (type: FocusName, subFocus: string, description: string) => void;
 }
 
 const UnionSelection: React.FC<UnionSelectionProps> = ({ onSelection }) => {
-  const unionSelected = (union: string) => {
-    onSelection('unions', union);
+  const unionSelected = (union: Union) => {
+    const description = `${union.value} (${union.key})`;
+    onSelection('unions', union.key, description);
   };
 
   return (
@@ -21,7 +22,7 @@ const UnionSelection: React.FC<UnionSelectionProps> = ({ onSelection }) => {
             key={union.key}
             href='#'
             className='list-group-item list-group-item-action'
-            onClick={() => unionSelected(union.key)}
+            onClick={() => unionSelected(union)}
           >
             {union.value}
           </a>

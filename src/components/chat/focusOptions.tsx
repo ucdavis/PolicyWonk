@@ -43,15 +43,18 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     }
   };
 
-  const subFocusSelection = (type: FocusName, subFocus: string) => {
+  const subFocusSelection = (
+    type: FocusName,
+    subFocus: string,
+    description: string
+  ) => {
     // find the focus option that matches the type
     const focus = options.find((option) => option.name === type);
 
     if (focus) {
       // should always find the focus
-      const augmentedDescription = `${focus.description} - ${subFocus}`;
       clearSubFocus();
-      onSelection({ ...focus, subFocus, description: augmentedDescription });
+      onSelection({ ...focus, subFocus, description });
     } else {
       clearSubFocus();
       onSelection();
