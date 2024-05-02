@@ -83,7 +83,7 @@ async function submitUserMessage(userInput: string, focus: Focus) {
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
-    wonkThoughts.done('Aha! Got it! :)'); // chatMessage component controls when to stop showing this message
+    wonkThoughts.done('Search complete, getting your answer...'); // chatMessage component controls when to stop showing this message
 
     // The `render()` creates a generated, streamable UI.
     // this is the response itself. render returns a ReactNode (our textNode)
