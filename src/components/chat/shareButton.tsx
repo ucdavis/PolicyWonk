@@ -32,7 +32,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       <AnimatedButton
         displayBeforeClick={<FontAwesomeIcon icon={faPaperPlane} />}
         displayOnClick={<FontAwesomeIcon icon={faPaperPlaneSolid} />}
-        onClick={() => onShare(chatId)}
+        onClick={() => onClick()}
       />
       <ShareModal isOpen={isOpen} setIsOpen={setIsOpen} shareId={shareId} />
     </>

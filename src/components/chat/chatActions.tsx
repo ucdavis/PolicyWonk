@@ -1,10 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState } from 'ai/rsc';
-import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
