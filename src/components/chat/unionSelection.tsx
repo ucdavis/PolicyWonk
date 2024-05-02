@@ -24,7 +24,7 @@ const UnionSelection: React.FC<UnionSelectionProps> = ({ onSelection }) => {
             className='list-group-item list-group-item-action'
             onClick={() => unionSelected(union)}
           >
-            {union.value}
+            {union.value} - {union.key.toLocaleUpperCase()}
           </a>
         ))}
       </div>
