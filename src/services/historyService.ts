@@ -5,11 +5,14 @@ import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
 import { ChatHistory, Feedback } from '@/models/chat';
+import { Focus } from '@/models/focus';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
 
 const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
+const mongoDbName = process.env.MONGO_DB ?? 'policywonk';
+const mongoCollectionName = process.env.MONGO_COLLECTION ?? 'chats';
 
 let _mongoClient: MongoClient;
 // TODO: separate out into actions and service
@@ -17,14 +20,16 @@ let _mongoClient: MongoClient;
 // all of our chats are stored in the "policywonk" db in the "chats" collection
 async function getChatsCollection() {
   if (_mongoClient) {
-    return _mongoClient.db('policywonk').collection<ChatHistory>('chats');
+    return _mongoClient
+      .db(mongoDbName)
+      .collection<ChatHistory>(mongoCollectionName);
   }
 
   // otherwise create a new one and make sure indexes are setup
   _mongoClient = new MongoClient(mongoConnectionString);
   const collection = _mongoClient
-    .db('policywonk')
-    .collection<ChatHistory>('chats');
+    .db(mongoDbName)
+    .collection<ChatHistory>(mongoCollectionName);
 
   await collection.createIndex({ timestamp: -1 });
 
@@ -67,7 +72,11 @@ export const getChatHistory = async (userId: string) => {
 
 // save chats to db
 // TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
-export const saveChat = async (chatId: string, messages: Message[]) => {
+export const saveChat = async (
+  chatId: string,
+  messages: Message[],
+  focus: Focus
+) => {
   const session = (await auth()) as Session;
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
@@ -76,6 +85,7 @@ export const saveChat = async (chatId: string, messages: Message[]) => {
     id: chatId,
     title,
     messages,
+    focus,
     llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',

@@ -1,9 +1,12 @@
 import { Message } from 'ai';
 
+import { Focus } from './focus';
+
 export type ChatHistory = {
   id: string;
   title: string;
   messages: Message[];
+  focus: Focus;
   llmModel: string;
   user: string;
   userId: string;

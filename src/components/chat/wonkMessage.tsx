@@ -31,6 +31,8 @@ export const WonkMessage = ({
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
 
+  const sanitizedText = sanitizeMarkdown(text);
+
   return (
     <div className='row mb-3'>
       <div className='col-3 col-md-1 mb-2'>
@@ -57,7 +59,7 @@ export const WonkMessage = ({
                 },
               }}
             >
-              {text}
+              {sanitizedText}
             </MemoizedReactMarkdown>
           ) : (
             wonkText
@@ -69,4 +71,26 @@ export const WonkMessage = ({
       )}
     </div>
   );
+};
+
+const cleanBracketedExpression = (str: string) => {
+  return str.replace(/\[\^([^\]]+)\]/g, (fullMatch, innerContent) => {
+    // Remove all non-word characters (except digits and underscore) and spaces from the innerContent
+    const cleanedContent = innerContent.replace(/[\W_]+/g, '');
+    return '[^' + cleanedContent + ']';
+  });
+};
+
+const cleanBadCitationList = (str: string) => {
+  // sometimes the llm lists citations w/ `- [^APM 015]` and we need to dump the `- `
+  return str.replace(/- \[\^([^\]]+)\]/g, '[^$1]');
+};
+
+// fix up common markdown issues
+const sanitizeMarkdown = (content: string) => {
+  // if we see a footnote like `[^APM 015]` we need strip any non-word characters and spaces
+  content = cleanBracketedExpression(content);
+  content = cleanBadCitationList(content);
+
+  return content;
 };

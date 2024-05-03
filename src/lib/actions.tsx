@@ -8,9 +8,11 @@ import {
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
+import FocusBanner from '@/components/chat/focusBanner';
 import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/wonkMessage';
 import { ChatHistory, UIState } from '@/models/chat';
+import { Focus, focuses } from '@/models/focus';
 import {
   getEmbeddings,
   getSearchResults,
@@ -21,7 +23,7 @@ import {
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
 
-async function submitUserMessage(userInput: string) {
+async function submitUserMessage(userInput: string, focus: Focus) {
   'use server'; // use server is inside of the function because only this server action
   // is async. we want to run createAI on the client
 
@@ -61,7 +63,7 @@ async function submitUserMessage(userInput: string) {
     const embeddings = await getEmbeddings(userInput);
 
     wonkThoughts.update('Searching for relevant documents...');
-    const searchResults = await getSearchResults(embeddings);
+    const searchResults = await getSearchResults(embeddings, focus);
 
     const transformedResults = expandedTransformSearchResults(searchResults);
 
@@ -79,10 +81,11 @@ async function submitUserMessage(userInput: string) {
     // Update the AI state
     aiState.update({
       ...aiState.get(), // chat id, from initial state
+      focus, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
-    wonkThoughts.done('Aha! Got it! :)'); // chatMessage component controls when to stop showing this message
+    wonkThoughts.done('Search complete, getting your answer...'); // chatMessage component controls when to stop showing this message
 
     // The `render()` creates a generated, streamable UI.
     // this is the response itself. render returns a ReactNode (our textNode)
@@ -117,6 +120,7 @@ async function submitUserMessage(userInput: string) {
           // and update the AI state with the final message
           aiState.done({
             ...aiState.get(),
+            focus,
             messages: [
               ...aiState.get().messages,
               {
@@ -129,7 +133,7 @@ async function submitUserMessage(userInput: string) {
           // TODO: use onSetAIState when it is no longer unstable
           (async () => {
             // save the chat to the db
-            await saveChat(chatId, aiState.get().messages);
+            await saveChat(chatId, aiState.get().messages, focus);
           })();
         } else {
           textStream.update(delta);
@@ -158,6 +162,7 @@ export const AI = createAI<ChatHistory, UIState>({
     id: nanoid(),
     messages: [],
     title: '',
+    focus: focuses[0],
     llmModel: llmModel,
     user: '',
     userId: '',
@@ -176,7 +181,10 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
       id: message.id,
       display:
         message.role === 'user' ? (
-          <UserMessage>{message.content}</UserMessage>
+          <>
+            <FocusBanner focus={aiState.focus} />
+            <UserMessage>{message.content}</UserMessage>
+          </>
         ) : (
           <WonkMessage
             chatId={aiState.id}
@@ -188,3 +196,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
         ),
     }));
 };
+
+export interface Actions {
+  submitUserMessage: typeof submitUserMessage;
+}
