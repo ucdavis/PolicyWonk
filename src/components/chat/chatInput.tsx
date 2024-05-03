@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { useUIState, useActions, useAIState } from 'ai/rsc';
+import { useUIState, useActions } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
 import { AI, Actions } from '@/lib/actions';
@@ -9,6 +9,7 @@ import { focuses } from '@/models/focus';
 
 import ChatBoxForm from './chatBoxForm';
 import DefaultQuestions from './defaultQuestions';
+import FocusBanner from './focusBanner';
 import FocusBar from './focusBar';
 import { UserMessage } from './userMessage';
 
@@ -18,24 +19,23 @@ const ChatInput = () => {
   const [focus, setFocus] = React.useState(focuses[0]);
 
   const [_, setMessagesUI] = useUIState<typeof AI>();
-  const [__, setAIState] = useAIState<typeof AI>();
+
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   // as Actions maybe a little hack but it lets us strongly type the actions
   const { submitUserMessage } = useActions() as Actions;
 
   const onQuestionSubmit = async (question: string) => {
-    // let the AI know what the focus is
-    setAIState((currentAIState) => ({
-      ...currentAIState,
-      focus,
-    }));
-
     // Optimistically add user message UI
     setMessagesUI((currentMessages) => [
       ...currentMessages,
       {
         id: nanoid(),
-        display: <UserMessage>{question}</UserMessage>,
+        display: (
+          <>
+            <FocusBanner focus={focus} />
+            <UserMessage>{question}</UserMessage>
+          </>
+        ),
       },
     ]);
 

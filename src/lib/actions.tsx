@@ -8,6 +8,7 @@ import {
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
+import FocusBanner from '@/components/chat/focusBanner';
 import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/wonkMessage';
 import { ChatHistory, UIState } from '@/models/chat';
@@ -80,6 +81,7 @@ async function submitUserMessage(userInput: string, focus: Focus) {
     // Update the AI state
     aiState.update({
       ...aiState.get(), // chat id, from initial state
+      focus, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
@@ -118,6 +120,7 @@ async function submitUserMessage(userInput: string, focus: Focus) {
           // and update the AI state with the final message
           aiState.done({
             ...aiState.get(),
+            focus,
             messages: [
               ...aiState.get().messages,
               {
@@ -178,7 +181,10 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
       id: message.id,
       display:
         message.role === 'user' ? (
-          <UserMessage>{message.content}</UserMessage>
+          <>
+            <FocusBanner focus={aiState.focus} />
+            <UserMessage>{message.content}</UserMessage>
+          </>
         ) : (
           <WonkMessage
             chatId={aiState.id}
