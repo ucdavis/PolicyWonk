@@ -38,8 +38,8 @@ export const Policywonksvg = ({
           y2='74.1645531%'
           id='linearGradient-7'
         >
-          <stop stop-color='#EFF6F9' offset='0%'></stop>
-          <stop stop-color='#F7F8F8' offset='100%'></stop>
+          <stop stopColor='#EFF6F9' offset='0%'></stop>
+          <stop stopColor='#F7F8F8' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='50%'
@@ -48,8 +48,8 @@ export const Policywonksvg = ({
           y2='100%'
           id='linearGradient-8'
         >
-          <stop stop-color='#F6F9FD' offset='0%'></stop>
-          <stop stop-color='#FBFBF9' offset='100%'></stop>
+          <stop stopColor='#F6F9FD' offset='0%'></stop>
+          <stop stopColor='#FBFBF9' offset='100%'></stop>
         </linearGradient>
         <path
           d='M78.411144,0.0106191228 C64.2132073,3.57602104 57.6637231,8.42942624 58.7626915,14.5708347 C58.7605201,15.1061511 44.4505233,13.5602438 32.3768407,24.462545 C32.0683043,24.9067167 12.5207976,23.6157264 21.7709734,0.0106191228 C21.8566016,-0.195763701 -3.88937761,6.73576772 11.832585,44.7564701 C11.9499227,45.1421167 -17.5352892,104.438992 16.1466282,129.171234 C38.6012398,145.659395 66.2216515,149.166543 99.0078633,139.692678 C111.53891,137.215802 120.902698,133.155218 127.099228,127.510928 C136.394023,119.044492 146.732299,95.2691711 127.099228,42.8316072 C126.866628,42.5919652 143.989473,15.6512071 117.804433,0.0106191228 C117.691901,-0.4534708 127.769629,14.3834181 109.2919,26.9832733 C108.886159,27.3678391 107.052462,23.9323139 103.030163,21.7460547 C99.0078633,19.5597954 100.04383,29.5040015 87.5191536,26.9832733 C74.9944774,24.462545 95.8955602,26.7809908 94.383251,4.90210439 C94.4927857,3.48874289 83.5778107,14.5708347 74.9944774,14.5708347 C69.2722551,14.5708347 70.411144,9.71742951 78.411144,0.0106191228 Z'
@@ -62,8 +62,8 @@ export const Policywonksvg = ({
           y2='95.2651552%'
           id='linearGradient-11'
         >
-          <stop stop-color='#FFD24C' offset='0%'></stop>
-          <stop stop-color='#FFC519' offset='100%'></stop>
+          <stop stopColor='#FFD24C' offset='0%'></stop>
+          <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='59.1090745%'
@@ -72,8 +72,8 @@ export const Policywonksvg = ({
           y2='100%'
           id='linearGradient-12'
         >
-          <stop stop-color='#FFD24C' offset='0%'></stop>
-          <stop stop-color='#FFC519' offset='100%'></stop>
+          <stop stopColor='#FFD24C' offset='0%'></stop>
+          <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
         <polygon
           id='path-13'
@@ -90,8 +90,8 @@ export const Policywonksvg = ({
           y2='100%'
           id='linearGradient-17'
         >
-          <stop stop-color='#F9FBFE' offset='0%'></stop>
-          <stop stop-color='#B3BDC4' offset='99.9189897%'></stop>
+          <stop stopColor='#F9FBFE' offset='0%'></stop>
+          <stop stopColor='#B3BDC4' offset='99.9189897%'></stop>
         </linearGradient>
         <linearGradient
           x1='46.5032358%'
@@ -100,8 +100,8 @@ export const Policywonksvg = ({
           y2='95.7260489%'
           id='linearGradient-18'
         >
-          <stop stop-color='#FFD24C' offset='0%'></stop>
-          <stop stop-color='#FFC519' offset='100%'></stop>
+          <stop stopColor='#FFD24C' offset='0%'></stop>
+          <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
         <path
           d='M24.0702846,8.77603149 C19.2857794,2.92534383 13.4674709,0 6.61535911,0 C-0.236752708,0 -1.76586139,4.88965352 2.02803306,14.6689606 C-1.58082314,23.720988 -0.0517144598,28.7529043 6.61535911,29.7647095 C13.2824327,30.7765147 19.1007412,29.22052 24.0702846,25.0967255 L24.0702846,8.77603149 Z'
@@ -118,8 +118,8 @@ export const Policywonksvg = ({
           y2='95.7260489%'
           id='linearGradient-23'
         >
-          <stop stop-color='#FFD24C' offset='0%'></stop>
-          <stop stop-color='#FFC519' offset='100%'></stop>
+          <stop stopColor='#FFD24C' offset='0%'></stop>
+          <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
         <linearGradient
           x1='46.5032358%'
@@ -128,8 +128,8 @@ export const Policywonksvg = ({
           y2='95.7260489%'
           id='linearGradient-24'
         >
-          <stop stop-color='#FFD24C' offset='0%'></stop>
-          <stop stop-color='#FFC519' offset='100%'></stop>
+          <stop stopColor='#FFD24C' offset='0%'></stop>
+          <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
       </defs>
       <g
@@ -333,7 +333,7 @@ export const Policywonksvg = ({
                 stroke='#0B0A08'
                 strokeWidth='5'
                 stroke-linecap='round'
-                stroke-linejoin='round'
+                strokeLinejoin='round'
               ></path>
             </g>
             <g id='bookhands' transform='translate(31.9794, 158.6086)'>
@@ -358,14 +358,14 @@ export const Policywonksvg = ({
                     id='Path-22'
                     stroke='#BFC5CF'
                     strokeWidth='2'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                   ></path>
                   <path
                     d='M4.38944033,12.3711681 L4.38944033,6.88433456 L8.88876703,8.43969917 L9.21434382,3.50213051 L15.0703962,6.64178848 L17.4865797,0 L73.4852605,26.856696 C82.140639,30.8243198 86.8547104,36.5124116 87.6274746,43.9209714 C88.4002389,51.3295311 72.879078,51.7069766 41.0639921,45.0533077 L9.83938768,22.9615503 L4.38944033,12.3711681 Z'
                     id='left-page-border'
                     stroke='#0B0A08'
                     strokeWidth='3'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                   ></path>
                 </g>
                 <g id='paper-left'>
@@ -385,14 +385,14 @@ export const Policywonksvg = ({
                     id='Path-22'
                     stroke='#BFC5CF'
                     strokeWidth='2'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                   ></path>
                   <path
                     d='M4.38944033,15.4287828 L4.38944033,12.3711681 L4.38944033,6.88433456 L8.88876703,8.43969917 L9.21434382,3.50213051 L15.0703962,6.64178848 L17.4865797,0 L73.4852605,26.856696 C82.140639,30.8243198 86.8547104,36.5124116 87.6274746,43.9209714 C88.4002389,51.3295311 72.879078,51.7069766 41.0639921,45.0533077 L9.83938768,22.9615503 L4.38944033,15.4287828 Z'
                     id='left-page-border'
                     stroke='#0B0A08'
                     strokeWidth='3'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                   ></path>
                 </g>
                 <g
@@ -419,7 +419,7 @@ export const Policywonksvg = ({
                     id='bookside-border'
                     stroke='#0B0A08'
                     strokeWidth='5'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                     points='0 4.54747351e-13 69.2549492 28.3461007 69.2549492 80.4563661 54.0715086 74.4397241 14.1960289 58.6385306'
                   ></polygon>
                 </g>
@@ -444,7 +444,7 @@ export const Policywonksvg = ({
                     id='bookside-border'
                     stroke='#0B0A08'
                     strokeWidth='5'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                     points='0 4.54747351e-13 69.2549492 28.3461007 69.2549492 80.4563661 14.1960289 58.6385306'
                   ></polygon>
                 </g>
@@ -471,7 +471,7 @@ export const Policywonksvg = ({
                     id='book-binding-border'
                     stroke='#0B0A08'
                     strokeWidth='2.82'
-                    stroke-linejoin='round'
+                    strokeLinejoin='round'
                   ></path>
                 </g>
               </g>
