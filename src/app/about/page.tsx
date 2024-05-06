@@ -60,7 +60,16 @@ const AboutPage = () => {
             UC Davis Manuals (including PPM, PPSM & DA)
           </Link>
         </li>
-        <li>[Coming Soon] Union Contracts</li>
+        <li>
+          <Link href='https://academicaffairs.ucdavis.edu/apm/apm-toc'>
+            UC Davis Academic Personnel Manual (APM)
+          </Link>
+        </li>
+        <li>
+          <Link href='https://ucnet.universityofcalifornia.edu/resources/employment-policies-contracts/bargaining-units/'>
+            UC Davis Bargaining Units and Contracts
+          </Link>
+        </li>
       </ul>
 
       <p>
