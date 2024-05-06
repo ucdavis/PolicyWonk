@@ -35,6 +35,15 @@ const SharePage = async ({ params: { sharedid } }: SharedPageProps) => {
 
   return (
     <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
+      <div className='row'>
+        <div className='col-10'>
+          <h2>Shared Chat</h2>
+        </div>
+        <div className='col-2'>
+          <button>button</button>
+        </div>
+        <hr />
+      </div>
       <MainContent shared={true} />
     </AI>
   );

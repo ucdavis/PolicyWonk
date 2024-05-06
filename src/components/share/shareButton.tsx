@@ -11,7 +11,7 @@ import ShareModal from './shareModal';
 
 interface ShareButtonProps {
   chatId: string;
-  shareId: string;
+  shareId: string | undefined;
   onShare: (chatId: string) => void;
 }
 
@@ -22,9 +22,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const onClick = () => {
-    setIsOpen(true);
+  const handleClick = async () => {
     onShare(chatId);
+    setIsOpen(true);
   };
 
   return (
@@ -32,9 +32,16 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       <AnimatedButton
         displayBeforeClick={<FontAwesomeIcon icon={faPaperPlane} />}
         displayOnClick={<FontAwesomeIcon icon={faPaperPlaneSolid} />}
-        onClick={() => onClick()}
+        onClick={() => setIsOpen(true)}
+        selected={!!shareId}
       />
-      <ShareModal isOpen={isOpen} setIsOpen={setIsOpen} shareId={shareId} />
+      <ShareModal
+        isOpen={isOpen}
+        toggle={setIsOpen}
+        chatId={chatId}
+        shareId={shareId}
+        shareChat={handleClick}
+      />
     </>
   );
 };

@@ -10,6 +10,8 @@ interface AnimatedButtonProps {
   onClick: () => void;
   clearOnHover?: boolean;
   selected?: boolean;
+  className?: string;
+  title?: string;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -19,6 +21,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   disabled = false,
   clearOnHover = false,
   selected = false,
+  className = 'btn-feedback me-1',
+  title,
 }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(selected);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
@@ -68,7 +72,8 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   };
   return (
     <motion.button
-      className='btn-feedback me-1'
+      className={className}
+      title={title}
       onClick={handleClick}
       onMouseEnter={() => handleHover(true)}
       onHoverEnd={() => handleHover(false)}

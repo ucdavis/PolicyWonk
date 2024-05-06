@@ -13,6 +13,8 @@ interface CopyToClipboardButtonProps
 
 const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
   value,
+  onClick, // pull out so we can override
+  ...rest
 }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
@@ -24,6 +26,8 @@ const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
       displayOnClick={<FontAwesomeIcon icon={faCopySolid} />}
       onClick={handleCopy}
       clearOnHover={true}
+      title='Copy to clipboard'
+      {...rest}
     />
   );
 };

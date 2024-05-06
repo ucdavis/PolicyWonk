@@ -57,7 +57,10 @@ export const getChat = async (chatId: string, userId: string) => {
 export const getSharedChat = async (shareId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ shareId: shareId });
+  const chat = await chatsDb.findOne(
+    { shareId: shareId },
+    { projection: { _id: 0, feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
+  );
 
   if (!chat) {
     return null;
@@ -66,7 +69,7 @@ export const getSharedChat = async (shareId: string) => {
   // TODO: skip pulling system message to begin with
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
-  return unwrapChat(chat);
+  return chat;
 };
 
 export const getChatHistory = async (userId: string) => {
@@ -146,8 +149,56 @@ export const shareChat = async (chatId: string) => {
     }
   );
   if (res.modifiedCount === 0) {
-    return;
+    return; // TODO: throw error
   }
 
   return shareId;
+};
+
+export const deleteShare = async (shareId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const res = await chatsDb.updateOne(
+    { shareId: shareId, userId: session.user?.id },
+    {
+      $unset: {
+        shareId: '',
+      },
+    }
+  );
+  if (res.modifiedCount === 0) {
+    return; // TODO: throw error
+  }
+
+  return;
+};
+
+export const regenerateShare = async (shareId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const chat = await chatsDb.findOne({
+    shareId: shareId,
+    userId: session.user?.id,
+  });
+
+  if (!chat) {
+    return;
+  }
+
+  const newShareId = nanoid();
+  const res = await chatsDb.updateOne(
+    { shareId: shareId, userId: session.user?.id },
+    {
+      $set: {
+        shareId: newShareId,
+      },
+    }
+  );
+  if (res.modifiedCount === 0) {
+    return; // TODO: throw error
+  }
+
+  return newShareId;
 };
