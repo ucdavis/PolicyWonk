@@ -8,9 +8,10 @@ import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
 interface ShareActionsProps {
   shareId: string;
+  url: string;
 }
 
-const ShareActions: React.FC<ShareActionsProps> = ({ shareId }) => {
+const ShareActions: React.FC<ShareActionsProps> = ({ shareId, url }) => {
   const handleDeleteShare = () => {
     // delete share logic here
   };
@@ -19,11 +20,9 @@ const ShareActions: React.FC<ShareActionsProps> = ({ shareId }) => {
     // rotate share logic here
   };
 
-  const url = `${window.location.origin}/share/${shareId}`;
-
   return (
     <>
-      <CopyToClipboardButton value={url} id='share-copy-url' />
+      <CopyToClipboardButton value={url} id='share-copy-url' selected={true} />
       <AnimatedButton
         displayBeforeClick={<FontAwesomeIcon icon={faRotateRight} />}
         onClick={handleRotateShare}

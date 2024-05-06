@@ -127,7 +127,7 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
   await logReaction(chatId, reaction);
 };
 
-export const shareChat = async (chatId: string) => {
+export const saveShareChat = async (chatId: string) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
@@ -137,6 +137,7 @@ export const shareChat = async (chatId: string) => {
     return;
   }
   if (chat.shareId) {
+    // TODO: handle regen
     return chat.shareId;
   }
   const shareId = nanoid();

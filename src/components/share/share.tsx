@@ -9,23 +9,13 @@ import AnimatedButton from '../ui/animatedButton';
 
 import ShareModal from './shareModal';
 
-interface ShareButtonProps {
+interface ShareProps {
   chatId: string;
   shareId: string | undefined;
-  onShare: (chatId: string) => void;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({
-  chatId,
-  shareId,
-  onShare,
-}) => {
+const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-
-  const handleClick = async () => {
-    onShare(chatId);
-    setIsOpen(true);
-  };
 
   return (
     <>
@@ -40,10 +30,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         toggle={setIsOpen}
         chatId={chatId}
         shareId={shareId}
-        shareChat={handleClick}
       />
     </>
   );
 };
 
-export default ShareButton;
+export default Share;

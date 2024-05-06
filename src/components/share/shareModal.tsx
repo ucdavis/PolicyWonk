@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useActions } from 'ai/rsc';
 import {
   Button,
   Input,
@@ -17,16 +18,16 @@ interface ShareModalProps {
   toggle: (isOpen: boolean) => void;
   chatId: string;
   shareId: string | undefined;
-  shareChat: () => void;
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
   isOpen,
   toggle,
+  chatId,
   shareId,
-  shareChat,
 }) => {
-  const url = `${window.location.origin}/share/${shareId}`;
+  const { shareChat } = useActions();
+  const url = window ? `${window.location.origin}/share/${shareId}` : '';
   return (
     <Modal isOpen={isOpen} toggle={() => toggle(!isOpen)}>
       <ModalHeader>Share Chat</ModalHeader>
@@ -36,7 +37,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
           will be able to see your name and the entire content of the chat. You
           will be able to delete the shared link or regenerate it at any time.
         </p>
-
         {shareId && (
           <InputGroup>
             <Input
@@ -45,7 +45,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
               readOnly={true}
             />
             <div className='ms-2'>
-              <ShareActions shareId={shareId} />
+              <ShareActions shareId={shareId} url={url} />
             </div>
           </InputGroup>
         )}
@@ -54,8 +54,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         <Button
           color='primary'
           onClick={() => {
-            shareChat();
-            toggle(false);
+            shareChat(chatId);
           }}
         >
           Share

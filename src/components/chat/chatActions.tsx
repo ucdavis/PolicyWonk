@@ -2,13 +2,13 @@
 import React from 'react';
 
 import { useAIState } from 'ai/rsc';
-import { redirect, usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 import { Feedback } from '@/models/chat';
-import { saveReaction, shareChat } from '@/services/historyService';
+import { saveReaction, saveShareChat } from '@/services/historyService';
 
-import ShareButton from '../share/shareButton';
+import Share from '../share/share';
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
 import FeedbackBar from './feedbackBar';
@@ -35,23 +35,11 @@ const ChatActions: React.FC<ChatActionsProps> = ({
     feedback ?? aiFeedback ?? null
   );
   const pathname = usePathname();
-  const router = useRouter();
   const shared = pathname.includes('/share/');
 
   const onFeedback = async (feedback: Feedback) => {
     setFeedbackSent(feedback);
     await saveReaction(chatId, feedback);
-  };
-
-  const onShare = async (chatId: string) => {
-    const newShareId = await shareChat(chatId);
-    if (!newShareId) return; // TODO: handle error sharing
-    navigator.clipboard.writeText(
-      `${window.location.origin}/share/${newShareId}`
-    );
-    return newShareId;
-    // router.push(`/share/${newShareId}`);
-    // TODO: toast?
   };
 
   return (
@@ -67,11 +55,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
                 onFeedback={onFeedback}
                 disableFeedback={feedbackSent !== null}
               />
-              <ShareButton
-                chatId={chatId}
-                shareId={shareId}
-                onShare={onShare}
-              />
+              <Share chatId={chatId} shareId={shareId} />
             </>
           )}
         </div>

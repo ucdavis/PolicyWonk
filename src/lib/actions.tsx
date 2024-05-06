@@ -19,7 +19,7 @@ import {
   openai,
   llmModel,
 } from '@/services/chatService';
-import { saveChat } from '@/services/historyService';
+import { saveChat, saveShareChat } from '@/services/historyService';
 
 async function submitUserMessage(userInput: string) {
   'use server'; // use server is inside of the function because only this server action
@@ -148,10 +148,24 @@ async function submitUserMessage(userInput: string) {
   };
 }
 
+export const shareChat = async (chatId: string) => {
+  'use server';
+
+  const aiState = getMutableAIState<typeof AI>();
+
+  const shareChat = await saveShareChat(chatId);
+  // TODO handle errors?
+  aiState.done({
+    ...aiState.get(),
+    shareId: shareChat,
+  });
+};
+
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<ChatHistory, UIState>({
   actions: {
     submitUserMessage,
+    shareChat,
   },
   initialUIState: [],
   initialAIState: {
