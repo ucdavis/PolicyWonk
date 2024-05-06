@@ -43,7 +43,7 @@ img.chat-portrait {
     max-width: 550px;
     padding-top:8%;
     img {
-        width:75px;
+        width:20%;
     }
 }
 .form-floating {
@@ -147,7 +147,23 @@ img.chat-portrait {
     .btn-link {
         padding-right:8px;
     }
+
 }
+
+.focus-result {
+    background-color:#F7F7F7;
+    border:1px solid $borders;
+    margin-bottom:20px;
+    border-radius: 6px;
+    .btn-link {
+        padding-right:8px;
+        cursor: initial;
+        &:hover {
+            color:$secondary-font;
+        }
+    }
+}
+
 
 // modal 
 .modal-header {
