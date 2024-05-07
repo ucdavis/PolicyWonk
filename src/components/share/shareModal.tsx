@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { faRotateRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useActions } from 'ai/rsc';
 import {
   Button,
@@ -11,13 +13,15 @@ import {
   ModalHeader,
 } from 'reactstrap';
 
-import ShareActions from './shareActions';
+import AnimatedButton from '../ui/animatedButton';
+import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
 interface ShareModalProps {
   isOpen: boolean;
   toggle: (isOpen: boolean) => void;
   chatId: string;
   shareId: string | undefined;
+  url: string;
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({
@@ -25,12 +29,13 @@ const ShareModal: React.FC<ShareModalProps> = ({
   toggle,
   chatId,
   shareId,
+  url,
 }) => {
-  const { shareChat } = useActions();
-  const url = window ? `${window.location.origin}/share/${shareId}` : '';
+  const { shareChat, unshareChat } = useActions();
+
   return (
     <Modal isOpen={isOpen} toggle={() => toggle(!isOpen)}>
-      <ModalHeader>Share Chat</ModalHeader>
+      <ModalHeader toggle={() => toggle(!isOpen)}>Share Chat</ModalHeader>
       <ModalBody>
         <p>
           Sharing this chat will allow anyone with the link to view it. They
@@ -45,22 +50,43 @@ const ShareModal: React.FC<ShareModalProps> = ({
               readOnly={true}
             />
             <div className='ms-2'>
-              <ShareActions shareId={shareId} url={url} />
+              <CopyToClipboardButton
+                value={url}
+                id='share-copy-url'
+                selected={true}
+                animateOnEnter={true}
+              />
+              <AnimatedButton
+                displayBeforeClick={<FontAwesomeIcon icon={faRotateRight} />}
+                onClick={() => {
+                  shareChat(chatId);
+                }}
+                title={'Regenerate share link'}
+              />
+              <AnimatedButton
+                displayBeforeClick={<FontAwesomeIcon icon={faTrash} />}
+                onClick={() => {
+                  unshareChat(chatId);
+                }}
+                title={'Delete share link'}
+              />
             </div>
           </InputGroup>
         )}
       </ModalBody>
       <ModalFooter>
-        <Button
-          color='primary'
-          onClick={() => {
-            shareChat(chatId);
-          }}
-        >
-          Share
-        </Button>
+        {!shareId && (
+          <Button
+            color='primary'
+            onClick={() => {
+              shareChat(chatId);
+            }}
+          >
+            Share
+          </Button>
+        )}
         <Button color='secondary' onClick={() => toggle(false)}>
-          Cancel
+          {!shareId ? 'Cancel' : 'Close'}
         </Button>
       </ModalFooter>
     </Modal>

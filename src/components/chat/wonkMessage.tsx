@@ -21,14 +21,12 @@ export const WonkMessage = ({
   isLoading,
   wonkThoughts,
   feedback,
-  shareId,
 }: {
   chatId: string;
   content: string | StreamableValue<string>;
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
   feedback?: Feedback;
-  shareId?: string;
 }) => {
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
@@ -67,12 +65,7 @@ export const WonkMessage = ({
         </div>
       </div>
       {!isLoading && (
-        <ChatActions
-          chatId={chatId}
-          shareId={shareId}
-          content={text}
-          feedback={feedback}
-        />
+        <ChatActions chatId={chatId} content={text} feedback={feedback} />
       )}
     </div>
   );

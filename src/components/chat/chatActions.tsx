@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 import { Feedback } from '@/models/chat';
-import { saveReaction, saveShareChat } from '@/services/historyService';
+import { saveReaction } from '@/services/historyService';
 
 import Share from '../share/share';
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
@@ -18,14 +18,12 @@ interface ChatActionsProps {
   chatId: string;
   content: string;
   feedback?: Feedback;
-  shareId?: string;
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({
   chatId,
   content,
   feedback,
-  shareId,
 }) => {
   // TODO: default to previously sent feedback
   // TODO: disable feedback when chat is shared
@@ -35,7 +33,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
     feedback ?? aiFeedback ?? null
   );
   const pathname = usePathname();
-  const shared = pathname.includes('/share/');
+  const onSharedPage = pathname.includes('/share/');
 
   const onFeedback = async (feedback: Feedback) => {
     setFeedbackSent(feedback);
@@ -48,19 +46,19 @@ const ChatActions: React.FC<ChatActionsProps> = ({
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
           <CopyToClipboardButton id={chatId} value={content} />
-          {!shared && (
+          {!onSharedPage && (
             <>
               <FeedbackButtons
                 feedback={feedbackSent}
                 onFeedback={onFeedback}
                 disableFeedback={feedbackSent !== null}
               />
-              <Share chatId={chatId} shareId={shareId} />
+              <Share chatId={chatId} shareId={aiState.shareId} />
             </>
           )}
         </div>
       </div>
-      {!shared && feedbackSent && <FeedbackBar />}
+      {!onSharedPage && feedbackSent && <FeedbackBar />}
     </>
   );
 };

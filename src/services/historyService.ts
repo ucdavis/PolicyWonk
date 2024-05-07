@@ -136,10 +136,6 @@ export const saveShareChat = async (chatId: string) => {
   if (!chat) {
     return;
   }
-  if (chat.shareId) {
-    // TODO: handle regen
-    return chat.shareId;
-  }
   const shareId = nanoid();
   const res = await chatsDb.updateOne(
     { id: chatId, userId: session.user?.id },
@@ -156,50 +152,22 @@ export const saveShareChat = async (chatId: string) => {
   return shareId;
 };
 
-export const deleteShare = async (shareId: string) => {
+export const removeShareChat = async (chatId: string) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
   const res = await chatsDb.updateOne(
-    { shareId: shareId, userId: session.user?.id },
+    { chatId: chatId, userId: session.user?.id },
     {
-      $unset: {
-        shareId: '',
+      $set: {
+        shareId: undefined,
       },
     }
   );
   if (res.modifiedCount === 0) {
+    console.log('error???');
     return; // TODO: throw error
   }
 
   return;
-};
-
-export const regenerateShare = async (shareId: string) => {
-  const session = (await auth()) as Session;
-  const chatsDb = await getChatsCollection();
-
-  const chat = await chatsDb.findOne({
-    shareId: shareId,
-    userId: session.user?.id,
-  });
-
-  if (!chat) {
-    return;
-  }
-
-  const newShareId = nanoid();
-  const res = await chatsDb.updateOne(
-    { shareId: shareId, userId: session.user?.id },
-    {
-      $set: {
-        shareId: newShareId,
-      },
-    }
-  );
-  if (res.modifiedCount === 0) {
-    return; // TODO: throw error
-  }
-
-  return newShareId;
 };
