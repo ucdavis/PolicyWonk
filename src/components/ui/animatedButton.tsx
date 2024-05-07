@@ -17,6 +17,7 @@ interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   clearOnHover?: boolean;
   selected?: boolean;
   animateOnEnter?: boolean;
+  animateOnChange?: any;
   className?: string;
   title?: string;
 }
@@ -29,8 +30,10 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   clearOnHover = false,
   selected = false,
   animateOnEnter = false,
+  animateOnChange = false,
   className = 'btn-feedback me-1',
   title,
+  variants,
   ...rest
 }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(
@@ -41,9 +44,17 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   const [scope, animate] = useAnimate();
 
   React.useEffect(() => {
+    if (!animateOnEnter || !animateOnChange) return;
+
     const enterAnimation = async () => {
       const a: Variant = {
-        scale: [null, 1, 1.2, 0.8, 1.2], // hover, tap, selected
+        scale: [
+          null,
+          1.2, // hover
+          0.8, // tap
+          1.2, // hover
+          1.2, // selected
+        ],
         color: [
           null,
           'var(--secondary-color)',
@@ -54,10 +65,36 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       };
       await animate(scope.current, a);
     };
-    if (animateOnEnter) {
-      enterAnimation();
-    }
-  }, [animateOnEnter, scope, animate]);
+
+    enterAnimation();
+  }, [animateOnEnter, scope, animate, animateOnChange]);
+
+  const defaultVariants: Variants = {
+    default: {
+      ...variants?.default,
+    },
+    selected: {
+      scale: 1.2,
+      opacity: 1,
+      color: 'var(--primary-color)',
+      ...variants?.selected,
+    },
+    hover: {
+      scale: 1.2,
+      transition: { type: 'spring', stiffness: 400, damping: 10 },
+      color: 'var(--secondary-color)',
+      ...variants?.hover,
+    },
+    disabledHover: {
+      opacity: 0.5,
+      ...variants?.disabledHover,
+    },
+    tap: {
+      scale: 0.8,
+      color: 'var(--primary-color)',
+      ...variants?.tap,
+    },
+  };
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
@@ -85,27 +122,6 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsTapped(false);
   };
 
-  const defaultVariants: Variants = {
-    selected: {
-      scale: 1.2,
-      opacity: 1,
-      color: 'var(--primary-color)',
-    },
-    hover: {
-      scale: 1.2,
-      transition: { type: 'spring', stiffness: 400, damping: 10 },
-      color: 'var(--secondary-color)',
-    },
-    disabledHover: {
-      opacity: 0.5,
-    },
-    tap: {
-      scale: 0.8,
-      color: 'var(--primary-color)',
-      // transition: { type: 'spring', stiffness: 400, damping: 10, duration: 1 },
-    },
-  };
-
   return (
     <motion.button
       ref={scope}
@@ -122,7 +138,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
       initial={animateOnEnter ? true : false}
-      animate={selected ? 'selected' : {}}
+      animate={selected ? 'selected' : 'default'}
       {...rest}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick

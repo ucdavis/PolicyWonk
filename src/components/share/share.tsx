@@ -16,12 +16,7 @@ interface ShareProps {
 
 const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [url, setUrl] = React.useState<string>('');
 
-  React.useEffect(() => {
-    // since window doesn't exist on the server, initialize this on first mount
-    setUrl(shareId ? `${window.location.origin}/share/${shareId}` : '');
-  }, [shareId]);
   return (
     <>
       <AnimatedButton
@@ -35,7 +30,6 @@ const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
         toggle={setIsOpen}
         chatId={chatId}
         shareId={shareId}
-        url={url}
       />
     </>
   );
