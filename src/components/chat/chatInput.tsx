@@ -5,6 +5,7 @@ import { useUIState, useActions } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
 import { AI, Actions } from '@/lib/actions';
+import gtagEvent from '@/lib/gtag';
 import { focuses } from '@/models/focus';
 
 import ChatBoxForm from './chatBoxForm';
@@ -40,6 +41,12 @@ const ChatInput = () => {
     ]);
 
     const responseMessage = await submitUserMessage(question, focus);
+
+    gtagEvent({
+      event: 'chat',
+      focus: focus.name,
+      subFocus: focus.subFocus,
+    });
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };

@@ -7,6 +7,7 @@ import { useAIState } from 'ai/rsc';
 import { motion } from 'framer-motion';
 
 import { AI } from '@/lib/actions';
+import gtagEvent from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
@@ -35,6 +36,16 @@ const ChatActions: React.FC<ChatActionsProps> = ({
 
   const onFeedback = async (feedback: Feedback) => {
     setFeedbackSent(feedback);
+
+    gtagEvent({
+      event: 'feedback',
+      feedback,
+    });
+
+    gtagEvent({
+      event: `feedback_${feedback}`,
+    });
+
     await saveReaction(chatId, feedback);
   };
 
