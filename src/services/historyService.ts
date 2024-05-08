@@ -157,15 +157,14 @@ export const removeShareChat = async (chatId: string) => {
   const chatsDb = await getChatsCollection();
 
   const res = await chatsDb.updateOne(
-    { chatId: chatId, userId: session.user?.id },
+    { id: chatId, userId: session.user?.id },
     {
-      $set: {
-        shareId: undefined,
+      $unset: {
+        shareId: '',
       },
     }
   );
   if (res.modifiedCount === 0) {
-    console.log('error???');
     return; // TODO: throw error
   }
 

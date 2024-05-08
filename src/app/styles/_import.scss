@@ -4,12 +4,6 @@
 $primary-color: #FFCC33;
 $secondary-color: #003A5D;
 
-// TODO: is there a better way to be able to use these variables inside react? used in chatActions.tsx
-:root {
-  --primary-color: #{$primary-color};
-  --secondary-color: #{$secondary-color};
-}
-
 $theme-colors: (
   primary: $primary-color,
   secondary: $secondary-color,
@@ -40,4 +34,11 @@ $error-color: $danger;
     max-width: 700px;
     margin: 1.75rem auto;
   }
+}
+
+// CSS variables that are accessible within components, to use in framer motion animations
+:root {
+  --primary-color: #{$primary-color};
+  --secondary-color: #{$secondary-color};
+  --tertiary-color: #{$tertiary-font};
 }

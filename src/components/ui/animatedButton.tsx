@@ -17,7 +17,8 @@ interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   clearOnHover?: boolean;
   selected?: boolean;
   animateOnEnter?: boolean;
-  animateOnChange?: any;
+  animateOnChange?: boolean | string;
+  clearOnChange?: boolean | string;
   className?: string;
   title?: string;
 }
@@ -28,6 +29,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   onClick,
   disabled = false,
   clearOnHover = false,
+  clearOnChange = false,
   selected = false,
   animateOnEnter = false,
   animateOnChange = false,
@@ -39,35 +41,44 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   const [hasClicked, setHasClicked] = React.useState<boolean>(
     selected || animateOnEnter
   );
+  React.useEffect(() => {
+    setHasClicked(!!clearOnChange);
+  }, [clearOnChange]);
+
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
   const [scope, animate] = useAnimate();
 
   React.useEffect(() => {
-    if (!animateOnEnter || !animateOnChange) return;
+    if (!animateOnEnter) {
+      return;
+    }
 
     const enterAnimation = async () => {
       const a: Variant = {
+        transition: {
+          delay: 1,
+        },
         scale: [
           null,
           1.2, // hover
           0.8, // tap
           1.2, // hover
-          1.2, // selected
+          1, // default
         ],
         color: [
           null,
           'var(--secondary-color)',
           'var(--primary-color)',
           'var(--secondary-color)',
-          'var(--primary-color)',
+          'var(--tertiary-color)',
         ],
       };
       await animate(scope.current, a);
     };
 
     enterAnimation();
-  }, [animateOnEnter, scope, animate, animateOnChange]);
+  }, [animateOnEnter, scope, animate]);
 
   const defaultVariants: Variants = {
     default: {
@@ -97,7 +108,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   };
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     setHasClicked(true);
     onClick(e);
   };
@@ -113,7 +126,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   };
 
   const handleTap = (tapped: boolean) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     setIsTapped(tapped);
   };
 

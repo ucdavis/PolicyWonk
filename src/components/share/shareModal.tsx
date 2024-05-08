@@ -36,7 +36,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   React.useEffect(() => {
     // we only care about the url when the modal is open and we have a shareId
-    if (!shareId || !isOpen) return;
+    if (!shareId || !isOpen) {
+      return;
+    }
 
     // since window doesn't exist on the server, initialize this on first mount + on shareId change
     const newUrl = shareId ? `${window.location.origin}/share/${shareId}` : '';
@@ -92,26 +94,31 @@ const ShareModal: React.FC<ShareModalProps> = ({
                   <CopyToClipboardButton
                     value={url}
                     id='share-copy-url'
-                    selected={true}
                     animateOnEnter={true}
                     animateOnChange={true}
+                    clearOnChange={true}
                   />
                   <AnimatedButton
                     displayBeforeClick={
-                      <FontAwesomeIcon icon={faRotateRight} />
+                      <motion.div // rotate icon when we start regenerating link
+                        variants={{
+                          rotate: {
+                            rotate: !url ? [0, 360] : 360,
+                            transition: {
+                              duration: 1,
+                              repeat: 0,
+                              ease: 'linear',
+                            },
+                          },
+                        }}
+                        initial={false}
+                        animate='rotate'
+                      >
+                        <FontAwesomeIcon icon={faRotateRight} />
+                      </motion.div>
                     }
                     onClick={handleShare}
                     title={'Regenerate share link'}
-                    variants={{
-                      default: {
-                        rotate: !url ? [0, 360] : 360,
-                        transition: {
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: 'linear',
-                        },
-                      },
-                    }}
                   />
                   <AnimatedButton
                     displayBeforeClick={<FontAwesomeIcon icon={faTrash} />}

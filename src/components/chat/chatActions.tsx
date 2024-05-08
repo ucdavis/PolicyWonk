@@ -25,8 +25,6 @@ const ChatActions: React.FC<ChatActionsProps> = ({
   content,
   feedback,
 }) => {
-  // TODO: default to previously sent feedback
-  // TODO: disable feedback when chat is shared
   const [aiState] = useAIState<typeof AI>();
   const aiFeedback = aiState.reaction;
   const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
@@ -36,6 +34,9 @@ const ChatActions: React.FC<ChatActionsProps> = ({
   const onSharedPage = pathname.includes('/share/');
 
   const onFeedback = async (feedback: Feedback) => {
+    if (onSharedPage) {
+      return;
+    }
     setFeedbackSent(feedback);
     await saveReaction(chatId, feedback);
   };
