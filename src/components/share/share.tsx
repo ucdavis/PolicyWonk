@@ -5,7 +5,7 @@ import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperPlane as faPaperPlaneSolid } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import AnimatedButton from '../ui/animatedButton';
+import AnimatedButton from '../ui/aButton';
 
 import ShareModal from './shareModal';
 
@@ -17,7 +17,6 @@ interface ShareProps {
 const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  console.log('chatId', chatId, ' shareId', shareId);
   return (
     <>
       <AnimatedButton
@@ -25,7 +24,7 @@ const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
         displayOnClick={<FontAwesomeIcon icon={faPaperPlaneSolid} />}
         onClick={() => setIsOpen(true)}
         selected={shareId !== undefined}
-        clearOnChange={shareId === undefined && !isOpen ? undefined : ''}
+        // clearOnChange={shareId === undefined && !isOpen ? undefined : ''}
         title={'Share Chat'}
       />
       <ShareModal

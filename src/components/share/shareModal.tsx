@@ -15,7 +15,7 @@ import {
   ModalHeader,
 } from 'reactstrap';
 
-import AnimatedButton from '../ui/animatedButton';
+import AnimatedButton from '../ui/aButton';
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
 interface ShareModalProps {
@@ -94,9 +94,9 @@ const ShareModal: React.FC<ShareModalProps> = ({
                   <CopyToClipboardButton
                     value={url}
                     id='share-copy-url'
-                    animateOnEnter={true}
+                    copyOnEnter={true}
                     animateOnChange={true}
-                    clearOnChange={true}
+                    // clearOnChange={true}
                   />
                   <AnimatedButton
                     displayBeforeClick={
