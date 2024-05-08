@@ -9,13 +9,23 @@ export interface GTagFeedback {
   feedback: Feedback;
 }
 
+export interface GTagFeedbackPositive {
+  event: 'feedback_thumbs_up';
+}
+
+export interface GTagFeedbackNegative {
+  event: 'feedback_thumbs_down';
+}
+
 export interface GTagChat {
   event: 'chat';
   focus: string;
   subFocus?: string;
 }
 
-const gtagEvent = (event: GTagChat | GTagFeedback) => {
+const gtagEvent = (
+  event: GTagChat | GTagFeedback | GTagFeedbackPositive | GTagFeedbackNegative
+) => {
   sendGTMEvent(event);
 };
 

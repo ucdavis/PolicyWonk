@@ -42,6 +42,10 @@ const ChatActions: React.FC<ChatActionsProps> = ({
       feedback,
     });
 
+    gtagEvent({
+      event: `feedback_${feedback}`,
+    });
+
     await saveReaction(chatId, feedback);
   };
 
