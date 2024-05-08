@@ -22,6 +22,7 @@
     "react-hooks/exhaustive-deps": "warn",
     "react/prop-types": "off",
     "react/no-unescaped-entities": "off",
+    "curly": ["error", "all"],
     "import/order": [
       "error",
       {
