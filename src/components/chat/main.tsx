@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useAIState, useUIState } from 'ai/rsc';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
@@ -42,7 +43,13 @@ const MainContent = () => {
       {!messagesUI.length ? (
         <>
           <WonkTop>
-            <ChatHeader />
+            <ChatHeader>
+              Meet Policywonk, your personal guide to navigating all the ins and
+              outs of our UC policies. Whether you're a newcomer or a seasoned
+              member of our community, this savvy assistant is here to ensure
+              you're always informed and compliant.{' '}
+              <Link href='/about'>Learn more</Link>
+            </ChatHeader>
           </WonkTop>
           <WonkBottom>
             <ChatInput />
