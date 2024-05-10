@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
 import { Focus, FocusName } from '@/models/focus';
 
@@ -67,19 +67,18 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     } else {
       return (
         <div className='container py-2'>
-          <div className='row'>
+          <div className='row g-3'>
             {options.map((option) => (
-              <div className='col' key={option.name}>
-                <div
-                  className={`card h-100 focus-card ${option.name === focus.name ? 'selected-focus' : ''}`}
+              <div className='col-12 col-md-6 focus-option' key={option.name}>
+                <Button
+                  className={`btn btn-wonk ${option.name === focus.name ? 'selected-focus' : ''}`}
                   style={{ cursor: 'pointer' }}
+                  color='none'
                   onClick={() => onFocusSelection(option)}
                 >
-                  <div className='card-body'>
-                    <h5 className='card-title'>{option.name}</h5>
-                    <p className='card-text'>{option.description}</p>
-                  </div>
-                </div>
+                  <h4>{option.name}</h4>
+                  <p>{option.description}</p>
+                </Button>
               </div>
             ))}
           </div>
@@ -90,7 +89,9 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
 
   return (
     <Modal isOpen={open} toggle={onClose} centered>
-      <ModalHeader toggle={onClose}>Focus Options</ModalHeader>
+      <ModalHeader toggle={onClose}>
+        Choose a focus for your question
+      </ModalHeader>
       <ModalBody>{renderBody()}</ModalBody>
     </Modal>
   );

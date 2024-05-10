@@ -40,7 +40,7 @@
   border-bottom: 2px solid #fff;
   width: 100%;
   margin-bottom: 1%;
-
+  transition: all ease-in 0.15s;
   @include breakpoint(md) {
     width: 48%;
 
@@ -90,23 +90,4 @@
     }
     
 }
-}
-
-.focus-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-  }
-}
-
-.selected-focus {
-  border: 2px solid $secondary-color;
-  box-shadow: 0 0 10px $secondary-color;
-}
-
-.focus-bar {
-  cursor: pointer;
 }
