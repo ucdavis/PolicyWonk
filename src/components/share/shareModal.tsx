@@ -50,7 +50,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   const handleShare = () => {
     setUrl('');
-    shareChat(chatId);
+    shareChat(chatId); // changes the aiState in the parent and triggers the useEffect above
   };
 
   return (
