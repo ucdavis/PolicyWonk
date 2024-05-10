@@ -26,9 +26,6 @@ const SharePage = async ({ params: { sharedid } }: SharedPageProps) => {
 
   const chat: ChatHistory | null = await getSharedChat(sharedid);
 
-  // if getChat returns null
-  // will happen if the user is at an /chat/{id} that is not /chat/new
-  // but the chat does not exist
   if (!chat) {
     return notFound();
   }

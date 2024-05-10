@@ -14,7 +14,7 @@ export const UserMessage = ({
       </div>
       <div className='col-10 col-md-11'>
         <p className='chat-name'>
-          <strong>{user ?? `You: `}</strong>
+          <strong>{!!user ? user : `You: `}</strong>
         </p>
         {children}
       </div>

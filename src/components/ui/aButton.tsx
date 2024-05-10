@@ -9,11 +9,6 @@ import {
 } from 'framer-motion';
 
 export const defaultVariants: Variants = {
-  default: {
-    scale: 1,
-    opacity: 1,
-    color: 'var(--tertiary-color)',
-  },
   selected: {
     scale: 1.2,
     opacity: 1,
@@ -106,7 +101,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
       initial={initial}
-      animate={selected ? 'selected' : 'default'}
+      animate={selected ? 'selected' : ''}
       {...rest}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick

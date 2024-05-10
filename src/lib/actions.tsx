@@ -215,7 +215,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
         message.role === 'user' ? (
           <>
             <FocusBanner focus={aiState.focus} />
-            <UserMessage>{message.content}</UserMessage>
+            <UserMessage user={aiState.user}>{message.content}</UserMessage>
           </>
         ) : (
           <WonkMessage
