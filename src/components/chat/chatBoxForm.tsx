@@ -1,24 +1,14 @@
 'use client';
 import React from 'react';
 
-import { nanoid } from 'ai';
-import { useActions, useUIState } from 'ai/rsc';
+interface ChatBoxFormProps {
+  onQuestionSubmit: (question: string) => void;
+}
 
-import { type AI } from '@/lib/actions';
-
-import { UserMessage } from './userMessage';
-
-interface ChatBoxFormProps {}
-
-const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
+const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
   const [input, setInput] = React.useState('');
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
-
-  // we aren't displaying messages, but we do need to set new ones
-  const [_, setMessagesUI] = useUIState<typeof AI>();
-  // use a server action to submit
-  const { submitUserMessage } = useActions();
 
   // focus on the input when the component mounts
   React.useEffect(() => {
@@ -39,34 +29,10 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({}) => {
         setInput('');
         if (!value) return;
 
-        // Optimistically add user message UI
-        setMessagesUI((currentMessages) => [
-          ...currentMessages,
-          {
-            id: nanoid(),
-            display: <UserMessage>{value}</UserMessage>,
-          },
-        ]);
-
-        // Submit and get response message
-        const responseMessage = await submitUserMessage(value);
-        setMessagesUI((currentMessages) => [
-          ...currentMessages,
-          responseMessage,
-        ]);
+        onQuestionSubmit(value);
       }}
     >
       <div className='input-group'>
-        {/* <button
-          className='input-group-text btn btn-secondary'
-          onClick={(e) => {
-            e.preventDefault();
-            // onNewMessage();
-          }}
-          aria-label='Start a new conversation'
-        >
-          +
-        </button> */}
         <div className='form-floating'>
           <textarea
             id='messageTextArea'

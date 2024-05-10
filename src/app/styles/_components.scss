@@ -7,81 +7,106 @@
   text-transform: uppercase;
   transition: all 0.15s ease;
   font-family: $sans-bold;
+
   svg {
     margin-right: 8px;
   }
 }
+
 .btn-feedback {
+  border: none;
+  background-color: rgba(255, 255, 255, 0.000001);
+  color: $tertiary-font;
+  font-size: 1.4rem;
+}
+.btn-link {
   border:none;
-  background-color: rgba(255,255,255,0.99999);
-  color:$tertiary-font;
-  font-size:1.4rem;
-  // moved this to chatActions.tsx
-  // &:hover {
-  //   color:$secondary-color;
-  // }
+  box-shadow:none;
+  color:$secondary-font;
+  &:hover {
+    color: $secondary-color;
+    background-color: rgba(255,255,255,0.000001);
+  }
+  &:active {
+    color: $secondary-color !important;
+    background-color: rgba(255,255,255,0.000001) !important;
+  }
+  &:focus-visible {
+    color: $secondary-color !important;
+    background-color: rgba(255,255,255,0.000001) !important;
+  }
 }
 .btn-wonk {
-   border-bottom:2px solid #fff;
-   width:100%;
-   margin-bottom:1%;
-   @include breakpoint(md) {
-     width:48%;
-     &:nth-child(odd) {
-      margin-right:4%;
-     }
+  border-bottom: 2px solid #fff;
+  width: 100%;
+  margin-bottom: 1%;
+
+  @include breakpoint(md) {
+    width: 48%;
+
+    &:nth-child(odd) {
+      margin-right: 4%;
+    }
   }
+
   &:hover {
-    border-bottom:2px solid $primary-color;
+    border-bottom: 2px solid $primary-color;
   }
 }
+
 .color-secondary-font {
-  color:$secondary-font;
+  color: $secondary-font;
 }
-.btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
-  border-color:$borders;
+
+.btn-check:checked+.btn,
+:not(.btn-check)+.btn:active,
+.btn:first-child:active,
+.btn.active,
+.btn.show {
+  border-color: $borders;
 }
+
 :focus-visible {
-    outline: 2px solid $primary-color;
+  outline: 2px solid $primary-color;
 }
 
 
 .wonk-portrait-loading {
-#antennae-keyframe {
-	animation: antennae 0.5s infinite;
-}
-@keyframes antennae {
-  0%, 100% {
-    transform: translate(32%,0%);
+  #antennae-keyframe {
+    animation: antennae 0.5s infinite;
   }
-  23% {
-    transform: translate(32%,3%);
-  }
+
   
-}
 #eye-keyframe {
   animation: eyepan 1s infinite;
 }
-@keyframes eyepan {
+
+  @keyframes eyepan {
   0%,100% {
-    transform: translate(7.5%,3.9%);
+    transform: translate(28%,28%);
   }
     50% {
-      transform: translate(5%,3.9%);
+      transform: translate(34%,28%);
     }
     
 }
-#eyelid {
-  animation: eyelid 1s infinite;
-  transform-origin:30px 50px;
 }
- @keyframes eyelid {
-  0%,100% {
-    transform: rotate(0deg);
+
+.focus-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
   }
-   50% {
-     transform: rotate(-15deg);
-   }
-    
 }
+
+.selected-focus {
+  border: 2px solid $secondary-color;
+  box-shadow: 0 0 10px $secondary-color;
+}
+
+.focus-bar {
+  cursor: pointer;
 }

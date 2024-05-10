@@ -10,9 +10,8 @@ import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
-import ChatBoxForm from './chatBoxForm';
 import ChatHeader from './chatHeader';
-import DefaultQuestions from './defaultQuestions';
+import ChatInput from './chatInput';
 
 const MainContent = ({ shared }: { shared?: boolean }) => {
   const router = useRouter();
@@ -46,8 +45,7 @@ const MainContent = ({ shared }: { shared?: boolean }) => {
             <ChatHeader />
           </WonkTop>
           <WonkBottom>
-            <DefaultQuestions />
-            <ChatBoxForm />
+            <ChatInput />
             <Disclaimer />
           </WonkBottom>
         </>

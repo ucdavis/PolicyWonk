@@ -43,12 +43,12 @@ img.chat-portrait {
     max-width: 550px;
     padding-top:8%;
     img {
-        width:75px;
+        width:20%;
     }
 }
 .form-floating {
     .wonk-input {
-        height:100px;
+        height:133px;
     }
 }
 .login-card {
@@ -82,7 +82,7 @@ img.chat-portrait {
             }
             a {
                 font-size:0.8rem;
-                padding:6px 10px;
+                padding:6px 10px 6px 24px;
                 display:block;
                 color:$primary-font;
                 text-decoration: none;
@@ -131,4 +131,47 @@ img.chat-portrait {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #fefefef6;
     border-radius: 5px;
+}
+// focus-bar
+
+.focus-bar {
+    background-color:$primary-bg;
+    border:1px solid $borders;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    margin-bottom:-20px;
+    transition: background-color 100ms linear;
+    &:hover {
+        background-color: #FFE599;
+    }
+    .btn-link {
+        padding-right:8px;
+    }
+
+}
+
+.focus-result {
+    background-color:#F7F7F7;
+    border:1px solid $borders;
+    margin-bottom:20px;
+    border-radius: 6px;
+    .btn-link {
+        padding-right:8px;
+        cursor: initial;
+        &:hover {
+            color:$secondary-font;
+        }
+    }
+}
+
+
+// modal 
+.modal-header {
+    padding:16px 16px 10px 16px !important;
+    background-color:$primary-bg;
+    h5.modal-title {
+        font-size:1.1rem;
+        color:$primary-font;
+        
+    }
 }
