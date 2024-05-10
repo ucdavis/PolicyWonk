@@ -27,7 +27,9 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
 
         const value = input.trim();
         setInput('');
-        if (!value) return;
+        if (!value) {
+          return;
+        }
 
         onQuestionSubmit(value);
       }}
