@@ -150,6 +150,41 @@ img.chat-portrait {
 
 }
 
+.focus-option {
+  .btn-wonk {
+    width:100%;
+    text-align: left;
+    height:111px;
+    font-family: $sans-reg;
+    text-transform: none;
+    border-bottom:4px solid #fff;
+    display: flex;
+    flex-direction: column;
+    h4 {
+        font-family: $sans-bold;
+        color:$primary-font;
+        text-transform: uppercase;
+        font-size:1.1rem;
+    }
+    &:hover {
+        border-bottom:4px solid $primary-color;
+    }
+    &.selected-focus {
+        background-color: $primary-bg;
+        border-bottom:4px solid $primary-bg;
+        &:hover {
+            background-color: $primary-bg !important;
+            border-bottom:4px solid $primary-color;
+        }
+        }
+  }
+
+}
+
+
+.focus-bar {
+  cursor: pointer;
+}
 .focus-result {
     background-color:#F7F7F7;
     border:1px solid $borders;

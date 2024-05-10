@@ -41,6 +41,9 @@ h5 {
   font-size: 1.2rem;
   font-family: $sans-reg;
   margin-bottom: 0px;
+  &.modal-title {
+    text-transform: none;
+  }
 }
 p {
   color: $primary-font;
