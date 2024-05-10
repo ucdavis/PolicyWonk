@@ -7,7 +7,6 @@ import AnimatedButton, { AnimatedButtonProps } from './aButton';
 
 interface AnimatedButtonEnhancedProps extends AnimatedButtonProps {
   animateOnEnter?: boolean;
-  showClickedOnEnter?: boolean;
   animateOnChange?: boolean | string;
   trackedValue?: string | boolean;
   clearOnChange?: boolean | string;
@@ -15,13 +14,11 @@ interface AnimatedButtonEnhancedProps extends AnimatedButtonProps {
 
 const AnimatedButtonEnhanced: React.FC<AnimatedButtonEnhancedProps> = ({
   animateOnEnter = false,
-  showClickedOnEnter = false,
   animateOnChange = false,
   trackedValue,
   clearOnChange = false,
   ...rest
 }) => {
-  const [showClicked, setShowClicked] = React.useState(showClickedOnEnter);
   const [scope, animate] = useAnimate();
 
   const a: Variant = React.useMemo(() => {
@@ -70,14 +67,7 @@ const AnimatedButtonEnhanced: React.FC<AnimatedButtonEnhancedProps> = ({
     animation();
   }, [animateOnChange, trackedValue, scope, animate, a]);
 
-  return (
-    <AnimatedButton
-      {...rest}
-      scope={scope}
-      initial={animateOnEnter}
-      parentHasClicked={showClicked}
-    />
-  );
+  return <AnimatedButton {...rest} scope={scope} initial={animateOnEnter} />;
 };
 
 export default AnimatedButtonEnhanced;

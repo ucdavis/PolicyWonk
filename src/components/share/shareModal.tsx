@@ -96,7 +96,6 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     id='share-copy-url'
                     copyOnEnter={true}
                     animateOnChange={true}
-                    // clearOnChange={true}
                   />
                   <AnimatedButton
                     displayBeforeClick={

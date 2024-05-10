@@ -10,7 +10,7 @@ import AnimatedButtonEnhanced from './aButtonEnhanced';
 interface CopyToClipboardButtonProps extends HTMLMotionProps<'button'> {
   value: string;
   selected?: boolean;
-  copyOnEnter?: boolean;
+  copyOnEnter?: boolean; // immediately copies to the clipboard
   animateOnChange?: boolean;
   clearOnChange?: boolean;
 }
@@ -29,18 +29,17 @@ const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
 
   return (
     <AnimatedButtonEnhanced
-      displayBeforeClick={<FontAwesomeIcon icon={faCopy} />}
+      displayBeforeClick={
+        <FontAwesomeIcon icon={copyOnEnter && !!value ? faCopySolid : faCopy} />
+      }
       displayOnClick={<FontAwesomeIcon icon={faCopySolid} />}
       onClick={handleCopy}
-      clearOnHover={true}
+      clearOnHover={!copyOnEnter} // keep solid icon since we immediately copied
       title='Copy to clipboard'
       selected={selected}
       animateOnEnter={copyOnEnter}
-      showClickedOnEnter={copyOnEnter}
       animateOnChange={animateOnChange}
       trackedValue={value}
-      // animateOnChange={animateOnChange && !!value ? value : false} // only animate change if there is a value
-      // clearOnChange={clearOnChange && !!value ? value : false} // only track changes if there is a value (i.e. )
       {...rest}
     />
   );

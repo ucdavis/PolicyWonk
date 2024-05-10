@@ -17,14 +17,15 @@ interface ShareProps {
 const Share: React.FC<ShareProps> = ({ chatId, shareId }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
+  const isShared = shareId !== undefined;
   return (
     <>
       <AnimatedButton
-        displayBeforeClick={<FontAwesomeIcon icon={faPaperPlane} />}
-        displayOnClick={<FontAwesomeIcon icon={faPaperPlaneSolid} />}
+        displayBeforeClick={
+          <FontAwesomeIcon icon={isShared ? faPaperPlaneSolid : faPaperPlane} />
+        }
         onClick={() => setIsOpen(true)}
-        selected={shareId !== undefined}
-        // clearOnChange={shareId === undefined && !isOpen ? undefined : ''}
+        selected={isShared}
         title={'Share Chat'}
       />
       <ShareModal

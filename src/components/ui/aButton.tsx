@@ -34,16 +34,13 @@ export const defaultVariants: Variants = {
 };
 
 export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
-  disabled?: boolean;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   displayBeforeClick: React.ReactNode;
   displayOnClick?: React.ReactNode;
   clearOnHover?: boolean;
   selected?: boolean;
-  className?: string;
-  title?: string;
+  startClicked?: boolean;
   scope?: AnimationScope<any>;
-  parentHasClicked?: boolean;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -57,12 +54,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   className = 'btn-feedback me-1',
   title,
   scope,
-  parentHasClicked = false,
   ...rest
 }) => {
-  const [hasClicked, setHasClicked] = React.useState<boolean>(
-    selected || parentHasClicked
-  );
+  const [hasClicked, setHasClicked] = React.useState<boolean>(selected);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
 
