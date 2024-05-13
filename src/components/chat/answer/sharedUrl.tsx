@@ -6,10 +6,10 @@ import { InputGroup, Input } from 'reactstrap';
 
 import { useShareUrl } from '@/lib/hooks/useShareUrl';
 
-import CopyToClipboardButton from '../ui/copyToClipboardButton';
+import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 
-import { ShareModalLoadingStates } from './share';
 import { RegenerateShareButton, UnshareButton } from './shareButtons';
+import { ShareModalLoadingStates } from './shareModal';
 
 interface SharedUrlProps {
   shareId: string | undefined;

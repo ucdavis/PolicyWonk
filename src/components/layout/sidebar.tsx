@@ -2,7 +2,7 @@ import React from 'react';
 
 import Link from 'next/link';
 
-import ChatHistory from '../chat/chatHistory';
+import ChatHistory from '../chatHistory/chatHistory';
 
 import Footer from './footer';
 
