@@ -1,8 +1,6 @@
 import React from 'react';
 
-import Image from 'next/image';
-
-import Logo from '/public/media/policy-wonk.svg';
+import Logo from '../layout/logo';
 
 const ChatHeader: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -12,11 +10,7 @@ const ChatHeader: React.FC<{ children: React.ReactNode }> = ({
   return (
     <>
       <div className='home-message'>
-        <Image
-          className='img-fluid policy-png mb-4'
-          src={Logo}
-          alt='Aggie Gold Robot cartoon'
-        />
+        <Logo />
         <p className='lede'>{children}</p>
       </div>
     </>

@@ -7,16 +7,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useActions, useAIState } from 'ai/rsc';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
+import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
-
-import AnimatedButton from '../ui/animatedButton';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
 
 export type ShareModalLoadingStates = '' | 'share' | 'regen' | 'unshare';
 
-const Share: React.FC = () => {
+const ShareModal: React.FC = () => {
   const { shareChat, unshareChat } = useActions();
   const [aiState] = useAIState<typeof AI>();
   const { id: chatId, shareId } = aiState;
@@ -87,4 +86,4 @@ const Share: React.FC = () => {
   );
 };
 
-export default Share;
+export default ShareModal;

@@ -5,9 +5,9 @@ import { nanoid } from 'nanoid';
 import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
+import NotAuthorized from '@/app/not-authorized';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import NotAuthorized from '@/components/layout/not-authorized';
 import { AI, getUIStateFromAIState } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
 import { focuses } from '@/models/focus';

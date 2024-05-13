@@ -11,8 +11,8 @@ import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
+import ChatInput from './ask/chatInput';
 import ChatHeader from './chatHeader';
-import ChatInput from './chatInput';
 
 const MainContent = () => {
   const router = useRouter();

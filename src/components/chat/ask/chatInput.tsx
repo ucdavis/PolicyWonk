@@ -8,11 +8,12 @@ import { AI, Actions } from '@/lib/actions';
 import gtagEvent from '@/lib/gtag';
 import { focuses } from '@/models/focus';
 
+import FocusBanner from '../answer/focusBanner';
+import { UserMessage } from '../userMessage';
+
 import ChatBoxForm from './chatBoxForm';
 import DefaultQuestions from './defaultQuestions';
-import FocusBanner from './focusBanner';
 import FocusBar from './focusBar';
-import { UserMessage } from './userMessage';
 
 // Container for all of components that can be used to send messages to the chat
 // Will send the actual message to the chatAI system

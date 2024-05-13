@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
-import AnimatedButton from '../ui/animatedButton';
+import AnimatedButton from '@/components/ui/animatedButton';
 
-import { ShareModalLoadingStates } from './share';
+import { ShareModalLoadingStates } from './shareModal';
 
 interface ShareButtonProps {
   handleShare: () => void;

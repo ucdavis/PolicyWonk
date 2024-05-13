@@ -4,16 +4,15 @@ import React from 'react';
 import { useAIState } from 'ai/rsc';
 import { usePathname } from 'next/navigation';
 
+import FeedbackBar from '@/components/chat/answer/feedbackBar';
+import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
 import gtagEvent from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
-import Share from '../share/share';
-import CopyToClipboardButton from '../ui/copyToClipboardButton';
-
-import FeedbackBar from './feedbackBar';
 import FeedbackButtons from './feedbackButtons';
+import ShareModal from './shareModal';
 
 interface ChatActionsProps {
   chatId: string;
@@ -65,7 +64,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
                 onFeedback={onFeedback}
                 disableFeedback={feedbackSent !== null}
               />
-              <Share />
+              <ShareModal />
             </>
           )}
         </div>
