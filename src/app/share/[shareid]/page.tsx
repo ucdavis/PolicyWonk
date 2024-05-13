@@ -34,7 +34,7 @@ const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
     <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
       <h5>Shared Chat</h5>
       <hr />
-      <MainContent shared={true} />
+      <MainContent />
     </AI>
   );
 };

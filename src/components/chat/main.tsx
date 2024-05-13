@@ -13,7 +13,7 @@ import WonkTop from '../layout/wonkTop';
 import ChatHeader from './chatHeader';
 import ChatInput from './chatInput';
 
-const MainContent = ({ shared }: { shared?: boolean }) => {
+const MainContent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [aiState] = useAIState<typeof AI>();
