@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm';
 import {
   useStreamableText,
   useTempStreamableText,
-} from '@/lib/hooks/use-streamable-text';
+} from '@/lib/hooks/useStreamableText';
 import { Feedback } from '@/models/chat';
 
 import ChatActions from './chatActions';

@@ -1,6 +1,7 @@
 'use server';
 import { Message } from 'ai';
 import { MongoClient, WithId } from 'mongodb';
+import { nanoid } from 'nanoid';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
@@ -56,6 +57,24 @@ export const getChat = async (chatId: string, userId: string) => {
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
   return unwrapChat(chat);
+};
+
+export const getSharedChat = async (shareId: string) => {
+  const chatsDb = await getChatsCollection();
+
+  const chat = await chatsDb.findOne(
+    { shareId: shareId },
+    { projection: { _id: 0, feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
+  );
+
+  if (!chat) {
+    return null;
+  }
+
+  // TODO: skip pulling system message to begin with
+  chat.messages = chat.messages.filter((m) => m.role !== 'system');
+
+  return chat;
 };
 
 export const getChatHistory = async (userId: string) => {
@@ -116,4 +135,48 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
   }
   // also log to elastic for now
   await logReaction(chatId, reaction);
+};
+
+export const saveShareChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
+
+  if (!chat) {
+    return;
+  }
+  const shareId = nanoid();
+  const res = await chatsDb.updateOne(
+    { id: chatId, userId: session.user?.id },
+    {
+      $set: {
+        shareId,
+      },
+    }
+  );
+  if (res.modifiedCount === 0) {
+    return; // TODO: throw error
+  }
+
+  return shareId;
+};
+
+export const removeShareChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const res = await chatsDb.updateOne(
+    { id: chatId, userId: session.user?.id },
+    {
+      $unset: {
+        shareId: '',
+      },
+    }
+  );
+  if (res.modifiedCount === 0) {
+    return; // TODO: throw error
+  }
+
+  return;
 };

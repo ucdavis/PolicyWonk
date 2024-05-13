@@ -1,36 +1,48 @@
 'use client';
 import React from 'react';
 
-import { Variants, motion } from 'framer-motion';
+import { AnimationScope, HTMLMotionProps, motion } from 'framer-motion';
 
-interface AnimatedButtonProps {
-  disabled?: boolean;
+import { defaultVariants } from '@/models/animations';
+
+export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
   displayBeforeClick: React.ReactNode;
   displayOnClick?: React.ReactNode;
-  onClick: () => void;
   clearOnHover?: boolean;
   selected?: boolean;
+  startClicked?: boolean;
+  scope?: AnimationScope<any>;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   displayBeforeClick,
   displayOnClick,
   onClick,
-  disabled = false,
-  clearOnHover = false,
+  initial = false,
+  disabled,
+  clearOnHover,
   selected = false,
+  className = 'btn-feedback me-1',
+  title,
+  ...deferred
 }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(selected);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
   const [isHovered, setIsHovered] = React.useState<boolean>(false);
 
-  const handleClick = () => {
-    if (disabled) return;
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled) {
+      return;
+    }
     setHasClicked(true);
-    onClick();
+    onClick(e);
   };
 
-  const handleHover = (hovered: boolean) => {
+  const handleHover = (
+    e: React.MouseEvent<HTMLButtonElement> | MouseEvent,
+    hovered: boolean
+  ) => {
     if (clearOnHover && hovered) {
       clear();
     }
@@ -38,7 +50,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   };
 
   const handleTap = (tapped: boolean) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     setIsTapped(tapped);
   };
 
@@ -47,40 +61,23 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsTapped(false);
   };
 
-  const defaultVariants: Variants = {
-    selected: {
-      scale: 1.2,
-      opacity: 1,
-      color: 'var(--primary-color)',
-    },
-    hover: {
-      scale: 1.2,
-      transition: { type: 'spring', stiffness: 400, damping: 10 },
-      color: 'var(--secondary-color)',
-    },
-    disabledHover: {
-      opacity: 0.5,
-    },
-    tap: {
-      scale: 0.8,
-      color: 'var(--primary-color)',
-    },
-  };
   return (
     <motion.button
-      className='btn-feedback me-1'
+      className={className}
+      title={title}
       onClick={handleClick}
-      onMouseEnter={() => handleHover(true)}
-      onHoverEnd={() => handleHover(false)}
+      onMouseEnter={(e) => handleHover(e, true)}
+      onHoverEnd={(event) => handleHover(event, false)}
       variants={defaultVariants}
       whileHover={isHovered ? 'hover' : 'disabledHover'}
-      whileTap={isTapped ? 'tap' : {}}
+      whileTap={isTapped ? 'tap' : 'none'}
       disabled={disabled}
       onTapStart={() => handleTap(true)}
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
-      initial={false}
-      animate={selected ? 'selected' : {}}
+      initial={initial}
+      animate={selected ? 'selected' : 'none'}
+      {...deferred}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick
         ? displayOnClick

@@ -21,7 +21,11 @@ import {
   openai,
   llmModel,
 } from '@/services/chatService';
-import { saveChat } from '@/services/historyService';
+import {
+  removeShareChat,
+  saveChat,
+  saveShareChat,
+} from '@/services/historyService';
 
 async function submitUserMessage(userInput: string, focus: Focus) {
   'use server'; // use server is inside of the function because only this server action
@@ -152,10 +156,38 @@ async function submitUserMessage(userInput: string, focus: Focus) {
   };
 }
 
+export const shareChat = async (chatId: string) => {
+  'use server';
+
+  const aiState = getMutableAIState<typeof AI>();
+
+  const shareChat = await saveShareChat(chatId);
+  // TODO handle errors?
+  aiState.done({
+    ...aiState.get(),
+    shareId: shareChat,
+  });
+};
+
+export const unshareChat = async (chatId: string) => {
+  'use server';
+
+  const aiState = getMutableAIState<typeof AI>();
+
+  await removeShareChat(chatId);
+  // TODO handle errors?
+  aiState.done({
+    ...aiState.get(),
+    shareId: undefined,
+  });
+};
+
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<ChatHistory, UIState>({
   actions: {
     submitUserMessage,
+    shareChat,
+    unshareChat,
   },
   initialUIState: [],
   initialAIState: {
@@ -183,7 +215,7 @@ export const getUIStateFromAIState = (aiState: ChatHistory) => {
         message.role === 'user' ? (
           <>
             <FocusBanner focus={aiState.focus} />
-            <UserMessage>{message.content}</UserMessage>
+            <UserMessage user={aiState.user}>{message.content}</UserMessage>
           </>
         ) : (
           <WonkMessage

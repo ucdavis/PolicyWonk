@@ -12,6 +12,7 @@ export type ChatHistory = {
   userId: string;
   reaction?: Feedback;
   timestamp: number;
+  shareId?: string;
 };
 
 export type Feedback = 'thumbs_up' | 'thumbs_down';

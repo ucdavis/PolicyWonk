@@ -132,13 +132,7 @@ export const Policywonksvg = ({
           <stop stopColor='#FFC519' offset='100%'></stop>
         </linearGradient>
       </defs>
-      <g
-        id='Main'
-        stroke='none'
-        strokeWidth='1'
-        fill='none'
-        fill-rule='evenodd'
-      >
+      <g id='Main' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='policy-wonk-cow' transform='translate(-9, -18)'>
           <g transform='translate(12.0206, 20.6507)'>
             <g id='ears' transform='translate(0, 42.8681)'>
@@ -332,7 +326,7 @@ export const Policywonksvg = ({
                 id='head-outer'
                 stroke='#0B0A08'
                 strokeWidth='5'
-                stroke-linecap='round'
+                strokeLinecap='round'
                 strokeLinejoin='round'
               ></path>
             </g>

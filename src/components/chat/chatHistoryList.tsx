@@ -14,7 +14,9 @@ interface ChatHistoryList {
 // separate out rendering the chat list so we can animate it as a client component
 const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
   const pathname = usePathname();
-  if (!chats) return null;
+  if (!chats) {
+    return null;
+  }
 
   const isActive = (chatId: string) => {
     return pathname.includes(chatId);

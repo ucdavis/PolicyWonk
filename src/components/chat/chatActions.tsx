@@ -1,18 +1,18 @@
 'use client';
 import React from 'react';
 
-import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState } from 'ai/rsc';
-import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 import { AI } from '@/lib/actions';
 import gtagEvent from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
+import Share from '../share/share';
 import CopyToClipboardButton from '../ui/copyToClipboardButton';
 
+import FeedbackBar from './feedbackBar';
 import FeedbackButtons from './feedbackButtons';
 
 interface ChatActionsProps {
@@ -26,15 +26,18 @@ const ChatActions: React.FC<ChatActionsProps> = ({
   content,
   feedback,
 }) => {
-  // TODO: default to previously sent feedback
-  // TODO: disable feedback when chat is shared
   const [aiState] = useAIState<typeof AI>();
   const aiFeedback = aiState.reaction;
   const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
     feedback ?? aiFeedback ?? null
   );
+  const pathname = usePathname();
+  const onSharedPage = pathname.includes('/share/');
 
   const onFeedback = async (feedback: Feedback) => {
+    if (onSharedPage) {
+      return;
+    }
     setFeedbackSent(feedback);
 
     gtagEvent({
@@ -55,34 +58,19 @@ const ChatActions: React.FC<ChatActionsProps> = ({
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
           <CopyToClipboardButton id={chatId} value={content} />
-          <FeedbackButtons
-            feedback={feedbackSent}
-            onFeedback={onFeedback}
-            disableFeedback={feedbackSent !== null}
-          />
+          {!onSharedPage && (
+            <>
+              <FeedbackButtons
+                feedback={feedbackSent}
+                onFeedback={onFeedback}
+                disableFeedback={feedbackSent !== null}
+              />
+              <Share />
+            </>
+          )}
         </div>
       </div>
-      {feedbackSent && (
-        <motion.div
-          className='row mb-3'
-          initial={false}
-          animate={{ opacity: 1 }}
-        >
-          <div className='col-1'>{/* empty */}</div>
-          <div className='col-11'>
-            <div
-              className='alert alert-success d-flex align-items-center'
-              role='alert'
-            >
-              <div className='me-2'>
-                <FontAwesomeIcon icon={faClipboardCheck} />
-              </div>
-              <div>Thank you for your feedback!</div>
-            </div>
-            <div></div>
-          </div>
-        </motion.div>
-      )}
+      {!onSharedPage && feedbackSent && <FeedbackBar />}
     </>
   );
 };
