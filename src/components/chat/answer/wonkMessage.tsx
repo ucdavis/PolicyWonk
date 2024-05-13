@@ -9,9 +9,9 @@ import {
   useStreamableText,
   useTempStreamableText,
 } from '@/lib/hooks/useStreamableText';
+import { MemoizedReactMarkdown } from '@/lib/markdown';
 import { Feedback } from '@/models/chat';
 
-import { MemoizedReactMarkdown } from '../../../lib/markdown';
 import { WonkPortrait } from '../rolePortrait';
 
 import ChatActions from './chatActions';

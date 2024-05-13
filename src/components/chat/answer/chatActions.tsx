@@ -5,12 +5,11 @@ import { useAIState } from 'ai/rsc';
 import { usePathname } from 'next/navigation';
 
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
+import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
 import gtagEvent from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
-
-import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';

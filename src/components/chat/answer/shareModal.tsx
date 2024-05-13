@@ -7,9 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useActions, useAIState } from 'ai/rsc';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
+import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
-
-import AnimatedButton from '../../ui/animatedButton';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';

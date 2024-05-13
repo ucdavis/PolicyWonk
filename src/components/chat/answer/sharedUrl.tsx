@@ -4,9 +4,8 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { InputGroup, Input } from 'reactstrap';
 
+import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { useShareUrl } from '@/lib/hooks/useShareUrl';
-
-import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 
 import { RegenerateShareButton, UnshareButton } from './shareButtons';
 import { ShareModalLoadingStates } from './shareModal';

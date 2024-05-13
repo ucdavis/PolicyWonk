@@ -7,9 +7,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import AnimatedButton from '@/components/ui/animatedButton';
 import { Feedback } from '@/models/chat';
-
-import AnimatedButton from '../../ui/animatedButton';
 
 interface FeedbackButtonsProps {
   feedback: Feedback | null;
