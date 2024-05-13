@@ -1,12 +1,9 @@
 'use client';
 import React from 'react';
 
-import {
-  AnimationScope,
-  HTMLMotionProps,
-  Variants,
-  motion,
-} from 'framer-motion';
+import { AnimationScope, HTMLMotionProps, motion } from 'framer-motion';
+
+import { defaultVariants } from '@/models/animations';
 
 export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -62,26 +59,6 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   const clear = () => {
     setHasClicked(false);
     setIsTapped(false);
-  };
-
-  const defaultVariants: Variants = {
-    selected: {
-      scale: 1.2,
-      opacity: 1,
-      color: 'var(--primary-color)',
-    },
-    hover: {
-      scale: 1.2,
-      transition: { type: 'spring', stiffness: 400, damping: 10 },
-      color: 'var(--secondary-color)',
-    },
-    disabledHover: {
-      opacity: 0.5,
-    },
-    tap: {
-      scale: 0.8,
-      color: 'var(--primary-color)',
-    },
   };
 
   return (
