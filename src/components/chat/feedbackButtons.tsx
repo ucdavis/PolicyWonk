@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Feedback } from '@/models/chat';
 
-import AnimatedButton from '../ui/aButton';
+import AnimatedButton from '../ui/animatedButton';
 
 interface FeedbackButtonsProps {
   feedback: Feedback | null;

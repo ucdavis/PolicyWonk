@@ -65,7 +65,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
                 onFeedback={onFeedback}
                 disableFeedback={feedbackSent !== null}
               />
-              <Share chatId={chatId} shareId={aiState.shareId} />
+              <Share />
             </>
           )}
         </div>

@@ -8,26 +8,6 @@ import {
   motion,
 } from 'framer-motion';
 
-export const defaultVariants: Variants = {
-  selected: {
-    scale: 1.2,
-    opacity: 1,
-    color: 'var(--primary-color)',
-  },
-  hover: {
-    scale: 1.2,
-    transition: { type: 'spring', stiffness: 400, damping: 10 },
-    color: 'var(--secondary-color)',
-  },
-  disabledHover: {
-    opacity: 0.5,
-  },
-  tap: {
-    scale: 0.8,
-    color: 'var(--primary-color)',
-  },
-};
-
 export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   displayBeforeClick: React.ReactNode;
@@ -48,8 +28,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   selected = false,
   className = 'btn-feedback me-1',
   title,
-  scope,
-  ...rest
+  ...deferred
 }) => {
   const [hasClicked, setHasClicked] = React.useState<boolean>(selected);
   const [isTapped, setIsTapped] = React.useState<boolean>(false);
@@ -85,9 +64,28 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     setIsTapped(false);
   };
 
+  const defaultVariants: Variants = {
+    selected: {
+      scale: 1.2,
+      opacity: 1,
+      color: 'var(--primary-color)',
+    },
+    hover: {
+      scale: 1.2,
+      transition: { type: 'spring', stiffness: 400, damping: 10 },
+      color: 'var(--secondary-color)',
+    },
+    disabledHover: {
+      opacity: 0.5,
+    },
+    tap: {
+      scale: 0.8,
+      color: 'var(--primary-color)',
+    },
+  };
+
   return (
     <motion.button
-      ref={scope}
       className={className}
       title={title}
       onClick={handleClick}
@@ -95,14 +93,14 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onHoverEnd={(event) => handleHover(event, false)}
       variants={defaultVariants}
       whileHover={isHovered ? 'hover' : 'disabledHover'}
-      whileTap={isTapped ? 'tap' : {}}
+      whileTap={isTapped ? 'tap' : 'none'}
       disabled={disabled}
       onTapStart={() => handleTap(true)}
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
       initial={initial}
-      animate={selected ? 'selected' : ''}
-      {...rest}
+      animate={selected ? 'selected' : 'none'}
+      {...deferred}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick
         ? displayOnClick
