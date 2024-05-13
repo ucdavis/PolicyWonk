@@ -12,11 +12,11 @@ import { getSharedChat } from '@/services/historyService';
 
 type SharedPageProps = {
   params: {
-    sharedid: string;
+    shareid: string;
   };
 };
 // TODO: loading animation when chatId changes
-const SharePage = async ({ params: { sharedid } }: SharedPageProps) => {
+const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
   const session = (await auth()) as Session;
 
   // middleware should take care of this, but if it doesn't then redirect to login
@@ -24,7 +24,7 @@ const SharePage = async ({ params: { sharedid } }: SharedPageProps) => {
     redirect('/auth/login');
   }
 
-  const chat: ChatHistory | null = await getSharedChat(sharedid);
+  const chat: ChatHistory | null = await getSharedChat(shareid);
 
   if (!chat) {
     return notFound();
