@@ -9,8 +9,8 @@ import {
 import { nanoid } from 'nanoid';
 
 import FocusBanner from '@/components/chat/answer/focusBanner';
-import { UserMessage } from '@/components/chat/userMessage';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
+import { UserMessage } from '@/components/chat/userMessage';
 import { ChatHistory, UIState } from '@/models/chat';
 import { Focus, focuses } from '@/models/focus';
 import {
