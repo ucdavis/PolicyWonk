@@ -11,6 +11,7 @@ import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
+import { AnimatedWonkPortrait } from './animatedRolePortrait';
 import ChatInput from './ask/chatInput';
 import ChatHeader from './chatHeader';
 
@@ -52,6 +53,7 @@ const MainContent = () => {
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
+            <AnimatedWonkPortrait />
             <ChatInput />
             <Disclaimer />
           </WonkBottom>
