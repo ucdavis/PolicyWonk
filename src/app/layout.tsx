@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head>
-        <GoogleTagManager gtmId='G-M1SEC6TR1S' />
+        <GoogleTagManager gtmId='GTM-NNCH6SSL' />
 
         <link rel='image_src' href='/media/thumbnail.jpg' />
         <link
