@@ -8,6 +8,7 @@ import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
 import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { getFullQuestionAndAnswer } from '@/lib/util';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
@@ -16,15 +17,11 @@ import ShareModal from './shareModal';
 
 interface ChatActionsProps {
   chatId: string;
-  content: string;
   feedback?: Feedback;
 }
 
-const ChatActions: React.FC<ChatActionsProps> = ({
-  chatId,
-  content,
-  feedback,
-}) => {
+const ChatActions: React.FC<ChatActionsProps> = ({ chatId, feedback }) => {
+  // we only show actions when streaming is done, so it's safe to use AI state
   const [aiState] = useAIState<typeof AI>();
   const aiFeedback = aiState.reaction;
   const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
@@ -49,7 +46,10 @@ const ChatActions: React.FC<ChatActionsProps> = ({
       <div className='row mb-3'>
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
-          <CopyToClipboardButton id='gtag-copy-chat' value={content} />
+          <CopyToClipboardButton
+            id='gtag-copy-chat'
+            value={getFullQuestionAndAnswer(aiState)}
+          />
           {!onSharedPage && (
             <>
               <FeedbackButtons
