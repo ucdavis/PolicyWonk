@@ -67,9 +67,7 @@ export const WonkMessage = ({
           )}
         </div>
       </div>
-      {!isLoading && (
-        <ChatActions chatId={chatId} content={text} feedback={feedback} />
-      )}
+      {!isLoading && <ChatActions chatId={chatId} feedback={feedback} />}
     </div>
   );
 };
