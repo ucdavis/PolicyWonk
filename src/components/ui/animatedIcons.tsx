@@ -1,15 +1,17 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 
 import { IconVariantOptions, IconVariants } from '@/models/animations';
 
 interface AnimatedIconProps {
+  icon: IconProp;
   isAnimating: boolean;
-  children: React.ReactNode;
 }
 
 export const AnimatedBounceIcon: React.FC<AnimatedIconProps> = ({
+  icon,
   isAnimating,
-  children,
 }) => {
   return (
     <motion.div
@@ -19,14 +21,14 @@ export const AnimatedBounceIcon: React.FC<AnimatedIconProps> = ({
         isAnimating ? IconVariantOptions.bounce : IconVariantOptions.bounceStop
       }
     >
-      {children}
+      <FontAwesomeIcon icon={icon} />
     </motion.div>
   );
 };
 
 export const AnimatedRotateIcon: React.FC<AnimatedIconProps> = ({
+  icon,
   isAnimating,
-  children,
 }) => {
   return (
     <motion.div
@@ -36,7 +38,7 @@ export const AnimatedRotateIcon: React.FC<AnimatedIconProps> = ({
         isAnimating ? IconVariantOptions.rotate : IconVariantOptions.rotateStop
       }
     >
-      {children}
+      <FontAwesomeIcon icon={icon} />
     </motion.div>
   );
 };

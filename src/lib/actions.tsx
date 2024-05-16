@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid';
 import FocusBanner from '@/components/chat/answer/focusBanner';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
 import { UserMessage } from '@/components/chat/userMessage';
-import { ChatHistory, UIState } from '@/models/chat';
+import { ChatHistory, Feedback, UIState } from '@/models/chat';
 import { Focus, focuses } from '@/models/focus';
 import {
   getEmbeddings,
@@ -24,6 +24,7 @@ import {
 import {
   removeShareChat,
   saveChat,
+  saveReaction,
   saveShareChat,
 } from '@/services/historyService';
 
@@ -182,12 +183,25 @@ export const unshareChat = async (chatId: string) => {
   });
 };
 
+export const submitFeedback = async (chatId: string, feedback: Feedback) => {
+  'use server';
+
+  const aiState = getMutableAIState<typeof AI>();
+
+  await saveReaction(chatId, feedback);
+  aiState.done({
+    ...aiState.get(),
+    reaction: feedback,
+  });
+};
+
 // AI is a provider you wrap your application with so you can access AI and UI state in your components.
 export const AI = createAI<ChatHistory, UIState>({
   actions: {
     submitUserMessage,
     shareChat,
     unshareChat,
+    submitFeedback,
   },
   initialUIState: [],
   initialAIState: {

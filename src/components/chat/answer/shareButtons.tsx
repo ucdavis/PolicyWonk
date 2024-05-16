@@ -2,11 +2,13 @@
 import React from 'react';
 
 import { faRotateRight, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
+import {
+  AnimatedBounceIcon,
+  AnimatedRotateIcon,
+} from '@/components/ui/animatedIcons';
 
 import { ShareModalLoadingStates } from './shareModal';
 
@@ -44,25 +46,7 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={
-        <motion.div
-          variants={{
-            bounce: {
-              y: [0, -10, 0],
-              scale: 1,
-              transition: {
-                duration: 0.75,
-                repeat: Infinity,
-                stiffness: 90,
-                damping: 5,
-              },
-            },
-            none: { y: 0, transition: { repeat: 0 } },
-          }}
-          animate={isLoading ? 'bounce' : 'none'}
-          initial={false}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </motion.div>
+        <AnimatedBounceIcon isAnimating={isLoading} icon={faTrash} />
       }
       onClick={handleUnshare}
       title={'Delete share link'}
@@ -84,23 +68,7 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={
-        <motion.div // rotate icon when we start regenerating link
-          variants={{
-            rotate: {
-              rotate: [0, 360],
-              transition: {
-                duration: 1,
-                repeat: Infinity,
-                ease: 'linear',
-              },
-            },
-            none: { rotate: 360, transition: { repeat: 0, duration: 1 } },
-          }}
-          initial={false}
-          animate={isLoading ? 'rotate' : 'none'}
-        >
-          <FontAwesomeIcon icon={faRotateRight} />
-        </motion.div>
+        <AnimatedRotateIcon isAnimating={isLoading} icon={faRotateRight} />
       }
       onClick={handleShare}
       title={'Regenerate share link'}

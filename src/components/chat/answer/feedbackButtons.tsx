@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
@@ -6,35 +7,71 @@ import {
   faThumbsDown as faThumbsDownSolid,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAIState, useActions } from 'ai/rsc';
 
 import AnimatedButton from '@/components/ui/animatedButton';
+import { AnimatedBounceIcon } from '@/components/ui/animatedIcons';
+import { AI } from '@/lib/actions';
+import gtagEvent from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 
+export type FeedbackLoadingStates = '' | Feedback;
+
 interface FeedbackButtonsProps {
-  feedback: Feedback | null;
-  onFeedback: (feedback: Feedback) => void;
-  disableFeedback: boolean;
+  onSharedPage: boolean;
 }
 
-const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
-  feedback,
-  onFeedback,
-  disableFeedback,
-}) => {
+const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({ onSharedPage }) => {
+  const [aiState] = useAIState<typeof AI>();
+  const { id: chatId, reaction: feedback } = aiState;
+  const { submitFeedback } = useActions();
+
+  const [loadingState, setLoadingState] =
+    React.useState<FeedbackLoadingStates>('');
+
+  const onFeedback = async (feedback: Feedback) => {
+    if (onSharedPage) {
+      return;
+    }
+    setLoadingState(feedback);
+    gtagEvent({
+      event: 'feedback',
+      feedback,
+    });
+
+    gtagEvent({
+      event: `feedback_${feedback}`,
+    });
+
+    await submitFeedback(chatId, feedback);
+
+    setLoadingState('');
+  };
+
   return (
     <>
       <AnimatedButton
-        displayBeforeClick={<FontAwesomeIcon icon={faThumbsUp} />}
+        displayBeforeClick={
+          <AnimatedBounceIcon
+            isAnimating={loadingState === 'thumbs_up'}
+            icon={faThumbsUp}
+          />
+        }
         displayOnClick={<FontAwesomeIcon icon={faThumbsUpSolid} />}
         onClick={() => onFeedback('thumbs_up')}
-        disabled={disableFeedback}
+        disabled={loadingState !== ''}
         selected={feedback === 'thumbs_up'}
       />
       <AnimatedButton
-        displayBeforeClick={<FontAwesomeIcon icon={faThumbsDown} />}
+        displayBeforeClick={
+          <AnimatedBounceIcon
+            isAnimating={loadingState === 'thumbs_down'}
+            icon={faThumbsDown}
+          />
+        }
         displayOnClick={<FontAwesomeIcon icon={faThumbsDownSolid} />}
         onClick={() => onFeedback('thumbs_down')}
-        disabled={disableFeedback}
+        disabled={loadingState !== ''}
         selected={feedback === 'thumbs_down'}
       />
     </>

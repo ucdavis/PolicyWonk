@@ -131,7 +131,7 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
     }
   );
   if (res.modifiedCount === 0) {
-    return;
+    return; // TODO: throw error
   }
   // also log to elastic for now
   await logReaction(chatId, reaction);
