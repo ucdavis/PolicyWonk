@@ -18,6 +18,7 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
     <div className='d-grid d-md-block'>
       {questions.map((question, index) => (
         <button
+          id={`gtag-default-question-${question}`}
           key={index}
           className='btn btn-wonk text-start color-secondary-font'
           onClick={() => onQuestionSubmit(question)}

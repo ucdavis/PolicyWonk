@@ -9,6 +9,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
+import { gtagEvent, GTagEvents } from '@/lib/gtag';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
@@ -26,6 +27,7 @@ const ShareModal: React.FC = () => {
 
   const handleShare = async () => {
     setIsLoading('share');
+    gtagEvent({ event: GTagEvents.SHARE, chat: aiState });
     await shareChat(chatId);
     setIsLoading('');
   };

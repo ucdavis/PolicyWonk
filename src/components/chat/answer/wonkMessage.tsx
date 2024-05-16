@@ -39,7 +39,7 @@ export const WonkMessage = ({
       <div className='col-3 col-md-1 mb-2'>
         <WonkPortrait isLoading={isLoading} />
       </div>
-      <div className='col-10 col-md-11'>
+      <div className='col-10 col-md-11 gtag'>
         <p className='chat-name'>
           <strong>Policy Wonk</strong>
         </p>

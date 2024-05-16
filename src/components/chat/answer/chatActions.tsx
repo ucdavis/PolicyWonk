@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
-import gtagEvent from '@/lib/gtag';
+import { gtagEvent, GTagEvents } from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 import { saveReaction } from '@/services/historyService';
 
@@ -39,14 +39,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
     }
     setFeedbackSent(feedback);
 
-    gtagEvent({
-      event: 'feedback',
-      feedback,
-    });
-
-    gtagEvent({
-      event: `feedback_${feedback}`,
-    });
+    gtagEvent({ event: GTagEvents.FEEDBACK, chat: aiState });
 
     await saveReaction(chatId, feedback);
   };
@@ -56,7 +49,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
       <div className='row mb-3'>
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
-          <CopyToClipboardButton id={chatId} value={content} />
+          <CopyToClipboardButton id='gtag-copy-chat' value={content} />
           {!onSharedPage && (
             <>
               <FeedbackButtons
