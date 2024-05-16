@@ -9,6 +9,8 @@ export enum GTagEvents {
   // custom events (manually triggered using gtagEvent()
   FEEDBACK = 'feedback',
   SHARE = 'share',
+  UNSHARE = 'unshare',
+  REGEN_SHARE = 'regen_share',
   NEW_CHAT = 'new_chat',
 
   /*

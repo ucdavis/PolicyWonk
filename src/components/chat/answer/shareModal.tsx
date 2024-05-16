@@ -34,12 +34,14 @@ const ShareModal: React.FC = () => {
 
   const handleRegenShare = async () => {
     setIsLoading('regen');
+    gtagEvent({ event: GTagEvents.REGEN_SHARE, chat: aiState });
     await shareChat(chatId);
     setIsLoading('');
   };
 
   const handleUnshare = async () => {
     setIsLoading('unshare');
+    gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
     await unshareChat(chatId);
     setIsLoading('');
   };
