@@ -12,7 +12,7 @@ import { useAIState, useActions } from 'ai/rsc';
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AnimatedBounceIcon } from '@/components/ui/animatedIcons';
 import { AI } from '@/lib/actions';
-import gtagEvent from '@/lib/gtag';
+import { GTagEvents, gtagEvent } from '@/lib/gtag';
 import { Feedback } from '@/models/chat';
 
 export type FeedbackLoadingStates = '' | Feedback;
@@ -35,12 +35,8 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({ onSharedPage }) => {
     }
     setLoadingState(feedback);
     gtagEvent({
-      event: 'feedback',
-      feedback,
-    });
-
-    gtagEvent({
-      event: `feedback_${feedback}`,
+      event: GTagEvents.FEEDBACK,
+      chat: aiState,
     });
 
     await submitFeedback(chatId, feedback);

@@ -57,7 +57,7 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
               readOnly={true}
             />
             <div className='ms-2'>
-              <CopyToClipboardButton value={url} id='share-copy-url' />
+              <CopyToClipboardButton value={url} id='gtag-copy-share-url' />
               <RegenerateShareButton
                 handleShare={handleRegenShare}
                 loadingState={isLoading}

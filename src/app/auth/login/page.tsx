@@ -1,8 +1,7 @@
 import React from 'react';
 
-import Logo from '/public/media/policy-wonk.svg';
-
 import { signIn } from '@/auth';
+import Logo from '@/components/layout/logo';
 
 const Login: React.FC = () => {
   return (
