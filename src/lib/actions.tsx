@@ -28,7 +28,7 @@ import {
   saveShareChat,
 } from '@/services/historyService';
 
-// to add an anction, add it to this type and also in createAI at the bottom of this file
+// to add an action, add it to this type and also in createAI at the bottom of this file
 // the functions need to be above the createAI call or you get the very helpful error "action is not a function"
 export type WonkActions<T = any, R = any> = {
   submitUserMessage: (userInput: string, focus: Focus) => Promise<UIStateNode>;
