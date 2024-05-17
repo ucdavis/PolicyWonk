@@ -2,13 +2,12 @@
 import React from 'react';
 
 import { faRotateRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
-import {
-  AnimatedBounceIcon,
-  AnimatedRotateIcon,
-} from '@/components/ui/animatedIcons';
+import { IconVariants, IconVariantOptions } from '@/models/animations';
 
 import { ShareModalLoadingStates } from './shareModal';
 
@@ -46,7 +45,17 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={
-        <AnimatedBounceIcon isAnimating={isLoading} icon={faTrash} />
+        <motion.div
+          variants={IconVariants}
+          initial={false}
+          animate={
+            isLoading
+              ? IconVariantOptions.bounce
+              : IconVariantOptions.bounceStop
+          }
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </motion.div>
       }
       onClick={handleUnshare}
       title={'Delete share link'}
@@ -68,7 +77,17 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={
-        <AnimatedRotateIcon isAnimating={isLoading} icon={faRotateRight} />
+        <motion.div
+          variants={IconVariants}
+          initial={false}
+          animate={
+            isLoading
+              ? IconVariantOptions.rotate
+              : IconVariantOptions.rotateStop
+          }
+        >
+          <FontAwesomeIcon icon={faRotateRight} />
+        </motion.div>
       }
       onClick={handleShare}
       title={'Regenerate share link'}
