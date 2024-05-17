@@ -38,7 +38,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
           )}
         </div>
       </div>
-      {!onSharedPage && <FeedbackBar />}
+      {!onSharedPage && !!aiState.reaction && <FeedbackBar />}
     </>
   );
 };
