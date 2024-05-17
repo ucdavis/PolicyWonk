@@ -24,7 +24,7 @@ interface FeedbackButtonsProps {
 const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({ onSharedPage }) => {
   const [aiState] = useAIState<typeof AI>();
   const { id: chatId, reaction: feedback } = aiState;
-  const { submitFeedback } = useActions();
+  const { submitFeedback } = useActions<typeof AI>();
 
   const [loadingState, setLoadingState] =
     React.useState<FeedbackLoadingStates>('');

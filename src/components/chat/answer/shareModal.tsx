@@ -17,7 +17,7 @@ import SharedUrl from './sharedUrl';
 export type ShareModalLoadingStates = '' | 'share' | 'regen' | 'unshare';
 
 const ShareModal: React.FC = () => {
-  const { shareChat, unshareChat } = useActions();
+  const { shareChat, unshareChat } = useActions<typeof AI>();
   const [aiState] = useAIState<typeof AI>();
   const { id: chatId, shareId } = aiState;
 

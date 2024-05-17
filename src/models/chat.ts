@@ -17,10 +17,12 @@ export type ChatHistory = {
 
 export type Feedback = 'thumbs_up' | 'thumbs_down';
 
-export type UIState = {
+export type UIStateNode = {
   id: string;
   display: React.ReactNode;
-}[];
+};
+
+export type UIState = UIStateNode[];
 
 export type PolicyIndex = {
   text: string;
