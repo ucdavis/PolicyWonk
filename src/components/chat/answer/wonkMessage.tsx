@@ -85,11 +85,25 @@ const cleanBadCitationList = (str: string) => {
   return str.replace(/- \[\^([^\]]+)\]/g, '[^$1]');
 };
 
+const reformatFootnotes = (markdown: string) => {
+  // Regular expression to match a footnote pattern [^doc2]: with optional leading whitespaces or newlines
+  const footnotePattern = /(?:\s*\n)?(\[\^doc[0-9]+\]:\s*\[.*?\])/g;
+
+  // Replace function to ensure each footnote starts on a new line
+  const formattedMarkdown = markdown.replace(
+    footnotePattern,
+    (match) => `\n${match.trim()}`
+  );
+
+  // Trim any leading or trailing whitespace (to clear any excessive newlines at the start)
+  return formattedMarkdown.trim();
+};
+
 // fix up common markdown issues
 const sanitizeMarkdown = (content: string) => {
-  // if we see a footnote like `[^APM 015]` we need strip any non-word characters and spaces
   content = cleanBracketedExpression(content);
   content = cleanBadCitationList(content);
+  content = reformatFootnotes(content);
 
   return content;
 };
