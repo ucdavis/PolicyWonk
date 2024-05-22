@@ -20,7 +20,8 @@ export type Focus = {
 export const focuses: Focus[] = [
   {
     name: 'core',
-    description: 'UCOP & Ellucid Policies (ppm, ppsm, delegations)',
+    description:
+      'UC & UCD Admin (PPM), Personnel (PPSM), Delegations of Authority (DA) Policies',
   },
   {
     name: 'apm',
