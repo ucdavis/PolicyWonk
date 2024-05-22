@@ -34,12 +34,12 @@ interface GTagEventVariables {
   sub_focus?: string;
 }
 
-interface gtagEventProps {
+interface GTagEventProps {
   event: GTagEvents;
   chat?: ChatHistory;
 }
 /* takes in the name of the event and the full AI state, and then extracts the variables we have set up in GTM */
-export const gtagEvent = ({ event, chat }: gtagEventProps): void => {
+export const gtagEvent = ({ event, chat }: GTagEventProps): void => {
   const eventObj: GTagEventVariables = {
     event,
     focus: chat?.focus?.name,

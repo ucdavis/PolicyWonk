@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
 
-import { AnimationScope, HTMLMotionProps, motion } from 'framer-motion';
+import { HTMLMotionProps, motion } from 'framer-motion';
 
-import { defaultVariants } from '@/models/animations';
+import { ButtonVariantOptions, ButtonVariants } from '@/models/animations';
 
 export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -12,7 +12,7 @@ export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
   clearOnHover?: boolean;
   selected?: boolean;
   startClicked?: boolean;
-  scope?: AnimationScope<any>;
+  isLoading?: boolean;
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -21,9 +21,10 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   onClick,
   initial = false,
   disabled,
+  isLoading = false,
   clearOnHover,
   selected = false,
-  className = 'btn-feedback me-1',
+  className,
   title,
   ...deferred
 }) => {
@@ -63,20 +64,24 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   return (
     <motion.button
-      className={className}
+      className={className ?? 'btn-feedback me-1'}
       title={title}
       onClick={handleClick}
       onMouseEnter={(e) => handleHover(e, true)}
       onHoverEnd={(event) => handleHover(event, false)}
-      variants={defaultVariants}
-      whileHover={isHovered ? 'hover' : 'disabledHover'}
-      whileTap={isTapped ? 'tap' : 'none'}
+      variants={ButtonVariants}
+      whileHover={
+        isHovered
+          ? ButtonVariantOptions.hover
+          : ButtonVariantOptions.disabledHover
+      }
+      whileTap={isTapped ? ButtonVariantOptions.tap : 'none'}
       disabled={disabled}
       onTapStart={() => handleTap(true)}
       onTap={() => handleTap(false)}
       onTapCancel={() => handleTap(false)}
       initial={initial}
-      animate={selected ? 'selected' : 'none'}
+      animate={selected ? ButtonVariantOptions.selected : 'none'}
       {...deferred}
     >
       {(isTapped || hasClicked || selected) && !!displayOnClick

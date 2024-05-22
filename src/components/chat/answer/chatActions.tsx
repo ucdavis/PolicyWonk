@@ -7,39 +7,19 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
 import { getFullQuestionAndAnswer } from '@/lib/util';
-import { Feedback } from '@/models/chat';
-import { saveReaction } from '@/services/historyService';
 
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';
 
 interface ChatActionsProps {
   chatId: string;
-  feedback?: Feedback;
 }
 
-const ChatActions: React.FC<ChatActionsProps> = ({ chatId, feedback }) => {
-  // we only show actions when streaming is done, so it's safe to use AI state
-  const [aiState] = useAIState<typeof AI>();
-  const aiFeedback = aiState.reaction;
-  const [feedbackSent, setFeedbackSent] = React.useState<null | Feedback>(
-    feedback ?? aiFeedback ?? null
-  );
+const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
   const pathname = usePathname();
   const onSharedPage = pathname.includes('/share/');
-
-  const onFeedback = async (feedback: Feedback) => {
-    if (onSharedPage) {
-      return;
-    }
-    setFeedbackSent(feedback);
-
-    gtagEvent({ event: GTagEvents.FEEDBACK, chat: aiState });
-
-    await saveReaction(chatId, feedback);
-  };
+  const [aiState] = useAIState<typeof AI>();
 
   return (
     <>
@@ -52,17 +32,13 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId, feedback }) => {
           />
           {!onSharedPage && (
             <>
-              <FeedbackButtons
-                feedback={feedbackSent}
-                onFeedback={onFeedback}
-                disableFeedback={feedbackSent !== null}
-              />
+              <FeedbackButtons />
               <ShareModal />
             </>
           )}
         </div>
       </div>
-      {!onSharedPage && feedbackSent && <FeedbackBar />}
+      {!onSharedPage && !!aiState.reaction && <FeedbackBar />}
     </>
   );
 };

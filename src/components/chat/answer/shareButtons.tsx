@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
+import { IconVariants, IconVariantOptions } from '@/models/animations';
 
 import { ShareModalLoadingStates } from './shareModal';
 
@@ -45,21 +46,13 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
     <AnimatedButton
       displayBeforeClick={
         <motion.div
-          variants={{
-            bounce: {
-              y: [0, -10, 0],
-              scale: 1,
-              transition: {
-                duration: 0.75,
-                repeat: Infinity,
-                stiffness: 90,
-                damping: 5,
-              },
-            },
-            none: { y: 0, transition: { repeat: 0 } },
-          }}
-          animate={isLoading ? 'bounce' : 'none'}
+          variants={IconVariants}
           initial={false}
+          animate={
+            isLoading
+              ? IconVariantOptions.bounce
+              : IconVariantOptions.bounceStop
+          }
         >
           <FontAwesomeIcon icon={faTrash} />
         </motion.div>
@@ -84,20 +77,14 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
   return (
     <AnimatedButton
       displayBeforeClick={
-        <motion.div // rotate icon when we start regenerating link
-          variants={{
-            rotate: {
-              rotate: [0, 360],
-              transition: {
-                duration: 1,
-                repeat: Infinity,
-                ease: 'linear',
-              },
-            },
-            none: { rotate: 360, transition: { repeat: 0, duration: 1 } },
-          }}
+        <motion.div
+          variants={IconVariants}
           initial={false}
-          animate={isLoading ? 'rotate' : 'none'}
+          animate={
+            isLoading
+              ? IconVariantOptions.rotate
+              : IconVariantOptions.rotateStop
+          }
         >
           <FontAwesomeIcon icon={faRotateRight} />
         </motion.div>
