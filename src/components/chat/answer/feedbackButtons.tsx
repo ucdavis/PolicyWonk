@@ -39,6 +39,10 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
       await submitFeedback(chatId, newFeedback);
     } catch (e) {
       // TODO: handle error
+      setAIState((currentAIState) => ({
+        ...currentAIState,
+        reaction: undefined, // unset the reaction on error
+      }));
     }
   };
 
