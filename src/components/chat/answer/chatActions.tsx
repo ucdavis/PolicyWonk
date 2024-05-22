@@ -32,7 +32,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
           />
           {!onSharedPage && (
             <>
-              <FeedbackButtons onSharedPage={onSharedPage} />
+              <FeedbackButtons />
               <ShareModal />
             </>
           )}

@@ -16,19 +16,14 @@ import { Feedback } from '@/models/chat';
 
 export type FeedbackLoadingStates = '' | Feedback;
 
-interface FeedbackButtonsProps {
-  onSharedPage: boolean;
-}
+interface FeedbackButtonsProps {}
 
-const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({ onSharedPage }) => {
+const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
   const [aiState, setAIState] = useAIState<typeof AI>();
   const { id: chatId, reaction: feedback } = aiState;
   const { submitFeedback } = useActions<typeof AI>();
 
   const onFeedback = async (newFeedback: Feedback) => {
-    if (onSharedPage) {
-      return;
-    }
     // optimistically update the AI state
     setAIState((currentAIState) => ({
       ...currentAIState,
