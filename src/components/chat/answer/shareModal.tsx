@@ -25,16 +25,12 @@ const ShareModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<ShareModalLoadingStates>('');
   const isShared = shareId !== undefined;
 
-  const handleShare = async () => {
-    setIsLoading('share');
-    gtagEvent({ event: GTagEvents.SHARE, chat: aiState });
-    await shareChat(chatId);
-    setIsLoading('');
-  };
-
-  const handleRegenShare = async () => {
-    setIsLoading('regen');
-    gtagEvent({ event: GTagEvents.REGEN_SHARE, chat: aiState });
+  const handleShare = async (type: 'share' | 'regen') => {
+    setIsLoading(type);
+    gtagEvent({
+      event: type === 'share' ? GTagEvents.SHARE : GTagEvents.REGEN_SHARE,
+      chat: aiState,
+    });
     await shareChat(chatId);
     setIsLoading('');
   };
@@ -72,14 +68,17 @@ const ShareModal: React.FC = () => {
           <SharedUrl
             shareId={shareId}
             isShared={isShared}
-            handleRegenShare={handleRegenShare}
+            handleRegenShare={() => handleShare('regen')}
             handleUnshare={handleUnshare}
             isLoading={isLoading}
           />
         </ModalBody>
         <ModalFooter>
           {!isShared && (
-            <ShareButton handleShare={handleShare} loadingState={isLoading} />
+            <ShareButton
+              handleShare={() => handleShare('share')}
+              loadingState={isLoading}
+            />
           )}
           <Button color='secondary' onClick={toggle}>
             {!isShared ? 'Cancel' : 'Close'}

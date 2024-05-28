@@ -7,7 +7,8 @@ import { ChatHistory, Feedback } from '@/models/chat';
 /* the properties here should use snake_case and exactly match what is set up in GTM */
 export enum GTagEvents {
   // custom events (manually triggered using gtagEvent()
-  FEEDBACK = 'feedback',
+  FEEDBACK_THUMBS_UP = 'feedback_thumbs_up',
+  FEEDBACK_THUMBS_DOWN = 'feedback_thumbs_down',
   SHARE = 'share',
   UNSHARE = 'unshare',
   REGEN_SHARE = 'regen_share',
