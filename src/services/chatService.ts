@@ -96,7 +96,7 @@ const generateFilter = (
         },
       };
     }
-  } else if (focus.name === 'ucdknowledgebase') {
+  } else if (focus.name === 'knowledgebase') {
     allowedScopes = ['ucdknowledgebase'];
 
     return {
