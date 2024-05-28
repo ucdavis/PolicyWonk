@@ -4,8 +4,7 @@ import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
-import SidebarLinks from '@/components/layout/sidebarLinks';
-
+import FooterLinks from './FooterLinks';
 import UserNameDisplay from './userNameDisplay';
 
 const Footer: React.FC = () => {
@@ -18,17 +17,17 @@ const Footer: React.FC = () => {
             rel='noopener noreferrer'
             href='https://ucdavis.edu'
           >
-            <Image src={Logo} alt='UC Davis logo greyscale' />
+            <Image width={85} src={Logo} alt='UC Davis logo greyscale' />
           </a>
           <p>
             &copy; UC Regents{' '}
             <span className='version-notice'>Policywonk v1.2.3.311</span>
           </p>
         </div>
-        <div className='col'>
-          {/* <UserNameDisplay /> */}
-          <p>User Name Login here</p>
-          <SidebarLinks />
+        <div className='col text-end'>
+          <UserNameDisplay />
+
+          <FooterLinks />
         </div>
       </div>
     </footer>

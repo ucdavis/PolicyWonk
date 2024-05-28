@@ -1,6 +1,6 @@
 $responsive-sidebar-sm: 0px;
-$responsive-sidebar-lg: 300px;
-$content-padding-value:40px 0;
+$responsive-sidebar-lg: 360px;
+$content-padding-value:36px 0 18px 0;
 .wonk-wrapper {
   height:100vh;
   width:100%;
@@ -44,7 +44,7 @@ $content-padding-value:40px 0;
     }
   }
 }
-.mobile-sidebar{
+.mobile-sidebar {
   display:inherit;
   @include breakpoint(lg) {
     display: none;
@@ -55,7 +55,7 @@ $content-padding-value:40px 0;
   border-right:1px solid $borders;
   .mobilesidebar-container {
     text-align: right;
-    padding:$content-padding-value;
+    padding-top:0;
     margin-right:5%;
     display: flex;
     flex-direction: column;
@@ -80,5 +80,6 @@ $content-padding-value:40px 0;
 footer {
   p {
     color:$secondary-font;
+    font-size:0.9rem;
   }
 }

@@ -1,22 +1,23 @@
 'use client';
 import React from 'react';
 
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { Offcanvas, OffcanvasHeader, OffcanvasBody, Button } from 'reactstrap';
 
 interface SidebarProps {
   history: React.ReactNode;
-  footer: React.ReactNode;
 }
 
-const MobileSidebar: React.FC<SidebarProps> = ({ history, footer }) => {
+const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
   return (
     <div>
-      <Button color='primary' onClick={toggle}>
-        Open
+      <Button color='offcanvas' onClick={toggle}>
+        <FontAwesomeIcon icon={faBars} />
       </Button>
       <Offcanvas
         backdrop={false}
@@ -38,7 +39,6 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history, footer }) => {
                 </h1>
                 {history}
               </header>
-              {footer}
             </div>
           </div>
         </OffcanvasBody>
