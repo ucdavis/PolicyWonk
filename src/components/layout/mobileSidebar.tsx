@@ -10,14 +10,23 @@ interface SidebarProps {
 }
 
 const MobileSidebar: React.FC<SidebarProps> = ({ history, footer }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const toggle = () => setIsOpen(!isOpen);
+
   return (
     <div className='sidebar-container'>
       <div>
-        <Button color='primary' onClick={() => {}}>
+        <Button color='primary' onClick={toggle}>
           Open
         </Button>
-        <Offcanvas backdrop={false} fade={false} scrollable toggle={() => {}}>
-          <OffcanvasHeader toggle={() => {}}>Offcanvas</OffcanvasHeader>
+        <Offcanvas
+          backdrop={false}
+          fade={false}
+          isOpen={isOpen}
+          scrollable={true}
+          toggle={toggle}
+        >
+          <OffcanvasHeader toggle={toggle}>Offcanvas</OffcanvasHeader>
           <OffcanvasBody>
             <header>
               mobile sidebar is here
