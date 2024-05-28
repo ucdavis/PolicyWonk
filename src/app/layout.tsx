@@ -43,14 +43,13 @@ export default function RootLayout({
       <body>
         <main className='d-flex'>
           <Providers>
-            <div className='sidebar-wrapper'>
-              <div className='mobile-sidebar'>
-                <MobileSidebar history={<ChatHistory />} footer={<Footer />} />
-              </div>
-              <div className='desktop-sidebar'>
-                <Sidebar history={<ChatHistory />} footer={<Footer />} />
-              </div>
+            <div className='mobile-sidebar'>
+              <MobileSidebar history={<ChatHistory />} footer={<Footer />} />
             </div>
+            <div className='desktop-sidebar'>
+              <Sidebar history={<ChatHistory />} footer={<Footer />} />
+            </div>
+
             <div className='wonk-wrapper'>
               <div className='wonk-container'>{children}</div>
             </div>

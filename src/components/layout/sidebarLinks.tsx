@@ -3,7 +3,11 @@
 import React from 'react';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faInfoCircle,
+  faAnchor,
+  faHatCowboy,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // import Link from 'next/link';
@@ -11,6 +15,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const SidebarLinks: React.FC = () => {
   return (
     <div className='external-links'>
+      <a rel='noopener noreferrer' href='https://computing.caes.ucdavis.edu/'>
+        <FontAwesomeIcon icon={faAnchor} />
+      </a>
+      <a rel='noopener noreferrer' href='https://computing.caes.ucdavis.edu/'>
+        <FontAwesomeIcon icon={faHatCowboy} />
+      </a>
       <a
         target='_blank'
         rel='noopener noreferrer'

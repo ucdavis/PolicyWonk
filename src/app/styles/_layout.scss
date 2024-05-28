@@ -1,5 +1,4 @@
-$responsive-sidebar-sm: 150px;
-$responsive-sidebar-md: 250px;
+$responsive-sidebar-sm: 0px;
 $responsive-sidebar-lg: 300px;
 $content-padding-value:40px 0;
 .wonk-wrapper {
@@ -14,9 +13,6 @@ $content-padding-value:40px 0;
   display: flex;
   flex-direction: column;
   height:100%;
-  @include breakpoint(md) {
-     margin-left:$responsive-sidebar-md;
-  }
   @include breakpoint(lg) {
     margin-left:$responsive-sidebar-lg;
     padding-left:2%;
@@ -33,9 +29,6 @@ $content-padding-value:40px 0;
   width:$responsive-sidebar-sm;
   border-right:1px solid $borders;
   position: fixed;
-  @include breakpoint(md) {
-    width:$responsive-sidebar-md;
-  }
     @include breakpoint(lg) {
     width:$responsive-sidebar-lg;
   }
@@ -49,11 +42,6 @@ $content-padding-value:40px 0;
     header {
       margin-bottom:auto;
     }
-    footer {
-      p {
-        color:$secondary-font;
-      }
-    }
   }
 }
 .mobile-sidebar{
@@ -62,10 +50,35 @@ $content-padding-value:40px 0;
     display: none;
   }
 }
+.mobilesidebar-wrapper {
+  background-color: $primary-bg;
+  border-right:1px solid $borders;
+  .mobilesidebar-container {
+    text-align: right;
+    padding:$content-padding-value;
+    margin-right:5%;
+    display: flex;
+    flex-direction: column;
+    header {
+      margin-bottom:auto;
+    }
+  }
+}
 .desktop-sidebar{
   display:none;
   @include breakpoint(lg) {
     display: inherit;
   }
 
+}
+.offcanvas {
+    background-color:$primary-bg;
+}
+.offcanvas-body {
+  padding:0;
+}
+footer {
+  p {
+    color:$secondary-font;
+  }
 }

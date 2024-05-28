@@ -12,35 +12,45 @@ import SidebarLinks from '@/components/layout/sidebarLinks';
 const Footer: React.FC = () => {
   return (
     <footer>
-      <UserNameDisplay />
-      <SidebarLinks />
-      <a target='_blank' rel='noopener noreferrer' href='https://ucdavis.edu'>
-        <Image src={Logo} alt='UC Davis logo greyscale' />
-      </a>
-      <p>
-        &copy; UC Regents
-        <br />
-        <span className='version-notice'>Policywonk v1.2.3.311</span>
-      </p>
+      <div className='row justify-content-between'>
+        <div className='col'>
+          <a
+            target='_blank'
+            rel='noopener noreferrer'
+            href='https://ucdavis.edu'
+          >
+            <Image src={Logo} alt='UC Davis logo greyscale' />
+          </a>
+          <p>
+            &copy; UC Regents{' '}
+            <span className='version-notice'>Policywonk v1.2.3.311</span>
+          </p>
+        </div>
+        <div className='col'>
+          {/* <UserNameDisplay /> */}
+          <p>User Name Login here</p>
+          <SidebarLinks />
+        </div>
+      </div>
     </footer>
   );
 };
 
 export default Footer;
 
-const UserNameDisplay: React.FC = async ({}) => {
-  const session = (await auth()) as Session;
+// const UserNameDisplay: React.FC = async ({}) => {
+//   const session = (await auth()) as Session;
 
-  if (!session) {
-    return null;
-  }
+//   if (!session) {
+//     return null;
+//   }
 
-  return (
-    <>
-      <p className='mb-0'>
-        <span className='me-1'>Logged in as:</span>
-        {session?.user?.name}
-      </p>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <p className='mb-0'>
+//         <span className='me-1'>Logged in as:</span>
+//         {session?.user?.name}
+//       </p>
+//     </>
+//   );
+// };
