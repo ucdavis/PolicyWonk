@@ -4,11 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { Offcanvas, OffcanvasHeader, OffcanvasBody, Button } from 'reactstrap';
 
-import ChatHistory from '../chatHistory/chatHistory';
+interface SidebarProps {
+  history: React.ReactNode;
+  footer: React.ReactNode;
+}
 
-import Footer from './footer';
-
-const MobileSidebar: React.FC = () => {
+const MobileSidebar: React.FC<SidebarProps> = ({ history, footer }) => {
   return (
     <div className='sidebar-container'>
       <div>
@@ -26,9 +27,9 @@ const MobileSidebar: React.FC = () => {
                   <span className='subtitle'>Your UC Policy expert</span>
                 </Link>
               </h1>
-              <ChatHistory />
+              {history}
             </header>
-            <Footer />
+            {footer}
           </OffcanvasBody>
         </Offcanvas>
       </div>

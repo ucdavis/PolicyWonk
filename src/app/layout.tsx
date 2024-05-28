@@ -7,6 +7,8 @@ import { GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
+import ChatHistory from '@/components/chatHistory/chatHistory';
+import Footer from '@/components/layout/footer';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Providers from '@/components/layout/providers';
 import Sidebar from '@/components/layout/sidebar';
@@ -43,10 +45,10 @@ export default function RootLayout({
           <Providers>
             <div className='sidebar-wrapper'>
               <div className='mobile-sidebar'>
-                <MobileSidebar />
+                <MobileSidebar history={<ChatHistory />} footer={<Footer />} />
               </div>
               <div className='desktop-sidebar'>
-                <Sidebar />
+                <Sidebar history={<ChatHistory />} footer={<Footer />} />
               </div>
             </div>
             <div className='wonk-wrapper'>
