@@ -164,7 +164,10 @@ img.chat-portrait {
         font-family: $sans-bold;
         color:$primary-font;
         text-transform: uppercase;
-        font-size:1.1rem;
+        font-size:1rem;
+    }
+    p {
+        font-size:0.9rem; 
     }
     &:hover {
         border-bottom:4px solid $primary-color;
