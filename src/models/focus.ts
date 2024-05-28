@@ -46,6 +46,7 @@ export type Union = {
 // TODO: grab unions from the db/index somehow? or just hardcode them?
 // For now this is hardcoded & includes UCOP + UC Davis unions
 export const unions: Union[] = [
+  { key: 'ra', value: 'Academic Researchers' },
   { key: 'bx', value: 'Academic Student Employees' },
   { key: 'cx', value: 'Clerical & Allied Services' },
   { key: 'br', value: 'Graduate Student Researchers' },
