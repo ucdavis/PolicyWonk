@@ -33,10 +33,10 @@ export const WonkMessage = ({
 
   return (
     <div className='row mb-3'>
-      <div className='col-3 col-sm-1 mb-2'>
+      <div className='col-2 mb-2'>
         <WonkPortrait isLoading={isLoading} />
       </div>
-      <div className='col-10 col-sm-11 gtag'>
+      <div className='col-10 gtag'>
         <p className='chat-name'>
           <strong>Policy Wonk</strong>
         </p>

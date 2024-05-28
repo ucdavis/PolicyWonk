@@ -9,14 +9,14 @@ export const UserMessage = ({
 }) => {
   return (
     <div className='row mb-3'>
-      <div className='col-3 col-sm-1 mb-2'>
+      <div className='col-2 mb-2'>
         <UserPortrait />
       </div>
-      <div className='col-10 col-sm-11'>
+      <div className='col-10'>
         <p className='chat-name'>
           <strong>{!!user ? user : `You: `}</strong>
         </p>
-        <p> {children}</p>
+        <p>{children}</p>
       </div>
     </div>
   );
