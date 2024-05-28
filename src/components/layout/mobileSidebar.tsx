@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import Link from 'next/link';
@@ -11,18 +12,11 @@ const MobileSidebar: React.FC = () => {
   return (
     <div className='sidebar-container'>
       <div>
-        <Button color='primary' onClick={function noRefCheck() {}}>
+        <Button color='primary' onClick={() => {}}>
           Open
         </Button>
-        <Offcanvas
-          backdrop={false}
-          fade={false}
-          scrollable
-          toggle={function noRefCheck() {}}
-        >
-          <OffcanvasHeader toggle={function noRefCheck() {}}>
-            Offcanvas
-          </OffcanvasHeader>
+        <Offcanvas backdrop={false} fade={false} scrollable toggle={() => {}}>
+          <OffcanvasHeader toggle={() => {}}>Offcanvas</OffcanvasHeader>
           <OffcanvasBody>
             <header>
               mobile sidebar is here
