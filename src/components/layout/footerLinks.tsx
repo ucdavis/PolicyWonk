@@ -9,6 +9,7 @@ import {
   faHatCowboy,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 
 // import Link from 'next/link';
 
@@ -25,14 +26,10 @@ const FooterLinks: React.FC = () => {
       >
         <FontAwesomeIcon icon={faHatCowboy} />
       </a>
-      <a
-        target='_blank'
-        rel='noopener noreferrer'
-        href='https://computing.caes.ucdavis.edu/'
-        className='ps-2'
-      >
+
+      <Link className='ps-2' href='/about'>
         <FontAwesomeIcon icon={faInfoCircle} />
-      </a>
+      </Link>
       <a
         target='_blank'
         rel='noopener noreferrer'

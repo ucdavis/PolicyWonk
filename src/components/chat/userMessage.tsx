@@ -9,7 +9,7 @@ export const UserMessage = ({
 }) => {
   return (
     <div className='row mb-3'>
-      <div className='col-2 mb-2'>
+      <div className='col-2 col-sm-1 mb-2'>
         <UserPortrait />
       </div>
       <div className='col-10'>
