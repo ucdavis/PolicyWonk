@@ -4,10 +4,9 @@ import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
-import { Session } from 'next-auth';
-
-import { auth } from '@/auth';
 import SidebarLinks from '@/components/layout/sidebarLinks';
+
+import UserNameDisplay from './userNameDisplay';
 
 const Footer: React.FC = () => {
   return (
@@ -37,20 +36,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-
-// const UserNameDisplay: React.FC = async ({}) => {
-//   const session = (await auth()) as Session;
-
-//   if (!session) {
-//     return null;
-//   }
-
-//   return (
-//     <>
-//       <p className='mb-0'>
-//         <span className='me-1'>Logged in as:</span>
-//         {session?.user?.name}
-//       </p>
-//     </>
-//   );
-// };
