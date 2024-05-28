@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
-import FooterLinks from './FooterLinks';
+import FooterLinks from './footerLinks';
 import UserNameDisplay from './userNameDisplay';
 
 const Footer: React.FC = () => {

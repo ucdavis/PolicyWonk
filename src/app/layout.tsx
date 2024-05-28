@@ -44,7 +44,7 @@ export default function RootLayout({
         <main className='d-flex'>
           <Providers>
             <div className='mobile-sidebar'>
-              <MobileSidebar history={<ChatHistory />} footer={<Footer />} />
+              <MobileSidebar history={<ChatHistory />} />
             </div>
             <div className='desktop-sidebar'>
               <Sidebar history={<ChatHistory />} footer={<Footer />} />
