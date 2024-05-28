@@ -9,7 +9,7 @@ import { Message } from 'ai';
 import OpenAI from 'openai';
 
 import { PolicyIndex } from '@/models/chat';
-import { Focus, FocusScope, unions } from '@/models/focus';
+import { Focus, FocusScope } from '@/models/focus';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -77,17 +77,14 @@ const generateFilter = (
     if (focus.subFocus) {
       // we could add more scopes here if we wanted to filter further
       // but for now we'll just match the subfocus
-
-      // TODO: right now our subfocus is the union key. our index will eventually store that, but only stores the value for now
-      // so we'll need to map the key to the value
-      const unionName = unions.find((u) => u.key === focus.subFocus)?.value;
-
       return {
         bool: {
           must: [
             {
               terms: {
-                'metadata.subject_areas.keyword': [unionName ?? ''],
+                'metadata.keywords.keyword': [
+                  focus.subFocus.toLocaleUpperCase(),
+                ],
               },
             },
             {
@@ -99,6 +96,14 @@ const generateFilter = (
         },
       };
     }
+  } else if (focus.name === 'ucdknowledgebase') {
+    allowedScopes = ['ucdknowledgebase'];
+
+    return {
+      terms: {
+        'metadata.scope.keyword': allowedScopes,
+      },
+    };
   }
 
   // match nothing since we don't know what to do

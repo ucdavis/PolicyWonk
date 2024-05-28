@@ -1,5 +1,5 @@
 // top-level focus types
-export type FocusName = 'core' | 'apm' | 'unions';
+export type FocusName = 'core' | 'apm' | 'unions' | 'ucdknowledgebase';
 
 // individual focus scopes which tie to specific policy groups in the index
 export type FocusScope =
@@ -9,7 +9,8 @@ export type FocusScope =
   | 'ucddelegation'
   | 'ucdinterim'
   | 'ucdapm'
-  | 'collective_bargaining_contracts';
+  | 'collective_bargaining_contracts'
+  | 'ucdknowledgebase';
 
 export type Focus = {
   name: FocusName;
@@ -30,6 +31,10 @@ export const focuses: Focus[] = [
   {
     name: 'unions',
     description: 'UCOP Union Contracts',
+  },
+  {
+    name: 'ucdknowledgebase',
+    description: 'UC Davis Knowledge Base',
   },
 ];
 
