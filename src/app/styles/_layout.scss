@@ -56,3 +56,16 @@ $content-padding-value:40px 0;
     }
   }
 }
+.mobile-sidebar{
+  display:inherit;
+  @include breakpoint(lg) {
+    display: none;
+  }
+}
+.desktop-sidebar{
+  display:none;
+  @include breakpoint(lg) {
+    display: inherit;
+  }
+
+}
