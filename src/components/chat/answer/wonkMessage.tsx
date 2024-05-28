@@ -84,7 +84,7 @@ const cleanBadCitationList = (str: string) => {
 
 const reformatFootnotes = (markdown: string) => {
   // Regular expression to match a footnote pattern [^doc2]: with optional leading whitespaces or newlines
-  const footnotePattern = /(?:\s*\n)?(\[\^doc[0-9]+\]:\s*\[.*?\])/g;
+  const footnotePattern = /(?:\s*\n)?(\[\^\w+\]:\s*\[.*?\])/g;
 
   // Replace function to ensure each footnote starts on a new line
   const formattedMarkdown = markdown.replace(
