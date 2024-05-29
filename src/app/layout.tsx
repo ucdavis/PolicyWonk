@@ -23,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head>
-        <GoogleTagManager gtmId='GTM-NNCH6SSL' />
+        <GoogleTagManager
+          gtmId='GTM-NNCH6SSL'
+          auth={process.env.GTM_DEV_CONTAINER ?? undefined}
+        />
 
         <link rel='image_src' href='/media/thumbnail.jpg' />
         <link
