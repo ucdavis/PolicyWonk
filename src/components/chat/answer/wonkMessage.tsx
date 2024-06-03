@@ -5,6 +5,7 @@ import { StreamableValue } from 'ai/rsc';
 import Link from 'next/link';
 import remarkGfm from 'remark-gfm';
 
+import { gtagEvent, GTagEvents } from '@/lib/gtag';
 import {
   useStreamableText,
   useTempStreamableText,
@@ -49,10 +50,29 @@ export const WonkMessage = ({
                   // open links in new tab but not for internal links
                   if (props.href?.startsWith('http')) {
                     return (
-                      <a {...props} target='_blank' rel='noopener noreferrer' />
+                      <a
+                        onClick={() => {
+                          gtagEvent({
+                            event: GTagEvents.CITATION_EXTERNAL,
+                          });
+                        }}
+                        {...props}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      />
                     );
                   } else {
-                    return <Link {...props} href={props.href || '#'} />;
+                    return (
+                      <Link
+                        onClick={() => {
+                          gtagEvent({
+                            event: GTagEvents.CITATION_INTERNAL,
+                          });
+                        }}
+                        {...props}
+                        href={props.href || '#'}
+                      />
+                    );
                   }
                 },
               }}

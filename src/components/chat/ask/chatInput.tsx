@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { useUIState, useActions } from 'ai/rsc';
+import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/actions';
@@ -19,6 +19,7 @@ import FocusBar from './focusBar';
 // Will send the actual message to the chatAI system
 const ChatInput = () => {
   const [focus, setFocus] = React.useState(focuses[0]);
+  const [aiState] = useAIState<typeof AI>();
 
   const [_, setMessagesUI] = useUIState<typeof AI>();
 
@@ -43,8 +44,10 @@ const ChatInput = () => {
 
     const responseMessage = await submitUserMessage(question, focus);
 
-    // TODO: use full AI state
-    gtagEvent({ event: GTagEvents.NEW_CHAT });
+    gtagEvent({
+      event: GTagEvents.NEW_CHAT,
+      chat: { ...aiState, focus },
+    });
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };

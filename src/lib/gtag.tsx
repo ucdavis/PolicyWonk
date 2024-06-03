@@ -16,6 +16,8 @@ export enum GTagEvents {
   NEW_CHAT = 'new_chat',
   COPY_CHAT = 'copy_chat',
   COPY_SHARE = 'copy_share_url',
+  CITATION_INTERNAL = 'citation_internal',
+  CITATION_EXTERNAL = 'citation_external',
 
   /*
   // automatic events (triggered by user actions), e.g. page visit or button click 
@@ -23,18 +25,19 @@ export enum GTagEvents {
   // e.g. see if chat contents are copied from /chat/ or from /share/
   // or see what default question was clicked
   DEFAULT_QUESTION = 'default_question', // automatically triggered on click from id=gtag-default-question*
-  ABOUT_PAGE = 'about_page', // automatically triggered on visit to /about
+  ABOUT_PAGE = 'about_page_view', // automatically triggered on visit to /about
   SHARED_PAGE_VIEW = 'shared_page_view', // automatically triggered on visit to /share/*
-  CITATION_CLICKED = 'citation_clicked', // automatically triggered on click from div.gtag a selector inside wonkMessage
   */
 }
 
 interface GTagEventVariables {
+  // if you add a new custom variable, remember to add it as a custom dimension in GA
   event: GTagEvents;
   feedback?: Feedback;
   focus?: string;
   sub_focus?: string;
   llm_model?: string;
+  // citation_url?: string; // this is a custom dimension, but we don't need to send it directly, it is pulled from the target URL in GTM
 }
 
 interface GTagEventProps {
