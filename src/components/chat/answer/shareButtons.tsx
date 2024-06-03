@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
+import { GTagEvents } from '@/lib/gtag';
 import { IconVariants, IconVariantOptions } from '@/models/animations';
 
 import { ShareModalLoadingStates } from './shareModal';
@@ -20,7 +21,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   handleShare,
   loadingState,
 }) => {
-  const isLoading = loadingState === 'share';
+  const isLoading = loadingState === GTagEvents.SHARE;
   return (
     <Button
       color='primary'
@@ -41,7 +42,7 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
   handleUnshare,
   loadingState,
 }) => {
-  const isLoading = loadingState === 'unshare';
+  const isLoading = loadingState === GTagEvents.UNSHARE;
   return (
     <AnimatedButton
       displayBeforeClick={
@@ -73,7 +74,7 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
   handleShare,
   loadingState,
 }) => {
-  const isLoading = loadingState === 'regen';
+  const isLoading = loadingState === GTagEvents.REGEN_SHARE;
   return (
     <AnimatedButton
       displayBeforeClick={

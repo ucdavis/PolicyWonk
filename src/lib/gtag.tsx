@@ -9,18 +9,19 @@ export enum GTagEvents {
   // custom events (manually triggered using gtagEvent()
   FEEDBACK_THUMBS_UP = 'feedback_thumbs_up',
   FEEDBACK_THUMBS_DOWN = 'feedback_thumbs_down',
+  OPEN_SHARE_MODAL = 'open_share_modal',
   SHARE = 'share',
   UNSHARE = 'unshare',
   REGEN_SHARE = 'regen_share',
   NEW_CHAT = 'new_chat',
+  COPY_CHAT = 'copy_chat',
+  COPY_SHARE = 'copy_share_url',
 
   /*
   // automatic events (triggered by user actions), e.g. page visit or button click 
   // Q: do we want any of these to be custom events, so we can pass along more data?
   // e.g. see if chat contents are copied from /chat/ or from /share/
   // or see what default question was clicked
-  COPY_CHAT = 'copy_chat', // automatically triggered on click from id=gtag=copy-chat*
-  COPY_SHARE = 'copy_share', // automatically triggered on click from id=gtag=copy-share-url*
   DEFAULT_QUESTION = 'default_question', // automatically triggered on click from id=gtag-default-question*
   ABOUT_PAGE = 'about_page', // automatically triggered on visit to /about
   SHARED_PAGE_VIEW = 'shared_page_view', // automatically triggered on visit to /share/*
@@ -33,6 +34,7 @@ interface GTagEventVariables {
   feedback?: Feedback;
   focus?: string;
   sub_focus?: string;
+  llm_model?: string;
 }
 
 interface GTagEventProps {
@@ -46,6 +48,7 @@ export const gtagEvent = ({ event, chat }: GTagEventProps): void => {
     focus: chat?.focus?.name,
     sub_focus: chat?.focus?.subFocus,
     feedback: chat?.reaction,
+    llm_model: chat?.llmModel,
   };
 
   sendGTMEvent(eventObj);

@@ -14,7 +14,11 @@ import { gtagEvent, GTagEvents } from '@/lib/gtag';
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
 
-export type ShareModalLoadingStates = '' | 'share' | 'regen' | 'unshare';
+export type ShareModalLoadingStates =
+  | ''
+  | GTagEvents.SHARE
+  | GTagEvents.REGEN_SHARE
+  | GTagEvents.UNSHARE;
 
 const ShareModal: React.FC = () => {
   const { shareChat, unshareChat } = useActions<typeof AI>();
@@ -25,10 +29,12 @@ const ShareModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<ShareModalLoadingStates>('');
   const isShared = shareId !== undefined;
 
-  const handleShare = async (type: 'share' | 'regen') => {
+  const handleShare = async (
+    type: GTagEvents.SHARE | GTagEvents.REGEN_SHARE
+  ) => {
     setIsLoading(type);
     gtagEvent({
-      event: type === 'share' ? GTagEvents.SHARE : GTagEvents.REGEN_SHARE,
+      event: type,
       chat: aiState,
     });
     await shareChat(chatId);
@@ -36,10 +42,14 @@ const ShareModal: React.FC = () => {
   };
 
   const handleUnshare = async () => {
-    setIsLoading('unshare');
+    setIsLoading(GTagEvents.UNSHARE);
     gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
     await unshareChat(chatId);
     setIsLoading('');
+  };
+
+  const handleCopyShareUrl = () => {
+    gtagEvent({ event: GTagEvents.COPY_SHARE, chat: aiState });
   };
 
   const toggle = () => {
@@ -56,7 +66,13 @@ const ShareModal: React.FC = () => {
         selected={isShared}
         title={'Share Chat'}
       />
-      <Modal isOpen={isOpen} toggle={toggle}>
+      <Modal
+        isOpen={isOpen}
+        toggle={toggle}
+        onOpened={() => {
+          gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat: aiState });
+        }}
+      >
         <ModalHeader toggle={toggle}>Share Chat</ModalHeader>
         <ModalBody>
           <p>
@@ -68,15 +84,16 @@ const ShareModal: React.FC = () => {
           <SharedUrl
             shareId={shareId}
             isShared={isShared}
-            handleRegenShare={() => handleShare('regen')}
+            handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
             handleUnshare={handleUnshare}
+            handleCopyShareUrl={handleCopyShareUrl}
             isLoading={isLoading}
           />
         </ModalBody>
         <ModalFooter>
           {!isShared && (
             <ShareButton
-              handleShare={() => handleShare('share')}
+              handleShare={() => handleShare(GTagEvents.SHARE)}
               loadingState={isLoading}
             />
           )}

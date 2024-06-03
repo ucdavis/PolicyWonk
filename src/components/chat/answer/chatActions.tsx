@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
+import { gtagEvent, GTagEvents } from '@/lib/gtag';
 import { getFullQuestionAndAnswer } from '@/lib/util';
 
 import FeedbackButtons from './feedbackButtons';
@@ -29,6 +30,9 @@ const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
           <CopyToClipboardButton
             id='gtag-copy-chat'
             value={getFullQuestionAndAnswer(aiState)}
+            onClick={() => {
+              gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
+            }}
           />
           {!onSharedPage && (
             <>
