@@ -2,8 +2,27 @@ import React from 'react';
 
 import { redirect } from 'next/navigation';
 
-const RedirectComponent: React.FC = () => {
-  redirect('/chat/new');
+interface RedirectComponentProps {
+  searchParams: { [key: string]: string | string[] };
+}
+
+const RedirectComponent: React.FC<RedirectComponentProps> = ({
+  searchParams,
+}) => {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      value.forEach((val) => params.append(key, val));
+    } else {
+      params.append(key, value);
+    }
+  }
+
+  const destination = `/chat/new?${params.toString()}`;
+  redirect(destination);
+
+  return null; // this component will never render
 };
 
 export default RedirectComponent;

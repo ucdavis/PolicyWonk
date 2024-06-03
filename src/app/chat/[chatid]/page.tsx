@@ -10,7 +10,7 @@ import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI, getUIStateFromAIState } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
-import { focuses } from '@/models/focus';
+import { focuses, getFocusWithSubFocus } from '@/models/focus';
 import { llmModel } from '@/services/chatService';
 import { getChat } from '@/services/historyService';
 
@@ -20,12 +20,13 @@ type HomePageProps = {
   };
   searchParams: {
     focus?: string;
+    subFocus?: string;
   };
 };
 // TODO: loading animation when chatId changes
 const ChatPage = async ({
   params: { chatid },
-  searchParams: { focus },
+  searchParams: { focus, subFocus },
 }: HomePageProps) => {
   const session = (await auth()) as Session;
 
@@ -37,7 +38,7 @@ const ChatPage = async ({
   const chat: ChatHistory | null =
     chatid !== 'new'
       ? await getChat(chatid, session.user.id)
-      : newChatSession(session, focus);
+      : newChatSession(session, focus, subFocus);
 
   // if getChat returns null
   // will happen if the user is at an /chat/{id} that is not /chat/new
@@ -60,21 +61,18 @@ const ChatPage = async ({
 export default ChatPage;
 
 // TODO: move this into a server-only file
-const newChatSession = (session: Session, focusParam?: string) => {
-  let focus = focuses[0];
-
-  if (focusParam) {
-    const foundFocus = focuses.find((f) => f.name === focusParam);
-    if (foundFocus) {
-      focus = foundFocus;
-    }
-  }
+const newChatSession = (
+  session: Session,
+  focusParam?: string,
+  subFocusParam?: string
+) => {
+  const focus = getFocusWithSubFocus(focusParam, subFocusParam);
 
   const chat: ChatHistory = {
     id: nanoid(),
     title: 'Unknown Title',
     messages: [],
-    focus: focus,
+    focus: focus ?? focuses[0],
     llmModel: llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
