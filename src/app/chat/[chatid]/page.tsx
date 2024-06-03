@@ -18,9 +18,15 @@ type HomePageProps = {
   params: {
     chatid: string;
   };
+  searchParams: {
+    focus?: string;
+  };
 };
 // TODO: loading animation when chatId changes
-const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
+const ChatPage = async ({
+  params: { chatid },
+  searchParams: { focus },
+}: HomePageProps) => {
   const session = (await auth()) as Session;
 
   // middleware should take care of this, but if it doesn't then redirect to login
@@ -31,7 +37,7 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
   const chat: ChatHistory | null =
     chatid !== 'new'
       ? await getChat(chatid, session.user.id)
-      : newChatSession(session);
+      : newChatSession(session, focus);
 
   // if getChat returns null
   // will happen if the user is at an /chat/{id} that is not /chat/new
@@ -54,12 +60,21 @@ const ChatPage = async ({ params: { chatid } }: HomePageProps) => {
 export default ChatPage;
 
 // TODO: move this into a server-only file
-const newChatSession = (session: Session) => {
+const newChatSession = (session: Session, focusParam?: string) => {
+  let focus = focuses[0];
+
+  if (focusParam) {
+    const foundFocus = focuses.find((f) => f.name === focusParam);
+    if (foundFocus) {
+      focus = foundFocus;
+    }
+  }
+
   const chat: ChatHistory = {
     id: nanoid(),
     title: 'Unknown Title',
     messages: [],
-    focus: focuses[0],
+    focus: focus,
     llmModel: llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
