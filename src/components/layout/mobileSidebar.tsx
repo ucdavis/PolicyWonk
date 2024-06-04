@@ -12,7 +12,9 @@ interface SidebarProps {
 
 const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  const toggle = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div>
@@ -20,7 +22,8 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
         <FontAwesomeIcon icon={faBars} />
       </Button>
       <Offcanvas
-        backdrop={false}
+        backdrop={true}
+        backdropClassName='offcanvas-backdrop-hide'
         fade={false}
         isOpen={isOpen}
         scrollable={false}
