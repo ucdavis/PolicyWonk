@@ -4,6 +4,7 @@ import React from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Offcanvas, OffcanvasHeader, OffcanvasBody, Button } from 'reactstrap';
 
 interface SidebarProps {
@@ -15,6 +16,11 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
   const toggle = () => {
     setIsOpen(!isOpen);
   };
+
+  const pathname = usePathname();
+  React.useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
     <div>
