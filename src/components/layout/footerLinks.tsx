@@ -3,11 +3,7 @@
 import React from 'react';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import {
-  faInfoCircle,
-  faAnchor,
-  faHatCowboy,
-} from '@fortawesome/free-solid-svg-icons';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 
@@ -16,17 +12,6 @@ import Link from 'next/link';
 const FooterLinks: React.FC = () => {
   return (
     <div className='external-links'>
-      {/* <a rel='noopener noreferrer' href='https://computing.caes.ucdavis.edu/'>
-        <FontAwesomeIcon icon={faAnchor} />
-      </a>
-      <a
-        className='ps-2'
-        rel='noopener noreferrer'
-        href='https://computing.caes.ucdavis.edu/'
-      >
-        <FontAwesomeIcon icon={faHatCowboy} />
-      </a> */}
-
       <Link className='ps-2' href='/about'>
         <FontAwesomeIcon icon={faInfoCircle} />
       </Link>
