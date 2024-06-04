@@ -16,7 +16,7 @@ import Link from 'next/link';
 const FooterLinks: React.FC = () => {
   return (
     <div className='external-links'>
-      <a rel='noopener noreferrer' href='https://computing.caes.ucdavis.edu/'>
+      {/* <a rel='noopener noreferrer' href='https://computing.caes.ucdavis.edu/'>
         <FontAwesomeIcon icon={faAnchor} />
       </a>
       <a
@@ -25,7 +25,7 @@ const FooterLinks: React.FC = () => {
         href='https://computing.caes.ucdavis.edu/'
       >
         <FontAwesomeIcon icon={faHatCowboy} />
-      </a>
+      </a> */}
 
       <Link className='ps-2' href='/about'>
         <FontAwesomeIcon icon={faInfoCircle} />
