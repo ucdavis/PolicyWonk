@@ -45,6 +45,15 @@ h5 {
     text-transform: none;
   }
 }
+li {
+  font-size: 0.8rem;
+    @include breakpoint(md) {
+    font-size:0.9rem;
+  }
+    @include breakpoint(lg) {
+    font-size:1rem;
+  }
+}
 p {
   color: $primary-font;
   font-size: 0.8rem;
