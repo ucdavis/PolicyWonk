@@ -25,6 +25,8 @@ export type UIStateNode = {
 export type UIState = UIStateNode[];
 
 export type PolicyIndex = {
+  id: string;
+  docNumber: number;
   text: string;
   metadata: PolicyMetadata;
   vector: number[];

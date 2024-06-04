@@ -3,7 +3,6 @@ import { Client, ClientOptions } from '@elastic/elasticsearch';
 import {
   KnnQuery,
   QueryDslQueryContainer,
-  SearchResponse,
 } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 import OpenAI from 'openai';
@@ -141,28 +140,30 @@ export const getSearchResults = async (
 
   // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
 
-  return searchResults;
+  // transform the results
+  const allResults: PolicyIndex[] = searchResults.hits.hits
+    .map((h, i) => ({
+      ...h._source,
+      id: h._id,
+      docNumber: i,
+    }))
+    .filter((r): r is PolicyIndex => r !== undefined);
+
+  return allResults;
 };
 
 export const expandedTransformSearchResults = (
-  searchResults: SearchResponse<PolicyIndex>
+  searchResults: PolicyIndex[]
 ) => {
   // doc format
-  //   Document: 0
-  // title: Tall penguins
+  // Document: 0
   // text: Emperor penguins are the tallest growing up to 122 cm in height.
 
   // For now, if the same document is returned >1, we'll just concatenate the text. This way we only get a single reference per document.
   // eventually we might want to keep them as separate references w/ different line number ranges, or pull in full or expanded text
-
-  // get all docs -- source should never be undefined but we'll filter just in case
-  const allResults: PolicyIndex[] = searchResults.hits.hits
-    .map((h) => h._source)
-    .filter((r): r is PolicyIndex => r !== undefined);
-
   const resultMap: Map<string, PolicyIndex> = new Map();
 
-  allResults.forEach((result) => {
+  searchResults.forEach((result) => {
     const {
       metadata: { hash },
       text,
@@ -183,14 +184,56 @@ export const expandedTransformSearchResults = (
   // format the results
   return uniqueResults
     .map((hit: PolicyIndex, i: number) => {
-      return `\nDocument: ${i}\ntitle: ${cleanupTitle(hit.metadata.title)}\nurl: ${hit.metadata.url}\ntext: ${hit.text}`;
+      return `\nDocument: ${hit.docNumber}\ntext: ${hit.text}`;
     })
     .join('\n\n');
 };
 
-const cleanupTitle = (title: string) => {
-  // replace any quotes
-  return title.replace(/"/g, '');
+export const transformContentWithCitations = (
+  docText: string,
+  policies: PolicyIndex[]
+) => {
+  // our content contains citations in the form <c:1234>
+  // we need to replace those w/ markdown citations
+  // markdown citations replace inline in the form of [^1]
+  // and then at the bottom of the document we have [^1]: [citation title](citation url)
+
+  // 1. find all citations in the text
+  const citations = docText.match(/<c:\d+>/g) ?? [];
+
+  // 2. replace the citations in the text w/ markdown citations and keep track of the citations
+  const usedCitationDocNums = new Set<number>();
+
+  let transformedText = docText;
+  citations.forEach((c, i) => {
+    // get the number
+    const number = c.match(/\d+/)?.[0] ?? '';
+
+    // add the number to the set if it is a number
+    const num = parseInt(number);
+    if (!isNaN(num)) {
+      usedCitationDocNums.add(num);
+    }
+
+    // replace the citation in the text
+    transformedText = transformedText.replace(c, `[^${number}]`);
+  });
+
+  // 3. create the markdown citations footnote now that we know which citations are used
+  const usedPolicies = policies.filter((p) =>
+    usedCitationDocNums.has(p.docNumber)
+  );
+
+  const citationFootnoteMarkdown = usedPolicies
+    .map((p) => {
+      return `[^${p.docNumber}]: [${p.metadata.title}](${p.metadata.url})`;
+    })
+    .join('\n');
+
+  // 4. add the citations to the end of the document
+  transformedText += `\n\n## Citations\n${citationFootnoteMarkdown}\n`;
+
+  return transformedText;
 };
 
 export const getSystemMessage = (docText: string) => {
@@ -200,11 +243,8 @@ export const getSystemMessage = (docText: string) => {
     content: `
     ## Basic Rules
 You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, you cite your sources in your answers, according to the provided instructions. Always respond in well-formatted markdown.
-
-# User Preamble
 ## Task and Context
 You help people answer their policy questions interactively. You should focus on serving the user's needs as best you can. If you don't know the answer, respond only with "Sorry, I couldn't find enough information to answer your question".
-
 ## Style Guide
 Unless the user asks for a different style of answer, you should answer in full sentences, using proper grammar and spelling.
 
@@ -213,9 +253,8 @@ Unless the user asks for a different style of answer, you should answer in full 
 ${docText}
 </documents>
 
-Carefully perform the following instructions, in order, starting each with a new line.
-Write a response to the user's last input in high quality natural english. Use the symbols [^doctitle] to indicate when a fact comes from a document in the search result, e.g ""my fact [^doc1]"" for a fact from document "doc1".
-Finally, Write 'Citation(s):' followed the citations for the facts you used in your response. Use the same symbols [^doctitle]: to indicate which document the fact came from, e.g. ""[^doc1]: [doc1](document url)"" for a fact from document "doc1". Do not put the citations in a list ('-') format.
+Write a response to the user's last input in high quality natural english. Use the symbol <c:id> to indicate when a fact comes from a document in the search result. 
+e.g ""my fact <c:0>"" for a fact from "Document: 0" or ""external citation <c:2>"" for a fact from "Document: 2".
 `,
   } as Message;
 };

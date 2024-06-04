@@ -20,6 +20,7 @@ import {
   expandedTransformSearchResults,
   openai,
   llmModel,
+  transformContentWithCitations,
 } from '@/services/chatService';
 import {
   removeShareChat,
@@ -120,15 +121,23 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
       text: ({ content, done, delta }) => {
         if (done) {
           textStream.done();
+
+          // once we are finished, we need to modify the content to transform the citations
+          const finalContent = transformContentWithCitations(
+            content,
+            searchResults
+          );
+
           const finalNode = (
             <WonkMessage
               chatId={chatId}
               key={wonkMsgId}
-              content={content}
+              content={finalContent}
               isLoading={false}
               wonkThoughts={''}
             />
           );
+
           // finally, close out the initial UI stream with the final node
           chatWindowUI.done(finalNode);
           // and update the AI state with the final message
@@ -140,7 +149,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
               {
                 id: wonkMsgId,
                 role: 'assistant',
-                content,
+                content: finalContent,
               },
             ],
           });
