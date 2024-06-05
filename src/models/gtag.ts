@@ -13,7 +13,7 @@ export enum GTagEvents {
   COPY_CHAT = 'copy_chat',
   COPY_SHARE = 'copy_share_url',
   CITATION_INTERNAL = 'citation_internal',
-  CITATION_EXTERNAL = 'citation_external',
+  CITATION_EXTERNAL = 'citation_external', // records citation_source, but not chat state
 
   /*
   // automatic events (triggered by user actions), e.g. page visit or button click 
@@ -33,7 +33,7 @@ export interface GTagEventVariables {
   focus?: string;
   sub_focus?: string;
   llm_model?: string;
-  // citation_url?: string; // this is a custom dimension, but we don't need to send it directly, it is pulled from the target URL in GTM
+  // citation_source?: string; // this is a custom dimension, but we don't need to send it directly, it is pulled from the target URL in GTM
 }
 
 export interface GTagEventProps {
