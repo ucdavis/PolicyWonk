@@ -6,6 +6,9 @@ config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatic
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
+import ChatHistory from '@/components/chatHistory/chatHistory';
+import Footer from '@/components/layout/footer';
+import MobileSidebar from '@/components/layout/mobileSidebar';
 import Providers from '@/components/layout/providers';
 import Sidebar from '@/components/layout/sidebar';
 import GtagProvider from '@/lib/gtagProvider';
@@ -39,9 +42,13 @@ export default function RootLayout({
       <body>
         <main className='d-flex'>
           <Providers>
-            <div className='sidebar-wrapper'>
-              <Sidebar />
+            <div className='mobile-sidebar'>
+              <MobileSidebar history={<ChatHistory />} />
             </div>
+            <div className='desktop-sidebar'>
+              <Sidebar history={<ChatHistory />} footer={<Footer />} />
+            </div>
+
             <div className='wonk-wrapper'>
               <div className='wonk-container'>{children}</div>
             </div>

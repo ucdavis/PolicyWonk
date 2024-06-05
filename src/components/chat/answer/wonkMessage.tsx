@@ -36,10 +36,10 @@ export const WonkMessage = ({
 
   return (
     <div className='row mb-3'>
-      <div className='col-3 col-md-1 mb-2'>
+      <div className='col-2 col-sm-1 mb-2'>
         <WonkPortrait isLoading={isLoading} />
       </div>
-      <div className='col-10 col-md-11 gtag'>
+      <div className='col-10 gtag'>
         <p className='chat-name'>
           <strong>Policy Wonk</strong>
         </p>
@@ -106,7 +106,7 @@ const cleanBadCitationList = (str: string) => {
 
 const reformatFootnotes = (markdown: string) => {
   // Regular expression to match a footnote pattern [^doc2]: with optional leading whitespaces or newlines
-  const footnotePattern = /(?:\s*\n)?(\[\^doc[0-9]+\]:\s*\[.*?\])/g;
+  const footnotePattern = /(?:\s*\n)?(\[\^\w+\]:\s*\[.*?\])/g;
 
   // Replace function to ensure each footnote starts on a new line
   const formattedMarkdown = markdown.replace(

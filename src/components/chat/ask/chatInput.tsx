@@ -20,10 +20,10 @@ import FocusBar from './focusBar';
 // Will send the actual message to the chatAI system
 const ChatInput = () => {
   const gtagEvent = useGtagEvent();
-  const [focus, setFocus] = React.useState(focuses[0]);
   const [aiState] = useAIState<typeof AI>();
-
   const [_, setMessagesUI] = useUIState<typeof AI>();
+
+  const [focus, setFocus] = React.useState(aiState.focus);
 
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   // as Actions maybe a little hack but it lets us strongly type the actions
