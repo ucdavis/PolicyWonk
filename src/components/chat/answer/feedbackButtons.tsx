@@ -11,8 +11,9 @@ import { useAIState, useActions } from 'ai/rsc';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
-import { GTagEvents, gtagEvent } from '@/lib/gtag';
-import { Feedback } from '@/models/chat';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
+import { ChatHistory, Feedback } from '@/models/chat';
+import { GTagEvents } from '@/models/gtag';
 
 export type FeedbackLoadingStates = '' | Feedback;
 
@@ -22,17 +23,22 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
   const [aiState, setAIState] = useAIState<typeof AI>();
   const { id: chatId, reaction: feedback } = aiState;
   const { submitFeedback } = useActions<typeof AI>();
+  const gtagEvent = useGtagEvent();
 
   const onFeedback = async (newFeedback: Feedback) => {
-    // optimistically update the AI state
-    setAIState((currentAIState) => ({
-      ...currentAIState,
+    const newAiState: ChatHistory = {
+      ...aiState,
       reaction: newFeedback,
-    }));
+    };
+    // optimistically update the AI state
+    setAIState(newAiState);
 
     gtagEvent({
-      event: GTagEvents.FEEDBACK,
-      chat: aiState,
+      event:
+        newFeedback === 'thumbs_up'
+          ? GTagEvents.FEEDBACK_THUMBS_UP
+          : GTagEvents.FEEDBACK_THUMBS_DOWN,
+      chat: newAiState,
     });
 
     try {

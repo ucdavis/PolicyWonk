@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 
 import { StreamableValue, readStreamableValue } from 'ai/rsc';

@@ -22,7 +22,6 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
       ref={formRef}
       className='d-flex flex-column mt-3'
       onSubmit={async (e: any) => {
-        // can you pull this out? how does this work with server actions?
         e.preventDefault();
 
         const value = input.trim();

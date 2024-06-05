@@ -3,7 +3,6 @@
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css'; // Import the CSS
 config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
-import { GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
@@ -12,6 +11,7 @@ import Footer from '@/components/layout/footer';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Providers from '@/components/layout/providers';
 import Sidebar from '@/components/layout/sidebar';
+import GtagProvider from '@/lib/gtagProvider';
 
 export const metadata: Metadata = {
   title: 'Policy Wonk',
@@ -26,8 +26,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head>
-        <GoogleTagManager gtmId='GTM-NNCH6SSL' />
-
+        <GtagProvider />
         <link rel='image_src' href='/media/thumbnail.jpg' />
         <link
           rel='apple-touch-icon'
