@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
-import { GTagEvents } from '@/lib/gtag';
 import { IconVariants, IconVariantOptions } from '@/models/animations';
+import { GTagEvents } from '@/models/gtag';
 
 import { ShareModalLoadingStates } from './shareModal';
 

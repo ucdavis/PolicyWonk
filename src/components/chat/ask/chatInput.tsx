@@ -5,8 +5,9 @@ import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/actions';
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
+import { GTagEvents } from '@/models/gtag';
 
 import FocusBanner from '../answer/focusBanner';
 import { UserMessage } from '../userMessage';
@@ -18,6 +19,7 @@ import FocusBar from './focusBar';
 // Container for all of components that can be used to send messages to the chat
 // Will send the actual message to the chatAI system
 const ChatInput = () => {
+  const gtagEvent = useGtagEvent();
   const [focus, setFocus] = React.useState(focuses[0]);
   const [aiState] = useAIState<typeof AI>();
 

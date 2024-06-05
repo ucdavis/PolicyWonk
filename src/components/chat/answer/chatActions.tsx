@@ -7,8 +7,9 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/actions';
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '@/lib/util';
+import { GTagEvents } from '@/models/gtag';
 
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';
@@ -18,6 +19,7 @@ interface ChatActionsProps {
 }
 
 const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
+  const gtagEvent = useGtagEvent();
   const pathname = usePathname();
   const onSharedPage = pathname.includes('/share/');
   const [aiState] = useAIState<typeof AI>();

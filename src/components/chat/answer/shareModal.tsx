@@ -9,7 +9,8 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
+import { GTagEvents } from '@/models/gtag';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
@@ -21,6 +22,7 @@ export type ShareModalLoadingStates =
   | GTagEvents.UNSHARE;
 
 const ShareModal: React.FC = () => {
+  const gtagEvent = useGtagEvent();
   const { shareChat, unshareChat } = useActions<typeof AI>();
   const [aiState] = useAIState<typeof AI>();
   const { id: chatId, shareId } = aiState;

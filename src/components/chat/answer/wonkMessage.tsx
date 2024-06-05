@@ -5,12 +5,13 @@ import { StreamableValue } from 'ai/rsc';
 import Link from 'next/link';
 import remarkGfm from 'remark-gfm';
 
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import {
   useStreamableText,
   useTempStreamableText,
 } from '@/lib/hooks/useStreamableText';
 import { MemoizedReactMarkdown } from '@/lib/markdown';
+import { GTagEvents } from '@/models/gtag';
 
 import { WonkPortrait } from '../rolePortrait';
 
@@ -27,6 +28,7 @@ export const WonkMessage = ({
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
 }) => {
+  const gtagEvent = useGtagEvent();
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
 

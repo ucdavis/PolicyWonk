@@ -1,7 +1,3 @@
-'use client';
-
-import { sendGTMEvent } from '@next/third-parties/google';
-
 import { ChatHistory, Feedback } from '@/models/chat';
 
 /* the properties here should use snake_case and exactly match what is set up in GTM */
@@ -30,7 +26,7 @@ export enum GTagEvents {
   */
 }
 
-interface GTagEventVariables {
+export interface GTagEventVariables {
   // if you add a new custom variable, remember to add it as a custom dimension in GA
   event: GTagEvents;
   feedback?: Feedback;
@@ -40,19 +36,7 @@ interface GTagEventVariables {
   // citation_url?: string; // this is a custom dimension, but we don't need to send it directly, it is pulled from the target URL in GTM
 }
 
-interface GTagEventProps {
+export interface GTagEventProps {
   event: GTagEvents;
   chat?: ChatHistory;
 }
-/* takes in the name of the event and the full AI state, and then extracts the variables we have set up in GTM */
-export const gtagEvent = ({ event, chat }: GTagEventProps): void => {
-  const eventObj: GTagEventVariables = {
-    event,
-    focus: chat?.focus?.name,
-    sub_focus: chat?.focus?.subFocus,
-    feedback: chat?.reaction,
-    llm_model: chat?.llmModel,
-  };
-
-  sendGTMEvent(eventObj);
-};
