@@ -49,7 +49,7 @@ export const WonkMessage = ({
               remarkPlugins={[remarkGfm]}
               components={{
                 a: ({ node, ...props }) => {
-                  // open links in new tab but not for internal links
+                  // external links should open in a new tab
                   if (props.href?.startsWith('http')) {
                     return (
                       <a
@@ -63,7 +63,28 @@ export const WonkMessage = ({
                         rel='noopener noreferrer'
                       />
                     );
-                  } else {
+                  }
+                  // internal links might be footnotes and we want to handle them differently
+                  else if (props.href?.startsWith('#')) {
+                    const footnoteRef = Object.keys(props).find(
+                      (key) => key === 'data-footnote-ref'
+                    );
+
+                    if (footnoteRef) {
+                      // for footnote references, we want to show them in a superscript
+                      return <sup>{props.children}</sup>;
+                    }
+
+                    const footnoteBackRef = Object.keys(props).find(
+                      (key) => key === 'data-footnote-backref'
+                    );
+
+                    if (footnoteBackRef) {
+                      // don't render the backref
+                      return null;
+                    }
+
+                    // other internal links should be handled by next/link
                     return (
                       <Link
                         onClick={() => {
@@ -75,6 +96,9 @@ export const WonkMessage = ({
                         href={props.href || '#'}
                       />
                     );
+                  } else {
+                    // regular links (like mailto:)
+                    return <a {...props} />;
                   }
                 },
               }}
@@ -93,7 +117,7 @@ export const WonkMessage = ({
 
 const stripTemporaryCitations = (content: string) => {
   // temporary citations are of the form <c:1234>
-  // we want to strip these out
+  // we want to strip these out so they aren't shown
   return content.replace(/<c:\d+>/g, '');
 };
 
