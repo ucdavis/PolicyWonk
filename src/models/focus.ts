@@ -65,3 +65,37 @@ export const unions: Union[] = [
   { key: 'f3', value: 'Local 4920' },
   { key: 'm3', value: 'Medical Residents' },
 ];
+
+// get a focus w/ sub-focus if it exists, otherwise return undefined
+export const getFocusWithSubFocus = (
+  focus?: string,
+  subFocus?: string
+): Focus | undefined => {
+  const foundFocus = focuses.find((f) => f.name === focus);
+
+  if (!foundFocus) {
+    return;
+  }
+
+  // right now, we only have unions as a focus with sub-focus
+  if (foundFocus.name === 'unions') {
+    // find the union by key
+    const union = unions.find((u) => u.key === subFocus);
+
+    // if we found the union, we can return the focus with the union name as the subFocus
+    if (union) {
+      return {
+        ...foundFocus,
+        subFocus: union.value,
+        description: getUnionDescription(union),
+      };
+    }
+  } else {
+    // if the focus doesn't have a sub-focus, we can just return the focus
+    return foundFocus;
+  }
+};
+
+export const getUnionDescription = (union: Union): string => {
+  return union ? `${union.value} (${union.key})` : '';
+};

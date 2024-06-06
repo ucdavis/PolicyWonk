@@ -64,7 +64,7 @@ img.chat-portrait {
         color:$secondary-font;
     }
     .history-list {
-        max-height:530px;
+        max-height:700px;
         overflow-y: scroll;
         width: calc(100% + 15px);
         padding:0;
@@ -164,7 +164,10 @@ img.chat-portrait {
         font-family: $sans-bold;
         color:$primary-font;
         text-transform: uppercase;
-        font-size:1.1rem;
+        font-size:1rem;
+    }
+    p {
+        font-size:0.9rem; 
     }
     &:hover {
         border-bottom:4px solid $primary-color;
@@ -180,7 +183,6 @@ img.chat-portrait {
   }
 
 }
-
 
 .focus-bar {
   cursor: pointer;

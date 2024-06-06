@@ -19,6 +19,23 @@
   color: $tertiary-font;
   font-size: 1.4rem;
 }
+.btn-offcanvas {
+  position: absolute;
+  top:2%;
+  left:5%;
+  box-shadow: none;
+  border: none;
+  font-size: 1.2rem;
+  padding:0;
+  margin:0;
+  color:$secondary-font;
+  &:hover {
+    color:$secondary-color;
+  }
+  &:active {
+    border: none;
+  }
+}
 .btn-link {
   border:none;
   box-shadow:none;
@@ -90,4 +107,7 @@
     }
     
 }
+}
+.offcanvas-backdrop-hide {
+  background-color: transparent;
 }

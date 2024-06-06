@@ -9,14 +9,20 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/actions';
-import { gtagEvent, GTagEvents } from '@/lib/gtag';
+import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
+import { GTagEvents } from '@/models/gtag';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
 
-export type ShareModalLoadingStates = '' | 'share' | 'regen' | 'unshare';
+export type ShareModalLoadingStates =
+  | ''
+  | GTagEvents.SHARE
+  | GTagEvents.REGEN_SHARE
+  | GTagEvents.UNSHARE;
 
 const ShareModal: React.FC = () => {
+  const gtagEvent = useGtagEvent();
   const { shareChat, unshareChat } = useActions<typeof AI>();
   const [aiState] = useAIState<typeof AI>();
   const { id: chatId, shareId } = aiState;
@@ -25,25 +31,27 @@ const ShareModal: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState<ShareModalLoadingStates>('');
   const isShared = shareId !== undefined;
 
-  const handleShare = async () => {
-    setIsLoading('share');
-    gtagEvent({ event: GTagEvents.SHARE, chat: aiState });
-    await shareChat(chatId);
-    setIsLoading('');
-  };
-
-  const handleRegenShare = async () => {
-    setIsLoading('regen');
-    gtagEvent({ event: GTagEvents.REGEN_SHARE, chat: aiState });
+  const handleShare = async (
+    type: GTagEvents.SHARE | GTagEvents.REGEN_SHARE
+  ) => {
+    setIsLoading(type);
+    gtagEvent({
+      event: type,
+      chat: aiState,
+    });
     await shareChat(chatId);
     setIsLoading('');
   };
 
   const handleUnshare = async () => {
-    setIsLoading('unshare');
+    setIsLoading(GTagEvents.UNSHARE);
     gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
     await unshareChat(chatId);
     setIsLoading('');
+  };
+
+  const handleCopyShareUrl = () => {
+    gtagEvent({ event: GTagEvents.COPY_SHARE, chat: aiState });
   };
 
   const toggle = () => {
@@ -60,7 +68,13 @@ const ShareModal: React.FC = () => {
         selected={isShared}
         title={'Share Chat'}
       />
-      <Modal isOpen={isOpen} toggle={toggle}>
+      <Modal
+        isOpen={isOpen}
+        toggle={toggle}
+        onOpened={() => {
+          gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat: aiState });
+        }}
+      >
         <ModalHeader toggle={toggle}>Share Chat</ModalHeader>
         <ModalBody>
           <p>
@@ -72,14 +86,18 @@ const ShareModal: React.FC = () => {
           <SharedUrl
             shareId={shareId}
             isShared={isShared}
-            handleRegenShare={handleRegenShare}
+            handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
             handleUnshare={handleUnshare}
+            handleCopyShareUrl={handleCopyShareUrl}
             isLoading={isLoading}
           />
         </ModalBody>
         <ModalFooter>
           {!isShared && (
-            <ShareButton handleShare={handleShare} loadingState={isLoading} />
+            <ShareButton
+              handleShare={() => handleShare(GTagEvents.SHARE)}
+              loadingState={isLoading}
+            />
           )}
           <Button color='secondary' onClick={toggle}>
             {!isShared ? 'Cancel' : 'Close'}

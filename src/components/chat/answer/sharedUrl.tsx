@@ -15,6 +15,7 @@ interface SharedUrlProps {
   isShared: boolean;
   handleRegenShare: () => void;
   handleUnshare: () => void;
+  handleCopyShareUrl: () => void;
   isLoading: ShareModalLoadingStates;
 }
 
@@ -23,6 +24,7 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
   isShared,
   handleRegenShare,
   handleUnshare,
+  handleCopyShareUrl,
   isLoading,
 }) => {
   const url = useShareUrl(shareId);
@@ -57,7 +59,11 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
               readOnly={true}
             />
             <div className='ms-2'>
-              <CopyToClipboardButton value={url} id='gtag-copy-share-url' />
+              <CopyToClipboardButton
+                value={url}
+                id='gtag-copy-share-url'
+                onClick={handleCopyShareUrl}
+              />
               <RegenerateShareButton
                 handleShare={handleRegenShare}
                 loadingState={isLoading}

@@ -35,7 +35,13 @@ const MainContent = () => {
   }, [aiState.messages, router, aiState.id, pathname]);
 
   const onNewMessage = () => {
-    router.push('/');
+    let newRoute = `/?focus=${aiState.focus.name}`;
+
+    if (aiState.focus.subFocus) {
+      newRoute += `&subFocus=${aiState.focus.subFocus}`;
+    }
+
+    router.push(newRoute);
   };
 
   return (

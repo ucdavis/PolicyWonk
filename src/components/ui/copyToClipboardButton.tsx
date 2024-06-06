@@ -13,11 +13,13 @@ interface CopyToClipboardButtonProps extends HTMLMotionProps<'button'> {
 
 const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
   value,
+  onClick,
   ...rest
 }) => {
-  const handleCopy = () => {
+  const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
     // since this is in an onclick, it should be okay to use navigator
     navigator.clipboard.writeText(value);
+    onClick?.(e);
   };
 
   return (
@@ -25,7 +27,7 @@ const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
       displayBeforeClick={<FontAwesomeIcon icon={faCopy} />}
       displayOnClick={<FontAwesomeIcon icon={faCopySolid} />}
       onClick={handleCopy}
-      clearOnHover={true} // keep solid icon since we immediately copied
+      clearOnHover={true}
       title='Copy to clipboard'
       {...rest}
     />
