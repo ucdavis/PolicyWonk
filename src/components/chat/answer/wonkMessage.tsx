@@ -49,7 +49,7 @@ export const WonkMessage = ({
               remarkPlugins={[remarkGfm]}
               components={{
                 a: ({ node, ...props }) => {
-                  // open links in new tab but not for internal links
+                  // external links should open in a new tab
                   if (props.href?.startsWith('http')) {
                     return (
                       <a
@@ -63,7 +63,28 @@ export const WonkMessage = ({
                         rel='noopener noreferrer'
                       />
                     );
-                  } else {
+                  }
+                  // internal links might be footnotes and we want to handle them differently
+                  else if (props.href?.startsWith('#')) {
+                    const footnoteRef = Object.keys(props).find(
+                      (key) => key === 'data-footnote-ref'
+                    );
+
+                    if (footnoteRef) {
+                      // for footnote references, we want to show them in a superscript
+                      return <sup>{props.children}</sup>;
+                    }
+
+                    const footnoteBackRef = Object.keys(props).find(
+                      (key) => key === 'data-footnote-backref'
+                    );
+
+                    if (footnoteBackRef) {
+                      // don't render the backref
+                      return null;
+                    }
+
+                    // other internal links should be handled by next/link
                     return (
                       <Link
                         onClick={() => {
@@ -75,6 +96,9 @@ export const WonkMessage = ({
                         href={props.href || '#'}
                       />
                     );
+                  } else {
+                    // regular links (like mailto:)
+                    return <a {...props} />;
                   }
                 },
               }}
@@ -91,38 +115,15 @@ export const WonkMessage = ({
   );
 };
 
-const cleanBracketedExpression = (str: string) => {
-  return str.replace(/\[\^([^\]]+)\]/g, (fullMatch, innerContent) => {
-    // Remove all non-word characters (except digits and underscore) and spaces from the innerContent
-    const cleanedContent = innerContent.replace(/[\W_]+/g, '');
-    return '[^' + cleanedContent + ']';
-  });
-};
-
-const cleanBadCitationList = (str: string) => {
-  // sometimes the llm lists citations w/ `- [^APM 015]` and we need to dump the `- `
-  return str.replace(/- \[\^([^\]]+)\]/g, '[^$1]');
-};
-
-const reformatFootnotes = (markdown: string) => {
-  // Regular expression to match a footnote pattern [^doc2]: with optional leading whitespaces or newlines
-  const footnotePattern = /(?:\s*\n)?(\[\^\w+\]:\s*\[.*?\])/g;
-
-  // Replace function to ensure each footnote starts on a new line
-  const formattedMarkdown = markdown.replace(
-    footnotePattern,
-    (match) => `\n${match.trim()}`
-  );
-
-  // Trim any leading or trailing whitespace (to clear any excessive newlines at the start)
-  return formattedMarkdown.trim();
+const stripTemporaryCitations = (content: string) => {
+  // temporary citations are of the form <c:1234>
+  // we want to strip these out so they aren't shown
+  return content.replace(/<c:\d+>/g, '');
 };
 
 // fix up common markdown issues
 const sanitizeMarkdown = (content: string) => {
-  content = cleanBracketedExpression(content);
-  content = cleanBadCitationList(content);
-  content = reformatFootnotes(content);
+  content = stripTemporaryCitations(content);
 
   return content;
 };
