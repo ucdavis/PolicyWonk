@@ -212,3 +212,22 @@ img.chat-portrait {
         
     }
 }
+
+.alert-tag {
+    position: absolute;
+    top: 10%;
+    left: 58%;
+    background-color:$redbud;
+    width:152px;
+    height:36px;
+    text-align: left;
+    padding-left:16px;
+    padding-top:4px;
+    p {
+        text-transform: uppercase;
+        color:#fff;
+        font-family:$sans-bold;
+        margin:0;
+        padding:0;
+    }
+}
