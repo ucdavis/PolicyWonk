@@ -48,7 +48,7 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
                 </h1>
                 {history}
               </header>
-              <div className='alert-tag-mobile'>
+              <div className='alert-tag alert-tag-mobile'>
                 <p>BETA v1.2.3.311</p>
               </div>
             </div>
