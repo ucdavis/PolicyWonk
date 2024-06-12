@@ -201,6 +201,11 @@ export const transformContentWithCitations = (
   // 1. find all citations in the text
   const citations = docText.match(/<c:\d+>/g) ?? [];
 
+  // if there are no citations, we don't need to do anything
+  if (citations.length === 0) {
+    return docText;
+  }
+
   // 2. replace the citations in the text w/ markdown citations and keep track of the citations
   const usedCitationDocNums = new Set<number>();
 
