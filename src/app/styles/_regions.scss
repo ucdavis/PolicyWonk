@@ -48,7 +48,7 @@ img.chat-portrait {
 }
 .form-floating {
     .wonk-input {
-        height:133px;
+        height:150px;
     }
 }
 .login-card {
@@ -141,11 +141,15 @@ img.chat-portrait {
     border-top-right-radius: 6px;
     margin-bottom:-20px;
     transition: background-color 100ms linear;
+    cursor: pointer;
+    margin-top:8%;
+    padding:6px 0;
     &:hover {
         background-color: #FFE599;
     }
     .btn-link {
         padding-right:8px;
+        font-size:0.9rem;
     }
 
 }
@@ -183,16 +187,13 @@ img.chat-portrait {
   }
 
 }
-
-.focus-bar {
-  cursor: pointer;
-}
 .focus-result {
     background-color:#F7F7F7;
     border:1px solid $borders;
     margin-bottom:20px;
     border-radius: 6px;
     .btn-link {
+        
         padding-right:8px;
         cursor: initial;
         &:hover {
@@ -216,13 +217,29 @@ img.chat-portrait {
 .alert-tag {
     position: absolute;
     top: 10%;
-    left: 58%;
-    background-color:$redbud;
-    width:152px;
-    height:36px;
+    left: 63.5%;
+    background-color: $california;
+    width: 132px;
     text-align: left;
-    padding-left:16px;
-    padding-top:4px;
+    padding: 4px 0 4px 16px;
+    p {
+        text-transform: uppercase;
+        color:#fff;
+        font-family:$sans-bold;
+        margin:0;
+        padding:0;
+         font-size:0.8rem;
+    }
+    
+}
+.alert-tag-mobile {
+    position: absolute;
+    top: 11%;
+    left: 66%;
+    background-color: $california;
+    width: 136px;
+    text-align: left;
+    padding: 4px 0 4px 16px;
     p {
         text-transform: uppercase;
         color:#fff;
