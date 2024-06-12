@@ -22,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ history, footer }) => {
         </header>
         {/* {footer} */}
         <div className='alert-tag'>
-          <p>Beta v1.2.3.311</p>
+          <p>BETA v1.2.3.311</p>
         </div>
       </div>
     </div>
