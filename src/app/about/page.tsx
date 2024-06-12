@@ -22,16 +22,21 @@ const AboutPage = () => {
       <ul>
         <li>
           <strong>Immediate Answers:</strong> Got a policy question? Just ask,
-          and PolicyWonk provides you with clear, concise answers, pronto! ✏️
+          and PolicyWonk provides you with clear, concise answers, pronto!
+        </li>
+        <li>
+          <strong>Intense Focus:</strong> Click on the focus bar to "focus" on
+          different policy areas, such as the core UC/UCD policies, APM, Union
+          Contracts, and more!
         </li>
         <li>
           <strong>Always Informed:</strong> PolicyWonk's database is updated
-          regularly, ensuring you get the most current policy information. 📅
+          regularly, ensuring you get the most current policy information.
         </li>
         <li>
           <strong>Simple to Use:</strong> Designed with user-friendliness in
           mind, PolicyWonk makes navigating policies as straightforward as
-          chatting with a friend. 🤝
+          chatting with a friend.
         </li>
       </ul>
 
@@ -53,6 +58,11 @@ const AboutPage = () => {
         <li>
           <a href='https://ucnet.universityofcalifornia.edu/resources/employment-policies-contracts/bargaining-units/'>
             UC Davis Bargaining Units and Contracts
+          </a>
+        </li>
+        <li>
+          <a href='https://kb.ucdavis.edu'>
+            UCD Public Knowledge Base (Service Now)
           </a>
         </li>
       </ul>
