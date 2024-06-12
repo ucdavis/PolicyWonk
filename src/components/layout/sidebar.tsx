@@ -2,6 +2,8 @@ import React from 'react';
 
 import Link from 'next/link';
 
+import { buildVersion } from '@/models/static';
+
 interface SidebarProps {
   history: React.ReactNode;
   footer: React.ReactNode;
@@ -22,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ history, footer }) => {
         </header>
         {/* {footer} */}
         <div className='alert-tag'>
-          <p>Beta v1.2.3.311</p>
+          <p>Beta v{buildVersion}</p>
         </div>
       </div>
     </div>
