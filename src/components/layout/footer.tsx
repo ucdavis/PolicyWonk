@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
           </a>
           <p>
             &copy; UC Regents{' '}
-            <span className='version-notice'>Policywonk v1.2.3.311</span>
+            <span className='version-notice'>PolicyWonk v1.2.3.311</span>
           </p>
         </div>
         <div className='col text-end'>
