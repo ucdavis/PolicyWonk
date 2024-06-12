@@ -50,10 +50,10 @@ const MainContent = () => {
         <>
           <WonkTop>
             <ChatHeader>
-              Meet PolicyWonk, your personal guide to navigating all the ins and
-              outs of our UC policies. Whether you're a newcomer or a seasoned
-              member of our community, this savvy assistant is here to ensure
-              you're always informed and compliant.{' '}
+              Meet Policywonk, your personal guide to navigating all the ins and
+              outs of our UC policies and procedures. Whether you're a newcomer
+              or a seasoned member of our community, this savvy assistant is
+              here to ensure you're always informed.{' '}
               <Link href='/about'>Learn more</Link>
             </ChatHeader>
           </WonkTop>
