@@ -29,16 +29,13 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
 
   return (
     <>
-      <div className='focus-wrapper'>
-        <p>click to change focus</p>
-        <div className='focus-bar' onClick={() => setOpen(true)}>
-          <div className='d-flex justify-content-start align-items-center'>
-            <span className='btn btn-link'>
-              <FontAwesomeIcon icon={faFilter} />
-              Focus: {focus.name}
-            </span>
-            <span className='text-muted small'>{focus.description}</span>
-          </div>
+      <div className='focus-bar' onClick={() => setOpen(true)}>
+        <div className='d-flex justify-content-start align-items-center'>
+          <span className='btn btn-link'>
+            <FontAwesomeIcon icon={faFilter} />
+            Focus: {focus.name}
+          </span>
+          <span className='text-muted small'>{focus.description}</span>
         </div>
       </div>
 
