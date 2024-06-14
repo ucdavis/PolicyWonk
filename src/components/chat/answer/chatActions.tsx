@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '@/lib/util';
 import { GTagEvents } from '@/models/gtag';

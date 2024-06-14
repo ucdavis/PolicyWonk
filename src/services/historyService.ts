@@ -180,3 +180,15 @@ export const removeShareChat = async (chatId: string) => {
 
   return;
 };
+
+export const removeChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
+  const chatsDb = await getChatsCollection();
+
+  const res = await chatsDb.deleteOne({ id: chatId, userId: session.user?.id });
+  if (res.deletedCount === 0) {
+    return; // TODO: throw error
+  }
+
+  return;
+};

@@ -3,8 +3,10 @@ import React from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { Button } from 'reactstrap';
 
+import { deleteChat } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
 
 interface ChatHistoryList {
@@ -13,13 +15,23 @@ interface ChatHistoryList {
 
 // separate out rendering the chat list so we can animate it as a client component
 const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
+  const router = useRouter();
   const pathname = usePathname();
+
   if (!chats) {
     return null;
   }
 
   const isActive = (chatId: string) => {
     return pathname.includes(chatId);
+  };
+
+  const handleRemoveChat = async (chatId: string) => {
+    await deleteChat(chatId);
+    if (pathname.includes(chatId)) {
+      router.replace('/chat/new');
+    }
+    router.refresh();
   };
 
   return (
@@ -32,11 +44,25 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             transition={{
-              duration: 0.3,
+              duration: 0.5,
               ease: 'easeIn',
             }}
+            exit={{ height: 0, opacity: 0 }}
           >
-            <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+            <div className='row'>
+              <div className='col-1'>
+                <Button
+                  block={false}
+                  color='primary'
+                  onClick={() => handleRemoveChat(chat.id)}
+                >
+                  X
+                </Button>
+              </div>
+              <div className='col'>
+                <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+              </div>
+            </div>
             <div className='history-fade'></div>
           </motion.li>
         ))}

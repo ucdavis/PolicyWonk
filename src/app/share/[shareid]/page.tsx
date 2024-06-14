@@ -6,7 +6,7 @@ import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { ChatHistory } from '@/models/chat';
 import { getSharedChat } from '@/services/historyService';
 

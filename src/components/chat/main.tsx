@@ -5,7 +5,7 @@ import { useAIState, useUIState } from 'ai/rsc';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';

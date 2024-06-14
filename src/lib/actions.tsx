@@ -1,27 +1,15 @@
+'use server';
 import { Message } from 'ai';
 import {
-  createAI,
   createStreamableUI,
   createStreamableValue,
-  getAIState,
   getMutableAIState,
   streamUI,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
-import { redirect } from 'next/navigation';
-import { Session } from 'next-auth';
 
-import { auth } from '@/auth';
-import FocusBanner from '@/components/chat/answer/focusBanner';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
-import { UserMessage } from '@/components/chat/userMessage';
-import {
-  ChatHistory,
-  Feedback,
-  UIState,
-  UIStateNode,
-  blankAIState,
-} from '@/models/chat';
+import { Feedback, UIStateNode } from '@/models/chat';
 import { Focus } from '@/models/focus';
 import {
   getEmbeddings,
@@ -33,11 +21,14 @@ import {
   transformContentWithCitations,
 } from '@/services/chatService';
 import {
+  removeChat,
   removeShareChat,
   saveChat,
   saveReaction,
   saveShareChat,
 } from '@/services/historyService';
+
+import { AI } from './aiProvider';
 
 // to add an action, add it to this type and also in createAI at the bottom of this file
 // the functions need to be above the createAI call or you get the very helpful error "action is not a function"
@@ -46,12 +37,10 @@ export type WonkActions<T = any, R = any> = {
   shareChat: (chatId: string) => Promise<void>;
   unshareChat: (chatId: string) => Promise<void>;
   submitFeedback: (chatId: string, feedback: Feedback) => Promise<void>;
+  deleteChat: (chatId: string) => Promise<void>;
 };
 
-const submitUserMessage = async (userInput: string, focus: Focus) => {
-  'use server'; // use server is inside of the function because only this server action
-  // is async. we want to run createAI on the client
-
+export const submitUserMessage = async (userInput: string, focus: Focus) => {
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
 
@@ -176,9 +165,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
   return uiNode;
 };
 
-const shareChat = async (chatId: string) => {
-  'use server';
-
+export const shareChat = async (chatId: string) => {
   const aiState = getMutableAIState<typeof AI>();
 
   const shareChat = await saveShareChat(chatId);
@@ -189,9 +176,7 @@ const shareChat = async (chatId: string) => {
   });
 };
 
-const unshareChat = async (chatId: string) => {
-  'use server';
-
+export const unshareChat = async (chatId: string) => {
   const aiState = getMutableAIState<typeof AI>();
 
   await removeShareChat(chatId);
@@ -202,9 +187,7 @@ const unshareChat = async (chatId: string) => {
   });
 };
 
-const submitFeedback = async (chatId: string, feedback: Feedback) => {
-  'use server';
-
+export const submitFeedback = async (chatId: string, feedback: Feedback) => {
   const aiState = getMutableAIState<typeof AI>();
 
   await saveReaction(chatId, feedback);
@@ -214,44 +197,6 @@ const submitFeedback = async (chatId: string, feedback: Feedback) => {
   });
 };
 
-// AI is a provider you wrap your application with so you can access AI and UI state in your components.
-export const AI = createAI<ChatHistory, UIState, WonkActions>({
-  actions: {
-    submitUserMessage,
-    shareChat,
-    unshareChat,
-    submitFeedback,
-  },
-  initialUIState: [],
-  initialAIState: blankAIState,
-  onGetUIState: async () => {
-    'use server';
-
-    const session = (await auth()) as Session;
-    // middleware should take care of this, but if it doesn't then redirect to login
-    if (!session?.user?.id) {
-      redirect('/auth/login');
-    }
-    const aiState = getAIState();
-    const messages: Message[] = aiState.messages;
-    return messages
-      .filter((message) => message.role !== 'system')
-      .map((message: Message, index) => ({
-        id: message.id,
-        display:
-          message.role === 'user' ? (
-            <>
-              <FocusBanner focus={aiState.focus} />
-              <UserMessage user={aiState.user}>{message.content}</UserMessage>
-            </>
-          ) : (
-            <WonkMessage
-              content={message.content}
-              isLoading={false}
-              wonkThoughts={''}
-            />
-          ),
-      }));
-  },
-  // not using onSetAIState, instead we are manually saving to the db with historyService
-});
+export const deleteChat = async (chatId: string) => {
+  await removeChat(chatId);
+};

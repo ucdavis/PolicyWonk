@@ -4,7 +4,7 @@ import React from 'react';
 import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
 import { GTagEvents } from '@/models/gtag';
