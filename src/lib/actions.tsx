@@ -113,8 +113,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
     wonkThoughts.done('Search complete, getting your answer...'); // chatMessage component controls when to stop showing this message
 
-    // The `render()` creates a generated, streamable UI.
-    // this is the response itself. render returns a ReactNode (our textNode)
+    // start streaming the assistant response, this returns the ReactNode to render
     streamUI({
       model: openai(llmModel),
       initial: textNode,
@@ -163,7 +162,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
               },
             ],
           });
-          // TODO: use onSetAIState when it is no longer unstable
           (async () => {
             // save the chat to the db
             await saveChat(chatId, aiState.get().messages, focus);
