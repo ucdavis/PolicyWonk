@@ -5,7 +5,7 @@ import {
   createStreamableValue,
   getAIState,
   getMutableAIState,
-  render,
+  streamUI,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 import { redirect } from 'next/navigation';
@@ -115,9 +115,8 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
     // The `render()` creates a generated, streamable UI.
     // this is the response itself. render returns a ReactNode (our textNode)
-    render({
-      model: llmModel,
-      provider: openai,
+    streamUI({
+      model: openai(llmModel),
       initial: textNode,
       messages: [
         ...aiState.get().messages.map((m: any) => ({
