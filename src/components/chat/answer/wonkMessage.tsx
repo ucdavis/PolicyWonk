@@ -18,12 +18,10 @@ import { WonkPortrait } from '../rolePortrait';
 import ChatActions from './chatActions';
 
 export const WonkMessage = ({
-  chatId,
   content,
   isLoading,
   wonkThoughts,
 }: {
-  chatId: string; // will be '' until the chat is finished loading and saved
   content: string | StreamableValue<string>;
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
@@ -110,7 +108,7 @@ export const WonkMessage = ({
           )}
         </div>
       </div>
-      {!isLoading && <ChatActions chatId={chatId} />}
+      {!isLoading && <ChatActions />}
     </div>
   );
 };

@@ -59,10 +59,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
   // user message is added on client
   const chatWindowUI = createStreamableUI();
 
-  const chatId = nanoid(); // generate a new id on submit so we don't duplicate ids
-  const userMsgId = nanoid();
-  const wonkMsgId = nanoid();
-
   // and create the text stream for the response
   let textStream = createStreamableValue();
   // wonk thoughts for fun, but also to show that we can update at any point
@@ -72,7 +68,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
   let textNode: React.ReactNode = (
     <WonkMessage
-      chatId={chatId}
       content={textStream.value}
       wonkThoughts={wonkThoughts.value}
       isLoading={true}
@@ -97,7 +92,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
     const initialMessages: Message[] = [
       systemMessage, // system message with full document info
       {
-        id: userMsgId,
+        id: nanoid(), // new id for the user message
         role: 'user',
         content: userInput,
       },
@@ -106,7 +101,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
     // Update the AI state
     aiState.update({
       ...aiState.get(), // blank state
-      id: chatId, // where the new id is generated
+      id: nanoid(), // where the new id is generated
       focus, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
@@ -139,8 +134,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
           const finalNode = (
             <WonkMessage
-              chatId={chatId}
-              key={wonkMsgId}
               content={finalContent}
               isLoading={false}
               wonkThoughts={''}
@@ -156,7 +149,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
             messages: [
               ...aiState.get().messages,
               {
-                id: wonkMsgId,
+                id: nanoid(), // new id for the message
                 role: 'assistant',
                 content: finalContent,
               },
@@ -164,7 +157,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
           });
           (async () => {
             // save the chat to the db
-            await saveChat(chatId, aiState.get().messages, focus);
+            await saveChat(aiState.get().id, aiState.get().messages, focus);
           })();
         } else {
           textStream.update(delta);
@@ -253,7 +246,6 @@ export const AI = createAI<ChatHistory, UIState, WonkActions>({
             </>
           ) : (
             <WonkMessage
-              chatId={aiState.id}
               content={message.content}
               isLoading={false}
               wonkThoughts={''}
