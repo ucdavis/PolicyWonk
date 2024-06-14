@@ -13,6 +13,11 @@
   }
 }
 
+.delete-chat-button {
+  position:absolute;
+  right:8px;
+  z-index: 9999;
+}
 .btn-feedback {
   border: none;
   background-color: rgba(255, 255, 255, 0.000001);

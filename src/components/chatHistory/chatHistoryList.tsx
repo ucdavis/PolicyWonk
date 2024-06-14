@@ -50,17 +50,17 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
             exit={{ height: 0, opacity: 0 }}
           >
             <div className='row'>
-              <div className='col-1'>
+              <div className='col-11'>
+                <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+              </div>
+              <div className='col-1 delete-chat-button'>
                 <Button
                   block={false}
-                  color='primary'
+                  color='link'
                   onClick={() => handleRemoveChat(chat.id)}
                 >
                   X
                 </Button>
-              </div>
-              <div className='col'>
-                <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
               </div>
             </div>
             <div className='history-fade'></div>
