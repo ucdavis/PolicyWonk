@@ -23,7 +23,7 @@ export const WonkMessage = ({
   isLoading,
   wonkThoughts,
 }: {
-  chatId: string;
+  chatId: string; // will be '' until the chat is finished loading and saved
   content: string | StreamableValue<string>;
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;

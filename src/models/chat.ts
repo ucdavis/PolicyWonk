@@ -1,6 +1,8 @@
 import { Message } from 'ai';
 
-import { Focus } from './focus';
+import { llmModel } from '@/services/chatService';
+
+import { Focus, focuses } from './focus';
 
 export type ChatHistory = {
   id: string;
@@ -13,6 +15,19 @@ export type ChatHistory = {
   reaction?: Feedback;
   timestamp: number;
   shareId?: string;
+};
+
+export const blankAIState: ChatHistory = {
+  id: '', // don't use nanoid() here so we make sure to generate a new id when we create a new chat
+  title: '',
+  messages: [],
+  focus: focuses[0],
+  llmModel: llmModel,
+  user: '',
+  userId: '',
+  reaction: undefined,
+  timestamp: Date.now(),
+  shareId: undefined,
 };
 
 export type Feedback = 'thumbs_up' | 'thumbs_down';
