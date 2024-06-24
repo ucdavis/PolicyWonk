@@ -90,7 +90,7 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
     // Update the AI state
     aiState.update({
       ...aiState.get(), // blank state
-      id: nanoid(), // where the new id is generated
+      // id is set on save to db
       focus, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
@@ -131,22 +131,27 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
 
           // finally, close out the initial UI stream with the final node
           chatWindowUI.done(finalNode);
-          // and update the AI state with the final message
-          aiState.done({
-            ...aiState.get(),
-            focus,
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(), // new id for the message
-                role: 'assistant',
-                content: finalContent,
-              },
-            ],
-          });
+
+          const chatId = nanoid(); // where the chat id is generated
+          const finalMessages: Message[] = [
+            ...aiState.get().messages,
+            {
+              id: nanoid(), // new id for the message
+              role: 'assistant',
+              content: finalContent,
+            },
+          ];
           (async () => {
             // save the chat to the db
-            await saveChat(aiState.get().id, aiState.get().messages, focus);
+            await saveChat(chatId, finalMessages, focus);
+
+            // and update the AI state with the final message
+            aiState.done({
+              ...aiState.get(),
+              id: chatId, // only once the chat has been saved to the db does the aiState.id get set
+              focus,
+              messages: finalMessages,
+            });
           })();
         } else {
           textStream.update(delta);

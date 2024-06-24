@@ -28,8 +28,9 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
 
   const handleRemoveChat = async (chatId: string) => {
     await deleteChat(chatId);
+
     if (pathname.includes(chatId)) {
-      router.replace('/chat/new');
+      router.push('/chat/new'); // router.replace so we don't maintain state
     }
     router.refresh();
   };
