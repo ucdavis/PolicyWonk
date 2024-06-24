@@ -3,7 +3,7 @@ import Logo from '@/components/layout/logo';
 const AboutPage = () => {
   return (
     <div className='container my-5 ms-5'>
-      <div className='home-message'>
+      <div className=''>
         <Logo />
       </div>
       <h1 className='text-center mb-5'>

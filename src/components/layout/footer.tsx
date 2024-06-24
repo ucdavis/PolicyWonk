@@ -23,7 +23,9 @@ const Footer: React.FC = () => {
           </a>
           <p>
             &copy; UC Regents{' '}
-            <span className='version-notice'>PolicyWonk v{buildVersion}</span>
+            <span className='version-notice'>
+              PolicyWonk BETA v{buildVersion}
+            </span>
           </p>
         </div>
         <div className='col text-end'>

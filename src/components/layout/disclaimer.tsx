@@ -4,9 +4,12 @@ const Disclaimer: React.FC = () => {
   return (
     <p className='discreet mt-2'>
       Disclaimer: The information provided by PolicyWonk is for general
-      informational purposes only and should not be considered legal or
-      professional advice. Always consult with the appropriate experts and refer
-      to official policies for accurate and up-to-date information.
+      informational purposes only and is not considered official UC Davis
+      interpretations of policy and/or legal advice. The Policy Owner is
+      responsible for providing policy interpretation and guidance on the
+      subject matter, including changes in laws, regulations, systemwide policy
+      or any other necessary changes that may not yet be reflected in published
+      policy.
     </p>
   );
 };

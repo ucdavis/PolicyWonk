@@ -50,10 +50,9 @@ const MainContent = () => {
         <>
           <WonkTop>
             <ChatHeader>
-              Meet Policywonk, your personal guide to navigating all the ins and
-              outs of our UC policies and procedures. Whether you're a newcomer
-              or a seasoned member of our community, this savvy assistant is
-              here to ensure you're always informed.{' '}
+              Meet PolicyWonk, a resource for navigating UC Davis administrative
+              policies and procedures.
+              <br />
               <Link href='/about'>Learn more</Link>
             </ChatHeader>
           </WonkTop>
