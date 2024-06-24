@@ -10,10 +10,12 @@ const Login: React.FC = () => {
         <Logo />
         <h1>Welcome to Policy Wonk</h1>
         <p className='lede'>
-          This tool will help you answer your UCD policy questions, just login,
-          type your question and viola Policy Wonk will do it's best to answer
-          it!
+          This tool will help you answer your UC Davis administrative policy and
+          procedure questions, just login, type your question and voila
+          PolicyWonk will do it’s best to answer it!
         </p>
+        <br />
+        <br />
         <form
           action={async () => {
             'use server';
