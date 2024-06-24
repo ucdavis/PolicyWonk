@@ -3,16 +3,26 @@ import {
   createAI,
   createStreamableUI,
   createStreamableValue,
+  getAIState,
   getMutableAIState,
-  render,
+  streamUI,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
+import { redirect } from 'next/navigation';
+import { Session } from 'next-auth';
 
+import { auth } from '@/auth';
 import FocusBanner from '@/components/chat/answer/focusBanner';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
 import { UserMessage } from '@/components/chat/userMessage';
-import { ChatHistory, Feedback, UIState, UIStateNode } from '@/models/chat';
-import { Focus, focuses } from '@/models/focus';
+import {
+  ChatHistory,
+  Feedback,
+  UIState,
+  UIStateNode,
+  blankAIState,
+} from '@/models/chat';
+import { Focus } from '@/models/focus';
 import {
   getEmbeddings,
   getSearchResults,
@@ -49,10 +59,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
   // user message is added on client
   const chatWindowUI = createStreamableUI();
 
-  const chatId = aiState.get().id; // provided on the page.tsx <AI> provider
-  const userMsgId = nanoid();
-  const wonkMsgId = nanoid();
-
   // and create the text stream for the response
   let textStream = createStreamableValue();
   // wonk thoughts for fun, but also to show that we can update at any point
@@ -62,7 +68,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
   let textNode: React.ReactNode = (
     <WonkMessage
-      chatId={chatId}
       content={textStream.value}
       wonkThoughts={wonkThoughts.value}
       isLoading={true}
@@ -87,7 +92,7 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
     const initialMessages: Message[] = [
       systemMessage, // system message with full document info
       {
-        id: userMsgId,
+        id: nanoid(), // new id for the user message
         role: 'user',
         content: userInput,
       },
@@ -95,18 +100,17 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
     // Update the AI state
     aiState.update({
-      ...aiState.get(), // chat id, from initial state
+      ...aiState.get(), // blank state
+      id: nanoid(), // where the new id is generated
       focus, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
     wonkThoughts.done('Search complete, getting your answer...'); // chatMessage component controls when to stop showing this message
 
-    // The `render()` creates a generated, streamable UI.
-    // this is the response itself. render returns a ReactNode (our textNode)
-    render({
-      model: llmModel,
-      provider: openai,
+    // start streaming the assistant response, this returns the ReactNode to render
+    streamUI({
+      model: openai(llmModel),
       initial: textNode,
       messages: [
         ...aiState.get().messages.map((m: any) => ({
@@ -130,8 +134,6 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
 
           const finalNode = (
             <WonkMessage
-              chatId={chatId}
-              key={wonkMsgId}
               content={finalContent}
               isLoading={false}
               wonkThoughts={''}
@@ -147,16 +149,15 @@ const submitUserMessage = async (userInput: string, focus: Focus) => {
             messages: [
               ...aiState.get().messages,
               {
-                id: wonkMsgId,
+                id: nanoid(), // new id for the message
                 role: 'assistant',
                 content: finalContent,
               },
             ],
           });
-          // TODO: use onSetAIState when it is no longer unstable
           (async () => {
             // save the chat to the db
-            await saveChat(chatId, aiState.get().messages, focus);
+            await saveChat(aiState.get().id, aiState.get().messages, focus);
           })();
         } else {
           textStream.update(delta);
@@ -222,40 +223,35 @@ export const AI = createAI<ChatHistory, UIState, WonkActions>({
     submitFeedback,
   },
   initialUIState: [],
-  initialAIState: {
-    id: nanoid(),
-    messages: [],
-    title: '',
-    focus: focuses[0],
-    llmModel: llmModel,
-    user: '',
-    userId: '',
-    reaction: undefined,
-    timestamp: Date.now(),
-  },
-  // TODO: use onSetAIState when it is no longer unstable
-  // then we can automatically save the chat to the db whenever the state changes
-  // TODO: also, onGetUIState
-});
+  initialAIState: blankAIState,
+  onGetUIState: async () => {
+    'use server';
 
-export const getUIStateFromAIState = (aiState: ChatHistory) => {
-  return aiState.messages
-    .filter((message) => message.role !== 'system')
-    .map((message: Message, index) => ({
-      id: message.id,
-      display:
-        message.role === 'user' ? (
-          <>
-            <FocusBanner focus={aiState.focus} />
-            <UserMessage user={aiState.user}>{message.content}</UserMessage>
-          </>
-        ) : (
-          <WonkMessage
-            chatId={aiState.id}
-            content={message.content}
-            isLoading={false}
-            wonkThoughts={''}
-          />
-        ),
-    }));
-};
+    const session = (await auth()) as Session;
+    // middleware should take care of this, but if it doesn't then redirect to login
+    if (!session?.user?.id) {
+      redirect('/auth/login');
+    }
+    const aiState = getAIState();
+    const messages: Message[] = aiState.messages;
+    return messages
+      .filter((message) => message.role !== 'system')
+      .map((message: Message, index) => ({
+        id: message.id,
+        display:
+          message.role === 'user' ? (
+            <>
+              <FocusBanner focus={aiState.focus} />
+              <UserMessage user={aiState.user}>{message.content}</UserMessage>
+            </>
+          ) : (
+            <WonkMessage
+              content={message.content}
+              isLoading={false}
+              wonkThoughts={''}
+            />
+          ),
+      }));
+  },
+  // not using onSetAIState, instead we are manually saving to the db with historyService
+});

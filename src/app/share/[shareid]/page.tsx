@@ -6,7 +6,7 @@ import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI, getUIStateFromAIState } from '@/lib/actions';
+import { AI } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
 import { getSharedChat } from '@/services/historyService';
 
@@ -15,7 +15,6 @@ type SharedPageProps = {
     shareid: string;
   };
 };
-// TODO: loading animation when chatId changes
 const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
   const session = (await auth()) as Session;
 
@@ -31,7 +30,7 @@ const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
   }
 
   return (
-    <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
+    <AI initialAIState={chat}>
       <h5>Shared Chat</h5>
       <hr />
       <MainContent />

@@ -1,17 +1,15 @@
 'use server'; // since this is an async component
 import React from 'react';
 
-import { nanoid } from 'nanoid';
 import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
 import NotAuthorized from '@/app/not-authorized';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI, getUIStateFromAIState } from '@/lib/actions';
-import { ChatHistory } from '@/models/chat';
+import { AI } from '@/lib/actions';
+import { ChatHistory, blankAIState } from '@/models/chat';
 import { focuses, getFocusWithSubFocus } from '@/models/focus';
-import { llmModel } from '@/services/chatService';
 import { getChat } from '@/services/historyService';
 
 type HomePageProps = {
@@ -52,7 +50,7 @@ const ChatPage = async ({
   }
 
   return (
-    <AI initialAIState={chat} initialUIState={getUIStateFromAIState(chat)}>
+    <AI initialAIState={chat}>
       <MainContent />
     </AI>
   );
@@ -60,7 +58,6 @@ const ChatPage = async ({
 
 export default ChatPage;
 
-// TODO: move this into a server-only file
 const newChatSession = (
   session: Session,
   focusParam?: string,
@@ -69,14 +66,12 @@ const newChatSession = (
   const focus = getFocusWithSubFocus(focusParam, subFocusParam);
 
   const chat: ChatHistory = {
-    id: nanoid(),
-    title: 'Unknown Title',
-    messages: [],
+    ...blankAIState,
+    // id is '' in state until submitUserMessage() is called
     focus: focus ?? focuses[0],
-    llmModel: llmModel,
     user: session.user?.name ?? 'Unknown User',
     userId: session.user?.id ?? 'Unknown User',
-    timestamp: Date.now(),
   };
+
   return chat;
 };

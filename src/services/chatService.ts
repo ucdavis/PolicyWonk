@@ -1,23 +1,25 @@
 'server only';
+import { createOpenAI } from '@ai-sdk/openai';
+import { EmbeddingModelV1Embedding } from '@ai-sdk/provider';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import {
   KnnQuery,
   QueryDslQueryContainer,
 } from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
-import OpenAI from 'openai';
 
 import { PolicyIndex } from '@/models/chat';
 import { Focus, FocusScope } from '@/models/focus';
 
-export const openai = new OpenAI({
+export const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
 
-const embeddingModel =
-  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large';
+const embeddingModel = openai.embedding(
+  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large'
+);
 
 // get my vector store
 const config: ClientOptions = {
@@ -34,12 +36,11 @@ const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
 export const getEmbeddings = async (query: string) => {
   // get our embeddings
-  const embeddings = await openai.embeddings.create({
-    model: embeddingModel, // needs to be the same model as we used to index
-    input: query,
+  const embeddings = await embeddingModel.doEmbed({
+    values: [query],
   });
 
-  return embeddings;
+  return embeddings.embeddings;
 };
 
 const generateFilter = (
@@ -112,7 +113,7 @@ const generateFilter = (
 };
 
 export const getSearchResults = async (
-  embeddings: OpenAI.Embeddings.CreateEmbeddingResponse,
+  embeddings: EmbeddingModelV1Embedding[],
   focus: Focus
 ) => {
   const searchResultMaxSize = 5;
@@ -124,7 +125,7 @@ export const getSearchResults = async (
 
   const knnQuery: KnnQuery = {
     field: 'vector', // the field we want to search, created by PolicyAcquisition
-    query_vector: embeddings.data[0].embedding, // the query vector
+    query_vector: embeddings[0], // the query vector
     k: searchResultMaxSize,
     num_candidates: 200,
     filter,

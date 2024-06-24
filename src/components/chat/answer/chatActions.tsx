@@ -14,11 +14,9 @@ import { GTagEvents } from '@/models/gtag';
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';
 
-interface ChatActionsProps {
-  chatId: string;
-}
+interface ChatActionsProps {}
 
-const ChatActions: React.FC<ChatActionsProps> = ({ chatId }) => {
+const ChatActions: React.FC<ChatActionsProps> = ({}) => {
   const gtagEvent = useGtagEvent();
   const pathname = usePathname();
   const onSharedPage = pathname.includes('/share/');
