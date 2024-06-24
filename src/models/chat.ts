@@ -6,6 +6,7 @@ import { Focus, focuses } from './focus';
 
 export type ChatHistory = {
   id: string;
+  active: boolean;
   title: string;
   messages: Message[];
   focus: Focus;
@@ -28,6 +29,7 @@ export const blankAIState: ChatHistory = {
   reaction: undefined,
   timestamp: Date.now(),
   shareId: undefined,
+  active: true,
 };
 
 export type Feedback = 'thumbs_up' | 'thumbs_down';

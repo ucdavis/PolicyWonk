@@ -47,13 +47,18 @@ function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
 export const getChat = async (chatId: string, userId: string) => {
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ id: chatId, userId: userId });
+  const queryFilter: Partial<ChatHistory> = {
+    id: chatId,
+    userId: userId,
+    active: true,
+  };
+
+  const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
     return null;
   }
 
-  // TODO: skip pulling system message to begin with
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
   return unwrapChat(chat);
@@ -62,8 +67,13 @@ export const getChat = async (chatId: string, userId: string) => {
 export const getSharedChat = async (shareId: string) => {
   const chatsDb = await getChatsCollection();
 
+  const queryFilter: Partial<ChatHistory> = {
+    shareId: shareId,
+    active: true,
+  };
+
   const chat = await chatsDb.findOne(
-    { shareId: shareId },
+    queryFilter,
     { projection: { _id: 0, feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
   );
 
@@ -71,7 +81,6 @@ export const getSharedChat = async (shareId: string) => {
     return null;
   }
 
-  // TODO: skip pulling system message to begin with
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
   return chat;
@@ -80,8 +89,13 @@ export const getSharedChat = async (shareId: string) => {
 export const getChatHistory = async (userId: string) => {
   const chatsDb = await getChatsCollection();
 
+  const queryFilter: Partial<ChatHistory> = {
+    userId: userId,
+    active: true,
+  };
+
   const chats = (await chatsDb
-    .find({ userId: userId })
+    .find(queryFilter)
     .project({ messages: 0, _id: 0 }) // we don't need messages for the history + unwrap chats
     .sort({ timestamp: -1 })
     .toArray()) as ChatHistory[];
@@ -102,6 +116,7 @@ export const saveChat = async (
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
   const chat: ChatHistory = {
     id: chatId,
+    active: true,
     title,
     messages,
     focus,
@@ -122,14 +137,17 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  const res = await chatsDb.updateOne(
-    { id: chatId, userId: session.user?.id },
-    {
-      $set: {
-        reaction,
-      },
-    }
-  );
+  const queryFilter: Partial<ChatHistory> = {
+    id: chatId,
+    userId: session.user?.id,
+    active: true,
+  };
+
+  const res = await chatsDb.updateOne(queryFilter, {
+    $set: {
+      reaction,
+    },
+  });
   if (res.modifiedCount === 0) {
     return; // TODO: throw error
   }
@@ -141,14 +159,20 @@ export const saveShareChat = async (chatId: string) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  const chat = await chatsDb.findOne({ id: chatId, userId: session.user?.id });
+  const queryFilter: Partial<ChatHistory> = {
+    id: chatId,
+    userId: session.user?.id,
+    active: true,
+  };
+
+  const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
     return;
   }
   const shareId = nanoid();
   const res = await chatsDb.updateOne(
-    { id: chatId, userId: session.user?.id },
+    { queryFilter },
     {
       $set: {
         shareId,
@@ -166,14 +190,17 @@ export const removeShareChat = async (chatId: string) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  const res = await chatsDb.updateOne(
-    { id: chatId, userId: session.user?.id },
-    {
-      $unset: {
-        shareId: '',
-      },
-    }
-  );
+  const queryFilter: Partial<ChatHistory> = {
+    id: chatId,
+    userId: session.user?.id,
+    active: true,
+  };
+
+  const res = await chatsDb.updateOne(queryFilter, {
+    $unset: {
+      shareId: '',
+    },
+  });
   if (res.modifiedCount === 0) {
     return; // TODO: throw error
   }
@@ -185,8 +212,18 @@ export const removeChat = async (chatId: string) => {
   const session = (await auth()) as Session;
   const chatsDb = await getChatsCollection();
 
-  const res = await chatsDb.deleteOne({ id: chatId, userId: session.user?.id });
-  if (res.deletedCount === 0) {
+  const queryFilter: Partial<ChatHistory> = {
+    id: chatId,
+    userId: session.user?.id,
+    active: true,
+  };
+
+  const res = await chatsDb.updateOne(queryFilter, {
+    $set: {
+      active: false,
+    },
+  });
+  if (res.modifiedCount === 0) {
     return; // TODO: throw error
   }
 

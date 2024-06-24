@@ -44,10 +44,14 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             transition={{
-              duration: 0.5,
+              duration: 0.4,
               ease: 'easeIn',
             }}
-            exit={{ height: 0, opacity: 0 }}
+            exit={{
+              height: 0,
+              opacity: 0,
+              transition: { duration: 0.3, ease: 'easeOut' },
+            }}
           >
             <div className='row'>
               <div className='col-11'>
