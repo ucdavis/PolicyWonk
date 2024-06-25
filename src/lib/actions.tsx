@@ -132,7 +132,6 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
           // finally, close out the initial UI stream with the final node
           chatWindowUI.done(finalNode);
 
-          const chatId = nanoid(); // where the chat id is generated
           const finalMessages: Message[] = [
             ...aiState.get().messages,
             {
@@ -142,6 +141,8 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
             },
           ];
           (async () => {
+            // where the new chat id is generated
+            const chatId = nanoid();
             // save the chat to the db
             await saveChat(chatId, finalMessages, focus);
 
