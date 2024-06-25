@@ -58,7 +58,7 @@ const AboutPage = () => {
       <p>
         {' '}
         Below is a snippet of our privacy policy, for the complete version{' '}
-        <Link href='/privacy'>click here</Link>
+        <Link href='/privacy'>click here.</Link>
       </p>
       <p>
         <b>Chat History</b>
