@@ -60,19 +60,22 @@
 }
 .btn-wonk {
   border-bottom: 2px solid #fff;
-  width: 100%;
   margin-bottom: 1%;
   transition: all ease-in 0.15s;
-  @include breakpoint(md) {
-    width: 48%;
+  color:$secondary-font;
+  .wonk-bottom & {
+    width:100%;
+    @include breakpoint(md) {
+        width: 48%;
 
-    &:nth-child(odd) {
-      margin-right: 4%;
-    }
+        &:nth-child(odd) {
+          margin-right: 4%;
+        }
+      }
   }
-
   &:hover {
     border-bottom: 2px solid $primary-color;
+    color:$primary-font;
   }
 }
 
@@ -116,3 +119,6 @@
 .offcanvas-backdrop-hide {
   background-color: transparent;
 }
+
+.form-floating>label {
+white-space:inherit !important; }

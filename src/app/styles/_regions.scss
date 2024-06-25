@@ -41,14 +41,14 @@ img.chat-portrait {
     text-align: center;
     margin: 0 auto;
     max-width: 550px;
-    padding-top:8%;
+    padding-top:1%;
     img {
         width:20%;
     }
 }
 .form-floating {
     .wonk-input {
-        height:133px;
+        height:150px;
     }
 }
 .login-card {
@@ -141,11 +141,15 @@ img.chat-portrait {
     border-top-right-radius: 6px;
     margin-bottom:-20px;
     transition: background-color 100ms linear;
+    cursor: pointer;
+    margin-top:1%;
+    padding:6px 0;
     &:hover {
         background-color: #FFE599;
     }
     .btn-link {
         padding-right:8px;
+        font-size:0.9rem;
     }
 
 }
@@ -183,16 +187,13 @@ img.chat-portrait {
   }
 
 }
-
-.focus-bar {
-  cursor: pointer;
-}
 .focus-result {
     background-color:#F7F7F7;
     border:1px solid $borders;
     margin-bottom:20px;
     border-radius: 6px;
     .btn-link {
+        
         padding-right:8px;
         cursor: initial;
         &:hover {
@@ -211,4 +212,32 @@ img.chat-portrait {
         color:$primary-font;
         
     }
+}
+
+.alert-tag {
+    position: absolute;
+    top: 100px;
+    left: 240px;
+    background-color: $california;
+    width: 120px;
+    text-align: right;
+    padding: 4px 20px 4px 0;
+    p {
+    
+        color:#fff;
+        font-family:$sans-bold;
+        margin:0;
+        padding:0;
+         font-size:0.8rem;
+    }
+    
+}
+.alert-tag-mobile {
+    left:279px;
+    top:107px;
+}
+// about
+
+.about-logo img{
+    width:100px;
 }

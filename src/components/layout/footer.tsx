@@ -4,6 +4,8 @@ import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
+import { buildVersion } from '@/models/static';
+
 import FooterLinks from './footerLinks';
 import UserNameDisplay from './userNameDisplay';
 
@@ -21,7 +23,9 @@ const Footer: React.FC = () => {
           </a>
           <p>
             &copy; UC Regents{' '}
-            <span className='version-notice'>Policywonk v1.2.3.311</span>
+            <span className='version-notice'>
+              PolicyWonk BETA v{buildVersion}
+            </span>
           </p>
         </div>
         <div className='col text-end'>

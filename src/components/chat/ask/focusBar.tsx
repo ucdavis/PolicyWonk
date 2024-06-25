@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Focus, focuses } from '@/models/focus';
@@ -29,10 +29,10 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
 
   return (
     <>
-      <div className='focus-bar mt-4' onClick={() => setOpen(true)}>
+      <div className='focus-bar' onClick={() => setOpen(true)}>
         <div className='d-flex justify-content-start align-items-center'>
           <span className='btn btn-link'>
-            <FontAwesomeIcon icon={faCaretRight} />
+            <FontAwesomeIcon icon={faFilter} />
             Focus: {focus.name}
           </span>
           <span className='text-muted small'>{focus.description}</span>

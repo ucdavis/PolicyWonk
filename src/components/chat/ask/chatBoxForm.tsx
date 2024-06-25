@@ -41,7 +41,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
             tabIndex={0}
             className='form-control wonk-input'
             autoFocus
-            placeholder='Message Policy Wonk'
+            placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
             value={input}
             onChange={(e) => setInput(e.target.value)}
             spellCheck={false}
@@ -56,7 +56,10 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
               }
             }}
           ></textarea>
-          <label htmlFor='messageTextArea'>Message Policy Wonk</label>
+          <label htmlFor='messageTextArea'>
+            Ask PolicyWonk a question; Change your focus by clicking on the
+            Focus Bar above
+          </label>
         </div>
       </div>
       <button className='btn btn-primary mt-3' aria-label='Send message'>
