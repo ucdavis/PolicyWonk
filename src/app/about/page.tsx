@@ -54,6 +54,27 @@ const AboutPage = () => {
         click "ask another question" to try again.
       </p>
       <hr />
+      <h2>Questions?</h2>
+      <p>
+        Questions about the PolicyWonk tool itself should be directed to its
+        developers via{' '}
+        <a href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'>
+          The CA&ES Helpdesk
+        </a>
+      </p>
+      <p>
+        Questions about UC Davis policy content should be directed to the
+        Responsible Department identified in the policy section. The Policy
+        Owner is responsible for providing policy interpretation and guidance on
+        the subject matter, including changes in laws, regulations, systemwide
+        policy, or any other necessary changes that may not yet be reflected in
+        policy. Questions about the content of delegations of authority should
+        be directed to the delegator. Information or assistance on policy
+        development, review, and approval process is available from the
+        Administrative Policy Office at{' '}
+        <a href='mailto:policy@ucdavis.edu'>policy@ucdavis.edu</a>.
+      </p>
+      <hr />
       <h2>Privacy</h2>
       <p>
         {' '}
@@ -122,20 +143,6 @@ const AboutPage = () => {
         </li>
       </ul>
       <hr />
-      <h2>Questions?</h2>
-      <p>
-        Questions about UC Davis policy content should be directed to the
-        Responsible Department identified in the policy section. The Policy
-        Owner is responsible for providing policy interpretation and guidance on
-        the subject matter, including changes in laws, regulations, systemwide
-        policy, or any other necessary changes that may not yet be reflected in
-        policy. Questions about the content of delegations of authority should
-        be directed to the delegator. Information or assistance on policy
-        development, review, and approval process is available from the
-        Administrative Policy Office at{' '}
-        <a href='mailto:policy@ucdavis.edu'>policy@ucdavis.edu</a>.
-      </p>
-
       <p>
         Embark on a journey through university policies with PolicyWonk today!
       </p>
