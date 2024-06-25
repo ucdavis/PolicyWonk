@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ history, footer }) => {
           <h1 className='logo'>
             <Link href='/'>
               PolicyWonk <br />
-              <span className='subtitle'>Your UC Policy expert</span>
+              <span className='subtitle'>A UC Davis Policy resource</span>
             </Link>
           </h1>
           {history}
