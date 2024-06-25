@@ -11,7 +11,6 @@ import { ChatHistory, UIState, blankAIState } from '@/models/chat';
 
 import {
   WonkActions,
-  deleteChat,
   shareChat,
   submitFeedback,
   submitUserMessage,
@@ -25,7 +24,6 @@ export const AI = createAI<ChatHistory, UIState, WonkActions>({
     shareChat,
     unshareChat,
     submitFeedback,
-    deleteChat,
   },
   initialUIState: [],
   initialAIState: blankAIState,

@@ -7,6 +7,7 @@ import {
   streamUI,
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
+import { redirect } from 'next/navigation';
 
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
 import { Feedback, UIStateNode } from '@/models/chat';
@@ -37,7 +38,6 @@ export type WonkActions<T = any, R = any> = {
   shareChat: (chatId: string) => Promise<void>;
   unshareChat: (chatId: string) => Promise<void>;
   submitFeedback: (chatId: string, feedback: Feedback) => Promise<void>;
-  deleteChat: (chatId: string) => Promise<void>;
 };
 
 export const submitUserMessage = async (userInput: string, focus: Focus) => {
@@ -202,6 +202,13 @@ export const submitFeedback = async (chatId: string, feedback: Feedback) => {
   });
 };
 
-export const deleteChat = async (chatId: string) => {
+// this happens outside of the AI Provider, so we can't mutate the AI state
+export const deleteChatFromSidebar = async (
+  chatId: string,
+  isActiveChat: boolean
+) => {
   await removeChat(chatId);
+  if (isActiveChat) {
+    redirect('/');
+  }
 };

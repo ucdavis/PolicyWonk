@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from 'reactstrap';
 
-import { deleteChat } from '@/lib/actions';
+import { deleteChatFromSidebar } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
 
 interface ChatHistoryList {
@@ -27,12 +27,15 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
   };
 
   const handleRemoveChat = async (chatId: string) => {
-    await deleteChat(chatId);
-
-    if (pathname.includes(chatId)) {
-      router.push('/chat/new'); // router.replace so we don't maintain state
+    router.prefetch(`/chat/new`);
+    const isActiveChat = isActive(chatId);
+    await deleteChatFromSidebar(chatId, isActiveChat);
+    if (isActiveChat) {
+      // deleteChatFromSidebar will handle the redirect to '/'
+      // because i could not get the router here to both refresh and redirect reliably
+    } else {
+      router.refresh();
     }
-    router.refresh();
   };
 
   return (
