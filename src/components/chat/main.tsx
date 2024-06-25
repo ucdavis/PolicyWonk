@@ -53,7 +53,9 @@ const MainContent = () => {
               Meet PolicyWonk, a resource for navigating UC Davis administrative
               policies and procedures.
               <br />
-              <Link href='/about'>Learn more</Link>
+              <Link className='btn btn-wonk mt-2' href='/about'>
+                Learn more
+              </Link>
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
