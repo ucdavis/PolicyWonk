@@ -64,7 +64,7 @@ const ChatPage = async ({
 
   const chat: ChatHistory | null =
     chatid !== 'new'
-      ? await getChat(chatid, session.user.id)
+      ? await getCachedChat(chatid, session.user.id)
       : newChatSession(session, focus, subFocus);
 
   // if getChat returns null
