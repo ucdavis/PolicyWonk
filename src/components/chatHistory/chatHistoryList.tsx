@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
