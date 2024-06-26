@@ -22,6 +22,35 @@ type HomePageProps = {
   };
 };
 
+const getCachedChat = React.cache(async (chatid: string, userId: string) => {
+  const chat = await getChat(chatid, userId);
+
+  return chat;
+});
+
+export const generateMetadata = async ({
+  params: { chatid },
+  searchParams: { focus, subFocus },
+}: HomePageProps) => {
+  if (chatid === 'new') {
+    return {
+      title: 'New Chat',
+    };
+  }
+
+  const session = (await auth()) as Session;
+
+  if (!session?.user?.id) {
+    return;
+  }
+
+  const chat = await getCachedChat(chatid, session.user.id);
+
+  return {
+    title: chat?.title ?? 'Chat',
+  };
+};
+
 const ChatPage = async ({
   params: { chatid },
   searchParams: { focus, subFocus },
