@@ -171,14 +171,11 @@ export const saveShareChat = async (chatId: string) => {
     return;
   }
   const shareId = nanoid();
-  const res = await chatsDb.updateOne(
-    { queryFilter },
-    {
-      $set: {
-        shareId,
-      },
-    }
-  );
+  const res = await chatsDb.updateOne(queryFilter, {
+    $set: {
+      shareId,
+    },
+  });
   if (res.modifiedCount === 0) {
     return; // TODO: throw error
   }
