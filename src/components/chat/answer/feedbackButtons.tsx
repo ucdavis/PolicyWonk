@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useActions } from 'ai/rsc';
 
 import AnimatedButton from '@/components/ui/animatedButton';
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { GTagEvents } from '@/models/gtag';

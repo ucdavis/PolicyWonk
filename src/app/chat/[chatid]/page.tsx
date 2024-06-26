@@ -7,7 +7,7 @@ import { Session } from 'next-auth';
 import NotAuthorized from '@/app/not-authorized';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { focuses, getFocusWithSubFocus } from '@/models/focus';
 import { getChat } from '@/services/historyService';
@@ -21,7 +21,7 @@ type HomePageProps = {
     subFocus?: string;
   };
 };
-// TODO: loading animation when chatId changes
+
 const ChatPage = async ({
   params: { chatid },
   searchParams: { focus, subFocus },

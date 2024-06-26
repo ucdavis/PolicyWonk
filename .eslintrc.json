@@ -15,6 +15,7 @@
   "rules": {
     "eqeqeq": "error", // require === and !==
     "no-console": "warn",
+    "no-restricted-globals": ["warn", "setTimeout"],
     "prettier/prettier": "error",
     "react/display-name": "off",
     "react/react-in-jsx-scope": "off",

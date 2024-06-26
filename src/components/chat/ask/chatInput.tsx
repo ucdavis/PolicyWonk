@@ -4,7 +4,7 @@ import React from 'react';
 import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
-import { AI } from '@/lib/actions';
+import { AI } from '@/lib/aiProvider';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
 import { GTagEvents } from '@/models/gtag';
@@ -26,7 +26,6 @@ const ChatInput = () => {
   const [focus, setFocus] = React.useState(aiState.focus);
 
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
-  // as Actions maybe a little hack but it lets us strongly type the actions
   const { submitUserMessage } = useActions<typeof AI>();
 
   const onQuestionSubmit = async (question: string) => {
