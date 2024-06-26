@@ -85,7 +85,7 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
                     onClick={() => handleRemoveChat(chat.id)}
                     disabled={isLoading !== null}
                   >
-                    <FontAwesomeIcon icon={faTrash} />
+                    <FontAwesomeIcon icon={faTrash} size='lg' />
                   </Button>
                 )}
               </div>
