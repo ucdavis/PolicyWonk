@@ -1,3 +1,9 @@
+export const generateMetadata = () => {
+  return {
+    title: 'Privacy Policy',
+  };
+};
+
 const PrivacyPage = () => {
   return (
     <div>

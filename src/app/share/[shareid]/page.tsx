@@ -15,6 +15,23 @@ type SharedPageProps = {
     shareid: string;
   };
 };
+
+const getCachedSharedChat = React.cache(async (shareid: string) => {
+  const chat = await getSharedChat(shareid);
+
+  return chat;
+});
+
+export const generateMetadata = async ({
+  params: { shareid },
+}: SharedPageProps) => {
+  const chat = await getCachedSharedChat(shareid);
+
+  return {
+    title: chat?.title ?? 'Shared Chat',
+  };
+};
+
 const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
   const session = (await auth()) as Session;
 
@@ -23,7 +40,7 @@ const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
     redirect('/auth/login');
   }
 
-  const chat: ChatHistory | null = await getSharedChat(shareid);
+  const chat: ChatHistory | null = await getCachedSharedChat(shareid);
 
   if (!chat) {
     return notFound();
