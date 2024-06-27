@@ -1,12 +1,12 @@
 'use client';
 import React, { ErrorInfo } from 'react';
 
-interface WonkyBoundaryProps {
+interface WonkyErrorBoundaryProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
-interface WonkyBoundaryState {
+interface WonkyErrorBoundaryState {
   hasError: boolean;
 }
 
@@ -21,11 +21,11 @@ interface WonkyBoundaryState {
  *
  * See: https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
  */
-class WonkyBoundary extends React.Component<
-  WonkyBoundaryProps,
-  WonkyBoundaryState
+class WonkyErrorBoundary extends React.Component<
+  WonkyErrorBoundaryProps,
+  WonkyErrorBoundaryState
 > {
-  constructor(props: WonkyBoundaryProps) {
+  constructor(props: WonkyErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -38,7 +38,7 @@ class WonkyBoundary extends React.Component<
   componentDidCatch(error: Error, info: ErrorInfo) {
     // Example "componentStack":
     //   in ComponentThatThrows (created by App)
-    //   in ErrorBoundary (created by App)
+    //   in wonkyErrorBoundary (created by App)
     //   in div (created by App)
     //   in App
     // TODO: log error to logging service
@@ -53,4 +53,4 @@ class WonkyBoundary extends React.Component<
   }
 }
 
-export default WonkyBoundary;
+export default WonkyErrorBoundary;

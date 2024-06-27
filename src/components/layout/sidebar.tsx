@@ -19,7 +19,6 @@ const Sidebar: React.FC<SidebarProps> = ({ history }) => {
               <span className='subtitle'>A UC Davis Policy resource</span>
             </Link>
           </h1>
-
           {history}
         </header>
         <div className='alert-tag'>

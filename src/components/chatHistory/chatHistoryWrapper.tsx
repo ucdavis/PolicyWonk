@@ -1,6 +1,6 @@
 'use client';
-import WonkyBoundary from '@/lib/error/errorBoundary';
-import WonkError from '@/lib/error/wonkError';
+import WonkyError from '@/lib/error/wonkyError';
+import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { ChatHistory } from '@/models/chat';
 
 import ChatHistoryList from './chatHistoryList';
@@ -12,9 +12,9 @@ interface ChatHistoryWrapperProps {
 // Wrapper for the chat history to handle errors
 const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({ chats }) => {
   return (
-    <WonkyBoundary
+    <WonkyErrorBoundary
       fallback={
-        <WonkError thereWasAnErrorLoadingThe='chat history' type='text' />
+        <WonkyError thereWasAnErrorLoadingThe='chat history' type='text' />
       }
     >
       {chats?.length ? (
@@ -22,7 +22,7 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({ chats }) => {
       ) : (
         <>No chat history found</>
       )}
-    </WonkyBoundary>
+    </WonkyErrorBoundary>
   );
 };
 
