@@ -7,6 +7,7 @@ import { Session } from 'next-auth';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
+import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory } from '@/models/chat';
 import { getSharedChat } from '@/services/historyService';
 
@@ -28,7 +29,7 @@ export const generateMetadata = async ({
   const chat = await getCachedSharedChat(shareid);
 
   return {
-    title: chat?.title ?? 'Shared Chat',
+    title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
   };
 };
 

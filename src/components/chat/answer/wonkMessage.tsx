@@ -11,6 +11,7 @@ import {
   useTempStreamableText,
 } from '@/lib/hooks/useStreamableText';
 import { MemoizedReactMarkdown } from '@/lib/markdown';
+import { sanitizeMarkdown } from '@/lib/util';
 import { GTagEvents } from '@/models/gtag';
 
 import { WonkPortrait } from '../rolePortrait';
@@ -111,17 +112,4 @@ export const WonkMessage = ({
       {!isLoading && <ChatActions />}
     </div>
   );
-};
-
-const stripTemporaryCitations = (content: string) => {
-  // temporary citations are of the form <c:1234>
-  // we want to strip these out so they aren't shown
-  return content.replace(/<c:\d+>/g, '');
-};
-
-// fix up common markdown issues
-const sanitizeMarkdown = (content: string) => {
-  content = stripTemporaryCitations(content);
-
-  return content;
 };

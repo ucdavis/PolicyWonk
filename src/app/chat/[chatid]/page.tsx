@@ -8,6 +8,7 @@ import NotAuthorized from '@/app/not-authorized';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
+import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { focuses, getFocusWithSubFocus } from '@/models/focus';
 import { getChat } from '@/services/historyService';
@@ -47,7 +48,7 @@ export const generateMetadata = async ({
   const chat = await getCachedChat(chatid, session.user.id);
 
   return {
-    title: chat?.title ?? 'Chat',
+    title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
   };
 };
 
