@@ -61,10 +61,7 @@ const MainContent = () => {
           <WonkBottom>
             <ErrorBoundary
               fallback={
-                <WonkError
-                  thereWasAnErrorLoadingThe='focus options'
-                  type='alert'
-                />
+                <WonkError thereWasAnErrorLoadingThe='input' type='alert' />
               }
             >
               <ChatInput />

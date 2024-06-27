@@ -3,6 +3,8 @@ import React from 'react';
 
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
+import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkError from '@/lib/error/wonkError';
 import { Focus, FocusName } from '@/models/focus';
 
 import UnionSelection from './unionSelection';
@@ -92,7 +94,15 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
       <ModalHeader toggle={onClose}>
         Choose a focus for your question
       </ModalHeader>
-      <ModalBody>{renderBody()}</ModalBody>
+      <ModalBody>
+        <ErrorBoundary
+          fallback={
+            <WonkError type='alert' thereWasAnErrorLoadingThe='focus options' />
+          }
+        >
+          {renderBody()}
+        </ErrorBoundary>
+      </ModalBody>
     </Modal>
   );
 };

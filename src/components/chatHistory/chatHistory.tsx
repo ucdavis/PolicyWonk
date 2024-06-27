@@ -6,7 +6,7 @@ import { Session } from 'next-auth';
 import { auth } from '@/auth';
 import { getChatHistory } from '@/services/historyService';
 
-import ChatHistoryList from './chatHistoryList';
+import ChatHistoryWrapper from './chatHistoryWrapper';
 
 const loadChatHistory = React.cache(async (userId: string) => {
   return await getChatHistory(userId);
@@ -25,11 +25,7 @@ const ChatHistory: React.FC = async () => {
     <>
       <div className='history-wrapper'>
         <h2>Chat History</h2>
-        {chats?.length ? (
-          <ChatHistoryList chats={chats} />
-        ) : (
-          <>No chat history</>
-        )}
+        <ChatHistoryWrapper chats={chats} />
       </div>
     </>
   );

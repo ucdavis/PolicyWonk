@@ -9,16 +9,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from 'reactstrap';
 
 import { deleteChatFromSidebar } from '@/lib/actions';
-import ErrorBoundary from '@/lib/error/errorBoundary';
-import WonkError from '@/lib/error/wonkError';
 import { ChatHistory } from '@/models/chat';
 
-interface ChatHistoryList {
+interface ChatHistoryListProps {
   chats: ChatHistory[];
 }
 
 // separate out rendering the chat list so we can animate it as a client component
-const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
+const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isHovering, setIsHovering] = React.useState<null | string>(null);
@@ -47,62 +45,56 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
   };
 
   return (
-    <ErrorBoundary
-      fallback={
-        <WonkError thereWasAnErrorLoadingThe='chat history' type='text' />
-      }
-    >
-      <ul className='history-list'>
-        <AnimatePresence initial={false}>
-          {chats.map((chat) => (
-            <motion.li
-              className={`history-list-group-item ${isActive(chat.id) ? 'active' : ''}`}
-              key={chat.id}
-              initial={{ height: 0, opacity: 0 }}
-              animate={{
-                height: 'auto',
-                opacity: 1,
-                transition: {
-                  duration: 0.4,
-                  ease: 'easeIn',
-                },
-              }}
-              exit={{
-                height: 0,
-                opacity: 0,
-                transition: { duration: 0.3, ease: 'easeOut' },
-              }}
-              onHoverStart={() => {
-                setIsHovering(chat.id);
-              }}
-              onHoverEnd={() => {
-                setIsHovering(null);
-              }}
-            >
-              <div className='row'>
-                <div className='col-11'>
-                  <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
-                </div>
-                <div className='col-1 delete-chat-button'>
-                  {((isHovering !== null && isHovering === chat.id) ||
-                    isLoading === chat.id) && (
-                    <Button
-                      block={false}
-                      color='link'
-                      onClick={() => handleRemoveChat(chat.id)}
-                      disabled={isLoading !== null}
-                    >
-                      <FontAwesomeIcon icon={faTrash} size='lg' />
-                    </Button>
-                  )}
-                </div>
+    <ul className='history-list'>
+      <AnimatePresence initial={false}>
+        {chats.map((chat) => (
+          <motion.li
+            className={`history-list-group-item ${isActive(chat.id) ? 'active' : ''}`}
+            key={chat.id}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{
+              height: 'auto',
+              opacity: 1,
+              transition: {
+                duration: 0.4,
+                ease: 'easeIn',
+              },
+            }}
+            exit={{
+              height: 0,
+              opacity: 0,
+              transition: { duration: 0.3, ease: 'easeOut' },
+            }}
+            onHoverStart={() => {
+              setIsHovering(chat.id);
+            }}
+            onHoverEnd={() => {
+              setIsHovering(null);
+            }}
+          >
+            <div className='row'>
+              <div className='col-11'>
+                <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
               </div>
-              <div className='history-fade' />
-            </motion.li>
-          ))}
-        </AnimatePresence>
-      </ul>
-    </ErrorBoundary>
+              <div className='col-1 delete-chat-button'>
+                {((isHovering !== null && isHovering === chat.id) ||
+                  isLoading === chat.id) && (
+                  <Button
+                    block={false}
+                    color='link'
+                    onClick={() => handleRemoveChat(chat.id)}
+                    disabled={isLoading !== null}
+                  >
+                    <FontAwesomeIcon icon={faTrash} size='lg' />
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className='history-fade' />
+          </motion.li>
+        ))}
+      </AnimatePresence>
+    </ul>
   );
 };
 
