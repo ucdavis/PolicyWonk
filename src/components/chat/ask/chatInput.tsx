@@ -5,6 +5,8 @@ import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 
 import { AI } from '@/lib/aiProvider';
+import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkError from '@/lib/error/wonkError';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
 import { GTagEvents } from '@/models/gtag';
@@ -53,11 +55,11 @@ const ChatInput = () => {
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };
   return (
-    <>
+    <ErrorBoundary fallback={<WonkError componentName='form' type='alert' />}>
       <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
       <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
-    </>
+    </ErrorBoundary>
   );
 };
 
