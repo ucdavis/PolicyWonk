@@ -41,9 +41,10 @@ const ChatInput = () => {
         display: (
           <>
             <FocusBanner focus={focus} />
-            <UserMessage user={session?.data?.user?.name || ''}>
-              {question}
-            </UserMessage>
+            <UserMessage
+              user={session?.data?.user?.name || ''}
+              content={question}
+            />
           </>
         ),
       },

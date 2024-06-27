@@ -45,7 +45,7 @@ export const AI = createAI<ChatHistory, UIState, WonkActions>({
           message.role === 'user' ? (
             <>
               <FocusBanner focus={aiState.focus} />
-              <UserMessage user={aiState.user}>{message.content}</UserMessage>
+              <UserMessage user={aiState.user} content={message.content} />
             </>
           ) : (
             <WonkMessage
