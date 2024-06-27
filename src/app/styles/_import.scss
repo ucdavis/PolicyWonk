@@ -12,6 +12,7 @@ $theme-colors: (
   link: $secondary-color,
   success: $quad,
   info: $recpool,
+  success-text-emphasis: $california
 );
 @import "bootstrap/scss/bootstrap";
 @import "@ucdavis/gunrockin/sass/_typography.scss";

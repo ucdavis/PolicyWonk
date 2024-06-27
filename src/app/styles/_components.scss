@@ -13,6 +13,12 @@
   }
 }
 .btn:disabled, .btn.disabled, fieldset:disabled .btn {
+  background-color:#ADB3B8;
+  border-color:#ADB3B8;
+  box-shadow: none;
+}
+.btn-link:disabled, .btn-link.disabled {
+  color:#ADB3B8;
   background-color: rgba(255,255,255,0.00009);
 }
 .delete-chat-button {
