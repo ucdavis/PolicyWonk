@@ -7,7 +7,6 @@ import type { Metadata } from 'next';
 
 import './styles/main.scss';
 import ChatHistory from '@/components/chatHistory/chatHistory';
-import Footer from '@/components/layout/footer';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Providers from '@/components/layout/providers';
 import Sidebar from '@/components/layout/sidebar';
@@ -46,7 +45,7 @@ export default function RootLayout({
               <MobileSidebar history={<ChatHistory />} />
             </div>
             <div className='desktop-sidebar'>
-              <Sidebar history={<ChatHistory />} footer={<Footer />} />
+              <Sidebar history={<ChatHistory />} />
             </div>
 
             <div className='wonk-wrapper'>
