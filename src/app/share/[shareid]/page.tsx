@@ -1,6 +1,7 @@
 'use server'; // since this is an async component
 import React from 'react';
 
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
@@ -23,15 +24,17 @@ const getCachedSharedChat = React.cache(async (shareid: string) => {
   return chat;
 });
 
-export const generateMetadata = async ({
-  params: { shareid },
-}: SharedPageProps) => {
+export async function generateMetadata(
+  { params }: SharedPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { shareid } = params;
   const chat = await getCachedSharedChat(shareid);
 
   return {
     title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
   };
-};
+}
 
 const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
   const session = (await auth()) as Session;

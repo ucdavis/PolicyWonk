@@ -1,6 +1,7 @@
 'use server'; // since this is an async component
 import React from 'react';
 
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
@@ -29,10 +30,11 @@ const getCachedChat = React.cache(async (chatid: string, userId: string) => {
   return chat;
 });
 
-export const generateMetadata = async ({
-  params: { chatid },
-  searchParams: { focus, subFocus },
-}: HomePageProps) => {
+export async function generateMetadata(
+  { params, searchParams }: HomePageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { chatid } = params;
   if (chatid === 'new') {
     return {
       title: 'New Chat',
@@ -42,7 +44,9 @@ export const generateMetadata = async ({
   const session = (await auth()) as Session;
 
   if (!session?.user?.id) {
-    return;
+    return {
+      title: 'Chat',
+    };
   }
 
   const chat = await getCachedChat(chatid, session.user.id);
@@ -50,7 +54,7 @@ export const generateMetadata = async ({
   return {
     title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
   };
-};
+}
 
 const ChatPage = async ({
   params: { chatid },
