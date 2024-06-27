@@ -29,17 +29,8 @@ const GlobalError: React.FC = () => {
             <div className='wonk-container'>
               <ChatHeader>
                 <WonkyError
-                  thereWasAnErrorLoadingThe={`whole page! That's not good`}
-                  message={
-                    <>
-                      <br />
-                      <br />
-                      If the problem persists, please{' '}
-                      <a href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'>
-                        contact the developers.
-                      </a>
-                    </>
-                  }
+                  thereWasAnErrorLoadingThe={`application`}
+                  contactLink={true}
                   type='alert'
                 />
               </ChatHeader>
