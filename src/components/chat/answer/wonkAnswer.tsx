@@ -4,14 +4,16 @@ import remarkGfm from 'remark-gfm';
 
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { MemoizedReactMarkdown } from '@/lib/markdown';
+import { sanitizeMarkdown } from '@/lib/util';
 import { GTagEvents } from '@/models/gtag';
 
-interface AnswerMarkdownProps {
+interface WonkAnswerProps {
   text: string;
 }
 
-const WonkAnswer: React.FC<AnswerMarkdownProps> = ({ text }) => {
+const WonkAnswer: React.FC<WonkAnswerProps> = ({ text }) => {
   const gtagEvent = useGtagEvent();
+
   const sanitizedText = sanitizeMarkdown(text);
 
   return (
