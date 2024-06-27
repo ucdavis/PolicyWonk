@@ -4,7 +4,7 @@ import React from 'react';
 import ChatHeader from '@/components/chat/chatHeader';
 import WonkTop from '@/components/layout/wonkTop';
 
-const NotFound: React.FC = () => {
+const Error: React.FC = () => {
   return (
     <>
       <WonkTop>
@@ -14,4 +14,4 @@ const NotFound: React.FC = () => {
   );
 };
 
-export default NotFound;
+export default Error;
