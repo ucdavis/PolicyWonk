@@ -27,8 +27,6 @@ export const WonkMessage = ({
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
 
-  const sanitizedText = sanitizeMarkdown(text);
-
   return (
     <div className='row mb-3'>
       <div className='col-2 col-sm-1 mb-2'>
@@ -45,7 +43,7 @@ export const WonkMessage = ({
                 <WonkError type='alert' thereWasAnErrorLoadingThe='answer' />
               }
             >
-              <WonkAnswer text={sanitizedText} />
+              <WonkAnswer text={text} />
             </ErrorBoundary>
           ) : (
             wonkText
@@ -55,17 +53,4 @@ export const WonkMessage = ({
       {!isLoading && <ChatActions />}
     </div>
   );
-};
-
-const stripTemporaryCitations = (content: string) => {
-  // temporary citations are of the form <c:1234>
-  // we want to strip these out so they aren't shown
-  return content.replace(/<c:\d+>/g, '');
-};
-
-// fix up common markdown issues
-const sanitizeMarkdown = (content: string) => {
-  content = stripTemporaryCitations(content);
-
-  return content;
 };

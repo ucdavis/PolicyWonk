@@ -3,6 +3,7 @@ import React from 'react';
 
 import { useUIState, useActions, useAIState } from 'ai/rsc';
 import { nanoid } from 'nanoid';
+import { useSession } from 'next-auth/react';
 
 import { AI } from '@/lib/aiProvider';
 import ErrorBoundary from '@/lib/error/errorBoundary';
@@ -22,6 +23,7 @@ import FocusBar from './focusBar';
 // Will send the actual message to the chatAI system
 const ChatInput = () => {
   const gtagEvent = useGtagEvent();
+  const session = useSession();
   const [aiState] = useAIState<typeof AI>();
   const [_, setMessagesUI] = useUIState<typeof AI>();
 
@@ -39,7 +41,9 @@ const ChatInput = () => {
         display: (
           <>
             <FocusBanner focus={focus} />
-            <UserMessage>{question}</UserMessage>
+            <UserMessage user={session?.data?.user?.name || ''}>
+              {question}
+            </UserMessage>
           </>
         ),
       },

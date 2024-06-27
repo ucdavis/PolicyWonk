@@ -22,6 +22,10 @@ const ChatActions: React.FC<ChatActionsProps> = ({}) => {
   const pathname = usePathname();
   const onSharedPage = pathname.includes('/share/');
   const [aiState] = useAIState<typeof AI>();
+  const fullQuestionAndAnswer = React.useMemo(
+    () => getFullQuestionAndAnswer(aiState.messages),
+    [aiState.messages]
+  );
 
   return (
     <>
@@ -31,7 +35,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({}) => {
           <ErrorBoundary>
             <CopyToClipboardButton
               id='gtag-copy-chat'
-              value={getFullQuestionAndAnswer(aiState)}
+              value={fullQuestionAndAnswer}
               onClick={() => {
                 gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
               }}

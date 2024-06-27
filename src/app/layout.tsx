@@ -13,7 +13,10 @@ import Sidebar from '@/components/layout/sidebar';
 import GtagProvider from '@/lib/gtagProvider';
 
 export const metadata: Metadata = {
-  title: 'Policy Wonk',
+  title: {
+    template: 'Policy Wonk | %s',
+    default: 'Policy Wonk',
+  },
   description: 'Policy Wonk: UCD Policy Expert',
 };
 

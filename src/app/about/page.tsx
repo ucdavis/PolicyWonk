@@ -2,6 +2,12 @@ import Link from 'next/link';
 
 import Logo from '@/components/layout/logo';
 
+export const generateMetadata = () => {
+  return {
+    title: 'About',
+  };
+};
+
 const AboutPage = () => {
   return (
     <div>

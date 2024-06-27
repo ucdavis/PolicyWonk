@@ -12,6 +12,7 @@ interface AnswerMarkdownProps {
 
 const WonkAnswer: React.FC<AnswerMarkdownProps> = ({ text }) => {
   const gtagEvent = useGtagEvent();
+  const sanitizedText = sanitizeMarkdown(text);
 
   return (
     <MemoizedReactMarkdown
@@ -72,7 +73,7 @@ const WonkAnswer: React.FC<AnswerMarkdownProps> = ({ text }) => {
         },
       }}
     >
-      {text}
+      {sanitizedText}
     </MemoizedReactMarkdown>
   );
 };

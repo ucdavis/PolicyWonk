@@ -1,8 +1,14 @@
+export const generateMetadata = () => {
+  return {
+    title: 'Privacy Policy',
+  };
+};
+
 const PrivacyPage = () => {
   return (
     <div>
       <h1>Privacy Policy</h1>
-      <h2>Introduciton</h2>
+      <h2>Introduction</h2>
       <p>
         Welcome to PolicyWonk. We are committed to protecting your privacy and
         ensuring that your personal information is handled responsibly. This
