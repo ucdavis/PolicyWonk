@@ -54,12 +54,21 @@ const ChatInput = () => {
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };
+
   return (
-    <ErrorBoundary fallback={<WonkError componentName='form' type='alert' />}>
-      <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
-      <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
+    <>
+      <ErrorBoundary>
+        <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
+      </ErrorBoundary>
+      <ErrorBoundary
+        fallback={
+          <WonkError thereWasAnErrorLoadingThe='focus options' type='alert' />
+        }
+      >
+        <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
+      </ErrorBoundary>
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
-    </ErrorBoundary>
+    </>
   );
 };
 

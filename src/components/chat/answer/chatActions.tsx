@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/aiProvider';
+import ErrorBoundary from '@/lib/error/errorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '@/lib/util';
 import { GTagEvents } from '@/models/gtag';
@@ -27,22 +28,32 @@ const ChatActions: React.FC<ChatActionsProps> = ({}) => {
       <div className='row mb-3'>
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
-          <CopyToClipboardButton
-            id='gtag-copy-chat'
-            value={getFullQuestionAndAnswer(aiState)}
-            onClick={() => {
-              gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
-            }}
-          />
+          <ErrorBoundary>
+            <CopyToClipboardButton
+              id='gtag-copy-chat'
+              value={getFullQuestionAndAnswer(aiState)}
+              onClick={() => {
+                gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
+              }}
+            />
+          </ErrorBoundary>
           {!onSharedPage && (
             <>
-              <FeedbackButtons />
-              <ShareModal />
+              <ErrorBoundary>
+                <FeedbackButtons />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <ShareModal />
+              </ErrorBoundary>
             </>
           )}
         </div>
       </div>
-      {!onSharedPage && !!aiState.reaction && <FeedbackBar />}
+      {!onSharedPage && !!aiState.reaction && (
+        <ErrorBoundary>
+          <FeedbackBar />
+        </ErrorBoundary>
+      )}
     </>
   );
 };

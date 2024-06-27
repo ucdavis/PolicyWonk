@@ -2,20 +2,18 @@
 import React from 'react';
 
 import { StreamableValue } from 'ai/rsc';
-import Link from 'next/link';
-import remarkGfm from 'remark-gfm';
 
-import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
+import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkError from '@/lib/error/wonkError';
 import {
   useStreamableText,
   useTempStreamableText,
 } from '@/lib/hooks/useStreamableText';
-import { MemoizedReactMarkdown } from '@/lib/markdown';
-import { GTagEvents } from '@/models/gtag';
 
 import { WonkPortrait } from '../rolePortrait';
 
 import ChatActions from './chatActions';
+import WonkAnswer from './wonkAnswer';
 
 export const WonkMessage = ({
   content,
@@ -26,7 +24,6 @@ export const WonkMessage = ({
   isLoading: boolean;
   wonkThoughts: StreamableValue<string> | string;
 }) => {
-  const gtagEvent = useGtagEvent();
   const text = useStreamableText(content);
   const wonkText = useTempStreamableText(wonkThoughts);
 
@@ -43,66 +40,13 @@ export const WonkMessage = ({
         </p>
         <div>
           {text ? (
-            <MemoizedReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({ node, ...props }) => {
-                  // external links should open in a new tab
-                  if (props.href?.startsWith('http')) {
-                    return (
-                      <a
-                        onClick={() => {
-                          gtagEvent({
-                            event: GTagEvents.CITATION_EXTERNAL,
-                          });
-                        }}
-                        {...props}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      />
-                    );
-                  }
-                  // internal links might be footnotes and we want to handle them differently
-                  else if (props.href?.startsWith('#')) {
-                    const footnoteRef = Object.keys(props).find(
-                      (key) => key === 'data-footnote-ref'
-                    );
-
-                    if (footnoteRef) {
-                      // for footnote references, we want to show them in a superscript
-                      return <sup>{props.children}</sup>;
-                    }
-
-                    const footnoteBackRef = Object.keys(props).find(
-                      (key) => key === 'data-footnote-backref'
-                    );
-
-                    if (footnoteBackRef) {
-                      // don't render the backref
-                      return null;
-                    }
-
-                    // other internal links should be handled by next/link
-                    return (
-                      <Link
-                        onClick={() => {
-                          gtagEvent({
-                            event: GTagEvents.CITATION_INTERNAL,
-                          });
-                        }}
-                        {...props}
-                        href={props.href || '#'}
-                      />
-                    );
-                  } else {
-                    // regular links (like mailto:)
-                    return <a {...props} />;
-                  }
-                },
-              }}
+            <ErrorBoundary
+              fallback={
+                <WonkError type='alert' thereWasAnErrorLoadingThe='answer' />
+              }
             >
-              {sanitizedText}
-            </MemoizedReactMarkdown>
+              <WonkAnswer text={sanitizedText} />
+            </ErrorBoundary>
           ) : (
             wonkText
           )}

@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import ErrorBoundary from '@/lib/error/errorBoundary';
+
 import Policywonksvg from './policywonksvg';
 
 export const WonkPortrait = React.memo(function WonkPortrait({
@@ -10,12 +12,14 @@ export const WonkPortrait = React.memo(function WonkPortrait({
 }) {
   return (
     <div className='role-portrait'>
-      <Policywonksvg
-        width={42}
-        height={42}
-        alt={'Policy Wonk portrait'}
-        className={`${isLoading ? 'wonk-portrait-loading' : ''} chat-portrait`}
-      />
+      <ErrorBoundary>
+        <Policywonksvg
+          width={42}
+          height={42}
+          alt={'Policy Wonk portrait'}
+          className={`${isLoading ? 'wonk-portrait-loading' : ''} chat-portrait`}
+        />
+      </ErrorBoundary>
     </div>
   );
 });

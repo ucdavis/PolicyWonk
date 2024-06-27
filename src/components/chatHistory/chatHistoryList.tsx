@@ -48,7 +48,9 @@ const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
 
   return (
     <ErrorBoundary
-      fallback={<WonkError componentName='chat history' type='text' />}
+      fallback={
+        <WonkError thereWasAnErrorLoadingThe='chat history' type='text' />
+      }
     >
       <ul className='history-list'>
         <AnimatePresence initial={false}>
