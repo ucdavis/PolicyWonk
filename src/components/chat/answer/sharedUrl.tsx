@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { InputGroup, Input } from 'reactstrap';
 
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import { useShareUrl } from '@/lib/hooks/useShareUrl';
 
 import { RegenerateShareButton, UnshareButton } from './shareButtons';
@@ -60,25 +60,25 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
               readOnly={true}
             />
             <div className='ms-2'>
-              <ErrorBoundary>
+              <WonkyBoundary>
                 <CopyToClipboardButton
                   value={url}
                   id='gtag-copy-share-url'
                   onClick={handleCopyShareUrl}
                 />
-              </ErrorBoundary>
-              <ErrorBoundary>
+              </WonkyBoundary>
+              <WonkyBoundary>
                 <RegenerateShareButton
                   handleShare={handleRegenShare}
                   loadingState={isLoading}
                 />
-              </ErrorBoundary>
-              <ErrorBoundary>
+              </WonkyBoundary>
+              <WonkyBoundary>
                 <UnshareButton
                   handleUnshare={handleUnshare}
                   loadingState={isLoading}
                 />
-              </ErrorBoundary>
+              </WonkyBoundary>
             </div>
           </InputGroup>
         </motion.div>

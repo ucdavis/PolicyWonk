@@ -9,7 +9,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import WonkError from '@/lib/error/wonkError';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { GTagEvents } from '@/models/gtag';
@@ -85,7 +85,7 @@ const ShareModal: React.FC = () => {
             You will be able to delete the shared link or regenerate it at any
             time.
           </p>
-          <ErrorBoundary
+          <WonkyBoundary
             fallback={
               <WonkError thereWasAnErrorLoadingThe='shared url' type='alert' />
             }
@@ -98,7 +98,7 @@ const ShareModal: React.FC = () => {
               handleCopyShareUrl={handleCopyShareUrl}
               isLoading={isLoading}
             />
-          </ErrorBoundary>
+          </WonkyBoundary>
         </ModalBody>
         <ModalFooter>
           {!isShared && (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 
 import Logo from '../layout/logo';
 
@@ -11,9 +11,9 @@ const ChatHeader: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   return (
     <div className='home-message'>
-      <ErrorBoundary>
+      <WonkyBoundary>
         <Logo />
-      </ErrorBoundary>
+      </WonkyBoundary>
       <p className='lede'>{children}</p>
     </div>
   );

@@ -1,5 +1,5 @@
 'use client';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import WonkError from '@/lib/error/wonkError';
 
 import { UserPortrait } from './userPortrait';
@@ -14,21 +14,21 @@ export const UserMessage = ({
   return (
     <div className='row mb-3'>
       <div className='col-2 col-sm-1 mb-2'>
-        <ErrorBoundary>
+        <WonkyBoundary>
           <UserPortrait />
-        </ErrorBoundary>
+        </WonkyBoundary>
       </div>
       <div className='col-10'>
         <p className='chat-name'>
           <strong>{!!user ? user : `You: `}</strong>
         </p>
-        <ErrorBoundary
+        <WonkyBoundary
           fallback={
             <WonkError type='alert' thereWasAnErrorLoadingThe='question' />
           }
         >
           <p>{content}</p>
-        </ErrorBoundary>
+        </WonkyBoundary>
       </div>
     </div>
   );

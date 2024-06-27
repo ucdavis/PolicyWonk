@@ -3,7 +3,7 @@ import React from 'react';
 
 import { StreamableValue } from 'ai/rsc';
 
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import WonkError from '@/lib/error/wonkError';
 import {
   useStreamableText,
@@ -30,9 +30,9 @@ export const WonkMessage = ({
   return (
     <div className='row mb-3'>
       <div className='col-2 col-sm-1 mb-2'>
-        <ErrorBoundary>
+        <WonkyBoundary>
           <WonkPortrait isLoading={isLoading} />
-        </ErrorBoundary>
+        </WonkyBoundary>
       </div>
       <div className='col-10 gtag'>
         <p className='chat-name'>
@@ -40,13 +40,13 @@ export const WonkMessage = ({
         </p>
         <div>
           {text ? (
-            <ErrorBoundary
+            <WonkyBoundary
               fallback={
                 <WonkError type='alert' thereWasAnErrorLoadingThe='answer' />
               }
             >
               <WonkAnswer text={text} />
-            </ErrorBoundary>
+            </WonkyBoundary>
           ) : (
             wonkText
           )}

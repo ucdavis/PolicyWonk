@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
 import CopyToClipboardButton from '@/components/ui/copyToClipboardButton';
 import { AI } from '@/lib/aiProvider';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '@/lib/util';
 import { GTagEvents } from '@/models/gtag';
@@ -32,7 +32,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({}) => {
       <div className='row mb-3'>
         <div className='col-1'>{/* empty */}</div>
         <div className='col-11'>
-          <ErrorBoundary>
+          <WonkyBoundary>
             <CopyToClipboardButton
               id='gtag-copy-chat'
               value={fullQuestionAndAnswer}
@@ -40,23 +40,23 @@ const ChatActions: React.FC<ChatActionsProps> = ({}) => {
                 gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
               }}
             />
-          </ErrorBoundary>
+          </WonkyBoundary>
           {!onSharedPage && (
             <>
-              <ErrorBoundary>
+              <WonkyBoundary>
                 <FeedbackButtons />
-              </ErrorBoundary>
-              <ErrorBoundary>
+              </WonkyBoundary>
+              <WonkyBoundary>
                 <ShareModal />
-              </ErrorBoundary>
+              </WonkyBoundary>
             </>
           )}
         </div>
       </div>
       {!onSharedPage && !!aiState.reaction && (
-        <ErrorBoundary>
+        <WonkyBoundary>
           <FeedbackBar />
-        </ErrorBoundary>
+        </WonkyBoundary>
       )}
     </>
   );

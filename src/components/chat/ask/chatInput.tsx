@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import { useSession } from 'next-auth/react';
 
 import { AI } from '@/lib/aiProvider';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import WonkError from '@/lib/error/wonkError';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
@@ -62,16 +62,16 @@ const ChatInput = () => {
 
   return (
     <>
-      <ErrorBoundary>
+      <WonkyBoundary>
         <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
-      </ErrorBoundary>
-      <ErrorBoundary
+      </WonkyBoundary>
+      <WonkyBoundary
         fallback={
           <WonkError thereWasAnErrorLoadingThe='focus options' type='alert' />
         }
       >
         <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
-      </ErrorBoundary>
+      </WonkyBoundary>
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </>
   );

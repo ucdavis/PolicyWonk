@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/aiProvider';
-import ErrorBoundary from '@/lib/error/errorBoundary';
+import WonkyBoundary from '@/lib/error/errorBoundary';
 import WonkError from '@/lib/error/wonkError';
 
 import Disclaimer from '../layout/disclaimer';
@@ -59,13 +59,13 @@ const MainContent = () => {
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
-            <ErrorBoundary
+            <WonkyBoundary
               fallback={
                 <WonkError thereWasAnErrorLoadingThe='input' type='alert' />
               }
             >
               <ChatInput />
-            </ErrorBoundary>
+            </WonkyBoundary>
             <Disclaimer />
           </WonkBottom>
         </>
@@ -78,7 +78,7 @@ const MainContent = () => {
               .map((m) => {
                 return (
                   <div key={m.id}>
-                    <ErrorBoundary
+                    <WonkyBoundary
                       fallback={
                         <WonkError
                           type='alert'
@@ -87,7 +87,7 @@ const MainContent = () => {
                       }
                     >
                       {m.display}
-                    </ErrorBoundary>
+                    </WonkyBoundary>
                   </div>
                 );
               })}
