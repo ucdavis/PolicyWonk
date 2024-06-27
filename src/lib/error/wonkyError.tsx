@@ -20,7 +20,7 @@ const WonkyError: React.FC<WonkyErrorProps> = ({
   type,
   thereWasAnErrorLoadingThe: componentName,
   contactLink = false,
-  message,
+  message = null,
 }) => {
   const errorText = (
     <>
@@ -36,7 +36,7 @@ const WonkyError: React.FC<WonkyErrorProps> = ({
           </a>
         </>
       )}
-      {message && <>{message}</>}
+      {message}
     </>
   );
 

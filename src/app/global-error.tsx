@@ -18,11 +18,11 @@ const GlobalError: React.FC = () => {
         <main className='d-flex'>
           <div className='mobile-sidebar'>
             <WonkyErrorBoundary>
-              <MobileSidebar history={<></>} />
+              <MobileSidebar history={null} />
             </WonkyErrorBoundary>
           </div>
           <div className='desktop-sidebar'>
-            <Sidebar history={<></>} />
+            <Sidebar history={null} />
           </div>
 
           <div className='wonk-wrapper'>
