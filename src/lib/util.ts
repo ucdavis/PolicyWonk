@@ -27,10 +27,9 @@ export const sanitizeUserInput = (input: string) => {
 };
 
 export const cleanMetadataTitle = (title: string) => {
-  const sanitizedTitle = sanitizeUserInput(title);
-  return sanitizedTitle.length > 60
-    ? `${sanitizedTitle.slice(0, 60)}...`
-    : sanitizedTitle;
+  return (
+    sanitizeUserInput(title).slice(0, 60) + (title.length > 60 ? '...' : '')
+  );
 };
 
 export const stripTemporaryCitations = (content: string) => {
@@ -41,7 +40,5 @@ export const stripTemporaryCitations = (content: string) => {
 
 // fix up common markdown issues
 export const sanitizeMarkdown = (content: string) => {
-  content = stripTemporaryCitations(content);
-
-  return content;
+  return stripTemporaryCitations(content);
 };
