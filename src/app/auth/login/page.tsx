@@ -3,6 +3,12 @@ import React from 'react';
 import { signIn } from '@/auth';
 import Logo from '@/components/layout/logo';
 
+export const generateMetadata = () => {
+  return {
+    title: 'Login',
+  };
+};
+
 const Login: React.FC = () => {
   return (
     <>
