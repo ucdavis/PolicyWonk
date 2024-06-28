@@ -41,7 +41,7 @@ const WonkyError: React.FC<WonkyErrorProps> = ({
   );
 
   if (type === 'alert') {
-    return <Alert color='warning'>{errorText}</Alert>;
+    return <Alert color='danger'>{errorText}</Alert>;
   }
 
   return <>{errorText}</>;
