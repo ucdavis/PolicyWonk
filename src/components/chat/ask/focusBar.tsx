@@ -4,6 +4,7 @@ import React from 'react';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { Focus, focuses } from '@/models/focus';
 
 import FocusOptions from './focusOptions';
@@ -38,13 +39,14 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
           <span className='text-muted small'>{focus.description}</span>
         </div>
       </div>
-
-      <FocusOptions
-        focus={focus}
-        open={open}
-        onSelection={onFocusSelection}
-        options={focuses}
-      />
+      <WonkyErrorBoundary>
+        <FocusOptions
+          focus={focus}
+          open={open}
+          onSelection={onFocusSelection}
+          options={focuses}
+        />
+      </WonkyErrorBoundary>
     </>
   );
 };

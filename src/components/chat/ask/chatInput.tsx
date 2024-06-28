@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { useSession } from 'next-auth/react';
 
 import { AI } from '@/lib/aiProvider';
+import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
 import { GTagEvents } from '@/models/gtag';
@@ -39,9 +40,10 @@ const ChatInput = () => {
         display: (
           <>
             <FocusBanner focus={focus} />
-            <UserMessage user={session?.data?.user?.name || ''}>
-              {question}
-            </UserMessage>
+            <UserMessage
+              user={session?.data?.user?.name || ''}
+              content={question}
+            />
           </>
         ),
       },
@@ -56,9 +58,12 @@ const ChatInput = () => {
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };
+
   return (
     <>
-      <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
+      <WonkyErrorBoundary>
+        <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
+      </WonkyErrorBoundary>
       <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </>

@@ -11,12 +11,12 @@ import { Button } from 'reactstrap';
 import { deleteChatFromSidebar } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
 
-interface ChatHistoryList {
+interface ChatHistoryListProps {
   chats: ChatHistory[];
 }
 
 // separate out rendering the chat list so we can animate it as a client component
-const ChatHistoryList: React.FC<ChatHistoryList> = ({ chats }) => {
+const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isHovering, setIsHovering] = React.useState<null | string>(null);

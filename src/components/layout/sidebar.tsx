@@ -6,10 +6,9 @@ import { buildVersion } from '@/models/static';
 
 interface SidebarProps {
   history: React.ReactNode;
-  footer: React.ReactNode;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ history, footer }) => {
+const Sidebar: React.FC<SidebarProps> = ({ history }) => {
   return (
     <div className='sidebar-wrapper'>
       <div className='sidebar-container'>
@@ -22,7 +21,6 @@ const Sidebar: React.FC<SidebarProps> = ({ history, footer }) => {
           </h1>
           {history}
         </header>
-        {/* {footer} */}
         <div className='alert-tag'>
           <p>BETA v{buildVersion}</p>
         </div>
