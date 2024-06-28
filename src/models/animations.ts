@@ -17,7 +17,7 @@ export const ButtonVariants: Record<ButtonVariantOptions, Variant> = {
   selected: {
     scale: 1.2,
     opacity: 1,
-    color: animationColors.primary,
+    color: animationColors.secondary,
   },
   hover: {
     scale: 1.2,
@@ -29,7 +29,7 @@ export const ButtonVariants: Record<ButtonVariantOptions, Variant> = {
   },
   tap: {
     scale: 0.8,
-    color: animationColors.primary,
+    color: animationColors.secondary,
   },
 };
 

@@ -14,7 +14,7 @@ const FocusBanner: React.FC<FocusBannerProps> = ({ focus }) => {
   }
 
   return (
-    <div className='focus-result mt-4'>
+    <div className='focus-result mt-3'>
       <div className='d-flex justify-content-start align-items-center'>
         <span className='btn btn-link'>Focus: {focus.name}</span>
         <span className='text-muted small'>{focus.description}</span>

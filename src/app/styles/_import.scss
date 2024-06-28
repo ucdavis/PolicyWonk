@@ -1,8 +1,8 @@
 @import "bootstrap/scss/_functions";
 @import "bootstrap/scss/_variables";
 @import "@ucdavis/gunrockin/sass/gunrockin.scss";
-$primary-color: #FFCC33;
-$secondary-color: #003A5D;
+$primary-color: $sunflower;
+$secondary-color: $putahcreek;
 
 $theme-colors: (
   primary: $primary-color,
@@ -12,6 +12,7 @@ $theme-colors: (
   link: $secondary-color,
   success: $quad,
   info: $recpool,
+  success-text-emphasis: $california
 );
 @import "bootstrap/scss/bootstrap";
 @import "@ucdavis/gunrockin/sass/_typography.scss";

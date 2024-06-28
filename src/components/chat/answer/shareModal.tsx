@@ -99,7 +99,7 @@ const ShareModal: React.FC = () => {
               loadingState={isLoading}
             />
           )}
-          <Button color='secondary' onClick={toggle}>
+          <Button color='link' onClick={toggle}>
             {!isShared ? 'Cancel' : 'Close'}
           </Button>
         </ModalFooter>
