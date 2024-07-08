@@ -3,10 +3,18 @@ import { useEffect, useState } from 'react';
 
 import { StreamableValue, readStreamableValue } from 'ai/rsc';
 
+interface StreamableTextOptions {
+  shouldAppend?: boolean;
+}
+
 export const useStreamableText = (
   content: string | StreamableValue<string>,
-  shouldAppend = true
+  options: StreamableTextOptions = {
+    shouldAppend: true,
+  }
 ) => {
+  const { shouldAppend } = options;
+
   const [rawContent, setRawContent] = useState(
     typeof content === 'string' ? content : ''
   );

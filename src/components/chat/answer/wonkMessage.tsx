@@ -22,7 +22,7 @@ export const WonkMessage = ({
   wonkThoughts: StreamableValue<string> | string;
 }) => {
   const text = useStreamableText(content);
-  const wonkText = useStreamableText(wonkThoughts, false);
+  const wonkText = useStreamableText(wonkThoughts, { shouldAppend: false });
 
   return (
     <div className='row mb-3'>
