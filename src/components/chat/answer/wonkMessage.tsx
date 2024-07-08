@@ -5,10 +5,7 @@ import { StreamableValue } from 'ai/rsc';
 
 import WonkyError from '@/lib/error/wonkyError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
-import {
-  useStreamableText,
-  useTempStreamableText,
-} from '@/lib/hooks/useStreamableText';
+import { useStreamableText } from '@/lib/hooks/useStreamableText';
 
 import { WonkPortrait } from '../rolePortrait';
 
@@ -25,7 +22,7 @@ export const WonkMessage = ({
   wonkThoughts: StreamableValue<string> | string;
 }) => {
   const text = useStreamableText(content);
-  const wonkText = useTempStreamableText(wonkThoughts);
+  const wonkText = useStreamableText(wonkThoughts, { shouldAppend: false });
 
   return (
     <div className='row mb-3'>
