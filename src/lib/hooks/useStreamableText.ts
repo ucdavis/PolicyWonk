@@ -19,6 +19,8 @@ export const useStreamableText = (
             setRawContent((value = value + delta));
           }
         }
+      } else if (typeof content === 'string') {
+        setRawContent(content);
       }
     })();
   }, [content]);
