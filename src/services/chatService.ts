@@ -49,13 +49,7 @@ const generateFilter = (
   let allowedScopes: FocusScope[] = [];
 
   if (focus.name === 'core') {
-    allowedScopes = [
-      'ucop',
-      'ucdppm',
-      'ucdppsm',
-      'ucddelegation',
-      'ucdinterim',
-    ];
+    allowedScopes = ['UCOP', 'UCDPOLICY'];
 
     return {
       terms: {
@@ -63,7 +57,7 @@ const generateFilter = (
       },
     };
   } else if (focus.name === 'apm') {
-    allowedScopes = ['ucdapm'];
+    allowedScopes = ['UCDAPM'];
 
     return {
       terms: {
@@ -71,7 +65,7 @@ const generateFilter = (
       },
     };
   } else if (focus.name === 'unions') {
-    allowedScopes = ['collective_bargaining_contracts'];
+    allowedScopes = ['UCCOLLECTIVEBARGAINING'];
 
     // for unions we need to read the subfocus
     if (focus.subFocus) {
@@ -97,7 +91,7 @@ const generateFilter = (
       };
     }
   } else if (focus.name === 'knowledgebase') {
-    allowedScopes = ['ucdknowledgebase'];
+    allowedScopes = ['UCDKB'];
 
     return {
       terms: {
@@ -258,7 +252,7 @@ export const getSystemMessage = (docText: string) => {
     role: 'system',
     content: `
     ## Basic Rules
-You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, you cite your sources in your answers, according to the provided instructions. Always respond in well-formatted markdown.
+You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, ALWAYS cite your sources in your answers, according to the provided instructions. Every answer MUST contain at least one citation. Always respond in well-formatted markdown.
 ## Task and Context
 You help people answer their policy questions interactively. You should focus on serving the user's needs as best you can. If you don't know the answer, respond only with "Sorry, I couldn't find enough information to answer your question".
 ## Style Guide
