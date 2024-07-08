@@ -243,6 +243,16 @@ export const transformContentWithCitations = (
 };
 
 export const getSystemMessage = (docText: string) => {
+  if (!docText) {
+    // if we don't have any documents, we can't do anything, but still use the llm to respond so the pipeline is consistent
+    return {
+      id: '1',
+      role: 'system',
+      content:
+        "Reploy with: Sorry, I couldn't find enough information to answer your question",
+    } as Message;
+  }
+
   return {
     id: '1',
     role: 'system',
