@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Offcanvas, OffcanvasHeader, OffcanvasBody, Button } from 'reactstrap';
 
+import { buildVersion } from '@/models/static';
+
 interface SidebarProps {
   history: React.ReactNode;
 }
@@ -49,7 +51,7 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
                 {history}
               </header>
               <div className='alert-tag alert-tag-mobile'>
-                <p>BETA v1.2.3.311</p>
+                <p>BETA v{buildVersion}</p>
               </div>
             </div>
           </div>
