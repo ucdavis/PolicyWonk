@@ -243,7 +243,7 @@ export const getSystemMessage = (docText: string) => {
       id: '1',
       role: 'system',
       content:
-        "Reploy with: Sorry, I couldn't find enough information to answer your question",
+        "Reply with: Sorry, I couldn't find enough information to answer your question",
     } as Message;
   }
 
@@ -252,7 +252,7 @@ export const getSystemMessage = (docText: string) => {
     role: 'system',
     content: `
     ## Basic Rules
-You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, ALWAYS cite your sources in your answers, according to the provided instructions. Every answer MUST contain at least one citation. Always respond in well-formatted markdown.
+You are a helpful assistant who is an expert in university policy at UC Davis. When you answer the user's requests, ALWAYS cite your sources in your answers, according to the provided instructions. Always respond in well-formatted markdown.
 ## Task and Context
 You help people answer their policy questions interactively. You should focus on serving the user's needs as best you can. If you don't know the answer, respond only with "Sorry, I couldn't find enough information to answer your question".
 ## Style Guide
