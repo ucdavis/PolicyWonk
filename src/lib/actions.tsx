@@ -208,6 +208,7 @@ export const deleteChatFromSidebar = async (
   chatId: string,
   isActiveChat: boolean
 ) => {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   await removeChat(chatId);
   if (isActiveChat) {
     redirect('/');

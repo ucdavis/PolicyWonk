@@ -20,7 +20,14 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isHovering, setIsHovering] = React.useState<null | string>(null);
-  const [isLoading, setIsLoading] = React.useState<null | string>(null);
+
+  const [optimisticState, removeOptimistic] = React.useOptimistic(
+    chats,
+    // updateFn
+    (currentState, optimisticValue) => {
+      return currentState.filter((chat) => chat.id !== optimisticValue);
+    }
+  );
 
   if (!chats) {
     return null;
@@ -33,9 +40,8 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   const handleRemoveChat = async (chatId: string) => {
     router.prefetch(`/chat/new`);
     const isActiveChat = isActive(chatId);
-    setIsLoading(chatId);
+    removeOptimistic(chatId);
     await deleteChatFromSidebar(chatId, isActiveChat);
-    setIsLoading(null);
     if (isActiveChat) {
       // deleteChatFromSidebar will handle the redirect to '/'
       // because i could not get the router here to both refresh and redirect reliably
@@ -47,7 +53,7 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   return (
     <ul className='history-list'>
       <AnimatePresence initial={false}>
-        {chats.map((chat) => (
+        {optimisticState.map((chat) => (
           <motion.li
             className={`history-list-group-item ${isActive(chat.id) ? 'active' : ''}`}
             key={chat.id}
@@ -77,13 +83,15 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
                 <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
               </div>
               <div className='col-1 delete-chat-button'>
-                {((isHovering !== null && isHovering === chat.id) ||
-                  isLoading === chat.id) && (
+                {isHovering !== null && isHovering === chat.id && (
                   <Button
                     block={false}
                     color='link'
-                    onClick={() => handleRemoveChat(chat.id)}
-                    disabled={isLoading !== null}
+                    onClick={() =>
+                      React.startTransition(() => {
+                        handleRemoveChat(chat.id);
+                      })
+                    }
                   >
                     <FontAwesomeIcon icon={faTrash} size='lg' />
                   </Button>
