@@ -3,9 +3,18 @@ import { useEffect, useState } from 'react';
 
 import { StreamableValue, readStreamableValue } from 'ai/rsc';
 
+interface StreamableTextOptions {
+  shouldAppend?: boolean;
+}
+
 export const useStreamableText = (
-  content: string | StreamableValue<string>
+  content: string | StreamableValue<string>,
+  options: StreamableTextOptions = {
+    shouldAppend: true,
+  }
 ) => {
+  const { shouldAppend } = options;
+
   const [rawContent, setRawContent] = useState(
     typeof content === 'string' ? content : ''
   );
@@ -16,34 +25,14 @@ export const useStreamableText = (
         let value = '';
         for await (const delta of readStreamableValue(content)) {
           if (typeof delta === 'string') {
-            setRawContent((value = value + delta));
+            setRawContent(shouldAppend ? (value = value + delta) : delta);
           }
         }
+      } else if (typeof content === 'string') {
+        setRawContent(content);
       }
     })();
-  }, [content]);
-
-  return rawContent;
-};
-
-export const useTempStreamableText = (
-  content: string | StreamableValue<string>
-) => {
-  const [rawContent, setRawContent] = useState(
-    typeof content === 'string' ? content : ''
-  );
-
-  useEffect(() => {
-    (async () => {
-      if (typeof content === 'object') {
-        for await (const delta of readStreamableValue(content)) {
-          if (typeof delta === 'string') {
-            setRawContent(delta); // replace instead of add to
-          }
-        }
-      }
-    })();
-  }, [content]);
+  }, [content, shouldAppend]);
 
   return rawContent;
 };
