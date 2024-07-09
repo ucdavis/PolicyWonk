@@ -4,8 +4,6 @@ import Image from 'next/image';
 
 import Logo from '/public/media/ucdavis-grey.svg';
 
-import { buildVersion } from '@/models/static';
-
 import FooterLinks from './footerLinks';
 import UserNameDisplay from './userNameDisplay';
 
@@ -21,12 +19,7 @@ const Footer: React.FC = () => {
           >
             <Image width={85} src={Logo} alt='UC Davis logo greyscale' />
           </a>
-          <p>
-            &copy; UC Regents{' '}
-            <span className='version-notice'>
-              PolicyWonk BETA v{buildVersion}
-            </span>
-          </p>
+          <p>Copyright &copy; UC Regents, Davis campus. All rights reserved.</p>
         </div>
         <div className='col text-end'>
           <UserNameDisplay />
