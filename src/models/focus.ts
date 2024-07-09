@@ -3,14 +3,11 @@ export type FocusName = 'core' | 'apm' | 'unions' | 'knowledgebase';
 
 // individual focus scopes which tie to specific policy groups in the index
 export type FocusScope =
-  | 'ucop'
-  | 'ucdppm'
-  | 'ucdppsm'
-  | 'ucddelegation'
-  | 'ucdinterim'
-  | 'ucdapm'
-  | 'collective_bargaining_contracts'
-  | 'ucdknowledgebase';
+  | 'UCOP'
+  | 'UCDPOLICY'
+  | 'UCDAPM'
+  | 'UCCOLLECTIVEBARGAINING'
+  | 'UCDKB';
 
 export type Focus = {
   name: FocusName;
