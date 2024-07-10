@@ -5,7 +5,11 @@ import { nanoid } from 'nanoid';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
-import { WonkError, WonkyErrorCodes } from '@/lib/error/error';
+import {
+  WonkError,
+  WonkStatusCodes,
+  returnStatusCode,
+} from '@/lib/error/error';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { Focus } from '@/models/focus';
 
@@ -49,11 +53,11 @@ function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
  * Assumes the user is authenticated. Throws an error if the chat is not found or the user is not authorized.
  * @returns ChatHistory for the chat, with messages filtered to remove system messages.
  */
-export const getChat = async (session: Session, chatId: string) => {
+export const getChat = async (chatId: string) => {
+  const session = (await auth()) as Session;
   const userId = session.user?.id;
   if (!userId) {
-    console.log('historyService !userId, ', WonkyErrorCodes.UNAUTHORIZED);
-    throw new WonkError(WonkyErrorCodes.UNAUTHORIZED);
+    return returnStatusCode(WonkStatusCodes.UNAUTHORIZED);
   }
 
   const chatsDb = await getChatsCollection();
@@ -66,16 +70,16 @@ export const getChat = async (session: Session, chatId: string) => {
   const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
-    console.log('historyService !chat', WonkyErrorCodes.NOT_FOUND);
-    throw new WonkError(WonkyErrorCodes.NOT_FOUND);
+    console.log('historyService !chat', WonkStatusCodes.NOT_FOUND);
+    return returnStatusCode(WonkStatusCodes.NOT_FOUND);
   }
 
   if (chat.userId !== userId) {
     console.log(
       'historyService chat.userId !== userId, ',
-      WonkyErrorCodes.UNAUTHORIZED
+      WonkStatusCodes.UNAUTHORIZED
     );
-    throw new WonkError(WonkyErrorCodes.UNAUTHORIZED);
+    return returnStatusCode(WonkStatusCodes.UNAUTHORIZED);
   }
 
   chat.messages = chat.messages.filter((m) => m.role !== 'system');

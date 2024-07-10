@@ -1,12 +1,10 @@
 import React from 'react';
 
+import { WonkStatusCodes } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
+
 const NotFound: React.FC = () => {
-  return (
-    <div>
-      <h1>404 - Chat Not Found</h1>
-      <p>The chat you are looking for does not exist.</p>
-    </div>
-  );
+  return <WonkyPageError error={WonkStatusCodes.NOT_FOUND} />;
 };
 
 export default NotFound;

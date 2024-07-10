@@ -3,34 +3,21 @@ import React from 'react';
 
 import ChatHeader from '@/components/chat/chatHeader';
 import WonkTop from '@/components/layout/wonkTop';
-import { WonkError } from '@/lib/error/error';
-import WonkyClientError from '@/lib/error/wonkyClientError';
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyComponentError from '@/lib/error/wonkyComponentError';
 
-interface ErrorProps {
-  error?: WonkError;
-  type?: 'text' | 'alert';
-}
-// this is the highest level error boundary, and catches any unhandled errors and stops the whole page crashing
-const Error: React.FC<ErrorProps> = ({ error, type = 'alert' }) => {
-  console.log('rendering Error: ', error);
-
+// this is the default error component displayed when there is an uncaught error
+// the only thing higher than this is the global-error, which catches errors in the layout
+const Error: React.FC = () => {
   return (
-    <>
-      <WonkTop>
-        <ChatHeader>
-          {error ? (
-            <WonkyError type={type} error={error} />
-          ) : (
-            <WonkyClientError
-              thereWasAnErrorLoadingThe='page'
-              type={type}
-              contactLink={true}
-            />
-          )}
-        </ChatHeader>
-      </WonkTop>
-    </>
+    <WonkTop>
+      <ChatHeader>
+        <WonkyComponentError
+          thereWasAnErrorLoadingThe='page'
+          type={'alert'}
+          contactLink={true}
+        />
+      </ChatHeader>
+    </WonkTop>
   );
 };
 

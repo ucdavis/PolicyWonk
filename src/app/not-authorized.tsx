@@ -1,12 +1,10 @@
 import React from 'react';
 
+import { WonkStatusCodes } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
+
 const NotAuthorized: React.FC = () => {
-  return (
-    <div>
-      <h1>Not Authorized</h1>
-      <p>You are not authorized to access this page.</p>
-    </div>
-  );
+  return <WonkyPageError error={WonkStatusCodes.UNAUTHORIZED} />;
 };
 
 export default NotAuthorized;

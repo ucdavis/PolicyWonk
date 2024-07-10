@@ -1,31 +1,27 @@
 import ChatHeader from '@/components/chat/chatHeader';
 import WonkTop from '@/components/layout/wonkTop';
 
-import { WonkError } from './error';
-import WonkyError from './wonkyError';
+import { WonkErrorMessage, WonkStatusCodes, WonkStatusMessages } from './error';
 
 interface WonkyPageErrorProps {
-  error: WonkError;
+  error: WonkErrorMessage | WonkStatusCodes;
+  children?: React.ReactNode;
 }
 
-/**
- * @param type 'text' or 'alert'
- * @param thereWasAnErrorLoadingThe As in "There was an error loading the {componentName}". Defaults to "there was an error loading."
- * @param contactLink Whether to include a link to contact the developers
- * @param message Optional message to display at the end
- * @returns Error component
- */
-
-export const WonkyPageError: React.FC<WonkyPageErrorProps> = ({ error }) => {
-  console.log('rendering WonkyPageError: ', error);
+export const WonkyPageError: React.FC<WonkyPageErrorProps> = ({
+  error,
+  children,
+}) => {
+  const errorObj =
+    typeof error === 'string' ? WonkStatusMessages[error] : error;
   return (
     <WonkTop>
       <ChatHeader>
-        <WonkyError type='alert'>
-          Error: {error.code} - {error.name}
-          <br />
-          {error.description}
-        </WonkyError>
+        <h2>
+          {errorObj.code}: {errorObj.name}
+        </h2>
+        <p>{errorObj.message}</p>
+        {children}
       </ChatHeader>
     </WonkTop>
   );
