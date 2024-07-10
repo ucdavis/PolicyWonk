@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
+import { WonkError, WonkyErrorCodes } from '@/lib/error/error';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { Focus } from '@/models/focus';
 
@@ -44,19 +45,37 @@ function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
   return chat;
 }
 
-export const getChat = async (chatId: string, userId: string) => {
+/**
+ * Assumes the user is authenticated. Throws an error if the chat is not found or the user is not authorized.
+ * @returns ChatHistory for the chat, with messages filtered to remove system messages.
+ */
+export const getChat = async (session: Session, chatId: string) => {
+  const userId = session.user?.id;
+  if (!userId) {
+    console.log('historyService !userId, ', WonkyErrorCodes.UNAUTHORIZED);
+    throw new WonkError(WonkyErrorCodes.UNAUTHORIZED);
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: userId,
     active: true,
   };
 
   const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
-    return null;
+    console.log('historyService !chat', WonkyErrorCodes.NOT_FOUND);
+    throw new WonkError(WonkyErrorCodes.NOT_FOUND);
+  }
+
+  if (chat.userId !== userId) {
+    console.log(
+      'historyService chat.userId !== userId, ',
+      WonkyErrorCodes.UNAUTHORIZED
+    );
+    throw new WonkError(WonkyErrorCodes.UNAUTHORIZED);
   }
 
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
@@ -106,6 +125,7 @@ export const getChatHistory = async (userId: string) => {
 // save chats to db
 // TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
 export const saveChat = async (
+  // session: Session,
   chatId: string,
   messages: Message[],
   focus: Focus
@@ -133,13 +153,16 @@ export const saveChat = async (
   await logMessages(chatId, messages);
 };
 
-export const saveReaction = async (chatId: string, reaction: Feedback) => {
-  const session = (await auth()) as Session;
+export const saveReaction = async (
+  userId: string,
+  chatId: string,
+  reaction: Feedback
+) => {
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 
@@ -155,13 +178,12 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
   await logReaction(chatId, reaction);
 };
 
-export const saveShareChat = async (chatId: string) => {
-  const session = (await auth()) as Session;
+export const saveShareChat = async (userId: string, chatId: string) => {
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 

@@ -1,0 +1,40 @@
+import WonkyError from './wonkyError';
+
+interface WonkyClientErrorProps {
+  type: 'text' | 'alert';
+  thereWasAnErrorLoadingThe?: string;
+  contactLink?: boolean;
+}
+
+/**
+ * @description Error component for client-side errors
+ * @param type 'text' or 'alert'
+ * @param thereWasAnErrorLoadingThe As in "There was an error loading the {componentName}". Defaults to "there was an error loading."
+ * @param contactLink Whether to include a link to contact the developers
+ * @returns Error component
+ */
+
+export const WonkyClientError: React.FC<WonkyClientErrorProps> = ({
+  type,
+  thereWasAnErrorLoadingThe: componentName,
+  contactLink = false,
+}) => {
+  return (
+    <WonkyError type={type}>
+      There was an error loading{componentName ? ` the ${componentName}` : ''}.
+      Please refresh and try again.{' '}
+      {contactLink && (
+        <>
+          <br />
+          <br />
+          If the problem persists, please{' '}
+          <a href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'>
+            contact the developers.
+          </a>
+        </>
+      )}
+    </WonkyError>
+  );
+};
+
+export default WonkyClientError;

@@ -1,14 +1,14 @@
-'use server'; // since this is an async component
+'server only';
 import React from 'react';
 
 import { Metadata, ResolvingMetadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
 import { Session } from 'next-auth';
 
-import NotAuthorized from '@/app/not-authorized';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
+import { WonkError, handleError } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { focuses, getFocusWithSubFocus } from '@/models/focus';
@@ -24,8 +24,8 @@ type HomePageProps = {
   };
 };
 
-const getCachedChat = React.cache(async (chatid: string, userId: string) => {
-  const chat = await getChat(chatid, userId);
+const getCachedChat = React.cache(async (session: Session, chatid: string) => {
+  const chat = await getChat(session, chatid);
 
   return chat;
 });
@@ -49,11 +49,16 @@ export async function generateMetadata(
     };
   }
 
-  const chat = await getCachedChat(chatid, session.user.id);
-
-  return {
-    title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
-  };
+  try {
+    const chat = await getCachedChat(session, chatid);
+    return {
+      title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
+    };
+  } catch (e) {
+    return {
+      title: 'Chat',
+    };
+  }
 }
 
 const ChatPage = async ({
@@ -62,25 +67,11 @@ const ChatPage = async ({
 }: HomePageProps) => {
   const session = (await auth()) as Session;
 
-  // middleware should take care of this, but if it doesn't then redirect to login
-  if (!session?.user?.id) {
-    redirect('/auth/login');
-  }
-
-  const chat: ChatHistory | null =
-    chatid !== 'new'
-      ? await getCachedChat(chatid, session.user.id)
-      : newChatSession(session, focus, subFocus);
-
-  // if getChat returns null
-  // will happen if the user is at an /chat/{id} that is not /chat/new
-  // but the chat does not exist
-  if (!chat) {
-    return notFound();
-  }
-
-  if (chat.userId !== session.user?.id) {
-    return <NotAuthorized />;
+  let chat: ChatHistory | undefined;
+  if (chatid !== 'new') {
+    chat = await getCachedChat(session, chatid);
+  } else {
+    chat = newChatSession(session, focus, subFocus);
   }
 
   return (

@@ -8,7 +8,9 @@ import {
 } from 'ai/rsc';
 import { nanoid } from 'nanoid';
 import { redirect } from 'next/navigation';
+import { Session } from 'next-auth';
 
+import { auth } from '@/auth';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
 import { Feedback, UIStateNode } from '@/models/chat';
 import { Focus } from '@/models/focus';
@@ -172,9 +174,14 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
 };
 
 export const shareChat = async (chatId: string) => {
-  const aiState = getMutableAIState<typeof AI>();
+  const session = (await auth()) as Session;
 
-  const shareChat = await saveShareChat(chatId);
+  if (!session?.user?.id) {
+    return;
+  }
+  const shareChat = await saveShareChat(session.user.id, chatId);
+
+  const aiState = getMutableAIState<typeof AI>();
   // TODO handle errors?
   aiState.done({
     ...aiState.get(),
@@ -194,9 +201,15 @@ export const unshareChat = async (chatId: string) => {
 };
 
 export const submitFeedback = async (chatId: string, feedback: Feedback) => {
+  const session = (await auth()) as Session;
+  if (!session?.user?.id) {
+    return;
+  }
+
+  await saveReaction(session.user?.id, chatId, feedback);
+
   const aiState = getMutableAIState<typeof AI>();
 
-  await saveReaction(chatId, feedback);
   aiState.done({
     ...aiState.get(),
     reaction: feedback,

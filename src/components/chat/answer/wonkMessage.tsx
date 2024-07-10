@@ -3,7 +3,7 @@ import React from 'react';
 
 import { StreamableValue } from 'ai/rsc';
 
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import {
   useStreamableText,
@@ -42,7 +42,10 @@ export const WonkMessage = ({
           {text ? (
             <WonkyErrorBoundary
               fallback={
-                <WonkyError type='alert' thereWasAnErrorLoadingThe='answer' />
+                <WonkyClientError
+                  type='alert'
+                  thereWasAnErrorLoadingThe='answer'
+                />
               }
             >
               <WonkAnswer text={text} />

@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { Focus, FocusName } from '@/models/focus';
 
@@ -97,7 +97,7 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
       <ModalBody>
         <WonkyErrorBoundary
           fallback={
-            <WonkyError
+            <WonkyClientError
               type='alert'
               thereWasAnErrorLoadingThe='focus options'
             />
