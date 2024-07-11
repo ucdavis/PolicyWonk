@@ -179,7 +179,7 @@ export const shareChat = async (chatId: string) => {
   if (!session?.user?.id) {
     return;
   }
-  const shareChat = await saveShareChat(session.user.id, chatId);
+  const { data: shareChat, status } = await saveShareChat(chatId);
 
   const aiState = getMutableAIState<typeof AI>();
   // TODO handle errors?
