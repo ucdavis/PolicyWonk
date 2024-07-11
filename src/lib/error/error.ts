@@ -1,47 +1,77 @@
-export enum WonkErrorCodes {
+export enum WonkStatusCodes {
+  SUCCESS = '200',
   UNAUTHORIZED = '401',
+  FORBIDDEN = '403',
   NOT_FOUND = '404',
   SERVER_ERROR = '500',
 }
 
-export const WonkErrorMessages: Record<WonkErrorCodes, WonkError> = {
-  [WonkErrorCodes.UNAUTHORIZED]: {
-    code: WonkErrorCodes.UNAUTHORIZED,
-    name: 'Unauthorized',
-    message: 'You are not authorized to view this page.',
+export interface WonkErrorMessage {
+  code: WonkStatusCodes;
+  name: string;
+  message: string;
+}
+
+export const WonkStatusMessages: Record<WonkStatusCodes, WonkErrorMessage> = {
+  [WonkStatusCodes.FORBIDDEN]: {
+    code: WonkStatusCodes.FORBIDDEN,
+    name: 'Forbidden',
+    message: 'You do not have permission to access this page',
   },
-  [WonkErrorCodes.NOT_FOUND]: {
-    code: WonkErrorCodes.NOT_FOUND,
+  [WonkStatusCodes.SUCCESS]: {
+    code: WonkStatusCodes.SUCCESS,
+    name: 'Success',
+    message: 'Success',
+  },
+  [WonkStatusCodes.UNAUTHORIZED]: {
+    code: WonkStatusCodes.UNAUTHORIZED,
+    name: 'Unauthorized??',
+    message: 'You are not authorized to view this page. LOSER!!!',
+  },
+  [WonkStatusCodes.NOT_FOUND]: {
+    code: WonkStatusCodes.NOT_FOUND,
     name: 'Not Found',
     message: 'The requested page was not found.',
   },
-  [WonkErrorCodes.SERVER_ERROR]: {
-    code: WonkErrorCodes.SERVER_ERROR,
+  [WonkStatusCodes.SERVER_ERROR]: {
+    code: WonkStatusCodes.SERVER_ERROR,
     name: 'Server Error',
     message: 'An internal server error occurred.',
   },
 };
 
-export class WonkError extends Error {
-  code: WonkErrorCodes;
-  name: string;
-  message: string;
-
-  constructor(
-    code: WonkErrorCodes = WonkErrorCodes.SERVER_ERROR,
-    ...params: any[]
-  ) {
-    super(...params);
-    this.code = code;
-    this.name = WonkErrorMessages[code].name;
-    this.message = WonkErrorMessages[code].message;
-  }
+export interface WonkReturnObject<T> {
+  data?: T;
+  status: WonkStatusCodes;
 }
 
-export const handleError = (error: unknown) => {
-  if (error instanceof WonkError) {
-    return error;
-  }
+export const WonkNotFound = () => {
+  return {
+    status: WonkStatusCodes.NOT_FOUND,
+  };
+};
 
-  return new WonkError();
+export const WonkForbidden = () => {
+  return {
+    status: WonkStatusCodes.FORBIDDEN,
+  };
+};
+
+export const WonkUnauthorized = () => {
+  return {
+    status: WonkStatusCodes.UNAUTHORIZED,
+  };
+};
+
+export const WonkServerError = () => {
+  return {
+    status: WonkStatusCodes.SERVER_ERROR,
+  };
+};
+
+export const WonkSuccess = <T>(data: T): WonkReturnObject<T> => {
+  return {
+    data,
+    status: WonkStatusCodes.SUCCESS,
+  };
 };

@@ -7,7 +7,13 @@ import WonkyComponentError from '@/lib/error/wonkyComponentError';
 
 // this is the default error component displayed when there is an uncaught error
 // the only thing higher than this is the global-error, which catches errors in the layout
-const Error: React.FC = () => {
+const Error = ({ error, reset }: { error: unknown; reset: () => void }) => {
+  let obj = error;
+  do {
+    console.log(Object.getOwnPropertyNames(obj), ' :', obj);
+    obj = Object.getPrototypeOf(obj);
+  } while (obj);
+
   return (
     <WonkTop>
       <ChatHeader>

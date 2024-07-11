@@ -9,12 +9,13 @@ import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
 import { WonkStatusCodes } from '@/lib/error/error';
+import { handleWonkReturnStatus } from '@/lib/error/useWonkReturn';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { focuses, getFocusWithSubFocus } from '@/models/focus';
 import { getChat } from '@/services/historyService';
 
-import NotFound from './not-found';
+import NotFound from '../../not-found';
 
 type HomePageProps = {
   params: {
@@ -52,8 +53,6 @@ export async function generateMetadata(
   }
 
   const chat = await getCachedChat(chatid);
-  if (!chat || chat.status === WonkStatusCodes.NOT_FOUND) {
-  }
 
   return {
     title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
@@ -65,18 +64,22 @@ const ChatPage = async ({
   searchParams: { focus, subFocus },
 }: HomePageProps) => {
   const session = (await auth()) as Session;
-  const chat = await getCachedChat(chatid);
+  let chat: ChatHistory | undefined;
 
-  // let chat: ChatHistory ;
   if (chatid !== 'new') {
+    const { data, status } = await getCachedChat(chatid);
+    if (status !== WonkStatusCodes.SUCCESS) {
+      return handleWonkReturnStatus(status);
+    }
+    chat = data;
   } else {
-    // chat = newChatSession(session, focus, subFocus);
+    chat = newChatSession(session, focus, subFocus);
   }
 
-  if (!session?.user?.id || chat === WonkStatusCodes.UNAUTHORIZED) {
+  if (!session?.user?.id) {
     return <NotAuthorized />;
   }
-  if (!chat || chat === WonkStatusCodes.NOT_FOUND) {
+  if (!chat) {
     return <NotFound />;
   }
 

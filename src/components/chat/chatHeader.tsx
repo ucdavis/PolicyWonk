@@ -14,7 +14,7 @@ const ChatHeader: React.FC<{ children: React.ReactNode }> = ({
       <WonkyErrorBoundary>
         <Logo />
       </WonkyErrorBoundary>
-      <p className='lede'>{children}</p>
+      <div className='lede'>{children}</div>
     </div>
   );
 };
