@@ -20,7 +20,7 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({ chats }) => {
         />
       }
     >
-      {chats?.length ? (
+      {chats.length ? (
         <ChatHistoryList chats={chats} />
       ) : (
         <>No chat history found</>

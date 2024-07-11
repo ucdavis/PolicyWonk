@@ -1,9 +1,6 @@
 import { Message } from 'ai';
 import { createAI, getAIState } from 'ai/rsc';
-import { redirect } from 'next/navigation';
-import { Session } from 'next-auth';
 
-import { auth } from '@/auth';
 import FocusBanner from '@/components/chat/answer/focusBanner';
 import { WonkMessage } from '@/components/chat/answer/wonkMessage';
 import { UserMessage } from '@/components/chat/userMessage';
@@ -30,11 +27,6 @@ export const AI = createAI<ChatHistory, UIState, WonkActions>({
   onGetUIState: async () => {
     'use server';
 
-    const session = (await auth()) as Session;
-    // middleware should take care of this, but if it doesn't then redirect to login
-    if (!session?.user?.id) {
-      redirect('/auth/login');
-    }
     const aiState = getAIState();
     const messages: Message[] = aiState.messages;
     return messages

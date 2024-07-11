@@ -7,7 +7,7 @@ import { Session } from 'next-auth';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
-import { WonkStatusCodes } from '@/lib/error/error';
+import { isWonkSuccess } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
@@ -41,18 +41,13 @@ export async function generateMetadata(
     };
   }
 
-  const session = (await auth()) as Session;
-
-  if (!session?.user?.id) {
-    return {
-      title: 'Chat',
-    };
-  }
-
-  const { data: chat } = await getCachedChat(chatid);
+  const result = await getCachedChat(chatid);
 
   return {
-    title: chat?.title ? cleanMetadataTitle(chat.title) : 'Chat',
+    title:
+      isWonkSuccess(result) && result.data.title
+        ? cleanMetadataTitle(result.data.title)
+        : 'Chat',
   };
 }
 
@@ -60,17 +55,17 @@ const ChatPage = async ({
   params: { chatid },
   searchParams: { focus, subFocus },
 }: HomePageProps) => {
-  let chat: ChatHistory | undefined;
+  let chat: ChatHistory;
 
   if (chatid !== 'new') {
-    const { data, status } = await getCachedChat(chatid);
-    if (status !== WonkStatusCodes.SUCCESS) {
-      return <WonkyPageError status={status} />;
+    // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page
+    const result = await getCachedChat(chatid);
+    if (!isWonkSuccess(result)) {
+      return <WonkyPageError status={result.status} />;
     }
-    chat = data;
+    chat = result.data;
   } else {
     const session = (await auth()) as Session;
-
     chat = newChatSession(session, focus, subFocus);
   }
 

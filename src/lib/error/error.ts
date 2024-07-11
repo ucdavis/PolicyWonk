@@ -18,6 +18,7 @@ export interface WonkReturnObject<T> {
 }
 
 /**
+ * @param data - the data to return, or `true` if you don't want to send data
  * @returns `{ data, 'status': '200'}`
  */
 export const WonkSuccess = <T>(data: T): WonkReturnObject<T> => {
@@ -25,6 +26,16 @@ export const WonkSuccess = <T>(data: T): WonkReturnObject<T> => {
     data,
     status: WonkStatusCodes.SUCCESS,
   };
+};
+
+/**
+ * @returns boolean of if the status is `200` and the data is not undefined
+ * if you don't want to send data, use `WonkSuccess(true)`
+ */
+export const isWonkSuccess = <T>(
+  result: WonkReturnObject<T>
+): result is WonkReturnObject<T> & { data: T } => {
+  return result.status === WonkStatusCodes.SUCCESS && result.data !== undefined;
 };
 
 /**
@@ -55,11 +66,13 @@ export const WonkNotFound = () => {
 };
 
 /**
- * @throws `new Error('500')`
+ * @returns `{ 'status': '500'}`
  * We use an error instead of a return object because we want to try/catch
  */
-export const ThrowWonkServerError = () => {
-  throw new Error(WonkStatusCodes.SERVER_ERROR);
+export const WonkServerError = () => {
+  return {
+    status: WonkStatusCodes.SERVER_ERROR,
+  };
 };
 
 export const WonkStatusMessages: Record<WonkStatusCodes, WonkErrorMessage> = {

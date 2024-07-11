@@ -96,6 +96,7 @@ export const getSharedChat = async (
   if (!userId) {
     return WonkUnauthorized();
   }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
@@ -154,7 +155,7 @@ export const saveChat = async (
   const session = (await auth()) as Session;
   const user = session?.user;
 
-  if (!user || !user.id) {
+  if (!user?.id) {
     return WonkUnauthorized();
   }
 
@@ -174,7 +175,10 @@ export const saveChat = async (
   };
 
   const chatsDb = await getChatsCollection();
-  await chatsDb.insertOne(chat);
+  const res = await chatsDb.insertOne(chat);
+  if (!res.acknowledged) {
+    throw new Error(WonkStatusCodes.SERVER_ERROR);
+  }
 
   // also log to elastic for now
   await logMessages(chatId, messages);

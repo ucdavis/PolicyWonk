@@ -41,6 +41,7 @@ const ShareModal: React.FC = () => {
       event: type,
       chat: aiState,
     });
+    // TODO: handle errors
     await shareChat(chatId);
     setIsLoading('');
   };
@@ -48,6 +49,7 @@ const ShareModal: React.FC = () => {
   const handleUnshare = async () => {
     setIsLoading(GTagEvents.UNSHARE);
     gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
+    // TODO: handle errors
     await unshareChat(chatId);
     setIsLoading('');
   };

@@ -1,8 +1,8 @@
 'use server'; // since this is async
 import React from 'react';
 
-import { WonkReturnObject, WonkStatusCodes } from '@/lib/error/error';
-import WonkyPageError from '@/lib/error/wonkyPageError';
+import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
+import WonkyComponentError from '@/lib/error/wonkyComponentError';
 import { ChatHistory as ChatHistoryInterface } from '@/models/chat'; // TODO: rename
 import { getChatHistory } from '@/services/historyService';
 
@@ -15,9 +15,26 @@ const loadChatHistory = React.cache(
 );
 
 const ChatHistory: React.FC = async () => {
-  const { data: chats, status } = await loadChatHistory();
-  if (status !== WonkStatusCodes.SUCCESS) {
-    return <WonkyPageError status={status} />;
+  let chats: ChatHistoryInterface[] = [];
+  try {
+    const result = await loadChatHistory();
+
+    if (!isWonkSuccess(result)) {
+      return <></>; // don't show anything on known errors
+    }
+    chats = result.data;
+  } catch (error) {
+    // same return as the fallback in the error boundary
+    // but we have to do it here too, since the error boundary doesn't catch server errors
+    return (
+      <div className='history-wrapper'>
+        <h2>Chat History</h2>
+        <WonkyComponentError
+          thereWasAnErrorLoadingThe='chat history'
+          type='text'
+        />
+      </div>
+    );
   }
 
   return (
