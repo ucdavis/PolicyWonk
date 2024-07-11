@@ -59,7 +59,7 @@ export const getChat = async (
   chatId: string
 ): Promise<WonkReturnObject<ChatHistory>> => {
   const session = (await auth()) as Session;
-  const userId = session.user?.id;
+  const userId = session?.user?.id;
   if (!userId) {
     return WonkUnauthorized();
   }
@@ -87,6 +87,11 @@ export const getChat = async (
 };
 
 export const getSharedChat = async (shareId: string) => {
+  const session = (await auth()) as Session;
+  if (!session?.user?.id) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
@@ -96,23 +101,28 @@ export const getSharedChat = async (shareId: string) => {
 
   const chat = await chatsDb.findOne(
     queryFilter,
-    { projection: { _id: 0, feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
+    { projection: { feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
   );
 
   if (!chat) {
-    return null;
+    return WonkNotFound();
   }
 
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
-  return chat;
+  return WonkSuccess(unwrapChat(chat));
 };
 
-export const getChatHistory = async (userId: string) => {
+export const getChatHistory = async () => {
+  const session = (await auth()) as Session;
+  if (!session?.user?.id) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
-    userId: userId,
+    userId: session.user.id,
     active: true,
   };
 
@@ -122,7 +132,7 @@ export const getChatHistory = async (userId: string) => {
     .sort({ timestamp: -1 })
     .toArray()) as ChatHistory[];
 
-  return chats;
+  return WonkSuccess(chats);
 };
 
 // save chats to db
@@ -134,6 +144,11 @@ export const saveChat = async (
   focus: Focus
 ) => {
   const session = (await auth()) as Session;
+
+  if (!session?.user?.id) {
+    return WonkUnauthorized();
+  }
+
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
@@ -144,8 +159,8 @@ export const saveChat = async (
     messages,
     focus,
     llmModel,
-    user: session.user?.name ?? 'Unknown User',
-    userId: session.user?.id ?? 'Unknown User',
+    user: session.user.name ?? 'Unknown User',
+    userId: session.user.id ?? 'Unknown User',
     timestamp: Date.now(),
   };
 
@@ -154,18 +169,21 @@ export const saveChat = async (
 
   // also log to elastic for now
   await logMessages(chatId, messages);
+
+  return WonkSuccess(true);
 };
 
-export const saveReaction = async (
-  userId: string,
-  chatId: string,
-  reaction: Feedback
-) => {
+export const saveReaction = async (chatId: string, reaction: Feedback) => {
+  const session = (await auth()) as Session;
+  if (!session?.user?.id) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId,
+    userId: session.user?.id,
     active: true,
   };
 

@@ -8,6 +8,7 @@ interface WonkyClientErrorProps {
 }
 
 /**
+ * Renders an error message as the fallback UI for a component that has errored. This is for **client components**, not handling server errors.
  * @param type 'text' or 'alert'
  * @param thereWasAnErrorLoadingThe As in "There was an error loading the {componentName}". Defaults to "there was an error loading."
  * @param contactLink Whether to include a link to contact the developers

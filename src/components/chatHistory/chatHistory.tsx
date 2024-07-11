@@ -1,31 +1,30 @@
 'use server'; // since this is async
 import React from 'react';
 
-import { Session } from 'next-auth';
-
-import { auth } from '@/auth';
+import { WonkReturnObject, WonkStatusCodes } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
+import { ChatHistory as ChatHistoryInterface } from '@/models/chat'; // TODO: rename
 import { getChatHistory } from '@/services/historyService';
 
 import ChatHistoryWrapper from './chatHistoryWrapper';
 
-const loadChatHistory = React.cache(async (userId: string) => {
-  return await getChatHistory(userId);
-});
+const loadChatHistory = React.cache(
+  async (): Promise<WonkReturnObject<ChatHistoryInterface[]>> => {
+    return await getChatHistory();
+  }
+);
 
 const ChatHistory: React.FC = async () => {
-  const session = (await auth()) as Session;
-  // display nothing if user isn't logged in
-  if (!session?.user?.id) {
-    return <></>;
+  const { data: chats, status } = await loadChatHistory();
+  if (status !== WonkStatusCodes.SUCCESS) {
+    return <WonkyPageError status={status} />;
   }
-
-  const chats = await loadChatHistory(session.user.id);
 
   return (
     <>
       <div className='history-wrapper'>
         <h2>Chat History</h2>
-        <ChatHistoryWrapper chats={chats} />
+        {!!chats && <ChatHistoryWrapper chats={chats} />}
       </div>
     </>
   );

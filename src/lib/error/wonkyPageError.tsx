@@ -1,19 +1,19 @@
 import ChatHeader from '@/components/chat/chatHeader';
 import WonkTop from '@/components/layout/wonkTop';
 
-import { WonkErrorMessage, WonkStatusCodes, WonkStatusMessages } from './error';
+import { WonkStatusCodes, WonkStatusMessages } from './error';
 
 interface WonkyPageErrorProps {
-  error: WonkErrorMessage | WonkStatusCodes;
+  status: WonkStatusCodes;
   children?: React.ReactNode;
 }
 
 export const WonkyPageError: React.FC<WonkyPageErrorProps> = ({
-  error,
+  status,
   children,
 }) => {
-  const errorObj =
-    typeof error === 'string' ? WonkStatusMessages[error] : error;
+  const errorObj = WonkStatusMessages[status];
+
   return (
     <WonkTop>
       <ChatHeader>
