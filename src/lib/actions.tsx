@@ -30,10 +30,9 @@ import {
 } from '@/services/historyService';
 
 import { AI } from './aiProvider';
-import { isWonkSuccess } from './error/error';
+import { WonkServerError, isWonkSuccess } from './error/error';
 
-// to add an action, add it to this type and also in createAI at the bottom of this file
-// the functions need to be above the createAI call or you get the very helpful error "action is not a function"
+// to add an action, add it to this type and also in the aiProvider
 export type WonkActions<T = any, R = any> = {
   submitUserMessage: (userInput: string, focus: Focus) => Promise<UIStateNode>;
   shareChat: (chatId: string) => Promise<void>;
@@ -146,7 +145,10 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
             const chatId = nanoid();
             // save the chat to the db
             // TODO: handle errors
-            await saveChat(chatId, finalMessages, focus);
+            const result = await saveChat(chatId, finalMessages, focus);
+            if (!isWonkSuccess(result)) {
+              return WonkServerError();
+            }
             // and update the AI state with the final message
             aiState.done({
               ...aiState.get(),
@@ -175,7 +177,7 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
 export const shareChat = async (chatId: string) => {
   const result = await saveShareChat(chatId);
   if (!isWonkSuccess(result)) {
-    // TODO handle errors
+    return WonkServerError();
   }
 
   const aiState = getMutableAIState<typeof AI>();
@@ -190,7 +192,7 @@ export const unshareChat = async (chatId: string) => {
 
   const result = await removeShareChat(chatId);
   if (!isWonkSuccess(result)) {
-    // TODO handle errors
+    return WonkServerError();
   }
 
   aiState.done({
@@ -202,7 +204,7 @@ export const unshareChat = async (chatId: string) => {
 export const submitFeedback = async (chatId: string, feedback: Feedback) => {
   const result = await saveReaction(chatId, feedback);
   if (!isWonkSuccess(result)) {
-    // TODO handle errors
+    return WonkServerError();
   }
 
   const aiState = getMutableAIState<typeof AI>();
@@ -222,7 +224,7 @@ export const deleteChatFromSidebar = async (
 ) => {
   const result = await removeChat(chatId);
   if (!isWonkSuccess(result)) {
-    // TODO handle errors
+    return WonkServerError();
   }
   if (isActiveChat) {
     redirect('/');
