@@ -9,7 +9,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
-import WonkyComponentError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyComponentError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { GTagEvents } from '@/models/gtag';
@@ -89,7 +89,7 @@ const ShareModal: React.FC = () => {
           </p>
           <WonkyErrorBoundary
             fallback={
-              <WonkyComponentError
+              <WonkyClientError
                 thereWasAnErrorLoadingThe='shared url'
                 type='alert'
               />

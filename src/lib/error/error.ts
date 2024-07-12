@@ -66,13 +66,10 @@ export const WonkNotFound = () => {
 };
 
 /**
- * @returns `{ 'status': '500'}`
- * We use an error instead of a return object because we want to try/catch
+ * @throws `new Error('500')`
  */
 export const WonkServerError = () => {
-  return {
-    status: WonkStatusCodes.SERVER_ERROR,
-  };
+  throw new Error(WonkStatusCodes.SERVER_ERROR);
 };
 
 export const WonkStatusMessages: Record<WonkStatusCodes, WonkErrorMessage> = {
@@ -99,6 +96,6 @@ export const WonkStatusMessages: Record<WonkStatusCodes, WonkErrorMessage> = {
   [WonkStatusCodes.SERVER_ERROR]: {
     code: WonkStatusCodes.SERVER_ERROR,
     name: 'Server Error',
-    message: 'An internal server error occurred.',
+    message: 'An unexpected error occurred. Please try again later.',
   },
 };

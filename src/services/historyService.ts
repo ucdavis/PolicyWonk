@@ -11,7 +11,7 @@ import {
   WonkForbidden,
   WonkUnauthorized,
   WonkSuccess,
-  WonkStatusCodes,
+  WonkServerError,
 } from '@/lib/error/error';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { Focus } from '@/models/focus';
@@ -177,7 +177,7 @@ export const saveChat = async (
   const chatsDb = await getChatsCollection();
   const res = await chatsDb.insertOne(chat);
   if (!res.acknowledged) {
-    throw new Error(WonkStatusCodes.SERVER_ERROR);
+    return WonkServerError();
   }
 
   // also log to elastic for now
@@ -211,7 +211,7 @@ export const saveReaction = async (
     },
   });
   if (res.modifiedCount === 0) {
-    throw new Error(WonkStatusCodes.SERVER_ERROR);
+    return WonkServerError();
   }
   // also log to elastic for now
   await logReaction(chatId, reaction);
@@ -250,7 +250,7 @@ export const saveShareChat = async (
     },
   });
   if (res.modifiedCount === 0) {
-    throw new Error(WonkStatusCodes.SERVER_ERROR);
+    return WonkServerError();
   }
 
   return WonkSuccess(shareId);
@@ -280,7 +280,7 @@ export const removeShareChat = async (
     },
   });
   if (res.modifiedCount === 0) {
-    throw new Error(WonkStatusCodes.SERVER_ERROR);
+    return WonkServerError();
   }
 
   return WonkSuccess(true);
@@ -310,7 +310,7 @@ export const removeChat = async (
     },
   });
   if (res.modifiedCount === 0) {
-    throw new Error(WonkStatusCodes.SERVER_ERROR);
+    return WonkServerError();
   }
 
   return WonkSuccess(true);

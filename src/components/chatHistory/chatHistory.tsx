@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
-import WonkyComponentError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyComponentError';
 import { ChatHistory as ChatHistoryInterface } from '@/models/chat'; // TODO: rename
 import { getChatHistory } from '@/services/historyService';
 
@@ -29,7 +29,7 @@ const ChatHistory: React.FC = async () => {
     return (
       <div className='history-wrapper'>
         <h2>Chat History</h2>
-        <WonkyComponentError
+        <WonkyClientError
           thereWasAnErrorLoadingThe='chat history'
           type='text'
         />

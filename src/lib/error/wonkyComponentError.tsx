@@ -14,7 +14,7 @@ interface WonkyClientErrorProps {
  * @param contactLink Whether to include a link to contact the developers
  */
 
-export const WonkyComponentError: React.FC<WonkyClientErrorProps> = ({
+export const WonkyClientError: React.FC<WonkyClientErrorProps> = ({
   type,
   thereWasAnErrorLoadingThe: componentName,
   contactLink = false,
@@ -42,4 +42,4 @@ export const WonkyComponentError: React.FC<WonkyClientErrorProps> = ({
   return <>{errorContent}</>;
 };
 
-export default WonkyComponentError;
+export default WonkyClientError;
