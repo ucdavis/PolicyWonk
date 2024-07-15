@@ -1,4 +1,4 @@
-'use server';
+'server only';
 import { Message } from 'ai';
 import { MongoClient, WithId } from 'mongodb';
 import { nanoid } from 'nanoid';

@@ -1,4 +1,4 @@
-'server only';
+'use server'; // since this is an async component
 import React from 'react';
 
 import { Metadata, ResolvingMetadata } from 'next';
