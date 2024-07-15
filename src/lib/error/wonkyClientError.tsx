@@ -1,29 +1,27 @@
+'use client';
 import { Alert } from 'reactstrap';
 
-interface WonkyErrorProps {
+interface WonkyClientErrorProps {
   type: 'text' | 'alert';
   thereWasAnErrorLoadingThe?: string;
   contactLink?: boolean;
-  message?: React.ReactNode;
 }
 
 /**
- *
+ * Renders an error message as the fallback UI for a component that has errored. This is for **client components**, not handling server errors.
  * @param type 'text' or 'alert'
  * @param thereWasAnErrorLoadingThe As in "There was an error loading the {componentName}". Defaults to "there was an error loading."
  * @param contactLink Whether to include a link to contact the developers
- * @param message Optional message to display at the end
- * @returns Error component
  */
 
-const WonkyError: React.FC<WonkyErrorProps> = ({
+export const WonkyClientError: React.FC<WonkyClientErrorProps> = ({
   type,
   thereWasAnErrorLoadingThe: componentName,
   contactLink = false,
-  message = null,
 }) => {
-  const errorText = (
+  const errorContent = (
     <>
+      {' '}
       There was an error loading{componentName ? ` the ${componentName}` : ''}.
       Please refresh and try again.{' '}
       {contactLink && (
@@ -36,15 +34,12 @@ const WonkyError: React.FC<WonkyErrorProps> = ({
           </a>
         </>
       )}
-      {message}
     </>
   );
-
   if (type === 'alert') {
-    return <Alert color='danger'>{errorText}</Alert>;
+    return <Alert color='danger'>{errorContent}</Alert>;
   }
-
-  return <>{errorText}</>;
+  return <>{errorContent}</>;
 };
 
-export default WonkyError;
+export default WonkyClientError;

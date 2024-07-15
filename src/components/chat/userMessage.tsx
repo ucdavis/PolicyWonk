@@ -1,5 +1,5 @@
 'use client';
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 
 import { UserPortrait } from './userPortrait';
@@ -24,7 +24,10 @@ export const UserMessage = ({
         </p>
         <WonkyErrorBoundary
           fallback={
-            <WonkyError type='alert' thereWasAnErrorLoadingThe='question' />
+            <WonkyClientError
+              type='alert'
+              thereWasAnErrorLoadingThe='question'
+            />
           }
         >
           <p>{content}</p>

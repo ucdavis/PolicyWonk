@@ -34,6 +34,7 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
     router.prefetch(`/chat/new`);
     const isActiveChat = isActive(chatId);
     setIsLoading(chatId);
+    // TODO: handle errors
     await deleteChatFromSidebar(chatId, isActiveChat);
     setIsLoading(null);
     if (isActiveChat) {

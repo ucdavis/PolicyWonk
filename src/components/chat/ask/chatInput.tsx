@@ -49,6 +49,7 @@ const ChatInput = () => {
       },
     ]);
 
+    // TODO: handle errors
     const responseMessage = await submitUserMessage(question, focus);
 
     gtagEvent({

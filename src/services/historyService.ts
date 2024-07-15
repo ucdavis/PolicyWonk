@@ -1,10 +1,18 @@
-'use server';
+'server only';
 import { Message } from 'ai';
 import { MongoClient, WithId } from 'mongodb';
 import { nanoid } from 'nanoid';
 import { Session } from 'next-auth';
 
 import { auth } from '@/auth';
+import {
+  WonkNotFound,
+  WonkReturnObject,
+  WonkForbidden,
+  WonkUnauthorized,
+  WonkSuccess,
+  WonkServerError,
+} from '@/lib/error/error';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { Focus } from '@/models/focus';
 
@@ -44,27 +52,51 @@ function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
   return chat;
 }
 
-export const getChat = async (chatId: string, userId: string) => {
+/**
+ * Assumes the user is authenticated. Throws an error if the chat is not found or the user is not authorized.
+ * @returns ChatHistory for the chat, with messages filtered to remove system messages.
+ */
+export const getChat = async (
+  chatId: string
+): Promise<WonkReturnObject<ChatHistory>> => {
+  const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: userId,
     active: true,
   };
 
   const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
-    return null;
+    return WonkNotFound();
+  }
+
+  if (chat.userId !== userId) {
+    return WonkForbidden();
   }
 
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
-  return unwrapChat(chat);
+  return WonkSuccess(unwrapChat(chat));
 };
 
-export const getSharedChat = async (shareId: string) => {
+export const getSharedChat = async (
+  shareId: string
+): Promise<WonkReturnObject<ChatHistory>> => {
+  const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
@@ -74,23 +106,32 @@ export const getSharedChat = async (shareId: string) => {
 
   const chat = await chatsDb.findOne(
     queryFilter,
-    { projection: { _id: 0, feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
+    { projection: { feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
   );
 
   if (!chat) {
-    return null;
+    return WonkNotFound();
   }
 
   chat.messages = chat.messages.filter((m) => m.role !== 'system');
 
-  return chat;
+  return WonkSuccess(unwrapChat(chat));
 };
 
-export const getChatHistory = async (userId: string) => {
+export const getChatHistory = async (): Promise<
+  WonkReturnObject<ChatHistory[]>
+> => {
+  const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
-    userId: userId,
+    userId,
     active: true,
   };
 
@@ -100,17 +141,24 @@ export const getChatHistory = async (userId: string) => {
     .sort({ timestamp: -1 })
     .toArray()) as ChatHistory[];
 
-  return chats;
+  return WonkSuccess(chats);
 };
 
 // save chats to db
 // TODO: we are calling this in actions.tsx, is it save to pass in the entire chat and use directly?
 export const saveChat = async (
+  // session: Session,
   chatId: string,
   messages: Message[],
   focus: Focus
-) => {
+): Promise<WonkReturnObject<boolean>> => {
   const session = (await auth()) as Session;
+  const user = session?.user;
+
+  if (!user?.id) {
+    return WonkUnauthorized();
+  }
+
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
     messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
@@ -121,25 +169,39 @@ export const saveChat = async (
     messages,
     focus,
     llmModel,
-    user: session.user?.name ?? 'Unknown User',
-    userId: session.user?.id ?? 'Unknown User',
+    user: user.name ?? 'Unknown User',
+    userId: user.id,
     timestamp: Date.now(),
   };
 
   const chatsDb = await getChatsCollection();
-  await chatsDb.insertOne(chat);
+  const res = await chatsDb.insertOne(chat);
+  if (!res.acknowledged) {
+    return WonkServerError();
+  }
 
   // also log to elastic for now
   await logMessages(chatId, messages);
+
+  return WonkSuccess(true);
 };
 
-export const saveReaction = async (chatId: string, reaction: Feedback) => {
+export const saveReaction = async (
+  chatId: string,
+  reaction: Feedback
+): Promise<WonkReturnObject<boolean>> => {
   const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 
@@ -149,27 +211,38 @@ export const saveReaction = async (chatId: string, reaction: Feedback) => {
     },
   });
   if (res.modifiedCount === 0) {
-    return; // TODO: throw error
+    return WonkServerError();
   }
   // also log to elastic for now
   await logReaction(chatId, reaction);
+
+  return WonkSuccess(true);
 };
 
-export const saveShareChat = async (chatId: string) => {
+export const saveShareChat = async (
+  chatId: string
+): Promise<WonkReturnObject<string>> => {
   const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 
   const chat = await chatsDb.findOne(queryFilter);
 
   if (!chat) {
-    return;
+    return WonkNotFound();
   }
+
   const shareId = nanoid();
   const res = await chatsDb.updateOne(queryFilter, {
     $set: {
@@ -177,19 +250,27 @@ export const saveShareChat = async (chatId: string) => {
     },
   });
   if (res.modifiedCount === 0) {
-    return; // TODO: throw error
+    return WonkServerError();
   }
 
-  return shareId;
+  return WonkSuccess(shareId);
 };
 
-export const removeShareChat = async (chatId: string) => {
+export const removeShareChat = async (
+  chatId: string
+): Promise<WonkReturnObject<boolean>> => {
   const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 
@@ -199,19 +280,27 @@ export const removeShareChat = async (chatId: string) => {
     },
   });
   if (res.modifiedCount === 0) {
-    return; // TODO: throw error
+    return WonkServerError();
   }
 
-  return;
+  return WonkSuccess(true);
 };
 
-export const removeChat = async (chatId: string) => {
+export const removeChat = async (
+  chatId: string
+): Promise<WonkReturnObject<boolean>> => {
   const session = (await auth()) as Session;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
   const chatsDb = await getChatsCollection();
 
   const queryFilter: Partial<ChatHistory> = {
     id: chatId,
-    userId: session.user?.id,
+    userId,
     active: true,
   };
 
@@ -221,8 +310,8 @@ export const removeChat = async (chatId: string) => {
     },
   });
   if (res.modifiedCount === 0) {
-    return; // TODO: throw error
+    return WonkServerError();
   }
 
-  return;
+  return WonkSuccess(true);
 };

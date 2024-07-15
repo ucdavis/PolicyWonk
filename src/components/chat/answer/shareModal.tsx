@@ -9,7 +9,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { GTagEvents } from '@/models/gtag';
@@ -41,6 +41,7 @@ const ShareModal: React.FC = () => {
       event: type,
       chat: aiState,
     });
+    // TODO: handle errors
     await shareChat(chatId);
     setIsLoading('');
   };
@@ -48,6 +49,7 @@ const ShareModal: React.FC = () => {
   const handleUnshare = async () => {
     setIsLoading(GTagEvents.UNSHARE);
     gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
+    // TODO: handle errors
     await unshareChat(chatId);
     setIsLoading('');
   };
@@ -87,7 +89,10 @@ const ShareModal: React.FC = () => {
           </p>
           <WonkyErrorBoundary
             fallback={
-              <WonkyError thereWasAnErrorLoadingThe='shared url' type='alert' />
+              <WonkyClientError
+                thereWasAnErrorLoadingThe='shared url'
+                type='alert'
+              />
             }
           >
             <SharedUrl

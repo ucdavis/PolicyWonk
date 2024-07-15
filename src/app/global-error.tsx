@@ -4,7 +4,7 @@ import React from 'react';
 import ChatHeader from '@/components/chat/chatHeader';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Sidebar from '@/components/layout/sidebar';
-import WonkyError from '@/lib/error/wonkyError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 
 /**
@@ -28,7 +28,7 @@ const GlobalError: React.FC = () => {
           <div className='wonk-wrapper'>
             <div className='wonk-container'>
               <ChatHeader>
-                <WonkyError
+                <WonkyClientError
                   thereWasAnErrorLoadingThe={`application`}
                   contactLink={true}
                   type='alert'

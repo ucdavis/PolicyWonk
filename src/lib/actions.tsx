@@ -30,9 +30,9 @@ import {
 } from '@/services/historyService';
 
 import { AI } from './aiProvider';
+import { WonkServerError, isWonkSuccess } from './error/error';
 
-// to add an action, add it to this type and also in createAI at the bottom of this file
-// the functions need to be above the createAI call or you get the very helpful error "action is not a function"
+// to add an action, add it to this type and also in the aiProvider
 export type WonkActions<T = any, R = any> = {
   submitUserMessage: (userInput: string, focus: Focus) => Promise<UIStateNode>;
   shareChat: (chatId: string) => Promise<void>;
@@ -143,8 +143,11 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
             // where the new chat id is generated
             const chatId = nanoid();
             // save the chat to the db
-            await saveChat(chatId, finalMessages, focus);
-
+            // TODO: handle errors
+            const result = await saveChat(chatId, finalMessages, focus);
+            if (!isWonkSuccess(result)) {
+              return WonkServerError();
+            }
             // and update the AI state with the final message
             aiState.done({
               ...aiState.get(),
@@ -171,21 +174,26 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
 };
 
 export const shareChat = async (chatId: string) => {
-  const aiState = getMutableAIState<typeof AI>();
+  const result = await saveShareChat(chatId);
+  if (!isWonkSuccess(result)) {
+    return WonkServerError();
+  }
 
-  const shareChat = await saveShareChat(chatId);
-  // TODO handle errors?
+  const aiState = getMutableAIState<typeof AI>();
   aiState.done({
     ...aiState.get(),
-    shareId: shareChat,
+    shareId: result.data,
   });
 };
 
 export const unshareChat = async (chatId: string) => {
   const aiState = getMutableAIState<typeof AI>();
 
-  await removeShareChat(chatId);
-  // TODO handle errors?
+  const result = await removeShareChat(chatId);
+  if (!isWonkSuccess(result)) {
+    return WonkServerError();
+  }
+
   aiState.done({
     ...aiState.get(),
     shareId: undefined,
@@ -193,21 +201,30 @@ export const unshareChat = async (chatId: string) => {
 };
 
 export const submitFeedback = async (chatId: string, feedback: Feedback) => {
+  const result = await saveReaction(chatId, feedback);
+  if (!isWonkSuccess(result)) {
+    return WonkServerError();
+  }
+
   const aiState = getMutableAIState<typeof AI>();
 
-  await saveReaction(chatId, feedback);
   aiState.done({
     ...aiState.get(),
     reaction: feedback,
   });
 };
 
-// this happens outside of the AI Provider, so we can't mutate the AI state
+/**
+ * this happens outside of the AI Provider, so it does not mutate the state
+ */
 export const deleteChatFromSidebar = async (
   chatId: string,
   isActiveChat: boolean
 ) => {
-  await removeChat(chatId);
+  const result = await removeChat(chatId);
+  if (!isWonkSuccess(result)) {
+    return WonkServerError();
+  }
   if (isActiveChat) {
     redirect('/');
   }
