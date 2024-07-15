@@ -3,7 +3,7 @@ import React from 'react';
 
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { Focus, FocusName } from '@/models/focus';
 

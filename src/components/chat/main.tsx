@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '@/lib/aiProvider';
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 
 import Disclaimer from '../layout/disclaimer';

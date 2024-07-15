@@ -5,23 +5,17 @@ import { WonkStatusCodes, WonkStatusMessages } from './error';
 
 interface WonkyPageErrorProps {
   status: WonkStatusCodes;
-  children?: React.ReactNode;
 }
 
-export const WonkyPageError: React.FC<WonkyPageErrorProps> = ({
-  status,
-  children,
-}) => {
+export const WonkyPageError: React.FC<WonkyPageErrorProps> = ({ status }) => {
   const errorObj = WonkStatusMessages[status];
 
   return (
     <WonkTop>
       <ChatHeader>
-        <h2>
-          {errorObj.code}: {errorObj.name}
-        </h2>
-        <p>{errorObj.message}</p>
-        {children}
+        {errorObj.code}: {errorObj.name}
+        <br />
+        {errorObj.message}
       </ChatHeader>
     </WonkTop>
   );

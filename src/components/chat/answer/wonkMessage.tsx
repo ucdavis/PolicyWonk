@@ -3,7 +3,7 @@ import React from 'react';
 
 import { StreamableValue } from 'ai/rsc';
 
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import {
   useStreamableText,

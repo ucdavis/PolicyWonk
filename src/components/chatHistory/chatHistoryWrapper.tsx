@@ -1,5 +1,5 @@
 'use client';
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { ChatHistory } from '@/models/chat';
 

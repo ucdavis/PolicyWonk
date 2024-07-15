@@ -4,7 +4,7 @@ import React from 'react';
 import ChatHeader from '@/components/chat/chatHeader';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Sidebar from '@/components/layout/sidebar';
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 
 /**

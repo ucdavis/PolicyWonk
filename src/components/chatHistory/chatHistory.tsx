@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
-import WonkyClientError from '@/lib/error/wonkyComponentError';
+import WonkyClientError from '@/lib/error/wonkyClientError';
 import { ChatHistory as ChatHistoryInterface } from '@/models/chat'; // TODO: rename
 import { getChatHistory } from '@/services/historyService';
 
