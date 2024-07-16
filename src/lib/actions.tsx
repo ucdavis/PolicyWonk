@@ -113,12 +113,13 @@ export const submitUserMessage = async (userInput: string, focus: Focus) => {
       // multiple times with `content` being incremental. `delta` is the new text to append.
       text: ({ content, done, delta }) => {
         if (done) {
+          textStream.done();
+
           // once we are finished, we need to modify the content to transform the citations
           const finalContent = transformContentWithCitations(
             content,
             searchResults
           );
-          textStream.done(finalContent);
 
           const finalNode = (
             <WonkMessage
