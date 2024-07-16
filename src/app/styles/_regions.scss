@@ -49,6 +49,11 @@ img.chat-portrait {
 .form-floating {
     .wonk-input {
         height:150px;
+        padding-top:50px !important;
+        @include breakpoint(md) {
+                padding-top:1.625rem !important;
+            }
+
     }
 }
 .login-card {
