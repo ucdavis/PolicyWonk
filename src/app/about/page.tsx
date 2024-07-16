@@ -25,18 +25,19 @@ const AboutPage = () => {
       <h2>How Can PolicyWonk Assist You?</h2>
       <ul>
         <li>
-          <b>Immediate Answers:</b> Got a policy question? Just ask, and
-          PolicyWonk tries to provide you with clear, concise answers, pronto!
+          <b>Immediate Answers:</b> Have a policy question? Just ask, and
+          PolicyWonk will provide clear and concise answers promptly!
         </li>
         <li>
-          <strong>Intense Focus:</strong> Click on the focus bar to "focus" on
-          different policy areas, such as the core UC/UC Davis policies, APM,
-          Union Contracts, and more!
+          <strong>Intense Focus:</strong> Click on the{' '}
+          <Link href='/focus'>focus bar</Link> to explore different policy areas
+          such as core UC/UC Davis policies, APM, Union Contracts, and more!
         </li>
         <li>
-          <strong>Resource:</strong> This will give you the tool to contact the
-          Responsible Department with ease and specificity, helping you bridge
-          the gap between policy and people.
+          <strong>Surface Resources:</strong> By identifying relevant policies,
+          PolicyWonk can help you find the best department to contact for
+          additional information, effectively bridging the gap between policy
+          and people.
         </li>
       </ul>
       <p className='discreet'>
@@ -50,8 +51,9 @@ const AboutPage = () => {
       <p>
         Use PolicyWonk by typing your question into the main textbox and then
         click "Send". By default PW will search its database of UC & UCD
-        policies for an answer, but you can also click on the "Focus" bar to
-        change your focus to other policies, procedures, contracts, and more.
+        policies for an answer, but you can also{' '}
+        <Link href='/focus'> click on the "Focus" bar</Link> to change your
+        focus to other policies, procedures, contracts, and more.
       </p>
       <p>
         Tips: Try to be specific when asking questions. For example, "Do staff
@@ -128,7 +130,7 @@ const AboutPage = () => {
           <a href='https://policy.ucop.edu/'>UC Policies</a>
         </li>
         <li>
-          <a href='https://manuals.ucdavis.edu/'>
+          <a href='https://ucdavispolicy.ellucid.com/home'>
             UC Davis Administrative Policy Manuals (including PPM, PPSM & DA)
           </a>
         </li>
