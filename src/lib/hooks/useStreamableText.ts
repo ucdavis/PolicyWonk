@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 
 import { StreamableValue, readStreamableValue } from 'ai/rsc';
@@ -12,6 +13,18 @@ export const useStreamableText = (
   options: StreamableTextOptions = {
     shouldAppend: true,
   }
+) => {
+  const streamedContent = useStreamingText(content, options);
+  // if the content is a string, we are done streaming
+  if (typeof content === 'string') {
+    return content;
+  }
+  return streamedContent;
+};
+
+const useStreamingText = (
+  content: string | StreamableValue<string>,
+  options: StreamableTextOptions
 ) => {
   const { shouldAppend } = options;
 
