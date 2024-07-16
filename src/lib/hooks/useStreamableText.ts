@@ -20,18 +20,21 @@ export const useStreamableText = (
   );
 
   useEffect(() => {
-    (async () => {
-      if (typeof content === 'object') {
-        let value = '';
-        for await (const delta of readStreamableValue(content)) {
-          if (typeof delta === 'string') {
-            setRawContent(shouldAppend ? (value = value + delta) : delta);
+    if (typeof content === 'string') {
+      // if the content is a string, that means we're done streaming
+      setRawContent(content);
+    } else {
+      (async () => {
+        if (typeof content === 'object') {
+          let value = '';
+          for await (const delta of readStreamableValue(content)) {
+            if (typeof delta === 'string') {
+              setRawContent(shouldAppend ? (value = value + delta) : delta);
+            }
           }
         }
-      } else if (typeof content === 'string') {
-        setRawContent(content);
-      }
-    })();
+      })();
+    }
   }, [content, shouldAppend]);
 
   return rawContent;
