@@ -1,4 +1,6 @@
 'use client';
+import { Stream } from 'stream';
+
 import { useEffect, useState } from 'react';
 
 import { StreamableValue, readStreamableValue } from 'ai/rsc';
@@ -13,6 +15,18 @@ export const useStreamableText = (
     shouldAppend: true,
   }
 ) => {
+  const streamedContent = useStreamingText(content, options);
+  // if the content is a string, we are done streaming
+  if (typeof content === 'string') {
+    return content;
+  }
+  return streamedContent;
+};
+
+const useStreamingText = (
+  content: string | StreamableValue<string>,
+  options: StreamableTextOptions
+) => {
   const { shouldAppend } = options;
 
   const [rawContent, setRawContent] = useState(
@@ -20,21 +34,18 @@ export const useStreamableText = (
   );
 
   useEffect(() => {
-    if (typeof content === 'string') {
-      // if the content is a string, that means we're done streaming
-      setRawContent(content);
-    } else {
-      (async () => {
-        if (typeof content === 'object') {
-          let value = '';
-          for await (const delta of readStreamableValue(content)) {
-            if (typeof delta === 'string') {
-              setRawContent(shouldAppend ? (value = value + delta) : delta);
-            }
+    (async () => {
+      if (typeof content === 'object') {
+        let value = '';
+        for await (const delta of readStreamableValue(content)) {
+          if (typeof delta === 'string') {
+            setRawContent(shouldAppend ? (value = value + delta) : delta);
           }
         }
-      })();
-    }
+      } else if (typeof content === 'string') {
+        setRawContent(content);
+      }
+    })();
   }, [content, shouldAppend]);
 
   return rawContent;
