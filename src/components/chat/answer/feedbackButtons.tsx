@@ -11,6 +11,7 @@ import { useAIState, useActions } from 'ai/rsc';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
+import { throwConfettiAt } from '@/lib/confetti';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { GTagEvents } from '@/models/gtag';
@@ -24,6 +25,8 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
   const { id: chatId, reaction: feedback } = aiState;
   const { submitFeedback } = useActions<typeof AI>();
   const gtagEvent = useGtagEvent();
+
+  const thumbsUpRef = React.useRef<HTMLButtonElement>(null);
 
   const onFeedback = async (newFeedback: Feedback) => {
     const newAiState: ChatHistory = {
@@ -55,9 +58,13 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
   return (
     <>
       <AnimatedButton
+        buttonRef={thumbsUpRef}
         displayBeforeClick={<FontAwesomeIcon icon={faThumbsUp} />}
         displayOnClick={<FontAwesomeIcon icon={faThumbsUpSolid} />}
-        onClick={() => onFeedback('thumbs_up')}
+        onClick={() => {
+          throwConfettiAt(thumbsUpRef.current);
+          onFeedback('thumbs_up');
+        }}
         disabled={!!feedback}
         selected={feedback === 'thumbs_up'}
       />

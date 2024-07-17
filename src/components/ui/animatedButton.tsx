@@ -6,6 +6,7 @@ import { HTMLMotionProps, motion } from 'framer-motion';
 import { ButtonVariantOptions, ButtonVariants } from '@/models/animations';
 
 export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
+  buttonRef?: React.Ref<HTMLButtonElement>;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   displayBeforeClick: React.ReactNode;
   displayOnClick?: React.ReactNode;
@@ -16,6 +17,7 @@ export interface AnimatedButtonProps extends HTMLMotionProps<'button'> {
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
+  buttonRef,
   displayBeforeClick,
   displayOnClick,
   onClick,
@@ -64,6 +66,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   return (
     <motion.button
+      ref={buttonRef}
       className={className ?? 'btn-feedback me-1'}
       title={title}
       onClick={handleClick}
