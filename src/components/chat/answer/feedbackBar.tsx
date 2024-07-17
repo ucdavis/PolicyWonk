@@ -10,8 +10,16 @@ const FeedbackBar: React.FC<FeedbackBarProps> = ({}) => {
   return (
     <motion.div
       className='row mb-3'
-      initial={false}
-      animate={{ opacity: 1 }} // TODO: better animation
+      initial={{ opacity: 0.1, scale: 0 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        transition: {
+          stiffness: 90,
+          damping: 7,
+        },
+        type: 'spring',
+      }}
     >
       <div className='col-1'>{/* empty */}</div>
       <div className='col-11'>
