@@ -42,3 +42,7 @@ export const stripTemporaryCitations = (content: string) => {
 export const sanitizeMarkdown = (content: string) => {
   return stripTemporaryCitations(content);
 };
+
+export const checkActiveChat = (pathname: string, chatId: string) => {
+  return pathname.includes(chatId);
+};
