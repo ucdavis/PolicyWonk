@@ -56,6 +56,10 @@ const AboutPage = () => {
         focus to other policies, procedures, contracts, and more.
       </p>
       <p>
+        Never include any sensitive or personally identifiable information (PII)
+        in your questions.
+      </p>
+      <p>
         Tips: Try to be specific when asking questions. For example, "Do staff
         need approval to work from home" is a better question that "can i work
         from home" (though both will get you solid answers). You can always
