@@ -27,13 +27,14 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
   const router = useRouter();
 
   const handleRemoveChat = async (chatId: string) => {
-    router.prefetch(`/chat/new`);
     const isActiveChat = checkActiveChat(pathname, chatId);
     setIsLoading(true);
-    // TODO: handle errors
+    // TODO: handle errors, set isLoading to false on err
     await deleteChatFromSidebar(chatId, isActiveChat);
-    setIsLoading(false);
+    // don't set isLoading to false here because the page will refresh, and component will unmount
+    // if multiple deletes are queued at once, the refresh won't happen until the last one completes
     if (isActiveChat) {
+      router.prefetch(`/chat/new`);
       // deleteChatFromSidebar will handle the redirect to '/'
       // because i could not get the router here to both refresh and redirect reliably
     } else {
@@ -58,7 +59,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
               initial={false}
               animate={
                 isLoading
-                  ? IconVariantOptions.bounce
+                  ? adjustedVariant.bounce
                   : IconVariantOptions.bounceStop
               }
             >
