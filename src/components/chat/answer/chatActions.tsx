@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { useAIState } from 'ai/rsc';
+import { AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
 import FeedbackBar from '@/components/chat/answer/feedbackBar';
@@ -51,11 +52,13 @@ const ChatActions: React.FC = () => {
           )}
         </div>
       </div>
-      {!onSharedPage && !!aiState.reaction && (
-        <WonkyErrorBoundary>
-          <FeedbackBar />
-        </WonkyErrorBoundary>
-      )}
+      <AnimatePresence initial={false}>
+        {!onSharedPage && !!aiState.reaction && (
+          <WonkyErrorBoundary>
+            <FeedbackBar />
+          </WonkyErrorBoundary>
+        )}
+      </AnimatePresence>
     </>
   );
 };
