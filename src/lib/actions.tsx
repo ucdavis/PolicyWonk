@@ -215,7 +215,7 @@ export const submitFeedback = async (chatId: string, feedback: Feedback) => {
 };
 
 /**
- * this happens outside of the AI Provider, so it does not mutate the state
+ * this happens outside of the AI Provider, so it does not mutate the AI state
  */
 export const deleteChatFromSidebar = async (
   chatId: string,

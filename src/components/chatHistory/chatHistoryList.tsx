@@ -1,15 +1,13 @@
 'use client';
 import React from 'react';
 
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Button } from 'reactstrap';
+import { usePathname } from 'next/navigation';
 
-import { deleteChatFromSidebar } from '@/lib/actions';
 import { ChatHistory } from '@/models/chat';
+
+import DeleteChatButton from './deleteChatButton';
 
 interface ChatHistoryListProps {
   chats: ChatHistory[];
@@ -17,10 +15,8 @@ interface ChatHistoryListProps {
 
 // separate out rendering the chat list so we can animate it as a client component
 const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
-  const router = useRouter();
   const pathname = usePathname();
   const [isHovering, setIsHovering] = React.useState<null | string>(null);
-  const [isLoading, setIsLoading] = React.useState<null | string>(null);
 
   if (!chats) {
     return null;
@@ -28,21 +24,6 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
 
   const isActive = (chatId: string) => {
     return pathname.includes(chatId);
-  };
-
-  const handleRemoveChat = async (chatId: string) => {
-    router.prefetch(`/chat/new`);
-    const isActiveChat = isActive(chatId);
-    setIsLoading(chatId);
-    // TODO: handle errors
-    await deleteChatFromSidebar(chatId, isActiveChat);
-    setIsLoading(null);
-    if (isActiveChat) {
-      // deleteChatFromSidebar will handle the redirect to '/'
-      // because i could not get the router here to both refresh and redirect reliably
-    } else {
-      router.refresh();
-    }
   };
 
   return (
@@ -77,19 +58,10 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
               <div className='col-11'>
                 <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
               </div>
-              <div className='col-1 delete-chat-button'>
-                {((isHovering !== null && isHovering === chat.id) ||
-                  isLoading === chat.id) && (
-                  <Button
-                    block={false}
-                    color='link'
-                    onClick={() => handleRemoveChat(chat.id)}
-                    disabled={isLoading !== null}
-                  >
-                    <FontAwesomeIcon icon={faTrash} size='lg' />
-                  </Button>
-                )}
-              </div>
+              <DeleteChatButton
+                chatId={chat.id}
+                isHovering={isHovering === chat.id}
+              />
             </div>
             <div className='history-fade' />
           </motion.li>
