@@ -8,59 +8,65 @@ const PrivacyPage = () => {
   return (
     <div>
       <h1>Privacy Policy</h1>
+
       <h2>Introduction</h2>
       <p>
         Welcome to PolicyWonk. We are committed to protecting your privacy and
         ensuring that your personal information is handled responsibly. This
         Privacy Policy outlines the types of data we collect, how we store and
         use that data, and your rights regarding your information. By using our
-        web application, you consent to the practices described in this policy.
+        web application, you consent to the practices described in this policy
+        and the{' '}
+        <a
+          href='https://www.ucdavis.edu/privacy-and-accessibility'
+          rel='noreferrer noopener'
+        >
+          UC Davis Web Privacy Policy
+        </a>
+        .
       </p>
 
-      <h2>Data Collection and Usage</h2>
+      <h2>Data Collection, Usage, and Sharing</h2>
+
+      <h3>Automatic Data Collection</h3>
       <p>
-        <b>Chat History</b>
-        <br />
-        <b>Storage: </b>
-        We securely store your chat history using industry-standard encryption
-        methods. All chat data is stored in a manner that ensures only you can
-        access it unless you explicitly choose to "share" a chat.
-        <br />
-        <b>Sharing: </b>
-        If you choose to share a chat, the shared chat will be accessible to the
-        recipient. You can revoke sharing at any time, after which the chat will
-        no longer be accessible to anyone but you.
+        We may automatically collect information about how you use our web
+        application, such as the number of visits to our pages, device & browser
+        information, and page actions. This data is aggregated and does not
+        identify any individual user. We use this data to track its use and
+        improve our service. We do not use cookies or other tracking
+        technologies for targeting or advertising purposes.
       </p>
       <p>
-        <b>Anonymous Tracking</b>
-        <br />
-        We track site usage anonymously to improve our services. The information
-        collected may include the number of visits and the pages visited. This
-        data is aggregated and does not identify any individual user. We do not
-        use cookies or other tracking technologies for targeting or advertising
-        purposes.
+        We also collect and transmit questions that you ask PolicyWonk to
+        provide this service. The question is automatically sent to a
+        third-party service provider, OpenAI Chat GPT. This processing activity
+        is governed by an agreement that restricts training the AI model or
+        retaining information that it receives.
+      </p>
+
+      <h3>Chat History</h3>
+      <p>
+        <strong>Storage:</strong> We securely store your chat history using
+        industry-standard encryption methods. All chat data is stored in a
+        manner that ensures only you can access it unless you explicitly choose
+        to "share" a chat.
       </p>
       <p>
-        <b>OpenAI ChatGPT</b>
-        <br />
-        <b>Anonymity: </b>
-        Your questions are sent to OpenAI ChatGPT anonymously. This means no
-        personally identifiable information is attached to your queries.
-        <br />
-        <b>Data Retention: </b>
-        None of your data sent to OpenAI is ever retained by OpenAI or used for
-        future training of any OpenAI models. This practice is governed by the
-        UC-wide OpenAI contract.
+        <strong>Sharing:</strong> If you choose to share a chat, the shared chat
+        will be accessible to the recipient. You can revoke sharing at any time,
+        after which the chat will no longer be accessible to anyone but you.
       </p>
+
+      <h2>Data Security</h2>
       <p>
-        <b>Data Security</b>
-        <br />
         We take data security seriously and implement technical and
         organizational measures to protect your data against unauthorized
         access, alteration, disclosure, or destruction. These measures include,
         but are not limited to, encryption, access controls, and secure hosting
         environments.
       </p>
+
       <h2>Changes to this Policy</h2>
       <p>
         We may update this Privacy Policy from time to time to reflect changes
@@ -70,6 +76,17 @@ const PrivacyPage = () => {
         application following the posting of changes constitutes your acceptance
         of such changes.
       </p>
+
+      <h2>Choices & Questions</h2>
+      <p>
+        You may choose not to visit or use our web application at any time. You
+        may choose to share or remove access to your chat history at any time.
+        Questions about this Policy should be directed to its developers via{' '}
+        <a href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'>
+          The CA&ES Helpdesk
+        </a>
+      </p>
+
       <h2>Conclusion</h2>
       <p>
         Thank you for trusting PolicyWonk with your information. We are
