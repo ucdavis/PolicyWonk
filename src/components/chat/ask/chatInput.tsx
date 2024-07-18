@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { AI } from '@/lib/aiProvider';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
-import { focuses } from '@/models/focus';
+import { Focus, focuses } from '@/models/focus';
 import { GTagEvents } from '@/models/gtag';
 
 import FocusBanner from '../answer/focusBanner';
@@ -23,13 +23,15 @@ import FocusBar from './focusBar';
 const ChatInput = () => {
   const gtagEvent = useGtagEvent();
   const session = useSession();
-  const [aiState] = useAIState<typeof AI>();
+  const [aiState, newState] = useAIState<typeof AI>();
   const [_, setMessagesUI] = useUIState<typeof AI>();
-
-  const [focus, setFocus] = React.useState(aiState.focus);
 
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   const { submitUserMessage } = useActions<typeof AI>();
+
+  const onFocusSelection = (focus: Focus) => {
+    newState((a) => ({ ...a, focus }));
+  };
 
   const onQuestionSubmit = async (question: string) => {
     // Optimistically add user message UI
@@ -39,7 +41,7 @@ const ChatInput = () => {
         id: nanoid(),
         display: (
           <>
-            <FocusBanner focus={focus} />
+            <FocusBanner focus={aiState.focus} />
             <UserMessage
               user={session?.data?.user?.name || ''}
               content={question}
@@ -50,11 +52,11 @@ const ChatInput = () => {
     ]);
 
     // TODO: handle errors
-    const responseMessage = await submitUserMessage(question, focus);
+    const responseMessage = await submitUserMessage(question, aiState.focus);
 
     gtagEvent({
       event: GTagEvents.NEW_CHAT,
-      chat: { ...aiState, focus },
+      chat: { ...aiState },
     });
 
     setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
@@ -65,7 +67,11 @@ const ChatInput = () => {
       <WonkyErrorBoundary>
         <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
       </WonkyErrorBoundary>
-      <FocusBar focus={focus} options={focuses} onSelection={setFocus} />
+      <FocusBar
+        focus={aiState.focus}
+        options={focuses}
+        onSelection={onFocusSelection}
+      />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </>
   );
