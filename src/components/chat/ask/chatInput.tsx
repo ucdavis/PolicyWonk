@@ -52,7 +52,7 @@ const ChatInput = () => {
     ]);
 
     // TODO: handle errors
-    const responseMessage = await submitUserMessage(question, aiState.focus);
+    const responseMessage = await submitUserMessage(question);
 
     gtagEvent({
       event: GTagEvents.NEW_CHAT,

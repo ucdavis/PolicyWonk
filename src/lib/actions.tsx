@@ -34,15 +34,16 @@ import { WonkServerError, isWonkSuccess } from './error/error';
 
 // to add an action, add it to this type and also in the aiProvider
 export type WonkActions<T = any, R = any> = {
-  submitUserMessage: (userInput: string, focus: Focus) => Promise<UIStateNode>;
+  submitUserMessage: (userInput: string) => Promise<UIStateNode>;
   shareChat: (chatId: string) => Promise<void>;
   unshareChat: (chatId: string) => Promise<void>;
   submitFeedback: (chatId: string, feedback: Feedback) => Promise<void>;
 };
 
-export const submitUserMessage = async (userInput: string, focus: Focus) => {
+export const submitUserMessage = async (userInput: string) => {
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
+  const focus = aiState.get().focus as Focus;
 
   // before we actually do anything, stream loading UI (for the chat window)
   // user message is added on client
