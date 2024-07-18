@@ -69,7 +69,7 @@ img.chat-portrait {
         color:$secondary-font;
     }
     .history-list {
-        max-height:700px;
+        max-height:80vh;
         overflow-y: scroll;
         width: calc(100% + 15px);
         padding:0;
