@@ -69,10 +69,13 @@ img.chat-portrait {
         color:$secondary-font;
     }
     .history-list {
-        max-height:80vh;
+        max-height:75vh;
         overflow-y: scroll;
         width: calc(100% + 15px);
         padding:0;
+        @include breakpoint(lg) {
+                max-height:80vh;
+            }
         .history-list-group-item {
             list-style: none;
             overflow: hidden;
