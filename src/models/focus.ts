@@ -83,7 +83,7 @@ export const getFocusWithSubFocus = (
     if (union) {
       return {
         ...foundFocus,
-        subFocus: union.value,
+        subFocus: union.key,
         description: getUnionDescription(union),
       };
     }
