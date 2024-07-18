@@ -23,14 +23,14 @@ import FocusBar from './focusBar';
 const ChatInput = () => {
   const gtagEvent = useGtagEvent();
   const session = useSession();
-  const [aiState, newState] = useAIState<typeof AI>();
+  const [aiState, setAIState] = useAIState<typeof AI>();
   const [_, setMessagesUI] = useUIState<typeof AI>();
 
   // instead of passing in a submit function, we use a server action defined in actions.tsx when we create the AI
   const { submitUserMessage } = useActions<typeof AI>();
 
   const onFocusSelection = (focus: Focus) => {
-    newState((a) => ({ ...a, focus }));
+    setAIState((a) => ({ ...a, focus }));
   };
 
   const onQuestionSubmit = async (question: string) => {
