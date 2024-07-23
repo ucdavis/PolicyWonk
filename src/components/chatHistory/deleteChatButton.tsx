@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { deleteChatFromSidebar } from '@/lib/actions';
+import addWonkToast from '@/lib/error/wonkToast';
 import { checkActiveChat } from '@/lib/util';
 import { IconVariants, IconVariantOptions } from '@/models/animations';
 
@@ -30,7 +31,14 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     const isActiveChat = checkActiveChat(pathname, chatId);
     setIsLoading(true);
     // TODO: handle errors, set isLoading to false on err
-    await deleteChatFromSidebar(chatId, isActiveChat);
+    try {
+      await deleteChatFromSidebar(chatId, isActiveChat);
+    } catch (e) {
+      addWonkToast({
+        type: 'error',
+        message: 'There was an error deleting the chat.',
+      });
+    }
     // don't set isLoading to false here because the page will refresh, and component will unmount
     // if multiple deletes are queued at once, the refresh won't happen until the last one completes
     if (isActiveChat) {

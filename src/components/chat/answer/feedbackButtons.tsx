@@ -12,6 +12,7 @@ import { useAIState, useActions } from 'ai/rsc';
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
 import { throwConfettiAt } from '@/lib/confetti';
+import addWonkToast from '@/lib/error/wonkToast';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '@/models/chat';
 import { GTagEvents } from '@/models/gtag';
@@ -47,7 +48,10 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
     try {
       await submitFeedback(chatId, newFeedback);
     } catch (e) {
-      // TODO: handle error
+      addWonkToast({
+        type: 'error',
+        message: 'There was an error submitting your feedback.',
+      });
       setAIState((currentAIState) => ({
         ...currentAIState,
         reaction: undefined, // unset the reaction on error

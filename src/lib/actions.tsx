@@ -34,10 +34,10 @@ import { WonkServerError, isWonkSuccess } from './error/error';
 
 // to add an action, add it to this type and also in the aiProvider
 export type WonkActions<T = any, R = any> = {
-  submitUserMessage: (userInput: string, focus: Focus) => Promise<UIStateNode>;
-  shareChat: (chatId: string) => Promise<void>;
-  unshareChat: (chatId: string) => Promise<void>;
-  submitFeedback: (chatId: string, feedback: Feedback) => Promise<void>;
+  submitUserMessage: typeof submitUserMessage;
+  shareChat: typeof shareChat;
+  unshareChat: typeof unshareChat;
+  submitFeedback: typeof submitFeedback;
 };
 
 export const submitUserMessage = async (userInput: string, focus: Focus) => {
@@ -213,6 +213,7 @@ export const submitFeedback = async (chatId: string, feedback: Feedback) => {
     ...aiState.get(),
     reaction: feedback,
   });
+  throw new Error('Not implemented');
 };
 
 /**

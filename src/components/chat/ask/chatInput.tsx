@@ -6,6 +6,7 @@ import { nanoid } from 'nanoid';
 import { useSession } from 'next-auth/react';
 
 import { AI } from '@/lib/aiProvider';
+import addWonkToast from '@/lib/error/wonkToast';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
 import { focuses } from '@/models/focus';
@@ -50,14 +51,20 @@ const ChatInput = () => {
     ]);
 
     // TODO: handle errors
-    const responseMessage = await submitUserMessage(question, focus);
+    try {
+      const responseMessage = await submitUserMessage(question, focus);
+      setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
+    } catch (e) {
+      addWonkToast({
+        type: 'error',
+        message: 'There was an error submitting your question.',
+      });
+    }
 
     gtagEvent({
       event: GTagEvents.NEW_CHAT,
       chat: { ...aiState, focus },
     });
-
-    setMessagesUI((currentMessages) => [...currentMessages, responseMessage]);
   };
 
   return (

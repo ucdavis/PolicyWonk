@@ -9,6 +9,8 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import AnimatedButton from '@/components/ui/animatedButton';
 import { AI } from '@/lib/aiProvider';
+import { isWonkSuccess } from '@/lib/error/error';
+import addWonkToast from '@/lib/error/wonkToast';
 import WonkyClientError from '@/lib/error/wonkyClientError';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '@/lib/hooks/useGtagEvent';
@@ -41,16 +43,28 @@ const ShareModal: React.FC = () => {
       event: type,
       chat: aiState,
     });
-    // TODO: handle errors
-    await shareChat(chatId);
+    try {
+      await shareChat(chatId);
+    } catch (e) {
+      addWonkToast({
+        type: 'error',
+        message: 'There was an error sharing the chat.',
+      });
+    }
     setIsLoading('');
   };
 
   const handleUnshare = async () => {
     setIsLoading(GTagEvents.UNSHARE);
     gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
-    // TODO: handle errors
-    await unshareChat(chatId);
+    try {
+      await unshareChat(chatId);
+    } catch (e) {
+      addWonkToast({
+        type: 'error',
+        message: 'There was an error unsharing the chat.',
+      });
+    }
     setIsLoading('');
   };
 

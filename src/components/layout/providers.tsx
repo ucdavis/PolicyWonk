@@ -2,6 +2,7 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 
 import { auth } from '@/auth';
+import WonkToastContainer from '@/lib/error/wonkToastContainer';
 
 export default async function Providers({
   children,
@@ -9,5 +10,10 @@ export default async function Providers({
   children: React.ReactNode;
 }>) {
   const session = (await auth()) as Session;
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  return (
+    <>
+      <WonkToastContainer />
+      <SessionProvider session={session}>{children}</SessionProvider>
+    </>
+  );
 }

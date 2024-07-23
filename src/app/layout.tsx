@@ -6,6 +6,8 @@ config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatic
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
+import 'react-toastify/dist/ReactToastify.css';
+
 import ChatHistory from '@/components/chatHistory/chatHistory';
 import MobileSidebar from '@/components/layout/mobileSidebar';
 import Providers from '@/components/layout/providers';
