@@ -48,14 +48,9 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
     try {
       await submitFeedback(chatId, newFeedback);
     } catch (e) {
-      addWonkToast({
-        type: 'error',
-        message: 'There was an error submitting your feedback.',
-      });
-      setAIState((currentAIState) => ({
-        ...currentAIState,
-        reaction: undefined, // unset the reaction on error
-      }));
+      // i'm chosing not to revert the state here because i don't think the user cares much if it fails
+      // and it makes the confetti and feedback bar look really sad
+      // we could show a toast here if we cared to
     }
   };
 

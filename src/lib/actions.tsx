@@ -213,7 +213,6 @@ export const submitFeedback = async (chatId: string, feedback: Feedback) => {
     ...aiState.get(),
     reaction: feedback,
   });
-  throw new Error('Not implemented');
 };
 
 /**
