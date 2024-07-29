@@ -4,10 +4,22 @@ import React from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 
-export const UserPortrait = React.memo(function UserPortrait() {
+interface UserPortraitProps {
+  for?: string;
+}
+
+export const UserPortrait = React.memo(function UserPortrait(
+  props: UserPortraitProps
+) {
   const session = useSession();
 
-  const userImage = session?.data?.user?.image || '/media/ph-profile.svg';
+  let userImage = '/media/ph-profile.svg';
+
+  // if the we are showing the user's portrait, use the user's image if it exists
+  if (session?.data?.user?.name === props.for && session?.data?.user?.image) {
+    userImage = session?.data?.user?.image;
+  }
+
   return (
     <div className='role-portrait'>
       <Image
