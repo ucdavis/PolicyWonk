@@ -15,7 +15,7 @@ export const UserMessage = ({
     <div className='row mb-3'>
       <div className='col-2 col-sm-1 mb-2'>
         <WonkyErrorBoundary>
-          <UserPortrait />
+          <UserPortrait for={user} />
         </WonkyErrorBoundary>
       </div>
       <div className='col-10'>
