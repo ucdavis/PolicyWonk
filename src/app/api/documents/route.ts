@@ -50,6 +50,21 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('page_size') || '10', 10);
+    const maxPageSize = 100;
+
+    if (isNaN(page) || page < 1) {
+      return NextResponse.json(
+        { error: "Invalid 'page' parameter. Must be a positive integer." },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(pageSize) || pageSize < 1 || pageSize > maxPageSize) {
+      return NextResponse.json(
+        { error: `Invalid 'page_size' parameter. Must be between 1 and ${maxPageSize}.` },
+        { status: 400 }
+      );
+    }
     const since = searchParams.get('since'); // date-time string (optional)
 
     // Build Mongo filter
