@@ -52,14 +52,14 @@ export async function GET(request: NextRequest) {
     const pageSize = parseInt(searchParams.get('page_size') || '10', 10);
     const maxPageSize = 100;
 
-    if (isNaN(page) || page < 1) {
+    if (Number.isNaN(page) || page < 1) {
       return NextResponse.json(
         { error: "Invalid 'page' parameter. Must be a positive integer." },
         { status: 400 }
       );
     }
 
-    if (isNaN(pageSize) || pageSize < 1 || pageSize > maxPageSize) {
+    if (Number.isNaN(pageSize) || pageSize < 1 || pageSize > maxPageSize) {
       return NextResponse.json(
         {
           error: `Invalid 'page_size' parameter. Must be between 1 and ${maxPageSize}.`,
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     const filter: Record<string, any> = {};
     if (since) {
       const sinceDate = new Date(since);
-      if (isNaN(sinceDate.getTime())) {
+      if (Number.isNaN(sinceDate.getTime())) {
         return NextResponse.json(
           {
             error:
