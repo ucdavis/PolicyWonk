@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { PolicyIndex } from '@/models/chat';
 
+// we don't want to pre-build this route
+export const dynamic = 'force-dynamic';
+
 // get my vector store
 const config: ClientOptions = {
   node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
