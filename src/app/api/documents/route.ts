@@ -55,8 +55,15 @@ export async function GET(request: NextRequest) {
     // Build Mongo filter
     const filter: Record<string, any> = {};
     if (since) {
+      const sinceDate = new Date(since);
+      if (isNaN(sinceDate.getTime())) {
+        return NextResponse.json(
+          { error: "Invalid 'since' parameter. Must be a valid date-time string." },
+          { status: 400 }
+        );
+      }
       // If 'since' is provided, only get documents where last_updated >= since
-      filter.last_updated = { $gte: new Date(since) };
+      filter.last_updated = { $gte: sinceDate };
     }
 
     // only query for docs with UCOP or UCDPOLICY scope
