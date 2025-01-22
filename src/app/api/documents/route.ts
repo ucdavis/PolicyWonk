@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
       filter.last_updated = { $gte: new Date(since) };
     }
 
+    // only query for docs with UCOP or UCDPOLICY scope
+    filter['metadata.scope'] = { $in: ['UCOP', 'UCDPOLICY'] };
+
     // -- Query MongoDB for the total count (for pagination) --
     const total = await documentCollection.countDocuments(filter);
 
@@ -90,11 +93,7 @@ export async function GET(request: NextRequest) {
     const esQueryBody = {
       query: {
         bool: {
-          filter: [
-            {
-              terms: { 'metadata.url': urls },
-            },
-          ],
+          filter: [{ terms: { 'metadata.url.keyword': urls } }],
         },
       },
       // Sort by metadata.start_index so we can easily concatenate in order
