@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 
-const unprotectedRoutes = ['/api/auth', '/auth'];
+const unprotectedRoutes = ['/api/auth', '/auth', '/api/documents'];
 
 export default auth((req: any) => {
   const url = req.nextUrl;
