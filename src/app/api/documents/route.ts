@@ -30,8 +30,8 @@ type WonkDocuments = {
 };
 
 export async function GET(request: NextRequest) {
+  const _mongoClient = new MongoClient(mongoConnectionString);
   try {
-    const _mongoClient = new MongoClient(mongoConnectionString);
     const documentCollection = _mongoClient
       .db(mongoDbName)
       .collection<WonkDocuments>('documents');
@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
 
     if (isNaN(pageSize) || pageSize < 1 || pageSize > maxPageSize) {
       return NextResponse.json(
-        { error: `Invalid 'page_size' parameter. Must be between 1 and ${maxPageSize}.` },
+        {
+          error: `Invalid 'page_size' parameter. Must be between 1 and ${maxPageSize}.`,
+        },
         { status: 400 }
       );
     }
@@ -73,7 +75,10 @@ export async function GET(request: NextRequest) {
       const sinceDate = new Date(since);
       if (isNaN(sinceDate.getTime())) {
         return NextResponse.json(
-          { error: "Invalid 'since' parameter. Must be a valid date-time string." },
+          {
+            error:
+              "Invalid 'since' parameter. Must be a valid date-time string.",
+          },
           { status: 400 }
         );
       }
@@ -196,5 +201,7 @@ export async function GET(request: NextRequest) {
       { error: 'Internal server error' },
       { status: 500 }
     );
+  } finally {
+    await _mongoClient.close();
   }
 }
