@@ -196,7 +196,6 @@ export async function GET(request: NextRequest) {
       results: finalDocs,
     });
   } catch (error: any) {
-    console.error('Error retrieving documents:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
