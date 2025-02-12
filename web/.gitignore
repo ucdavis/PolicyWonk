@@ -34,10 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# python
-__pycache__/
-*.pyc
-
-# dev container artifacts
-.devcontainer/pg_data/
