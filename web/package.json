@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "echo \"Use http://localhost:3001\" to view the app",
     "dev": "next dev",
     "build": "next build",
     "start": "next dev",
