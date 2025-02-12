@@ -1,0 +1,38 @@
+{
+  "name": "PolicyWonk Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.formatting.provider": "autopep8",
+        "python.analysis.typeCheckingMode": "basic",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "always"
+        },
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+  // Uncomment the following lines to use Playwright (not currently used in this project)
+  // "postCreateCommand": "playwright install chromium",
+  "mounts": [
+    // Mount to persist Playwright's browser cache
+    "source=playwright-cache,target=/root/.cache/ms-playwright,type=volume"
+  ],
+  "remoteEnv": {
+    "PYTHONPATH": "/workspace/backend"
+  }
+}
