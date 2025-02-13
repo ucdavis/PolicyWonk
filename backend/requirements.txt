@@ -1,2 +1,4 @@
 pytest-playwright==0.7.0
 marimo==0.11.2
+PyMuPDF==1.25.2
+pymupdf4llm==0.0.17
