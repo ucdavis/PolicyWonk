@@ -25,23 +25,6 @@ services:
     volumes:
       - ./pg_data:/var/lib/postgresql/data
 
-  jackson: # for SAML SSO
-    image: boxyhq/jackson
-    container_name: pw-jackson
-    restart: unless-stopped
-    environment:
-      DB_ENGINE: "sql"
-      DB_TYPE: "postgres"
-      DB_URL: "postgres://root:example@postgres:5432/policywonk"
-      JACKSON_API_KEYS: "secret"
-      NEXTAUTH_URL: "http://localhost:5225"
-      EXTERNAL_URL: "http://localhost:5225"
-      NEXTAUTH_SECRET: "super-secret"
-      NEXTAUTH_ADMIN_CREDENTIALS: "admin@company.com:secretpassword"
-      SAML_AUDIENCE: "https://policywonk.ucdavis.edu/shibboleth" #SP Entity ID
-    ports:
-      - "5225:5225"
-
 volumes:
   playwright-cache:
   pg_data:
