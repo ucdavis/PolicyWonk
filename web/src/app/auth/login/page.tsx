@@ -27,8 +27,9 @@ const Login: React.FC = () => {
             'use server';
             // TODO: get the callbackUrl from the query params
 
-            await signIn('azure-ad', {
-              redirectTo: '/',
+            await signIn('boxyhq-saml', undefined, {
+              tenant: 'ucdavis',
+              product: 'policywonk',
             });
           }}
         >
