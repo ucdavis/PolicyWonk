@@ -49,6 +49,9 @@ class Chat(Base):
 
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
+    # store focus and other meta data
+    meta: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
     assistant = relationship("Assistant", back_populates="chats")
 
     # Define indexes
