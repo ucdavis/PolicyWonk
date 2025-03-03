@@ -1,5 +1,10 @@
+alembic==1.13.2
+autopep8==2.3.1
 beautifulsoup4
+docling
+psycopg2==2.9.9
 pytest-playwright
 PyMuPDF==1.25.2
 pymupdf4llm==0.0.17
-docling==2.21.0
+SQLAlchemy==2.0.33
+requests==2.32.2
