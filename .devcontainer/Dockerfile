@@ -1,6 +1,6 @@
 # Use the python devcontainer which also installs Node.js via devcontainer.json
 # https://hub.docker.com/r/microsoft/devcontainers-python
-FROM mcr.microsoft.com/vscode/devcontainers/python:3.13
+FROM mcr.microsoft.com/vscode/devcontainers/python:3.12
 
 # Set up a virtual environment and install Python dependencies
 COPY backend/requirements.txt /tmp/pip-tmp/

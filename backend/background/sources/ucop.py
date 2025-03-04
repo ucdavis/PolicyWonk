@@ -70,6 +70,8 @@ class UcopDocumentStream(DocumentStream):
                 # Get href directly from the link tag but convert to absolute url
                 href = urljoin(base_url, link["href"])
 
+                logger.info(f"Processing policy at {href}")
+
                 # For the title, find the first (or only) 'span' with class 'icon pdf' within the link
                 span = link.find("span", class_="icon pdf")
                 if span:  # Check if the span exists
@@ -124,6 +126,8 @@ class UcopDocumentStream(DocumentStream):
                         "classifications": classifications
                     }
                 )
+
+                logger.info(f"Processed policy: {doc.title} at {doc.url}")
 
                 yield doc
 

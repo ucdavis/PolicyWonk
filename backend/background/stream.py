@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List
 from background.logger import setup_logger
 from background.sources.shared import DocumentStream
@@ -22,7 +23,7 @@ class DocumentIngestStream():
 class DocumentProcessor:
     def __init__(self, stream: DocumentStream):
         self.stream = stream
-        self.batch_size = 50
+        self.batch_size = 5
         self.current_batch = []
 
     async def process_stream(self):
@@ -30,6 +31,8 @@ class DocumentProcessor:
 
         try:
             async for document in self.stream:
+                logger.info(
+                    f"New document: {document} added to batch.  Current batch size: {len(self.current_batch)}")
                 self.current_batch.append(document)
 
                 if len(self.current_batch) >= self.batch_size:
@@ -55,6 +58,16 @@ class DocumentProcessor:
 
         print(f"Processing batch of {len(batch)} documents")
         print(f"First document: {first}")
+
+        # TODO: Implement actual processing logic
+        return IngestResult(
+            num_docs_indexed=len(batch),
+            num_new_docs=len(batch),
+            source_id='',
+            start_time=first.last_modified,
+            end_time=first.last_modified,
+            duration=0,
+        )
 
 
 class IngestResult:
