@@ -2,11 +2,12 @@ from datetime import datetime
 from urllib.parse import urljoin
 import asyncio
 from playwright.async_api import async_playwright
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from typing import AsyncIterator
 
 from background.logger import setup_logger
+from background.sources.ingestion import ingest_url
 from background.sources.shared import DocumentStream
 from db.models import Source
 from models.document_details import DocumentDetails
@@ -58,6 +59,10 @@ class UcopDocumentStream(DocumentStream):
             # Find the element with the id 'accordion'
             accordion = soup.find(id="accordion")
 
+            if not isinstance(accordion, Tag):
+                logger.error("Couldn't find the accordion element")
+                return
+
             # Find all 'a' tags within the accordion with class="blue"
             links = accordion.find_all("a", class_="blue")
 
@@ -101,25 +106,26 @@ class UcopDocumentStream(DocumentStream):
                 subject_areas = [area.strip()
                                  for area in subject_areas_text.split(",")]
 
-            # extract the content of the policy PDF
+                # extract the content of the policy PDF
+                markdown_content = ingest_url(href)
 
-            # Create a DocumentDetails object with the extracted information
-            doc = DocumentDetails(
-                title=title,
-                url=href,
-                description="",
-                content="",
-                last_modified=datetime.now().isoformat(),
-                metadata={
-                    "subject_areas": subject_areas,
-                    "effective_date": effective_date,
-                    "issuance_date": issuance_date,
-                    "responsible_office": responsible_office,
-                    "classifications": classifications
-                }
-            )
+                # Create a DocumentDetails object with the extracted information
+                doc = DocumentDetails(
+                    title=title,
+                    url=href,
+                    description="",
+                    content=markdown_content,
+                    last_modified=datetime.now().isoformat(),
+                    metadata={
+                        "subject_areas": subject_areas,
+                        "effective_date": effective_date,
+                        "issuance_date": issuance_date,
+                        "responsible_office": responsible_office,
+                        "classifications": classifications
+                    }
+                )
 
-            yield doc
+                yield doc
 
 
 if __name__ == "__main__":
