@@ -22,4 +22,4 @@ class DocumentStream:
         Returns:
             AsyncIterator[DocumentDetails]: An asynchronous iterator of `DocumentDetails`.
         """
-        raise NotImplementedError
+        yield DocumentDetails()  # Placeholder for subclass implementation
