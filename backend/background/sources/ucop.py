@@ -64,11 +64,23 @@ class UcopDocumentStream(DocumentStream):
                 return
 
             # Find all 'a' tags within the accordion with class="blue"
-            links = accordion.find_all("a", class_="blue")
+            raw_links = accordion.find_all("a", class_="blue")
+            links = [link for link in raw_links if isinstance(link, Tag)]
 
             for link in links:
                 # Get href directly from the link tag but convert to absolute url
-                href = urljoin(base_url, link["href"])
+                raw_href = link.get("href")
+                if raw_href is None:
+                    logger.error(
+                        "Couldn't find the href attribute in this link, moving on")
+                    continue
+                elif isinstance(raw_href, list):
+                    # Join the list elements into a single string if necessary.
+                    href_attr = " ".join(raw_href)
+                else:
+                    href_attr = raw_href
+
+                href = urljoin(base_url, href_attr)
 
                 logger.info(f"Processing policy at {href}")
 
@@ -82,26 +94,20 @@ class UcopDocumentStream(DocumentStream):
                 # get the parent of the link and find the next 4 sibling divs - subject areas, effective date, issuance date, responsible office
                 parent = link.parent
 
+                if not isinstance(parent, Tag):
+                    logger.error("Couldn't find the parent div of this link")
+                    continue
+
                 # Get the next 4 sibling divs
-                siblings = parent.find_next_siblings("div")
+                raw_siblings = parent.find_next_siblings("div")
+                siblings = [
+                    sibling for sibling in raw_siblings if isinstance(sibling, Tag)]
 
                 # Get the text from each sibling but ignore the <cite> tag
-                subject_areas_text = (
-                    siblings[0].text.replace(
-                        siblings[0].find("cite").text, "").strip()
-                )
-                effective_date = (
-                    siblings[1].text.replace(
-                        siblings[1].find("cite").text, "").strip()
-                )
-                issuance_date = (
-                    siblings[2].text.replace(
-                        siblings[2].find("cite").text, "").strip()
-                )
-                responsible_office = (
-                    siblings[3].text.replace(
-                        siblings[3].find("cite").text, "").strip()
-                )
+                subject_areas_text = get_sibling_text(siblings[0])
+                effective_date = get_sibling_text(siblings[1])
+                issuance_date = get_sibling_text(siblings[2])
+                responsible_office = get_sibling_text(siblings[3])
                 classifications = ["Policy"]
 
                 # subject areas is a comma separated list, so split it into a list
@@ -132,6 +138,15 @@ class UcopDocumentStream(DocumentStream):
                 yield doc
 
 
+def get_sibling_text(sibling: Tag) -> str:
+    """
+    Return the text of the sibling with any text from a <cite> tag removed.
+    """
+    cite_tag = sibling.find("cite")
+    cite_text = cite_tag.text if cite_tag is not None else ""
+    return sibling.text.replace(cite_text, "").strip()
+
+
 if __name__ == "__main__":
     source = Source(
         name="UCOP",
@@ -142,5 +157,6 @@ if __name__ == "__main__":
     async def main():
         async for doc in UcopDocumentStream(source):
             print(doc)
+            print(doc.metadata)
 
     asyncio.run(main())
