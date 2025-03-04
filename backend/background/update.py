@@ -10,7 +10,7 @@ import time
 from sqlalchemy.orm import Session
 
 from background.logger import setup_logger
-from background.stream import DocumentIngestStream, DocumentProcessor, StreamingIngestProcessor
+from background.stream import DocumentIngestStream, DocumentProcessor
 from db.mutations import create_index_attempt
 from db.models import IndexAttempt, Source
 from db.constants import IndexStatus, RefreshFrequency, SourceStatus
@@ -44,9 +44,10 @@ async def index_documents(session: Session, source: Source) -> None:
     try:
         # our docs will be streamed in, since we might not get the list all at once
         stream = DocumentIngestStream.getSourceStream(source)
+        processor = DocumentProcessor(stream)
 
         # Process documents as they arrive
-        processor_result = await processor.process_stream(stream)
+        processor_result = await processor.process_stream()
 
         logger.info(f"Indexing source {source.name} successful.")
 
