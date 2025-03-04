@@ -45,7 +45,7 @@ async def index_documents(session: Session, source: Source) -> None:
     try:
         # our docs will be streamed in, since we might not get the list all at once
         stream = DocumentIngestStream.getSourceStream(source)
-        processor = DocumentProcessor(stream)
+        processor = DocumentProcessor(session, stream)
 
         # Process documents as they arrive
         processor_result = await processor.process_stream()

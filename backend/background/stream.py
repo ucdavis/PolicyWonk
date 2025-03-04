@@ -1,11 +1,14 @@
 from datetime import datetime, timezone
+import hashlib
 from typing import List
 from background.logger import setup_logger
 from background.sources.shared import DocumentStream
 from background.sources.ucop import UcopDocumentStream
 from db.constants import SourceType
 from db.models import Source
+from db.queries import get_document_by_url
 from models.document_details import DocumentDetails
+from sqlalchemy.orm import Session
 
 logger = setup_logger()
 
@@ -21,7 +24,8 @@ class DocumentIngestStream():
 
 
 class DocumentProcessor:
-    def __init__(self, stream: DocumentStream):
+    def __init__(self, session: Session, stream: DocumentStream):
+        self.session = session
         self.stream = stream
         self.batch_size = 5
         self.current_batch = []
@@ -52,21 +56,61 @@ class DocumentProcessor:
             raise
 
     async def process_batch(self, batch: List[DocumentDetails]):
-        # TODO: Implement batch processing
+        # TODO: refactor into separate class/file
 
-        first = batch[0]
+        start_time = datetime.now(timezone.utc)
+        num_docs_indexed = 0
+        num_new_docs = 0
+        token_count = 0
 
-        print(f"Processing batch of {len(batch)} documents")
-        print(f"First document: {first}")
+        for document_details in batch:
+            # - get the doc from the db and check if it has changed
+            # - include hash, content_length (of entire non-chunked content) and other metadata
+            # - chunk and vectorize the content, store in vector db
+            # - store entire document content in a separate db table (for ctx retrieval)
+            # - update/save doc in db
+            logger.info(f"Processing document {document_details.url}")
+
+            if not document_details:
+                logger.warning(
+                    f"Document {document_details.url} is empty. Skipping")
+                continue
+
+            num_docs_indexed += 1
+
+            content_hash = calculate_content_hash(document_details.content)
+
+            # get the doc from the db
+            db_document = get_document_by_url(
+                self.session, document_details.url)
+
+            if db_document and db_document.meta and db_document.meta.get("hash") == content_hash:
+                logger.info(
+                    f"Document {document_details.url} has not changed. Skipping")
+                continue
+
+            # TODO: vectorize (chunk and store in vector db in separate table)
+            # TODO: store content in separate table
+
+            # doc changed, let's vectorize and update
+            num_new_docs += 1
+
+            # TODO: update the document in the db
+
+        # end of batch
+        logger.info(
+            f"Indexed {num_docs_indexed} documents from source {self.stream.source.name} with {token_count} tokens")
+
+        end_time = datetime.now(timezone.utc)
 
         # TODO: Implement actual processing logic
         return IngestResult(
             num_docs_indexed=len(batch),
             num_new_docs=len(batch),
             source_id='',
-            start_time=first.last_modified,
-            end_time=first.last_modified,
-            duration=0,
+            start_time=start_time,
+            end_time=end_time,
+            duration=(end_time - start_time).total_seconds()
         )
 
 
@@ -136,3 +180,9 @@ def get_bad_ingest_result() -> IngestResult:
         end_time=datetime.now(timezone.utc),
         duration=0,
     )
+
+
+def calculate_content_hash(content: str) -> str:
+    hasher = hashlib.sha256()
+    hasher.update(content.encode())
+    return hasher.hexdigest()

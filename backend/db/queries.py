@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from db.models import Source
+from db.models import Document, Source
 from db.constants import RefreshFrequency, SourceStatus
 
 from sqlalchemy import or_
@@ -13,3 +13,7 @@ def get_sources(session: Session, last_updated: datetime, refresh_frequency: Ref
         Source.refresh_frequency == refresh_frequency,
         Source.status == status
     ).all()
+
+
+def get_document_by_url(session: Session, url: str) -> Document | None:
+    return session.query(Document).filter(Document.url == url).first()
