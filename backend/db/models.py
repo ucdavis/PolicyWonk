@@ -4,7 +4,7 @@ Data models for sources, indices, and documents
 
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, Float, ForeignKey, Index, Integer, Table, func
+from sqlalchemy import JSON, Boolean, Column, DateTime, Enum, Float, ForeignKey, Index, Integer, Table, Text, func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -12,6 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import String
 
 from db.constants import IndexStatus, RefreshFrequency, RoleName, SourceStatus, SourceType
+from pgvector.sqlalchemy import Vector
 
 
 class Base(DeclarativeBase):
@@ -236,6 +237,53 @@ class Document(Base):
     last_updated: Mapped[Optional[datetime]] = mapped_column(
         DateTime, nullable=True
     )
+
+
+class DocumentChunk(Base):
+    __tablename__ = "document_chunks"
+    __table_args__ = (
+        # Index for similarity search on the vector column
+        Index(
+            "document_chunks_embedding_idx",
+            "embedding",
+            postgresql_using="ivfflat",
+            postgresql_ops={"embedding": "vector_cosine_ops"},
+            postgresql_with={"lists": "100"},
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True)
+    # Reference to the main document (documents.id is a string)
+    document_id: Mapped[str] = mapped_column(
+        String, ForeignKey("documents.id"), nullable=False)
+    # The order/index of the chunk
+    chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    # The actual text of this chunk
+    chunk_text: Mapped[str] = mapped_column(Text, nullable=False)
+    # The vector embedding for this chunk (adjust dimension as needed)
+    embedding: Mapped[List[float]] = mapped_column(
+        Vector(3072), nullable=False)
+    # Optional metadata stored as JSONB
+    meta: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # Back-reference to the Document
+    document: Mapped["Document"] = relationship(
+        "Document", back_populates="chunks")
+
+
+class DocumentContent(Base):
+    __tablename__ = "document_contents"
+
+    # Use the document_id as the primary key and foreign key to documents.id
+    document_id: Mapped[str] = mapped_column(
+        String, ForeignKey("documents.id"), primary_key=True)
+    # The full, potentially very large, document content
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Back-reference to the Document
+    document: Mapped["Document"] = relationship(
+        "Document", back_populates="content_entry")
 
 
 user_roles = Table(

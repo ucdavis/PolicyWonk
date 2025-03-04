@@ -5,6 +5,7 @@ docling
 langchain==0.3.20
 langchain-openai==0.3.7
 langchain-text-splitters==0.3.6
+pgvector==0.3.6
 psycopg2==2.9.9
 pytest-playwright
 PyMuPDF==1.25.2
