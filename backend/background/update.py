@@ -4,6 +4,7 @@ Main module to update data for RAG
 import asyncio
 from datetime import datetime, timedelta, timezone
 import gc
+import math
 import traceback
 from dotenv import load_dotenv
 import time
@@ -57,7 +58,7 @@ async def index_documents(session: Session, source: Source) -> None:
         # Record a successful index attempt
         attempt.status = IndexStatus.SUCCESS
         attempt.end_time = end_time
-        attempt.duration = (end_time - start_time).total_seconds()
+        attempt.duration = math.floor((end_time - start_time).total_seconds())
         attempt.num_docs_indexed = processor_result.num_docs_indexed
         attempt.num_new_docs = processor_result.num_new_docs
         attempt.num_docs_removed = 0  # TODO: update with actual counts
