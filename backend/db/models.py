@@ -263,7 +263,7 @@ class DocumentChunk(Base):
     chunk_text: Mapped[str] = mapped_column(Text, nullable=False)
     # The vector embedding for this chunk (adjust dimension as needed)
     embedding: Mapped[List[float]] = mapped_column(
-        Vector(3072), nullable=False)
+        Vector(1536), nullable=False)
     # Optional metadata stored as JSONB
     meta: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 

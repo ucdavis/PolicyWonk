@@ -13,7 +13,7 @@ services:
       - "3001:3000" # use localhost:3001 to access the app from the host machine
 
   postgres:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     container_name: pw-postgres
     restart: unless-stopped
     environment:
@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: policywonk
     ports:
-      - "5433:5432"  # Maps container's PostgreSQL (5432) to host's 5433 (avoid conflicts)
+      - "5433:5432" # Maps container's PostgreSQL (5432) to host's 5433 (avoid conflicts)
     volumes:
       - ./pg_data:/var/lib/postgresql/data
 
