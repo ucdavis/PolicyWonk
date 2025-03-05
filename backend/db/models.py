@@ -242,7 +242,7 @@ class Document(Base):
         "DocumentChunk", back_populates="document")
 
     content: Mapped["DocumentContent"] = relationship(
-        "DocumentContent", back_populates="document", uselist=False)
+        "DocumentContent", back_populates="document", uselist=False, cascade="all, delete-orphan")
 
 
 class DocumentChunk(Base):
@@ -282,7 +282,7 @@ class DocumentContent(Base):
 
     # Use the document_id as the primary key and foreign key to documents.id
     document_id: Mapped[str] = mapped_column(
-        String, ForeignKey("documents.id"), primary_key=True)
+        String, ForeignKey("documents.id", ondelete='CASCADE'), primary_key=True)
     # The full, potentially very large, document content
     content: Mapped[str] = mapped_column(Text, nullable=False)
 
