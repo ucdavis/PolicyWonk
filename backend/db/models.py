@@ -238,6 +238,12 @@ class Document(Base):
         DateTime, nullable=True
     )
 
+    chunks: Mapped[List["DocumentChunk"]] = relationship(
+        "DocumentChunk", back_populates="document")
+
+    content: Mapped["DocumentContent"] = relationship(
+        "DocumentContent", back_populates="document", uselist=False)
+
 
 class DocumentChunk(Base):
     __tablename__ = "document_chunks"
@@ -246,9 +252,8 @@ class DocumentChunk(Base):
         Index(
             "document_chunks_embedding_idx",
             "embedding",
-            postgresql_using="ivfflat",
-            postgresql_ops={"embedding": "vector_cosine_ops"},
-            postgresql_with={"lists": "100"},
+            postgresql_using="hnsw",
+            postgresql_ops={"embedding": "vector_cosine_ops"}
         ),
     )
 
@@ -283,7 +288,7 @@ class DocumentContent(Base):
 
     # Back-reference to the Document
     document: Mapped["Document"] = relationship(
-        "Document", back_populates="content_entry")
+        "Document", back_populates="content")
 
 
 user_roles = Table(
