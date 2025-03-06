@@ -50,7 +50,8 @@ class UcopDocumentStream(DocumentStream):
                 # Parse with BeautifulSoup
                 soup = BeautifulSoup(content, "html.parser")
             except Exception as e:
-                print(f"Couldn't fetch policy info: {str(e)}")
+                logger.exception(
+                    f"Couldn't fetch policy info from {self.policy_url}")
             finally:
                 await context.close()
                 await browser.close()
@@ -104,10 +105,14 @@ class UcopDocumentStream(DocumentStream):
                     sibling for sibling in raw_siblings if isinstance(sibling, Tag)]
 
                 # Get the text from each sibling but ignore the <cite> tag
-                subject_areas_text = get_sibling_text(siblings[0])
-                effective_date = get_sibling_text(siblings[1])
-                issuance_date = get_sibling_text(siblings[2])
-                responsible_office = get_sibling_text(siblings[3])
+                subject_areas_text = get_sibling_text(
+                    siblings[0]) if len(siblings) > 0 else ""
+                effective_date = get_sibling_text(
+                    siblings[1]) if len(siblings) > 1 else ""
+                issuance_date = get_sibling_text(
+                    siblings[2]) if len(siblings) > 2 else ""
+                responsible_office = get_sibling_text(
+                    siblings[3]) if len(siblings) > 3 else ""
                 classifications = ["Policy"]
 
                 # subject areas is a comma separated list, so split it into a list
@@ -115,7 +120,7 @@ class UcopDocumentStream(DocumentStream):
                                  for area in subject_areas_text.split(",")]
 
                 # extract the content of the policy PDF
-                markdown_content = ingest_url(href)
+                markdown_content = await ingest_url(href)
 
                 # Create a DocumentDetails object with the extracted information
                 doc = DocumentDetails(

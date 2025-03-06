@@ -40,7 +40,7 @@ def setup_logger(
     name: str = __name__,
     log_level: int = get_log_level_from_str(),
     logfile_name: str | None = None,
-) -> logging.LoggerAdapter:
+) -> logging.Logger:
     """Setup a logger with the given name and log level."""
 
     logger = logging.getLogger(name)

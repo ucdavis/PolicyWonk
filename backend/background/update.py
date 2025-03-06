@@ -135,7 +135,7 @@ async def update_loop(delay: int = 60) -> None:
                 # if we have on inprogress attempts, they are probably stale, so clean them up since there is nothing else to do
                 cleanup_old_attempts(session)
 
-                time.sleep(delay)
+                await asyncio.sleep(delay)
                 continue
 
             # we have valid sources in need up update, get the first
