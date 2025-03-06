@@ -17,6 +17,8 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 
 logger = setup_logger()
 
+PROCESSOR_BATCH_SIZE = 2  # small for testing
+
 
 class DocumentIngestStream():
     @staticmethod
@@ -32,7 +34,7 @@ class DocumentProcessor:
     def __init__(self, session: Session, stream: DocumentStream):
         self.session = session
         self.stream = stream
-        self.batch_size = 5
+        self.batch_size = PROCESSOR_BATCH_SIZE
         self.current_batch = []
 
     async def process_stream(self):
@@ -85,6 +87,9 @@ class DocumentProcessor:
 
             content_hash = calculate_content_hash(document_details.content)
 
+            # add the content hash so we have it for later
+            document_details.metadata['hash'] = content_hash
+
             # get the doc from the db
             db_document = get_document_by_url(
                 self.session, document_details.url)
@@ -99,16 +104,7 @@ class DocumentProcessor:
             db_document = self.vectorize_document(
                 document_details, db_document)
 
-            # get the metadata for this doc
-            metadata = document_details.metadata or {}
-            metadata['hash'] = content_hash
-
-            db_document.title = document_details.title
-            db_document.last_updated = datetime.now(timezone.utc)
-            db_document.url = document_details.url
-            db_document.meta = metadata
-
-            self.session.add(db_document)
+            self.session.flush()  # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
 
         # end of batch
         logger.info(
@@ -116,11 +112,10 @@ class DocumentProcessor:
 
         end_time = datetime.now(timezone.utc)
 
-        # TODO: Implement actual processing logic
         return IngestResult(
-            num_docs_indexed=len(batch),
-            num_new_docs=len(batch),
-            source_id='',
+            num_docs_indexed=num_docs_indexed,
+            num_new_docs=num_new_docs,
+            source_id=self.stream.source.id,
             start_time=start_time,
             end_time=end_time,
             duration=(end_time - start_time).total_seconds()
@@ -186,12 +181,31 @@ class DocumentProcessor:
 
         doc_content = DocumentContent(content=document_details.content)
 
+        # get the metadata for this doc
+        metadata = document_details.metadata or {}
+
         # 5. update the db document info
         if not db_document:
             db_document = Document(
                 url=document_details.url,
+                title=document_details.title,
+                meta=metadata,
+                source_id=self.stream.source.id,
+                last_updated=datetime.now(timezone.utc)
             )
+        else:
+            # already exists
+            db_document.title = document_details.title
+            db_document.source_id = self.stream.source.id
+            db_document.last_updated = datetime.now(timezone.utc)
+            db_document.url = document_details.url
+            db_document.meta = metadata
 
+        # save the doc
+        self.session.add(db_document)
+        self.session.flush()
+
+        # now that we've flushed the changes and have a docId we can continue
         db_document.chunks = doc_chunks
         db_document.content = doc_content
 
