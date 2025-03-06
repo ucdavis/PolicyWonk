@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 import hashlib
 from typing import List
 
-import requests
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.embeddings import FakeEmbeddings
 from background.logger import setup_logger
 from background.sources.shared import DocumentStream
 from background.sources.ucop import UcopDocumentStream
@@ -152,8 +153,18 @@ def vectorize_document(document_details: DocumentDetails, db_document: Document 
     # log the chunks
     logger.info(f"Document {document_details.url} has {len(chunks)} chunks")
 
-    for chunk in chunks:
-        logger.info(chunk.model_dump_json())
+    # 2. vectorize the chunks
+    # OpenAIEmbeddings(model='text-embedding-3-small')
+    embeddings = FakeEmbeddings(size=1536)
+
+    # mass embeddings for all chunks
+    embedded_vectors = embeddings.embed_documents(
+        [chunk.page_content for chunk in chunks])
+
+    # 3. remove any existing content or chunks related to the doc
+    if db_document:
+        # remove existing content and chunks
+        pass
 
 
 class IngestResult:
