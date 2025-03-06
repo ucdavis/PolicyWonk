@@ -1,14 +1,17 @@
 from datetime import datetime, timezone
 import hashlib
 from typing import List
+
+import requests
 from background.logger import setup_logger
 from background.sources.shared import DocumentStream
 from background.sources.ucop import UcopDocumentStream
 from db.constants import SourceType
-from db.models import Source
+from db.models import Document, Source
 from db.queries import get_document_by_url
 from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
+from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 logger = setup_logger()
 
@@ -90,6 +93,8 @@ class DocumentProcessor:
                 continue
 
             # TODO: vectorize (chunk and store in vector db in separate table)
+            vectorize_document(document_details, db_document)
+
             # TODO: store content in separate table
 
             # doc changed, let's vectorize and update
@@ -112,6 +117,43 @@ class DocumentProcessor:
             end_time=end_time,
             duration=(end_time - start_time).total_seconds()
         )
+
+
+def vectorize_document(document_details: DocumentDetails, db_document: Document | None):
+    # we want to re-vectorize the document if it has changed, or otherwise create new
+    # 1. chunk the content
+    # 2. vectorize the chunks
+    # 3. remove any existing content or chunks related to the doc
+    # 4. store the new content and vectors
+    # 5. update the db document info
+
+    # 1. We're going to use langchain to chunk using the content (assuming it's markdown)
+    # https://python.langchain.com/docs/how_to/markdown_header_metadata_splitter/
+    headers_to_split_on = [
+        ("#", "h1"),
+        ("##", "h2"),
+        ("###", "h3"),
+    ]
+
+    # first we split the content into headers and content
+    markdown_splitter = MarkdownHeaderTextSplitter(
+        headers_to_split_on, strip_headers=False)
+    md_header_splits = markdown_splitter.split_text(document_details.content)
+
+    # now we need to chunk the content into smaller pieces so it can be vectorized
+    chunk_size = 500
+    chunk_overlap = 30
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size, chunk_overlap=chunk_overlap
+    )
+
+    chunks = text_splitter.split_documents(md_header_splits)
+
+    # log the chunks
+    logger.info(f"Document {document_details.url} has {len(chunks)} chunks")
+
+    for chunk in chunks:
+        logger.info(chunk.model_dump_json())
 
 
 class IngestResult:
@@ -186,3 +228,14 @@ def calculate_content_hash(content: str) -> str:
     hasher = hashlib.sha256()
     hasher.update(content.encode())
     return hasher.hexdigest()
+
+
+if __name__ == "__main__":
+    # load sample policy from file
+    with open("/workspace/backend/experiments/data/sample_policy.md", "r") as f:
+        content = f.read()
+
+    fake_document_details = DocumentDetails(
+        content=content)
+
+    vectorize_document(fake_document_details, None)

@@ -1,38 +1,11 @@
-import marimo
 
-__generated_with = "0.11.2"
-app = marimo.App(width="medium")
+from docling.document_converter import DocumentConverter
 
+converter = DocumentConverter()
 
-@app.cell
-def _():
-    from docling.document_converter import DocumentConverter
-    return (DocumentConverter,)
+# document per local path or URL
+source = "https://policy.ucop.edu/doc/4000701/AbusiveConduct"
+result = converter.convert(source)
 
-
-@app.cell
-def _(DocumentConverter):
-    converter = DocumentConverter()
-    return (converter,)
-
-
-@app.cell
-def _(converter):
-    source = "https://policy.ucop.edu/doc/4000701/AbusiveConduct"  # document per local path or URL
-    result = converter.convert(source)
-    return result, source
-
-
-@app.cell
-def _(result):
-    print(result.document.export_to_markdown())  # output: "## Docling Technical Report[...]"
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-if __name__ == "__main__":
-    app.run()
+# output: "## Docling Technical Report[...]"
+print(result.document.export_to_markdown())
