@@ -145,8 +145,11 @@ class DocumentProcessor:
             document_details.content)
 
         # now we need to chunk the content into smaller pieces so it can be vectorized
-        chunk_size = 500
-        chunk_overlap = 30
+        # langchain uses character sizes so token sizes are about 4x the character size
+        chunk_size_in_tokens = 500
+        chunk_overlap_in_tokens = 50
+        chunk_size = chunk_size_in_tokens * 4
+        chunk_overlap = chunk_overlap_in_tokens * 4
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size, chunk_overlap=chunk_overlap
         )
@@ -158,7 +161,7 @@ class DocumentProcessor:
             f"Document {document_details.url} has {len(chunks)} chunks")
 
         # 2. vectorize the chunks
-        # OpenAIEmbeddings(model='text-embedding-3-small')
+        # embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
         embeddings = FakeEmbeddings(size=1536)
 
         # mass embeddings for all chunks
@@ -176,7 +179,10 @@ class DocumentProcessor:
                 chunk_index=i,
                 chunk_text=chunk.page_content,
                 embedding=embedded_vectors[i],
-                meta=chunk.metadata if hasattr(chunk, 'metadata') else None
+                meta={
+                    **(chunk.metadata if hasattr(chunk, 'metadata') and chunk.metadata else {}),
+                    "parent_document_length": len(document_details.content)
+                }
             )
             for i, chunk in enumerate(chunks)]
 
