@@ -15,3 +15,11 @@ Playing with using playwright for browser automation instead of selenium (mostly
 ```bash
 playwright install chromium && playwright install-deps chromium
 ```
+
+# Fun with LLMs
+
+Pack up the backend with repomix to get a full representation of the backend codebase.
+
+```bash
+npx repomix backend --ignore "experiments/,.env"
+```
