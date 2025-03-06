@@ -104,7 +104,8 @@ class DocumentProcessor:
             db_document = self.vectorize_document(
                 document_details, db_document)
 
-            self.session.flush()  # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
+            # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
+            self.session.commit()
 
         # end of batch
         logger.info(
@@ -196,7 +197,7 @@ class DocumentProcessor:
 
         # # save the doc
         self.session.add(db_document)
-        self.session.flush()
+        # self.session.flush()
 
         # now that we've flushed the changes and have a docId we can continue
         db_document.chunks = doc_chunks
