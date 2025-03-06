@@ -8,7 +8,8 @@ from background.logger import setup_logger
 from background.sources.shared import DocumentStream
 from background.sources.ucop import UcopDocumentStream
 from db.constants import SourceType
-from db.models import Document, Source
+from db.models import Document, DocumentChunk, DocumentContent, Source
+from db.mutations import delete_chunks_and_content
 from db.queries import get_document_by_url
 from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
@@ -93,15 +94,21 @@ class DocumentProcessor:
                     f"Document {document_details.url} has not changed. Skipping")
                 continue
 
-            # TODO: vectorize (chunk and store in vector db in separate table)
-            vectorize_document(document_details, db_document)
-
-            # TODO: store content in separate table
-
             # doc changed, let's vectorize and update
             num_new_docs += 1
+            db_document = self.vectorize_document(
+                document_details, db_document)
 
-            # TODO: update the document in the db
+            # get the metadata for this doc
+            metadata = document_details.metadata or {}
+            metadata['hash'] = content_hash
+
+            db_document.title = document_details.title
+            db_document.last_updated = datetime.now(timezone.utc)
+            db_document.url = document_details.url
+            db_document.meta = metadata
+
+            self.session.add(db_document)
 
         # end of batch
         logger.info(
@@ -119,55 +126,80 @@ class DocumentProcessor:
             duration=(end_time - start_time).total_seconds()
         )
 
+    def vectorize_document(self, document_details: DocumentDetails, db_document: Document | None):
+        # we want to re-vectorize the document if it has changed, or otherwise create new
+        # 1. chunk the content
+        # 2. vectorize the chunks
+        # 3. remove any existing content or chunks related to the doc
+        # 4. store the new content and vectors
+        # 5. return the updated db document
 
-def vectorize_document(document_details: DocumentDetails, db_document: Document | None):
-    # we want to re-vectorize the document if it has changed, or otherwise create new
-    # 1. chunk the content
-    # 2. vectorize the chunks
-    # 3. remove any existing content or chunks related to the doc
-    # 4. store the new content and vectors
-    # 5. update the db document info
+        # 1. We're going to use langchain to chunk using the content (assuming it's markdown)
+        # https://python.langchain.com/docs/how_to/markdown_header_metadata_splitter/
+        headers_to_split_on = [
+            ("#", "h1"),
+            ("##", "h2"),
+            ("###", "h3"),
+        ]
 
-    # 1. We're going to use langchain to chunk using the content (assuming it's markdown)
-    # https://python.langchain.com/docs/how_to/markdown_header_metadata_splitter/
-    headers_to_split_on = [
-        ("#", "h1"),
-        ("##", "h2"),
-        ("###", "h3"),
-    ]
+        # first we split the content into headers and content
+        markdown_splitter = MarkdownHeaderTextSplitter(
+            headers_to_split_on, strip_headers=False)
+        md_header_splits = markdown_splitter.split_text(
+            document_details.content)
 
-    # first we split the content into headers and content
-    markdown_splitter = MarkdownHeaderTextSplitter(
-        headers_to_split_on, strip_headers=False)
-    md_header_splits = markdown_splitter.split_text(document_details.content)
+        # now we need to chunk the content into smaller pieces so it can be vectorized
+        chunk_size = 500
+        chunk_overlap = 30
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        )
 
-    # now we need to chunk the content into smaller pieces so it can be vectorized
-    chunk_size = 500
-    chunk_overlap = 30
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap
-    )
+        chunks = text_splitter.split_documents(md_header_splits)
 
-    chunks = text_splitter.split_documents(md_header_splits)
+        # log the chunks
+        logger.info(
+            f"Document {document_details.url} has {len(chunks)} chunks")
 
-    # log the chunks
-    logger.info(f"Document {document_details.url} has {len(chunks)} chunks")
+        # 2. vectorize the chunks
+        # OpenAIEmbeddings(model='text-embedding-3-small')
+        embeddings = FakeEmbeddings(size=1536)
 
-    # 2. vectorize the chunks
-    # OpenAIEmbeddings(model='text-embedding-3-small')
-    embeddings = FakeEmbeddings(size=1536)
+        # mass embeddings for all chunks
+        embedded_vectors = embeddings.embed_documents(
+            [chunk.page_content for chunk in chunks])
 
-    # mass embeddings for all chunks
-    embedded_vectors = embeddings.embed_documents(
-        [chunk.page_content for chunk in chunks])
+        # 3. remove any existing content or chunks related to the doc
+        if db_document:
+            # remove existing content and chunks
+            delete_chunks_and_content(self.session, db_document)
 
-    # 3. remove any existing content or chunks related to the doc
-    if db_document:
-        # remove existing content and chunks
-        pass
+        # 4. store the new content and vectors
+        doc_chunks = [
+            DocumentChunk(
+                chunk_index=i,
+                chunk_text=chunk.page_content,
+                embedding=embedded_vectors[i],
+                meta=chunk.metadata if hasattr(chunk, 'metadata') else None
+            )
+            for i, chunk in enumerate(chunks)]
+
+        doc_content = DocumentContent(content=document_details.content)
+
+        # 5. update the db document info
+        if not db_document:
+            db_document = Document(
+                url=document_details.url,
+            )
+
+        db_document.chunks = doc_chunks
+        db_document.content = doc_content
+
+        return db_document
 
 
 class IngestResult:
+
     def __init__(
         self,
         num_docs_indexed,
@@ -241,12 +273,12 @@ def calculate_content_hash(content: str) -> str:
     return hasher.hexdigest()
 
 
-if __name__ == "__main__":
-    # load sample policy from file
-    with open("/workspace/backend/experiments/data/sample_policy.md", "r") as f:
-        content = f.read()
+# if __name__ == "__main__":
+#     # load sample policy from file
+#     with open("/workspace/backend/experiments/data/sample_policy.md", "r") as f:
+#         content = f.read()
 
-    fake_document_details = DocumentDetails(
-        content=content)
+#     fake_document_details = DocumentDetails(
+#         content=content)
 
-    vectorize_document(fake_document_details, None)
+#     vectorize_document(fake_document_details, None)
