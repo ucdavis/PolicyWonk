@@ -217,8 +217,9 @@ class IndexAttempt(Base):
 class Document(Base):
     __tablename__ = "documents"
 
-    # id is URL path of the doc
-    id: Mapped[str] = mapped_column(String, primary_key=True)
+    # id is an auto-incremented integer primary key
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True)
 
     # title is the title of the document
     title: Mapped[str] = mapped_column(String, nullable=False)
@@ -260,8 +261,8 @@ class DocumentChunk(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True)
     # Reference to the main document (documents.id is a string)
-    document_id: Mapped[str] = mapped_column(
-        String, ForeignKey("documents.id"), nullable=False)
+    document_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("documents.id"), nullable=False)
     # The order/index of the chunk
     chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
     # The actual text of this chunk
@@ -281,8 +282,8 @@ class DocumentContent(Base):
     __tablename__ = "document_contents"
 
     # Use the document_id as the primary key and foreign key to documents.id
-    document_id: Mapped[str] = mapped_column(
-        String, ForeignKey("documents.id", ondelete='CASCADE'), primary_key=True)
+    document_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("documents.id", ondelete='CASCADE'), primary_key=True)
     # The full, potentially very large, document content
     content: Mapped[str] = mapped_column(Text, nullable=False)
 

@@ -186,22 +186,15 @@ class DocumentProcessor:
 
         # 5. update the db document info
         if not db_document:
-            db_document = Document(
-                url=document_details.url,
-                title=document_details.title,
-                meta=metadata,
-                source_id=self.stream.source.id,
-                last_updated=datetime.now(timezone.utc)
-            )
-        else:
-            # already exists
-            db_document.title = document_details.title
-            db_document.source_id = self.stream.source.id
-            db_document.last_updated = datetime.now(timezone.utc)
-            db_document.url = document_details.url
-            db_document.meta = metadata
+            db_document = Document()
 
-        # save the doc
+        db_document.title = document_details.title
+        db_document.source_id = self.stream.source.id
+        db_document.last_updated = datetime.now(timezone.utc)
+        db_document.url = document_details.url
+        db_document.meta = metadata
+
+        # # save the doc
         self.session.add(db_document)
         self.session.flush()
 
