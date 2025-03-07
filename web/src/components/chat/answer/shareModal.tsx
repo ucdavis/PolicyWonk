@@ -7,12 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useActions, useAIState } from 'ai/rsc';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
-import AnimatedButton from '../../ui/animatedButton';
 import { AI } from '../../../lib/aiProvider';
 import WonkyClientError from '../../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { GTagEvents } from '../../../models/gtag';
+import AnimatedButton from '../../ui/animatedButton';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';

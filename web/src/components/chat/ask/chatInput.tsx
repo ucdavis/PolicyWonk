@@ -10,7 +10,6 @@ import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { Focus, focuses } from '../../../models/focus';
 import { GTagEvents } from '../../../models/gtag';
-
 import FocusBanner from '../answer/focusBanner';
 import { UserMessage } from '../userMessage';
 

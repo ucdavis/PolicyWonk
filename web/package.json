@@ -6,7 +6,7 @@
     "predev": "echo \"Use http://localhost:3001\" to view the app",
     "dev": "next dev",
     "build": "next build",
-    "start": "next dev",
+    "start": "next start",
     "production": "next build && next start",
     "serve": "node_modules/next/dist/bin/next start",
     "lint": "next lint",

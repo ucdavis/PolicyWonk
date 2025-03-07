@@ -9,12 +9,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useActions } from 'ai/rsc';
 
-import AnimatedButton from '../../ui/animatedButton';
 import { AI } from '../../../lib/aiProvider';
 import { throwConfettiAt } from '../../../lib/confetti';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
+import AnimatedButton from '../../ui/animatedButton';
 
 export type FeedbackLoadingStates = '' | Feedback;
 
