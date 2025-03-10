@@ -1,15 +1,17 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from typing import List, AsyncIterator
+from typing import List, AsyncIterator, Optional, Sequence, cast
 from urllib.parse import urljoin
-from bs4 import BeautifulSoup, Tag
-from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError
+from bs4 import BeautifulSoup, Tag, ResultSet
+from bs4.element import PageElement, NavigableString
+from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError, Browser, BrowserContext
 from background.sources.shared import user_agent, get_browser_page
 
 from background.logger import setup_logger
 from db.models import Source
 from models.document_details import DocumentDetails
+from background.sources.document_stream import DocumentStream
 
 load_dotenv()  # Loads environment variables from .env
 logger = setup_logger()
@@ -50,20 +52,28 @@ class UcopCollectiveBargainingStream(DocumentStream):
 
         soup: BeautifulSoup = BeautifulSoup(await page.content(), "html.parser")
         union_details: List[UnionDetail] = []
-        accordion_items = soup.find_all(
-            "div", class_="wp-block-ns-accordion__item")
+        accordion_items: Sequence[Tag] = cast(
+            Sequence[Tag],
+            soup.find_all(
+                "div", attrs={"class": "wp-block-ns-accordion__item"})
+        )
         for item in accordion_items:
-            button = item.find(
-                "button", class_="wp-block-ns-accordion__item-toggle")
-            campus: str = button.get_text(strip=True) if button else "Unknown"
-            links = item.find_all("a")
+            button_elem = cast(Optional[Tag], item.find(
+                "button", attrs={"class": "wp-block-ns-accordion__item-toggle"}))
+            campus: str = button_elem.get_text(
+                strip=True) if button_elem else "Unknown"
+            links: Sequence[Tag] = cast(Sequence[Tag], item.find_all("a"))
             for a_tag in links:
                 href = a_tag.get("href")
-                link_text = a_tag.get_text(strip=True)
-                if href and "—" in link_text:
+                link_text: str = cast(str, a_tag.get_text(strip=True))
+                if href and isinstance(href, str) and "—" in link_text:
                     name, code = link_text.split("—")
                     union_detail = UnionDetail(
-                        name=name.strip(), code=code.strip(), url=href, scope=campus)
+                        name=name.strip(),
+                        code=code.strip(),
+                        url=href,
+                        scope=campus
+                    )
                     union_details.append(union_detail)
         return union_details
 
@@ -79,17 +89,26 @@ class UcopCollectiveBargainingStream(DocumentStream):
 
         soup: BeautifulSoup = BeautifulSoup(await page.content(), "html.parser")
         union_details: List[UnionDetail] = []
-        for a_tag in soup.find_all("a", href=True):
+        a_tags: Sequence[Tag] = cast(
+            Sequence[Tag],
+            soup.find_all("a", attrs={"href": True})
+        )
+        for a_tag in a_tags:
             href = a_tag.get("href")
-            full_text: str = ""
             scope: str = "ucop"
-            span_tags = a_tag.find_all("span")
+            span_tags: Sequence[Tag] = cast(
+                Sequence[Tag], a_tag.find_all("span"))
+            full_text: str = ""
             if span_tags:
-                full_text = span_tags[0].get_text(strip=True)
-            if "—" in full_text:
+                full_text = cast(str, span_tags[0].get_text(strip=True))
+            if href and isinstance(href, str) and "—" in full_text:
                 name, code = full_text.split("—")
                 union_detail = UnionDetail(
-                    name=name.strip(), code=code.strip(), url=href, scope=scope)
+                    name=name.strip(),
+                    code=code.strip(),
+                    url=href,
+                    scope=scope
+                )
                 union_details.append(union_detail)
         return union_details
 
@@ -108,18 +127,25 @@ class UcopCollectiveBargainingStream(DocumentStream):
                 continue
 
             soup: BeautifulSoup = BeautifulSoup(await page.content(), "html.parser")
-            content_detail = soup.find(id="content-detail__content")
+            content_detail = cast(Optional[Tag], soup.find(
+                id="content-detail__content"))
             if content_detail:
-                for a_tag in content_detail.find_all("a", href=True):
-                    href = a_tag.get("href")
-                    if href and href.endswith(".pdf"):
+                a_tags: Sequence[Tag] = cast(
+                    Sequence[Tag],
+                    content_detail.find_all("a", attrs={"href": True})
+                )
+                for a_tag in a_tags:
+                    href = cast(Optional[str], a_tag.get("href"))
+                    if href and isinstance(href, str) and href.endswith(".pdf"):
                         title: str = href.split("/")[-1].replace(".pdf", "")
                         policy_detail = DocumentDetails(
                             title=title,
                             url=href,
-                            metadata={"keywords": [union.code, union.name, union.scope],
-                                      "subject_areas": ["Collective Bargaining", union.code],
-                                      "responsible_office": union.scope}
+                            metadata={
+                                "keywords": [union.code, union.name, union.scope],
+                                "subject_areas": ["Collective Bargaining", union.code],
+                                "responsible_office": union.scope
+                            }
                         )
                         policy_details_list.append(policy_detail)
         return policy_details_list
@@ -140,18 +166,25 @@ class UcopCollectiveBargainingStream(DocumentStream):
                 continue
 
             soup: BeautifulSoup = BeautifulSoup(await page.content(), "html.parser")
-            content_detail = soup.find(id="content-detail__content")
+            content_detail = cast(Optional[Tag], soup.find(
+                id="content-detail__content"))
             if content_detail:
-                for a_tag in content_detail.find_all("a", href=True):
-                    href = a_tag.get("href")
-                    if href and href.endswith(".pdf"):
+                a_tags: Sequence[Tag] = cast(
+                    Sequence[Tag],
+                    content_detail.find_all("a", attrs={"href": True})
+                )
+                for a_tag in a_tags:
+                    href = cast(Optional[str], a_tag.get("href"))
+                    if href and isinstance(href, str) and href.endswith(".pdf"):
                         title: str = href.split("/")[-1].replace(".pdf", "")
                         policy_detail = DocumentDetails(
                             title=title,
                             url=href,
-                            metadata={"keywords": [union.code, union.name, union.scope],
-                                      "subject_areas": ["Collective Bargaining", union.code],
-                                      "responsible_office": union.scope}
+                            metadata={
+                                "keywords": [union.code, union.name, union.scope],
+                                "subject_areas": ["Collective Bargaining", union.code],
+                                "responsible_office": union.scope
+                            }
                         )
                         policy_details_list.append(policy_detail)
         return policy_details_list
