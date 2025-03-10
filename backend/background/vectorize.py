@@ -1,6 +1,10 @@
 from datetime import datetime, timezone
+import os
 
+from dotenv import load_dotenv
 from langchain_core.embeddings import FakeEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from pydantic import SecretStr
 from background.logger import setup_logger
 from db.models import Document, DocumentChunk, DocumentContent, Source
 from db.mutations import delete_chunks_and_content
@@ -8,7 +12,19 @@ from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
+load_dotenv()
+
 logger = setup_logger()
+
+# make sure we have the necessary environment variables
+# LLM_API_EMBEDDING_URL = os.getenv("LLM_API_EMBEDDING_URL")
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "")
+USE_REAL_EMBEDDINGS = bool(LLM_API_KEY and LLM_EMBEDDING_MODEL)
+
+if not USE_REAL_EMBEDDINGS:
+    logger.warning(
+        "No LLM_API_KEY or LLM_EMBEDDING_MODEL environment variables found. Using fake embeddings.")
 
 # Markdown headers we want to split on
 HEADER_CONFIG = [("#", "h1"), ("##", "h2"), ("###", "h3")]
@@ -47,8 +63,11 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         f"Document {document_details.url} has {len(chunks)} chunks")
 
     # 2. vectorize the chunks
-    # embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
-    embeddings = FakeEmbeddings(size=1536)
+    if USE_REAL_EMBEDDINGS:
+        embeddings = OpenAIEmbeddings(
+            model=LLM_EMBEDDING_MODEL, api_key=SecretStr(LLM_API_KEY))
+    else:
+        embeddings = FakeEmbeddings(size=1536)
 
     # mass embeddings for all chunks
     embedded_vectors = embeddings.embed_documents(
