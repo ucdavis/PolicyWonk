@@ -63,18 +63,20 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         delete_chunks_and_content(session, db_document)
 
     # 4. store the new content and vectors
+    metadata_from_parent = {
+        "doc_length": document_details.metadata.get("content_length", 0),
+        "doc_tokens": document_details.metadata.get("token_count", 0),
+    }
     doc_chunks = [
         DocumentChunk(
             chunk_index=i,
             chunk_text=chunk.page_content,
             embedding=embedded_vectors[i],
             meta={
-                # each chunk should have the doc metadata
-                **(document_details.metadata if document_details.metadata else {}),
+                # add in desired metadata from the parent doc
+                **metadata_from_parent,
                 # add in any metadata from the chunk
                 **(chunk.metadata if hasattr(chunk, 'metadata') and chunk.metadata else {}),
-                # add the length of the parent doc
-                "parent_document_length": len(document_details.content)
             }
         )
         for i, chunk in enumerate(chunks)]

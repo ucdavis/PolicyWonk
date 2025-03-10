@@ -1,25 +1,106 @@
-from typing import AsyncIterator
-from db.models import Source
-from models.document_details import DocumentDetails
+import os
+from typing import List, Optional
+import requests
+import time
+import uuid
+
+import tiktoken
+
+from background.logger import setup_logger
+
+logger = setup_logger()
+
+# safe user agent
+user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 
-class DocumentStream:
-    """Base class for streaming documents from various sources.
+def request_with_retry(url, retries=5, backoff_factor=1, **kwargs):
+    if 'headers' not in kwargs:
+        kwargs['headers'] = {'User-Agent': user_agent}
+    else:
+        if 'User-Agent' not in kwargs['headers']:
+            kwargs['headers']['User-Agent'] = user_agent
 
-    Provides an async iterator interface for retrieving DocumentDetails
-    from a specific source.
     """
+    Sends a GET request to the specified URL with retry mechanism.
 
-    def __init__(self, source: Source):
-        if not source:
-            raise ValueError("source must be provided")
-        self.source = source
+    Args:
+        url (str): The URL to send the request to.
+        retries (int, optional): The number of retries to attempt. Defaults to 5.
+        backoff_factor (int, optional): The backoff factor for exponential backoff. Defaults to 1.
+        **kwargs: Additional keyword arguments to pass to the requests.get() function.
 
-    async def __aiter__(self) -> AsyncIterator[DocumentDetails]:
-        """
-        Asynchronous iterator method to be overridden in subclasses.
+    Returns:
+        requests.Response or None: The response object if the request is successful, None otherwise.
 
-        Returns:
-            AsyncIterator[DocumentDetails]: An asynchronous iterator of `DocumentDetails`.
-        """
-        yield DocumentDetails()  # Placeholder for subclass implementation
+    >>> response = request_with_retry("https://example.com")
+    >>> response.status_code == 200
+    True
+    """
+    for attempt in range(retries):
+        try:
+            response = requests.get(url, **kwargs)
+            if response.status_code == 200:
+                return response
+            else:
+                logger.warning(
+                    f"Request to {url} returned status code {response.status_code} on attempt {attempt + 1}"
+                )
+        except requests.exceptions.RequestException as e:
+            logger.warning(
+                f"Request to {url} failed on attempt {attempt + 1} with exception: {e}"
+            )
+
+        # If we are here, that means the request failed. We wait before
+        # retrying.
+        wait_time = backoff_factor * (2**attempt)
+        logger.info(f"Retrying request to {url} in {wait_time} seconds...")
+        time.sleep(wait_time)
+
+    # If we exit the loop without returning, it means we've exhausted all
+    # attempts
+    logger.error(f"Failed to fetch {url} after {retries} attempts")
+    return None
+
+
+def download_document(url: str, dir: str) -> tuple[Optional[str], Optional[str]]:
+    """ Download the document and return a path to the downloaded file and the content type """
+    headers = {"User-Agent": user_agent}
+    response = request_with_retry(
+        url, headers=headers, allow_redirects=True, timeout=60
+    )
+
+    if not response:
+        logger.error(f"Failed to download {url}")
+        return None, None
+
+    response.raise_for_status()
+
+    content_type = response.headers.get("Content-Type")
+
+    unique_filename = f"{uuid.uuid4()}"
+    file_path = os.path.join(dir, unique_filename)
+
+    with open(file_path, "wb") as file:
+        file.write(response.content)
+
+    return file_path, content_type
+
+
+def num_tokens(content: str, encoding_name: str) -> int:
+    """
+    Returns the total number of tokens in the input string.
+
+    Args:
+        content (str): The text to be tokenized.
+        encoding_name (str): The name of the encoding to use for tokenization.
+
+    Returns:
+        int: The number of tokens in the input string.
+
+    Example:
+        >>> num_tokens("Hello, world!", "cl100k_base")
+        4
+    """
+    encoding = tiktoken.get_encoding(encoding_name)
+    return len(encoding.encode(content))

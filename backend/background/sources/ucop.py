@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup, Tag
 from typing import AsyncIterator
 
 from background.logger import setup_logger
-from background.sources.ingestion import ingest_url
-from background.sources.shared import DocumentStream
+from background.sources.ingestion import ingest_path_to_markdown
+from background.sources.document_stream import DocumentStream
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -119,15 +119,12 @@ class UcopDocumentStream(DocumentStream):
                 subject_areas = [area.strip()
                                  for area in subject_areas_text.split(",")]
 
-                # extract the content of the policy PDF
-                markdown_content = await ingest_url(href)
-
                 # Create a DocumentDetails object with the extracted information
                 doc = DocumentDetails(
                     title=title,
                     url=href,
                     description="",
-                    content=markdown_content,
+                    content="",
                     last_modified=datetime.now().isoformat(),
                     metadata={
                         "subject_areas": subject_areas,

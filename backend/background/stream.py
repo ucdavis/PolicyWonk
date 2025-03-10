@@ -1,11 +1,14 @@
 from datetime import datetime, timezone
 import hashlib
+import tempfile
 from typing import List
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.embeddings import FakeEmbeddings
-from background.logger import setup_logger
-from background.sources.shared import DocumentStream
+from background.logger import log_memory_usage, setup_logger
+from background.sources.document_stream import DocumentStream
+from background.sources.ingestion import ingest_path_to_markdown
+from background.sources.shared import download_document, num_tokens
 from background.sources.ucop import UcopDocumentStream
 from background.vectorize import vectorize_document
 from db.constants import SourceType
@@ -72,41 +75,64 @@ class DocumentProcessor:
         token_count = 0
 
         for document_details in batch:
+            # - get the content from the document url
             # - get the doc from the db and check if it has changed
             # - include hash, content_length (of entire non-chunked content) and other metadata
             # - chunk and vectorize the content, store in vector db
             # - store entire document content in a separate db table (for ctx retrieval)
             # - update/save doc in db
-            logger.info(f"Processing document {document_details.url}")
+            with tempfile.TemporaryDirectory() as temp_dir:
+                if not document_details:
+                    logger.warning(
+                        f"Document {document_details.url} is empty. Skipping")
+                    continue
 
-            if not document_details:
-                logger.warning(
-                    f"Document {document_details.url} is empty. Skipping")
-                continue
+                logger.info(f"Processing document {document_details.url}")
+                log_memory_usage(logger)
 
-            num_docs_indexed += 1
+                # get the raw content from the document url
+                local_file_path, content_type = download_document(
+                    document_details.url, temp_dir)
 
-            content_hash = calculate_content_hash(document_details.content)
+                if not local_file_path:
+                    logger.error(
+                        f"Failed to download document at {document_details.url}. ")
+                    continue
 
-            # add the content hash so we have it for later
-            document_details.metadata['hash'] = content_hash
+                # ingest raw content into nice markdown
+                document_details.content = await ingest_path_to_markdown(local_file_path)
 
-            # get the doc from the db
-            db_document = get_document_by_url(
-                self.session, document_details.url)
+                num_docs_indexed += 1
 
-            if db_document and db_document.meta and db_document.meta.get("hash") == content_hash:
-                logger.info(
-                    f"Document {document_details.url} has not changed. Skipping")
-                continue
+                # get the hash to see if the doc has changed
+                content_hash = calculate_content_hash(document_details.content)
 
-            # doc changed, let's vectorize and update
-            num_new_docs += 1
-            db_document = vectorize_document(self.session, self.stream.source,
-                                             document_details, db_document)
+                # get the doc from the db
+                db_document = get_document_by_url(
+                    self.session, document_details.url)
 
-            # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
-            self.session.commit()
+                if db_document and db_document.meta and db_document.meta.get("hash") == content_hash:
+                    logger.info(
+                        f"Document {document_details.url} has not changed. Skipping")
+                    continue
+
+                # doc changed, let's vectorize and update
+                num_new_docs += 1
+
+                # add metadata to the document
+                document_details.metadata['hash'] = content_hash
+                document_details.metadata['content_type'] = content_type
+                document_details.metadata['content_length'] = len(
+                    document_details.content)
+                document_details.metadata['token_count'] = num_tokens(
+                    document_details.content, 'cl100k_base')
+
+                # chunk + vectorize + store
+                db_document = vectorize_document(self.session, self.stream.source,
+                                                 document_details, db_document)
+
+                # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
+                self.session.commit()
 
         # end of batch
         logger.info(
