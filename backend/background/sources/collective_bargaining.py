@@ -1,11 +1,8 @@
 import asyncio
-import os
 from dotenv import load_dotenv
 from typing import List, AsyncIterator, Optional, Sequence, cast
-from urllib.parse import urljoin
-from bs4 import BeautifulSoup, Tag, ResultSet
-from bs4.element import PageElement, NavigableString
-from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError, Browser, BrowserContext
+from bs4 import BeautifulSoup, Tag
+from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
 from background.sources.shared import user_agent, get_browser_page
 
 from background.logger import setup_logger
