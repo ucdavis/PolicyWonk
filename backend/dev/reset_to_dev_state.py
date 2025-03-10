@@ -44,6 +44,8 @@ def reset_to_dev_state():
         refresh_frequency="DAILY",
     )
 
+    # All policies can be found at https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse&all=1
+
     session.add(source)
 
     session.commit()
