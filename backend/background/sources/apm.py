@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup, Tag
 from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError
 
 from background.sources.document_stream import DocumentStream
+from background.sources.shared import user_agent
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -14,11 +15,6 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 base_url: str = "https://academicaffairs.ucdavis.edu/"
-user_agent: str = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/120.0.0.0 Safari/537.36"
-)
 
 
 class UcdApmStream(DocumentStream):

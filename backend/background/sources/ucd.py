@@ -8,6 +8,7 @@ from typing import AsyncIterator, List, Optional, Tuple
 
 from background.logger import setup_logger
 from background.sources.document_stream import DocumentStream
+from background.sources.shared import user_agent
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -30,8 +31,6 @@ binders = {
 ignore_folders = ["Parent Directory"]
 # tag these folders as revision history
 # revision_folders = ["PPM Revision History", "PPSM Revision History"]
-
-user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 
 class UcdPolicyManualDocumentStream(DocumentStream):

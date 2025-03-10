@@ -9,13 +9,11 @@ from typing import AsyncIterator
 from background.logger import setup_logger
 from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.document_stream import DocumentStream
+from background.sources.shared import user_agent
 from db.models import Source
 from models.document_details import DocumentDetails
 
 logger = setup_logger()
-
-# TODO: move to shared
-user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # UCOP Policies are on `https://policy.ucop.edu`
 base_url = "https://policy.ucop.edu"
