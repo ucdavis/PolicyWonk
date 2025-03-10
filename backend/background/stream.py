@@ -118,13 +118,17 @@ class DocumentProcessor:
                 # doc changed, let's vectorize and update
                 num_new_docs += 1
 
+                doc_token_count = num_tokens(
+                    document_details.content, 'cl100k_base')
+
+                token_count += doc_token_count
+
                 # add metadata to the document
                 document_details.metadata['hash'] = content_hash
                 document_details.metadata['content_type'] = content_type
                 document_details.metadata['content_length'] = len(
                     document_details.content)
-                document_details.metadata['token_count'] = num_tokens(
-                    document_details.content, 'cl100k_base')
+                document_details.metadata['token_count'] = doc_token_count
 
                 # chunk + vectorize + store
                 db_document = vectorize_document(self.session, self.stream.source,
