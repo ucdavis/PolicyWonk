@@ -4,6 +4,7 @@ import tempfile
 from typing import List
 
 from background.logger import log_memory_usage, setup_logger
+from background.sources.apm import UcdApmStream
 from background.sources.document_stream import DocumentStream
 from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.shared import download_document, num_tokens
@@ -30,6 +31,8 @@ class DocumentIngestStream():
             return UcopDocumentStream(source)
         elif source.type == SourceType.UCDPOLICYMANUAL:
             return UcdPolicyManualDocumentStream(source)
+        elif source.type == SourceType.UCDAPM:
+            return UcdApmStream(source)
         # TODO: Add other source types here
         else:
             raise ValueError(f"Unsupported source type {source.type}")
