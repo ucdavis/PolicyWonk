@@ -29,6 +29,7 @@ class SourceType(Enum):
     """Enum for the type of a source."""
     UCOP = "UCOP"  # Crawl UCOP policies
     UCDPOLICYMANUAL = "UCDPOLICYMANUAL"  # Crawl UCD Policy Manual (ellucid)
+    UCDAPM = "UCDAPM"  # Crawl UCD APM (Academic Affairs APM)
     UCCONTRACTS = "UCCONTRACTS"  # Crawl UC Contracts and Bargaining Agreements
     # (unsupported) Given a base site, index everything under that path
     RECURSIVE = "RECURSIVE"
