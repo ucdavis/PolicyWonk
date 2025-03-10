@@ -126,6 +126,7 @@ class UcopDocumentStream(DocumentStream):
                     description="",
                     content="",
                     last_modified=datetime.now().isoformat(),
+                    # TODO: standarize metadata a little for these common ones
                     metadata={
                         "subject_areas": subject_areas,
                         "effective_date": effective_date,

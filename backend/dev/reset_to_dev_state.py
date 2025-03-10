@@ -36,15 +36,23 @@ def reset_to_dev_state():
 
     # now insert a sample source
     # UCOP but just the fist page
+    # source = Source(
+    #     name="UCOP Policies Page 1",
+    #     url="https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse",
+    #     type="UCOP",
+    #     status="ACTIVE",
+    #     refresh_frequency="DAILY",
+    # )
+
+    # All policies can be found at https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse&all=1
+
     source = Source(
-        name="UCOP Policies Page 1",
-        url="https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse",
-        type="UCOP",
+        name="UCD Policies",
+        url="https://ucdavispolicy.ellucid.com",
+        type="UCDPOLICYMANUAL",
         status="ACTIVE",
         refresh_frequency="DAILY",
     )
-
-    # All policies can be found at https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse&all=1
 
     session.add(source)
 
