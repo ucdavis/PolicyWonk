@@ -1,9 +1,11 @@
+from contextlib import asynccontextmanager
 import os
-from typing import List, Optional
+from typing import AsyncGenerator, Optional
 import requests
 import time
 import uuid
 
+from playwright.async_api import async_playwright, Page
 import tiktoken
 
 from background.logger import setup_logger
@@ -104,3 +106,19 @@ def num_tokens(content: str, encoding_name: str) -> int:
     """
     encoding = tiktoken.get_encoding(encoding_name)
     return len(encoding.encode(content))
+
+
+@asynccontextmanager
+async def get_browser_page(user_agent: str) -> AsyncGenerator[Page, None]:
+    """
+    Async context manager that launches Playwright, creates a browser context with the specified user agent,
+    opens a new page, and ensures that the browser is closed after use.
+    """
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch()
+        context = await browser.new_context(user_agent=user_agent)
+        page: Page = await context.new_page()
+        try:
+            yield page
+        finally:
+            await browser.close()

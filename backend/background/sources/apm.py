@@ -4,10 +4,10 @@ from typing import List, AsyncIterator
 from urllib.parse import urljoin
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup, Tag
-from playwright.async_api import async_playwright, Page, TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
 
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent
+from background.sources.shared import user_agent, get_browser_page
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -62,18 +62,12 @@ class UcdApmStream(DocumentStream):
     async def __aiter__(self) -> AsyncIterator[DocumentDetails]:
         """
         Asynchronously iterate over the APM policies.
-        Launches the browser, navigates to the APM page, retrieves PDF links,
-        and yields each policy detail.
+        Uses the get_browser_page context manager to handle browser lifecycle.
         """
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch()
-            context = await browser.new_context(user_agent=user_agent)
-            page: Page = await context.new_page()
-
+        async with get_browser_page(user_agent) as page:
             policy_links: List[DocumentDetails] = await self.get_apm_links(page, self.apm_url)
             for policy in policy_links:
                 yield policy
-            await browser.close()
 
 
 if __name__ == "__main__":

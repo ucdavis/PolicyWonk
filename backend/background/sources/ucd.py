@@ -1,14 +1,14 @@
 import re
 from urllib.parse import urljoin
 import asyncio
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError, Page
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError, Page
 from bs4 import BeautifulSoup, Tag
 
 from typing import AsyncIterator, List, Optional, Tuple
 
 from background.logger import setup_logger
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent
+from background.sources.shared import user_agent, get_browser_page
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -50,20 +50,14 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         - The policies are organized by binders.
         - Each policy page contains an iframe with the actual PDF source.
         """
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch()
-            context = await browser.new_context(user_agent=user_agent)
-            page = await context.new_page()
-
+        async with get_browser_page(user_agent) as page:
             for binder in self.get_policy_binders():
                 _, binder_url = binder
                 policy_links = await self.get_ucd_policy_links(page, binder_url)
                 for policy in policy_links:
                     yield policy
 
-            await browser.close()
-
-    async def get_ucd_policy_links(self, page, url) -> List[DocumentDetails]:
+    async def get_ucd_policy_links(self, page: Page, url: str) -> List[DocumentDetails]:
         """
         Get policy links from the provided URL.
         For each policy page, navigate to it and extract the true PDF source

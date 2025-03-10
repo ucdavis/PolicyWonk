@@ -1,7 +1,7 @@
 from datetime import datetime
 from urllib.parse import urljoin
 import asyncio
-from playwright.async_api import async_playwright
+from playwright.async_api import Page
 from bs4 import BeautifulSoup, Tag
 
 from typing import AsyncIterator
@@ -9,7 +9,7 @@ from typing import AsyncIterator
 from background.logger import setup_logger
 from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent
+from background.sources.shared import user_agent, get_browser_page
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -28,15 +28,8 @@ class UcopDocumentStream(DocumentStream):
     async def __aiter__(self) -> AsyncIterator[DocumentDetails]:
         # We'll use playwright to read the provided policies page and get back the list of policies
         # then we'll loop through each and grab the policy PDF, parse it and return the DocumentDetails
-
-        async with async_playwright() as playwright:
-            # Launch browser with custom user agent
-            browser = await playwright.chromium.launch()
-            context = await browser.new_context(user_agent=user_agent)
-
-            # Create new page and navigate to UCOP policies
-            page = await context.new_page()
-
+        soup = None
+        async with get_browser_page(user_agent) as page:
             try:
                 # Navigate and wait for content to load
                 await page.goto(self.policy_url)
@@ -50,93 +43,93 @@ class UcopDocumentStream(DocumentStream):
             except Exception as e:
                 logger.exception(
                     f"Couldn't fetch policy info from {self.policy_url}")
-            finally:
-                await context.close()
-                await browser.close()
-
-            # we now have the page content, let's get all policies
-            # Find the element with the id 'accordion'
-            accordion = soup.find(id="accordion")
-
-            if not isinstance(accordion, Tag):
-                logger.error("Couldn't find the accordion element")
                 return
 
-            # Find all 'a' tags within the accordion with class="blue"
-            raw_links = accordion.find_all("a", class_="blue")
-            links = [link for link in raw_links if isinstance(link, Tag)]
+        if soup is None:
+            return
 
-            for link in links:
-                # Get href directly from the link tag but convert to absolute url
-                raw_href = link.get("href")
-                if raw_href is None:
-                    logger.error(
-                        "Couldn't find the href attribute in this link, moving on")
-                    continue
-                elif isinstance(raw_href, list):
-                    # Join the list elements into a single string if necessary.
-                    href_attr = " ".join(raw_href)
-                else:
-                    href_attr = raw_href
+        # Find the element with the id 'accordion'
+        accordion = soup.find(id="accordion")
 
-                href = urljoin(base_url, href_attr)
+        if not isinstance(accordion, Tag):
+            logger.error("Couldn't find the accordion element")
+            return
 
-                logger.info(f"Processing policy at {href}")
+        # Find all 'a' tags within the accordion with class="blue"
+        raw_links = accordion.find_all("a", class_="blue")
+        links = [link for link in raw_links if isinstance(link, Tag)]
 
-                # For the title, find the first (or only) 'span' with class 'icon pdf' within the link
-                span = link.find("span", class_="icon pdf")
-                if span:  # Check if the span exists
-                    title = span.text.strip()
-                else:
-                    title = "Title not found"
+        for link in links:
+            # Get href directly from the link tag but convert to absolute url
+            raw_href = link.get("href")
+            if raw_href is None:
+                logger.error(
+                    "Couldn't find the href attribute in this link, moving on")
+                continue
+            elif isinstance(raw_href, list):
+                # Join the list elements into a single string if necessary.
+                href_attr = " ".join(raw_href)
+            else:
+                href_attr = raw_href
 
-                # get the parent of the link and find the next 4 sibling divs - subject areas, effective date, issuance date, responsible office
-                parent = link.parent
+            href = urljoin(base_url, href_attr)
 
-                if not isinstance(parent, Tag):
-                    logger.error("Couldn't find the parent div of this link")
-                    continue
+            logger.info(f"Processing policy at {href}")
 
-                # Get the next 4 sibling divs
-                raw_siblings = parent.find_next_siblings("div")
-                siblings = [
-                    sibling for sibling in raw_siblings if isinstance(sibling, Tag)]
+            # For the title, find the first (or only) 'span' with class 'icon pdf' within the link
+            span = link.find("span", class_="icon pdf")
+            if span:  # Check if the span exists
+                title = span.text.strip()
+            else:
+                title = "Title not found"
 
-                # Get the text from each sibling but ignore the <cite> tag
-                subject_areas_text = get_sibling_text(
-                    siblings[0]) if len(siblings) > 0 else ""
-                effective_date = get_sibling_text(
-                    siblings[1]) if len(siblings) > 1 else ""
-                issuance_date = get_sibling_text(
-                    siblings[2]) if len(siblings) > 2 else ""
-                responsible_office = get_sibling_text(
-                    siblings[3]) if len(siblings) > 3 else ""
-                classifications = ["Policy"]
+            # get the parent of the link and find the next 4 sibling divs - subject areas, effective date, issuance date, responsible office
+            parent = link.parent
 
-                # subject areas is a comma separated list, so split it into a list
-                subject_areas = [area.strip()
-                                 for area in subject_areas_text.split(",")]
+            if not isinstance(parent, Tag):
+                logger.error("Couldn't find the parent div of this link")
+                continue
 
-                # Create a DocumentDetails object with the extracted information
-                doc = DocumentDetails(
-                    title=title,
-                    url=href,
-                    description="",
-                    content="",
-                    last_modified=datetime.now().isoformat(),
-                    # TODO: standarize metadata a little for these common ones
-                    metadata={
-                        "subject_areas": subject_areas,
-                        "effective_date": effective_date,
-                        "issuance_date": issuance_date,
-                        "responsible_office": responsible_office,
-                        "classifications": classifications
-                    }
-                )
+            # Get the next 4 sibling divs
+            raw_siblings = parent.find_next_siblings("div")
+            siblings = [
+                sibling for sibling in raw_siblings if isinstance(sibling, Tag)]
 
-                logger.info(f"Processed policy: {doc.title} at {doc.url}")
+            # Get the text from each sibling but ignore the <cite> tag
+            subject_areas_text = get_sibling_text(
+                siblings[0]) if len(siblings) > 0 else ""
+            effective_date = get_sibling_text(
+                siblings[1]) if len(siblings) > 1 else ""
+            issuance_date = get_sibling_text(
+                siblings[2]) if len(siblings) > 2 else ""
+            responsible_office = get_sibling_text(
+                siblings[3]) if len(siblings) > 3 else ""
+            classifications = ["Policy"]
 
-                yield doc
+            # subject areas is a comma separated list, so split it into a list
+            subject_areas = [area.strip()
+                             for area in subject_areas_text.split(",")]
+
+            # Create a DocumentDetails object with the extracted information
+            doc = DocumentDetails(
+                title=title,
+                url=href,
+                description="",
+                content="",
+                last_modified=datetime.now().isoformat(),
+                # TODO: standarize metadata a little for these common ones
+                metadata={
+                    "subject_areas": subject_areas,
+                    "effective_date": effective_date,
+                    "issuance_date": issuance_date,
+                    "responsible_office": responsible_office,
+                    "classifications": classifications
+                }
+            )
+
+            logger.info(f"Processed policy: {doc.title} at {doc.url}")
+
+            yield doc
 
 
 def get_sibling_text(sibling: Tag) -> str:
