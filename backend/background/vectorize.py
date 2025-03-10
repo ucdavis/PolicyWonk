@@ -10,6 +10,9 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 
 logger = setup_logger()
 
+# Markdown headers we want to split on
+HEADER_CONFIG = [("#", "h1"), ("##", "h2"), ("###", "h3")]
+
 
 def vectorize_document(session: Session, source: Source, document_details: DocumentDetails, db_document: Document | None):
     # we want to re-vectorize the document if it has changed, or otherwise create new
@@ -21,20 +24,14 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
 
     # 1. We're going to use langchain to chunk using the content (assuming it's markdown)
     # https://python.langchain.com/docs/how_to/markdown_header_metadata_splitter/
-    headers_to_split_on = [
-        ("#", "h1"),
-        ("##", "h2"),
-        ("###", "h3"),
-    ]
-
     # first we split the content into headers and content
     markdown_splitter = MarkdownHeaderTextSplitter(
-        headers_to_split_on, strip_headers=False)
+        HEADER_CONFIG, strip_headers=False)
     md_header_splits = markdown_splitter.split_text(
         document_details.content)
 
     # now we need to chunk the content into smaller pieces so it can be vectorized
-    # langchain uses character sizes so token sizes are about 4x the character size
+    # langchain uses character sizes so token sizes are about 1/4 the character size
     chunk_size_in_tokens = 500
     chunk_overlap_in_tokens = 50
     chunk_size = chunk_size_in_tokens * 4
@@ -75,8 +72,8 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
             meta={
                 # add in desired metadata from the parent doc
                 **metadata_from_parent,
-                # add in any metadata from the chunk
-                **(chunk.metadata if hasattr(chunk, 'metadata') and chunk.metadata else {}),
+                # add in metadata from the chunk and group the headers so they aren't spread around
+                **(group_headers(chunk.metadata) if hasattr(chunk, 'metadata') and chunk.metadata else {}),
             }
         )
         for i, chunk in enumerate(chunks)]
@@ -104,3 +101,31 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     db_document.content = doc_content
 
     return db_document
+
+
+def group_headers(metadata: dict) -> dict:
+    """
+    Groups specific headers from the metadata dictionary into a single "headers" key.
+
+    This function extracts values from the metadata dictionary based on keys defined
+    in HEADER_CONFIG. It then creates a new dictionary excluding these keys and adds
+    a "headers" key containing the extracted values if any are found.
+
+    Args:
+        metadata (dict): The metadata dictionary containing various key-value pairs.
+
+    Returns:
+        dict: A new dictionary with the specified headers grouped under the "headers" key,
+              and the remaining key-value pairs from the original metadata.
+    """
+    # Extract header keys (second elements) from HEADER_CONFIG tuples
+    header_keys = [key for _, key in HEADER_CONFIG]
+    headers = []
+    for key in header_keys:
+        if key in metadata:
+            headers.append(metadata[key])
+    # Build new dictionary excluding header keys
+    new_meta = {k: v for k, v in metadata.items() if k not in header_keys}
+    if headers:
+        new_meta["headers"] = headers
+    return new_meta
