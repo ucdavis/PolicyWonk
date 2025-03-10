@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup, Tag
 from typing import AsyncIterator, List, Optional, Tuple
 
 from background.logger import setup_logger
-from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.document_stream import DocumentStream
 from db.models import Source
 from models.document_details import DocumentDetails

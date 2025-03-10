@@ -3,21 +3,18 @@ import hashlib
 import tempfile
 from typing import List
 
-from langchain_openai import OpenAIEmbeddings
-from langchain_core.embeddings import FakeEmbeddings
 from background.logger import log_memory_usage, setup_logger
 from background.sources.document_stream import DocumentStream
 from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.shared import download_document, num_tokens
+from background.sources.ucd import UcdPolicyManualDocumentStream
 from background.sources.ucop import UcopDocumentStream
 from background.vectorize import vectorize_document
 from db.constants import SourceType
-from db.models import Document, DocumentChunk, DocumentContent, Source
-from db.mutations import delete_chunks_and_content
+from db.models import Source
 from db.queries import get_document_by_url
 from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
-from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 from models.ingest_result import IngestResult
 
@@ -31,6 +28,8 @@ class DocumentIngestStream():
     def getSourceStream(source: Source) -> DocumentStream:
         if source.type == SourceType.UCOP:
             return UcopDocumentStream(source)
+        elif source.type == SourceType.UCDPOLICYMANUAL:
+            return UcdPolicyManualDocumentStream(source)
         # TODO: Add other source types here
         else:
             raise ValueError(f"Unsupported source type {source.type}")
