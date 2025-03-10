@@ -207,16 +207,10 @@ class UcopCollectiveBargainingStream(DocumentStream):
         Launches the browser, navigates to the UCOP Collective Bargaining page,
         retrieves union details and contracts, and yields each contract as a PolicyDetails object.
         """
-        async with async_playwright() as playwright:
-            browser = await playwright.chromium.launch(headless=False)
-            context = await browser.new_context(user_agent=user_agent)
-            page: Page = await context.new_page()
-
+        async with get_browser_page(user_agent) as page:
             policy_links: List[DocumentDetails] = await self.get_uc_collective_bargaining_links(page)
             for policy in policy_links:
                 yield policy
-
-            await browser.close()
 
 
 if __name__ == "__main__":
