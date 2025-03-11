@@ -2,6 +2,7 @@
 
 import os
 from dotenv import load_dotenv
+from db.constants import SourceType
 from db.models import Source
 from dev.reset_db import reset_database
 
@@ -34,27 +35,35 @@ def reset_to_dev_state():
     # first full reset
     reset_database()
 
-    # now insert a sample source
-    # UCOP but just the fist page
-    # source = Source(
-    #     name="UCOP Policies Page 1",
-    #     url="https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse",
-    #     type="UCOP",
-    #     status="ACTIVE",
-    #     refresh_frequency="DAILY",
-    # )
-
-    # All policies can be found at https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse&all=1
-
-    source = Source(
-        name="UCD Policies",
-        url="https://ucdavispolicy.ellucid.com",
-        type="UCDPOLICYMANUAL",
+    # now our main sources
+    # UCOP
+    ucop_source = Source(
+        name="UCOP Policies",
+        url="https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse&all=1",
+        type=SourceType.UCOP,
         status="ACTIVE",
         refresh_frequency="DAILY",
     )
 
-    session.add(source)
+    ucd_policy_source = Source(
+        name="UCD Policies",
+        url="https://ucdavispolicy.ellucid.com",
+        type=SourceType.UCDPOLICYMANUAL,
+        status="ACTIVE",
+        refresh_frequency="DAILY",
+    )
+
+    apm_policy_source = Source(
+        name="APM",
+        url="https://academicaffairs.ucdavis.edu/apm/apm-toc",
+        type=SourceType.UCDAPM,
+        status="ACTIVE",
+        refresh_frequency="DAILY",
+    )
+
+    session.add(ucop_source)
+    session.add(ucd_policy_source)
+    session.add(apm_policy_source)
 
     session.commit()
     print("Database has been reset to the dev state.")
