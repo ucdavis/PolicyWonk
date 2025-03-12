@@ -213,4 +213,11 @@ def create_test_dataset():
 
 if __name__ == "__main__":
     # Create test dataset
-    create_test_dataset()
+    examples = create_test_dataset()
+    logging.info(f"Generated {len(examples)} synthetic examples")
+
+    for ex in examples:
+        logging.info(f"Q: {ex.prompt}")
+        logging.info(f"A: {ex.expected_output}")
+        logging.info(f"Context: {ex.context}")
+        logging.info("\n")
