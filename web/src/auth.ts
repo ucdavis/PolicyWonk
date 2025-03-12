@@ -20,6 +20,10 @@ export const {
       console.log('jwt', params);
       return params.token;
     },
+    async session(params) {
+      console.log('session', params);
+      return params.session;
+    },
   },
   // callbacks: {
   //   async jwt(params) {
