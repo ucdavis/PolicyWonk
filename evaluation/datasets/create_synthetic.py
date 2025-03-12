@@ -68,14 +68,21 @@ class DatasetConfig(BaseModel):
         
 Given the following policy document content, generate appropriate question-answer pairs that test understanding and reasoning about the policies. Focus on questions that require analysis rather than simple fact extraction.
 
-Important: Generate only meaningful Q&A pairs based on the content density, up to a maximum of {max_count}. Quality over quantity - only create pairs that test substantial policy understanding. If the content lacks meaningful testable information, you may generate fewer or no pairs.
+Important: Generate only meaningful Q&A pairs based on the content density, up to a maximum of {max_count}. Quality over quantity - only create pairs that test substantial policy understanding.
 
 Policy Content:
 {content}
 
-Generate pairs in this exact format:
-Q: [A natural policy-related question someone might ask]
-A: [A clear, accurate answer based on the policy content]
+Return your response in this exact JSON format:
+{
+  "qa_pairs": [
+    {
+      "question": "A natural policy-related question",
+      "answer": "A clear, accurate answer based on the policy content"
+    },
+    ...
+  ]
+}
 
 Remember to:
 - Make questions sound natural and realistic
@@ -85,7 +92,7 @@ Remember to:
 - Only create high-quality pairs that test meaningful policy understanding
 - It's okay to generate fewer pairs if the content doesn't warrant more
 
-Response:""")
+Response as JSON:""")
 
 
 class SyntheticDatasetGenerator:
@@ -102,28 +109,6 @@ class SyntheticDatasetGenerator:
             max_count=max_count
         )
 
-    def parse_qa_pairs(self, text: str) -> List[SyntheticExample]:
-        """Parse Q&A pairs from LLM output"""
-        examples = []
-        lines = text.strip().split('\n')
-        current_q = None
-
-        for line in lines:
-            line = line.strip()
-            if line.startswith('Q:'):
-                current_q = line[2:].strip()
-            elif line.startswith('A:') and current_q:
-                answer = line[2:].strip()
-                example = SyntheticExample(
-                    prompt=current_q,
-                    expected_output=answer,
-                    context=""  # Will be filled in later
-                )
-                examples.append(example)
-                current_q = None
-
-        return examples
-
     def generate_examples(self, doc: Document) -> List[SyntheticExample]:
         """Generate synthetic examples for a single document"""
         try:
@@ -134,19 +119,74 @@ class SyntheticDatasetGenerator:
                 max_count=self.config.max_examples_per_doc
             )
 
-            # Call litellm
-            response = completion(
-                model=f"ollama/{self.config.model_name}",
-                api_base="http://host.docker.internal:11434",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=self.config.temperature,
-            )
+            try:
+                logging.info(f"Using model: ollama/{self.config.model_name}")
+                logging.info(f"Temperature: {self.config.temperature}")
+                logging.info("Sending prompt to model...")
 
-            # Extract response text
-            response_text = response.choices[0].message.content
+                # Call litellm
+                response = completion(
+                    model=f"ollama/{self.config.model_name}",
+                    api_base="http://host.docker.internal:11434",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=self.config.temperature,
+                )
+                logging.info("Got response from model")
+                logging.debug(f"Raw response: {response}")
 
-            # Parse into structured format
-            examples = self.parse_qa_pairs(response_text)
+                # Extract response text
+                response_text = response.choices[0].message.content
+                logging.debug(f"Response text: {response_text}")
+
+                try:
+                    # Try to parse as JSON
+                    examples_json = json.loads(response_text)
+                    if "qa_pairs" in examples_json:
+                        examples = [
+                            SyntheticExample(
+                                prompt=pair["question"],
+                                expected_output=pair["answer"],
+                                context=""
+                            )
+                            for pair in examples_json["qa_pairs"]
+                        ]
+                    else:
+                        # Fallback to parse_qa_pairs for non-JSON responses
+                        examples = []
+                        for line in response_text.split('\n'):
+                            if line.startswith('Q:'):
+                                q = line[2:].strip()
+                            elif line.startswith('A:') and 'q' in locals():
+                                a = line[2:].strip()
+                                examples.append(SyntheticExample(
+                                    prompt=q,
+                                    expected_output=a,
+                                    context=""
+                                ))
+
+                    return examples
+                except json.JSONDecodeError as e:
+                    logging.warning(f"Failed to parse JSON response: {e}")
+                    # Already handled by fallback parsing above
+                    return examples
+
+            except Exception as e:
+                logging.error(f"Error calling model: {e}")
+                return []
+
+            # Extract and parse JSON response
+            response_json = json.loads(response.choices[0].message.content)
+            examples = [
+                SyntheticExample(
+                    prompt=pair["question"],
+                    expected_output=pair["answer"],
+                    context=""
+                )
+                for pair in response_json["qa_pairs"]
+            ]
+
+            logging.info(f"Extracted {len(examples)} examples")
+            logging.debug(f"Parsed examples: {examples}")
 
             # Add document context and convert to SyntheticExample objects
             return [
