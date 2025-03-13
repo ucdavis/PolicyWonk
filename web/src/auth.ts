@@ -1,5 +1,17 @@
-import NextAuth from 'next-auth';
+import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
+
+const SamlClaims = {
+  name: 'urn:oid:2.16.840.1.113730.3.1.241',
+  upn: 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6', // unique id - resembles email but isn't actually email
+  email: 'urn:oid:0.9.2342.19200300.100.1.3',
+  nameIdentifier:
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
+};
+
+interface ProfileWithRaw extends Profile {
+  raw: Record<string, string>;
+}
 
 export const {
   handlers: { GET, POST },
@@ -18,39 +30,37 @@ export const {
   callbacks: {
     async jwt(params) {
       console.log('jwt', params);
+      // params.profile has user info -- params.profile.raw has the shibboleth claims
+      // params.profile.requested.tenant has the tenant as defined by boxy -- might be nice for multi-tenant
+      if (params.trigger === 'signIn') {
+        // profile is only available on sign in
+        const profileExtended = params.profile as ProfileWithRaw | undefined;
+
+        // TODO: ensure user exists in the db
+        // upn: profileExtended?.raw?.[SamlClaims.upn] ?? null,
+        const userId = 12; // TODO: get from db
+
+        const token = {
+          ...params.token,
+          name: profileExtended?.raw?.[SamlClaims.name] ?? null,
+          email: profileExtended?.raw?.[SamlClaims.email] ?? null,
+          userId: userId,
+          nameIdentifier:
+            profileExtended?.raw?.[SamlClaims.nameIdentifier] ?? null,
+        };
+
+        return token;
+      }
+
       return params.token;
     },
-    async session(params) {
-      console.log('session', params);
-      return params.session;
+    async session({ session, token }) {
+      // we want to add the user id to the session
+      if (session) {
+        session.userId = token.userId as string;
+      }
+
+      return session;
     },
   },
-  // callbacks: {
-  //   async jwt(params) {
-  //     console.log('jwt', params);
-
-  //     // params.account has token info -- use to get picture or additional info from provider
-  //     // params.profile has user info -- oid is the unique user id, email, name also useful.
-  //     if (params.trigger === 'signIn') {
-  //       // profile is only available on sign in
-  //       const token = {
-  //         ...params.token,
-  //         name: params.profile?.name,
-  //         email: params.profile?.email,
-  //         userId: params.profile?.oid,
-  //       };
-
-  //       return token;
-  //     } else {
-  //       return params.token;
-  //     }
-  //   },
-  //   async session(params) {
-  //     console.log('session', params);
-
-  //     params.session.user.id = (params.token.userId as string) || '';
-
-  //     return params.session;
-  //   },
-  // },
 });
