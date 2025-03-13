@@ -1,6 +1,9 @@
 import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 
+import { User } from './models/user';
+import { ensureUserExists } from './services/userService';
+
 const SamlClaims = {
   name: 'urn:oid:2.16.840.1.113730.3.1.241',
   upn: 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6', // unique id - resembles email but isn't actually email
@@ -36,17 +39,19 @@ export const {
         // profile is only available on sign in
         const profileExtended = params.profile as ProfileWithRaw | undefined;
 
-        // TODO: ensure user exists in the db
-        // upn: profileExtended?.raw?.[SamlClaims.upn] ?? null,
-        const userId = 12; // TODO: get from db
+        const userFromToken: Partial<User> = {
+          name: profileExtended?.raw?.[SamlClaims.name],
+          email: profileExtended?.raw?.[SamlClaims.email],
+          upn: profileExtended?.raw?.[SamlClaims.upn],
+        };
+
+        const user = await ensureUserExists(userFromToken);
 
         const token = {
           ...params.token,
-          name: profileExtended?.raw?.[SamlClaims.name] ?? null,
-          email: profileExtended?.raw?.[SamlClaims.email] ?? null,
-          userId: userId,
-          nameIdentifier:
-            profileExtended?.raw?.[SamlClaims.nameIdentifier] ?? null,
+          name: user.name,
+          email: user.email,
+          userId: user.id,
         };
 
         return token;

@@ -7,204 +7,218 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model alembic_version {
-  version_num String @id(map: "alembic_version_pkc") @db.VarChar(32)
+model alembicVersion {
+  versionNum String @id(map: "alembic_version_pkc") @map("version_num") @db.VarChar(32)
+
+  @@map("alembic_version")
 }
 
-model assistant_collections {
-  assistant_id  Int
-  collection_id Int
-  assistants    assistants  @relation(fields: [assistant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  collections   collections @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model assistantCollections {
+  assistantId  Int         @map("assistant_id")
+  collectionId Int         @map("collection_id")
+  assistant    assistants  @relation(fields: [assistantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  collection   collections @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([assistant_id, collection_id])
-  @@index([assistant_id], map: "ix_assistant_collections_assistant_id")
-  @@index([collection_id], map: "ix_assistant_collections_collection_id")
+  @@id([assistantId, collectionId])
+  @@index([assistantId], map: "ix_assistant_collections_assistant_id")
+  @@index([collectionId], map: "ix_assistant_collections_collection_id")
+  @@map("assistant_collections")
 }
 
 model assistants {
-  id                    Int                     @id @default(autoincrement())
-  slug                  String                  @unique @db.VarChar
-  name                  String                  @db.VarChar
-  description           String                  @db.VarChar
-  theme                 String                  @db.VarChar
-  instructions          String?                 @db.VarChar
-  assistant_collections assistant_collections[]
-  chats                 chats[]
-  default_questions     default_questions[]
-  evaluations           evaluations[]
+  id                   Int                    @id @default(autoincrement())
+  slug                 String                 @unique @db.VarChar
+  name                 String                 @db.VarChar
+  description          String                 @db.VarChar
+  theme                String                 @db.VarChar
+  instructions         String?                @db.VarChar
+  assistantCollections assistantCollections[]
+  chats                chats[]
+  defaultQuestions     defaultQuestions[]
+  evaluations          evaluations[]
 }
 
 model chats {
-  id             String     @id @db.VarChar
-  title          String     @db.VarChar
-  messages       Json       @db.Json
-  assistant_slug String     @db.VarChar
-  llm_model      String     @db.VarChar
-  user_id        Int
-  timestamp      DateTime   @db.Timestamp(6)
-  share_id       String?    @db.VarChar
-  active         Boolean
-  meta           Json?      @db.Json
-  assistants     assistants @relation(fields: [assistant_slug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
-  users          users      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            String     @id @db.VarChar
+  title         String     @db.VarChar
+  messages      Json       @db.Json
+  assistantSlug String     @map("assistant_slug")
+  llmModel      String     @map("llm_model")
+  userId        Int        @map("user_id")
+  timestamp     DateTime   @db.Timestamp(6)
+  shareId       String?    @map("share_id") @db.VarChar
+  active        Boolean
+  meta          Json?      @db.Json
+  assistant     assistants @relation(fields: [assistantSlug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
+  user          users      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([id, active], map: "idx_id_active")
-  @@index([user_id, active, timestamp], map: "idx_userid_active_timestamp")
+  @@index([userId, active, timestamp], map: "idx_userid_active_timestamp")
 }
 
 model collections {
-  id                    Int                     @id @default(autoincrement())
-  name                  String                  @unique @db.VarChar
-  created_date          DateTime                @db.Timestamp(6)
-  active                Boolean
-  requires_sync         Boolean
-  assistant_collections assistant_collections[]
-  collections_sources   collections_sources[]
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @unique @db.VarChar
+  createdDate          DateTime               @map("created_date") @db.Timestamp(6)
+  active               Boolean
+  requiresSync         Boolean                @map("requires_sync")
+  assistantCollections assistantCollections[]
+  collectionsSources   collectionsSources[]
 }
 
-model collections_sources {
-  collection_id Int
-  source_id     Int
-  collections   collections @relation(fields: [collection_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sources       sources     @relation(fields: [source_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model collectionsSources {
+  collectionId Int         @map("collection_id")
+  sourceId     Int         @map("source_id")
+  collection   collections @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  source       sources     @relation(fields: [sourceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([collection_id, source_id])
-  @@index([collection_id], map: "ix_collections_sources_collection_id")
-  @@index([source_id], map: "ix_collections_sources_source_id")
+  @@id([collectionId, sourceId])
+  @@index([collectionId], map: "ix_collections_sources_collection_id")
+  @@index([sourceId], map: "ix_collections_sources_source_id")
+  @@map("collections_sources")
 }
 
-model default_questions {
-  id             Int        @id @default(autoincrement())
-  assistant_slug String     @db.VarChar
-  question       String     @db.VarChar
-  assistants     assistants @relation(fields: [assistant_slug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
+model defaultQuestions {
+  id            Int        @id @default(autoincrement())
+  assistantSlug String     @map("assistant_slug") @db.VarChar
+  question      String     @db.VarChar
+  assistant     assistants @relation(fields: [assistantSlug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("default_questions")
 }
 
-model document_chunks {
-  id          Int                   @id @default(autoincrement())
-  document_id Int
-  chunk_index Int
-  chunk_text  String
-  embedding   Unsupported("vector")
-  meta        Json?                 @db.Json
-  documents   documents             @relation(fields: [document_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model documentChunks {
+  id         Int                   @id @default(autoincrement())
+  documentId Int                   @map("document_id")
+  chunkIndex Int                   @map("chunk_index")
+  chunkText  String                @map("chunk_text")
+  embedding  Unsupported("vector")
+  meta       Json?                 @db.Json
+  document   documents             @relation(fields: [documentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([embedding])
+  @@map("document_chunks")
 }
 
-model document_contents {
-  document_id Int       @id
-  content     String
-  documents   documents @relation(fields: [document_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model documentContents {
+  documentId Int       @id @map("document_id")
+  content    String
+  document   documents @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("document_contents")
 }
 
 model documents {
-  id                Int                @id @default(autoincrement())
-  title             String             @db.VarChar
-  url               String?            @db.VarChar
-  meta              Json?              @db.Json
-  source_id         Int
-  last_updated      DateTime?          @db.Timestamp(6)
-  document_chunks   document_chunks[]
-  document_contents document_contents?
-  sources           sources            @relation(fields: [source_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id               Int               @id @default(autoincrement())
+  title            String            @db.VarChar
+  url              String?           @db.VarChar
+  meta             Json?             @db.Json
+  sourceId         Int               @map("source_id")
+  lastUpdated      DateTime?         @map("last_updated") @db.Timestamp(6)
+  documentChunks   documentChunks[]
+  documentContents documentContents?
+  source           sources           @relation(fields: [sourceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([url], map: "ix_documents_url")
 }
 
 model evaluations {
-  id                 Int                  @id @default(autoincrement())
-  assistant_id       Int
-  pipeline_version   String               @db.VarChar
-  comments           String?              @db.VarChar
-  run_date           DateTime             @db.Timestamp(6)
-  overall_score      Float
-  assistants         assistants           @relation(fields: [assistant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  prompt_evaluations prompt_evaluations[]
+  id                Int                 @id @default(autoincrement())
+  assistantId       Int                 @map("assistant_id")
+  pipelineVersion   String              @map("pipeline_version") @db.VarChar
+  comments          String?             @db.VarChar
+  runDate           DateTime            @map("run_date") @db.Timestamp(6)
+  overallScore      Float               @map("overall_score")
+  assistant         assistants          @relation(fields: [assistantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  promptEvaluations promptEvaluations[]
 }
 
-model index_attempts {
-  id               Int       @id @default(autoincrement())
-  status           String    @db.VarChar(10)
-  num_docs_indexed Int
-  num_new_docs     Int
-  num_docs_removed Int
-  start_time       DateTime  @db.Timestamp(6)
-  end_time         DateTime? @db.Timestamp(6)
-  duration         Int?
-  error_details    String?   @db.VarChar
-  source_id        Int
-  sources          sources   @relation(fields: [source_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model indexAttempts {
+  id             Int       @id @default(autoincrement())
+  status         String    @db.VarChar(10)
+  numDocsIndexed Int       @map("num_docs_indexed")
+  numNewDocs     Int       @map("num_new_docs")
+  numDocsRemoved Int       @map("num_docs_removed")
+  startTime      DateTime  @map("start_time") @db.Timestamp(6)
+  endTime        DateTime? @map("end_time") @db.Timestamp(6)
+  duration       Int?
+  errorDetails   String?   @map("error_details") @db.VarChar
+  sourceId       Int       @map("source_id")
+  source         sources   @relation(fields: [sourceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("index_attempts")
 }
 
-model prompt_evaluations {
-  id            Int         @id @default(autoincrement())
-  prompt_id     Int
-  evaluation_id Int
-  actual_output String      @db.VarChar
-  context       String?     @db.VarChar
-  scores        Json?       @db.Json
-  overall_score Float
-  evaluations   evaluations @relation(fields: [evaluation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  prompts       prompts     @relation(fields: [prompt_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model promptEvaluations {
+  id           Int         @id @default(autoincrement())
+  promptId     Int         @map("prompt_id")
+  evaluationId Int         @map("evaluation_id")
+  actualOutput String      @map("actual_output") @db.VarChar
+  context      String?     @db.VarChar
+  scores       Json?       @db.Json
+  overallScore Float       @map("overall_score")
+  evaluation   evaluations @relation(fields: [evaluationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  prompt       prompts     @relation(fields: [promptId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("prompt_evaluations")
 }
 
 model prompts {
-  id                 Int                  @id @default(autoincrement())
-  prompt             String               @db.VarChar
-  expected_output    String?              @db.VarChar
-  category           String               @db.VarChar
-  comments           String?              @db.VarChar
-  prompt_evaluations prompt_evaluations[]
+  id                Int                 @id @default(autoincrement())
+  prompt            String              @db.VarChar
+  expectedOutput    String?             @map("expected_output") @db.VarChar
+  category          String              @db.VarChar
+  comments          String?             @db.VarChar
+  promptEvaluations promptEvaluations[]
 }
 
 model roles {
-  id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar(5)
-  user_roles user_roles[]
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(5)
+  userRoles userRoles[]
 }
 
 model sources {
-  id                  Int                   @id @default(autoincrement())
-  name                String                @db.VarChar
-  url                 String                @db.VarChar
-  refresh_frequency   String                @db.VarChar(6)
-  status              String                @db.VarChar(10)
-  type                String                @db.VarChar(15)
-  config              Json?                 @db.Json
-  last_updated        DateTime?             @db.Timestamp(6)
-  last_failed         DateTime?             @db.Timestamp(6)
-  failure_count       Int
-  collections_sources collections_sources[]
-  documents           documents[]
-  index_attempts      index_attempts[]
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar
+  url                String               @db.VarChar
+  refreshFrequency   String               @map("refresh_frequency") @db.VarChar(6)
+  status             String               @db.VarChar(10)
+  type               String               @db.VarChar(15)
+  config             Json?                @db.Json
+  lastUpdated        DateTime?            @map("last_updated") @db.Timestamp(6)
+  lastFailed         DateTime?            @map("last_failed") @db.Timestamp(6)
+  failureCount       Int                  @map("failure_count")
+  collectionsSources collectionsSources[]
+  documents          documents[]
+  indexAttempts      indexAttempts[]
 
-  @@index([refresh_frequency, status, last_updated], map: "ix_source_refresh_status_last_updated")
+  @@index([refreshFrequency, status, lastUpdated], map: "ix_source_refresh_status_last_updated")
 }
 
-model user_roles {
-  user_id Int
-  role_id Int
-  roles   roles @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users   users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model userRoles {
+  userId Int   @map("user_id")
+  roleId Int   @map("role_id")
+  role   roles @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user   users @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([user_id, role_id])
+  @@id([userId, roleId])
+  @@map("user_roles")
 }
 
 model users {
-  id           Int          @id @default(autoincrement())
-  name         String       @db.VarChar
-  email        String       @db.VarChar
-  kerberos     String?      @db.VarChar(20)
-  iam          String?      @db.VarChar(10)
-  ms_user_id   String?      @db.VarChar
-  titles       String?      @db.VarChar
-  affiliations String?      @db.VarChar
-  departments  String?      @db.VarChar
-  upn          String       @unique(map: "ix_users_upn") @db.VarChar
+  id           Int         @id @default(autoincrement())
+  name         String      @db.VarChar
+  email        String      @db.VarChar
+  kerberos     String?     @db.VarChar(20)
+  iam          String?     @db.VarChar(10)
+  msUserId     String?     @map("ms_user_id") @db.VarChar
+  titles       String?     @db.VarChar
+  affiliations String?     @db.VarChar
+  departments  String?     @db.VarChar
+  upn          String      @unique(map: "ix_users_upn") @db.VarChar
   chats        chats[]
-  user_roles   user_roles[]
+  userRoles    userRoles[]
 
   @@index([email], map: "ix_users_email")
   @@index([kerberos], map: "ix_users_kerberos")
