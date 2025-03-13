@@ -308,11 +308,13 @@ class User(Base):
         Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     email: Mapped[str] = mapped_column(String, nullable=False)
+    # UPN is ePPn from InCommon / Shibboleth.  It'll be our unique identifier for users.
+    upn: Mapped[str] = mapped_column(
+        String, nullable=False, unique=True, index=True)
     kerberos: Mapped[str] = mapped_column(String(20), nullable=True)
-    # TODO: make iam unique/notnull once we have all the data
     iam: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     ms_user_id: Mapped[str] = mapped_column(
-        String, nullable=False, unique=True)
+        String, nullable=True)
     titles: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     affiliations: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     departments: Mapped[Optional[str]
