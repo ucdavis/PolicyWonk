@@ -28,3 +28,13 @@ az deployment group create \
   --resource-group policy \
   --template-file boxy.bicep
 ```
+
+## Configure Networking App <--> DB
+
+We need to talk to the DB and the easiest way is to just add the outbound IPs of the app to the DB firewall.
+
+This take a lot of time by hand so I wrote a script to do it
+
+```bash
+sh network.sh
+```
