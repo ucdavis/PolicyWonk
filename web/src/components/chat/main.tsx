@@ -8,7 +8,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { AI } from '../../lib/aiProvider';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-
 import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';

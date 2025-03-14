@@ -6,7 +6,6 @@ import { StreamableValue } from 'ai/rsc';
 import WonkyClientError from '../../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useStreamableText } from '../../../lib/hooks/useStreamableText';
-
 import { WonkPortrait } from '../rolePortrait';
 
 import ChatActions from './chatActions';

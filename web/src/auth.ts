@@ -1,5 +1,20 @@
-import NextAuth from 'next-auth';
-import AzureAd from 'next-auth/providers/azure-ad';
+import NextAuth, { Profile } from 'next-auth';
+import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
+
+import { User } from './models/user';
+import { ensureUserExists } from './services/userService';
+
+const SamlClaims = {
+  name: 'urn:oid:2.16.840.1.113730.3.1.241',
+  upn: 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6', // unique id - resembles email but isn't actually email
+  email: 'urn:oid:0.9.2342.19200300.100.1.3',
+  nameIdentifier:
+    'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
+};
+
+interface ProfileWithRaw extends Profile {
+  raw: Record<string, string>;
+}
 
 export const {
   handlers: { GET, POST },
@@ -7,36 +22,50 @@ export const {
   signIn,
 } = NextAuth({
   providers: [
-    AzureAd({
-      clientId: process.env.AZURE_CLIENT_ID,
-      clientSecret: process.env.AZURE_CLIENT_SECRET,
-      tenantId: process.env.AZURE_TENANT_ID,
-      // need domain_hint to force login with ucdavis.edu and bypass the account selector
-      authorization: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/oauth2/v2.0/authorize?response_type=code&domain_hint=ucdavis.edu`,
+    BoxyHQSAMLProvider({
+      authorization: { params: { scope: '' } }, // This is needed for OAuth 2.0 flow, otherwise default to openid (from docs)
+      issuer: 'https://policywonk-sso.azurewebsites.net',
+      clientId: 'dummy', // special boxyhq to signal we are going multi-tenant
+      clientSecret: 'dummy',
+      checks: ['state'],
     }),
   ],
   callbacks: {
     async jwt(params) {
-      // params.account has token info -- use to get picture or additional info from provider
-      // params.profile has user info -- oid is the unique user id, email, name also useful.
+      console.log('jwt', params);
+      // params.profile has user info -- params.profile.raw has the shibboleth claims
+      // params.profile.requested.tenant has the tenant as defined by boxy -- might be nice for multi-tenant
       if (params.trigger === 'signIn') {
         // profile is only available on sign in
+        const profileExtended = params.profile as ProfileWithRaw | undefined;
+
+        const userFromToken: Partial<User> = {
+          name: profileExtended?.raw?.[SamlClaims.name],
+          email: profileExtended?.raw?.[SamlClaims.email],
+          upn: profileExtended?.raw?.[SamlClaims.upn],
+        };
+
+        const user = await ensureUserExists(userFromToken);
+
         const token = {
           ...params.token,
-          name: params.profile?.name,
-          email: params.profile?.email,
-          userId: params.profile?.oid,
+          name: user.name,
+          email: user.email,
+          userId: user.id,
         };
 
         return token;
-      } else {
-        return params.token;
       }
-    },
-    async session(params) {
-      params.session.user.id = (params.token.userId as string) || '';
 
-      return params.session;
+      return params.token;
+    },
+    async session({ session, token }) {
+      // we want to add the user id to the session
+      if (session) {
+        session.userId = token.userId as string;
+      }
+
+      return session;
     },
   },
 });

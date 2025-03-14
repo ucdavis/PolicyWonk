@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 import { Button } from 'reactstrap';
 
-import AnimatedButton from '../../ui/animatedButton';
 import { IconVariants, IconVariantOptions } from '../../../models/animations';
 import { GTagEvents } from '../../../models/gtag';
+import AnimatedButton from '../../ui/animatedButton';
 
 import { ShareModalLoadingStates } from './shareModal';
 
