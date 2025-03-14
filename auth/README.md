@@ -24,8 +24,7 @@ You'll need the azure cli installed and logged in. Make sure you are in the righ
 
 ```bash
 az deployment group create \
-  --name policywonkDeployment \
+  --name pwssoDeploy \
   --resource-group policy \
-  --template-file main.bicep \
-  --parameters webAppName=policywonk servicePlanName=Nibbler
+  --template-file boxy.bicep
 ```
