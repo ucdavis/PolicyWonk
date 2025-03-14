@@ -1,4 +1,16 @@
-# Auth Setup
+# Deployment Setup
+
+We need to deploy
+
+1. Database (PGSQL)
+2. The Auth service
+3. PolicyWonk frontend (NextJS)
+
+# Database
+
+For now it's just a manual deployment of PGSQL Flexible Server
+
+# Auth Deployment
 
 We need to use SAML for auth so we can integrate w/ UCTrust + InCommon.
 
@@ -37,4 +49,30 @@ This take a lot of time by hand so I wrote a script to do it
 
 ```bash
 sh network.sh
+```
+
+# PolicyWonk Frontend
+
+The frontend is a NextJS app that will be deployed to the same Azure App Service as the BoxyHQ SAML Jackson service. Doesn't need to be but let's start there.
+
+It's a Docker container we'll build and push to the Azure Container Registry, then deploy to the Azure App Service.
+
+## Local testing
+
+You can always build it locally w/ docker for testing
+
+```bash
+docker build -t policywonk-frontend .
+docker run --rm -p 3000:3000 policywonk-frontend
+```
+
+## Azure Setup
+
+We'll use another bicep template to get the Azure resources we need. It's just a webapp and a container registry.
+
+```bash
+az deployment group create \
+  --name pwappDeploy \
+  --resource-group policy \
+  --template-file frontend.bicep
 ```
