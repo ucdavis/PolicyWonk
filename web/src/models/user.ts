@@ -9,9 +9,9 @@ export interface User {
   name: string;
   email: string;
   upn: string;
-  kerberos: string;
-  iam: string;
-  msUserId: string;
+  kerberos: string | null;
+  iam: string | null;
+  msUserId: string | null;
   titles: string | null;
   affiliations: string | null;
   departments: string | null;
