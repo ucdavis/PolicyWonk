@@ -1,8 +1,9 @@
 name: Build and Deploy to Azure Web App
-on:
-  push:
-    branches:
-      - main
+on: {} # turn off workflow for now
+# on:
+#   push:
+#     branches:
+#       - main
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
