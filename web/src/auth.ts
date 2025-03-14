@@ -24,7 +24,7 @@ export const {
   providers: [
     BoxyHQSAMLProvider({
       authorization: { params: { scope: '' } }, // This is needed for OAuth 2.0 flow, otherwise default to openid (from docs)
-      issuer: 'https://policywonk-sso.azurewebsites.net',
+      issuer: process.env.SSO_ISSUER_URL,
       clientId: 'dummy', // special boxyhq to signal we are going multi-tenant
       clientSecret: 'dummy',
       checks: ['state'],
