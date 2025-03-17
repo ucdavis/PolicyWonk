@@ -1,0 +1,204 @@
+{
+  "entries": [
+    {
+      "prompt": "What is considered Abusive Conduct under this policy, and how will it be addressed?",
+      "expected_output": "Abusive Conduct includes speech or expressive conduct that violates federal and state anti-discrimination laws. The University encourages reporting of incidents to managers or supervisors, who are responsible for addressing the situation and taking disciplinary action if necessary.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "How does this policy balance the right to freedom of speech with the need to address Abusive Conduct?",
+      "expected_output": "The policy recognizes that freedom of speech is not limitless, but also seeks to protect against speech or conduct that violates federal and state anti-discrimination laws. The University aims to implement procedures that respect individual rights while maintaining a healthy working environment.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "What are the consequences for violating this policy, and who is responsible for addressing incidents of Abusive Conduct?",
+      "expected_output": "Violations of this policy will not be tolerated. Managers and supervisors are responsible for investigating reports of Abusive Conduct, taking disciplinary action if necessary, and ensuring compliance with this policy.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "How does the University define Retaliation, and what procedures are in place to address it?",
+      "expected_output": "Retaliation is defined as any adverse action taken against an individual who reports or participates in an investigation of Abusive Conduct. The University has procedures in place to investigate Retaliation allegations and take corrective action.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "Can this policy be applied retroactively, and what are the implications for individuals who have engaged in Abusive Conduct prior to its implementation?",
+      "expected_output": "This policy applies prospectively, meaning it only addresses future incidents of Abusive Conduct. However, the University may take steps to address any past incidents that are reported under this policy.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "How will the University ensure compliance with this policy among third-party contractors and vendors?",
+      "expected_output": "The University will communicate its commitment to this policy through its contracts and agreements with third-party contractors and vendors. It is also responsible for ensuring that these parties understand their obligations under the policy.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "Can employees who are subject to Abusive Conduct seek redress through alternative channels, such as a civil lawsuit?",
+      "expected_output": "No, this policy provides an exclusive means of redress for individuals who have experienced or witnessed Abusive Conduct. Employees should report incidents under this policy before pursuing alternative remedies.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "What procedures are in place for reporting and investigating allegations of Retaliation?",
+      "expected_output": "The University has established procedures for reporting and investigating allegations of Retaliation, which include steps to ensure confidentiality and protect the complainant's identity.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "How will the University communicate this policy to employees, students, and third-party contractors and vendors?",
+      "expected_output": "The University will communicate its commitment to this policy through various channels, including training programs, posters, and website updates.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "Can employees who have reported or participated in an investigation of Abusive Conduct expect protection from retaliation?",
+      "expected_output": "Yes, the University is committed to protecting employees who report or participate in an investigation of Abusive Conduct from Retaliation. Employees should feel confident in reporting incidents without fear of reprisal.",
+      "context": "[1] https://policy.ucop.edu/doc/4000701"
+    },
+    {
+      "prompt": "What is a key principle guiding University technology licensing arrangements, and how does it align with the general public benefit?",
+      "expected_output": "The principles set forth in the Policy establish parameters for entering into such arrangements, aiming to encourage practical application of research results for the general public's benefit.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "How do campuses or national laboratories that have certified their ability to manage equity set forth in Delegation of Authority 2650 differ from others?",
+      "expected_output": "Equity management for certified campuses/lab will be governed by the equity management plan they developed, addressing Guiding Principles for Campus Innovation Equity Management Programs and applicable laws and policies.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "What is the primary motivation behind accepting equity in a company as partial consideration for technology licensing-related transactions?",
+      "expected_output": "The University seeks to realize the full potential of the technology, with technologies disclosed by faculty, research scientists, and staff being offered to potential licensees often during early stages of developmental research.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "How do University personnel responsible for licensing-related transactions fit into this policy framework?",
+      "expected_output": "All University personnel responsible for licensing-related transactions fall under the scope of this Policy, which applies to investigations performing clinical trials or other comparable licensed-product testing for companies in which the University holds equity from a licensing-related transaction.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "What is the role of Delegation of Authority 2650 in the context of this policy?",
+      "expected_output": "Delegation of Authority 2650 sets forth equity management guidelines that certified campuses/lab will follow, ensuring compliance with applicable laws and policies governing equity management.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "Who is responsible for overseeing compliance with this policy, especially when it comes to licensing-related transactions?",
+      "expected_output": "The VP - Research & Innovation serves as the Responsible Officer, while Bruce Hunter in the RI - Innovation Transfer and Entrepreneurship office provides contact information and support for inquiries related to technology licensing.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "How does this policy reflect the University's commitment to supporting technological innovation?",
+      "expected_output": "By recognizing the importance of encouraging practical application of research results, the Policy aims to facilitate the transfer of technology from the University to external parties, ultimately benefiting society at large.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "What is an exception to this policy regarding equity management for certified campuses/lab?",
+      "expected_output": "This policy will not apply to any campus/national laboratory that has certified their ability to manage equity set forth in Delegation of Authority 2650, with those campuses/lab governed by their own equity management plan.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "How does the University ensure responsible technology licensing practices?",
+      "expected_output": "The Policy establishes parameters for entering into technology licensing arrangements, while also requiring compliance with Guiding Principles for Campus Innovation Equity Management Programs and applicable laws and policies.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "What happens when a licensed product is deemed comparable to one that has already been tested or proven?",
+      "expected_output": "When comparing clinical trials or other comparable licensed-product testing for companies in which the University holds equity, similar standards must be followed to maintain consistency in evaluation processes.",
+      "context": "[2] https://policy.ucop.edu/doc/2500486"
+    },
+    {
+      "prompt": "What is the primary function of the University library system, and how does it impact its relationship with external users?",
+      "expected_output": "The primary function of the University library system is to provide support for the University's approved programs of teaching and research. This means that the library system prioritizes serving students, faculty, and staff who are affiliated with the University, while also providing interinstitutional support for other academic programs in California.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "How do UC libraries share collections and services with external users, and what are the implications of this for access to materials?",
+      "expected_output": "UC libraries share collections and services with external users through cooperative agreements and reciprocal arrangements. This means that external users may have limited access to certain materials, as they are not the primary users of the library system.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "What is the purpose of registering as an external user for UC library privileges, and what benefits do registered students receive?",
+      "expected_output": "Registering as an external user allows individuals to borrow UC library materials for use outside the library. Registered students who are not affiliated with the University can access these materials through their local libraries or by registering directly with the UC library system.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "How do faculty and librarians from accredited institutions of higher education in California differ from other external users in terms of library borrowing privileges?",
+      "expected_output": "Faculty and librarians from accredited institutions of higher education in California are exempt from user fees for borrowing privileges, as they are considered qualified members of the faculties of other institutions of public higher education in this State.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "What is the role of reciprocal or special agreements with institutions and agencies in determining library borrowing privileges?",
+      "expected_output": "Reciprocal or special agreements with institutions and agencies can grant individuals access to UC library materials without user fees, depending on the terms of the agreement.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "How do University support groups and other affiliated organizations impact library borrowing privileges for external users?",
+      "expected_output": "University support groups and other affiliated organizations may be eligible for reciprocal or special agreements that grant access to UC library materials without user fees, depending on the terms of the agreement.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "What are the implications of the Donahoe Act of 1960 for the use of UC library and research facilities by qualified members of faculties of other institutions?",
+      "expected_output": "The Donahoe Act of 1960 allows universities to make reasonable provision for the use of their library and research facilities by qualified members of faculties of other institutions of public higher education in this State.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "How does the University's mission statement relate to its role as a resource for other users throughout the State, region, and nation?",
+      "expected_output": "The University's mission statement emphasizes the importance of facilitating scholarship, research, and development based on the utilization of knowledge. This means that the University sees itself as a resource for other users who can contribute to or benefit from its research and scholarship.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "What is the relationship between UC library collections and interinstitutional support for academic programs in other institutions?",
+      "expected_output": "UC library collections are used to furnish interinstitutional support for academic programs in other institutions of higher learning in California, both public and private. This means that the University's libraries provide resources and services that can be shared with other institutions.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "How do UC libraries balance their primary function with their obligation to serve external users?",
+      "expected_output": "UC libraries must balance their primary function of supporting the University's approved programs of teaching and research with their obligation to serve external users through cooperative agreements and reciprocal arrangements. This means that they prioritize serving students, faculty, and staff who are affiliated with the University while also providing access to materials for external users.",
+      "context": "[3] https://policy.ucop.edu/doc/2000617"
+    },
+    {
+      "prompt": "What is the primary consideration for selecting a common academic calendar after 2010, according to this policy?",
+      "expected_output": "The responsible University bodies must choose calendars (semester and quarter) that avoid scheduling fall residence hall move-in days for students that conflict with the observance of a major religious holiday.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "How do campuses handle situations where adopting a new calendar would create a conflict between a major religious holiday and residence hall move-in dates for new students?",
+      "expected_output": "Campuses must abide by guidelines that include giving students who observe holidays the opportunity to move in on a non-conflicting day, as well as providing equivalent community-wide social and orientation activities.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "What is an example of how a campus might adjust its move-in schedule to accommodate students who observe a major religious holiday?",
+      "expected_output": "A large campus might move in all of its students over a number of days, but not schedule community-wide social and orientation activities until all students are given the opportunity to occupy their residence halls.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "How often must the University provide written reports on its progress in developing guidelines for addressing religious holiday conflicts with residence hall move-in dates?",
+      "expected_output": "The University shall provide written reports to the Senate Education Committee and the Assembly Higher Education Committee on September 1, 2007, and March 1, 2008.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "What is the deadline for the University to complete development of the written guidelines for addressing religious holiday conflicts with residence hall move-in dates?",
+      "expected_output": "The University must complete development of the written guidelines no later than June 1, 2008.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "Why are exceptions made to the policy only in cases where there are overriding academic or administrative considerations that would make a calendar unworkable?",
+      "expected_output": "Exceptions are made only if there are overriding academic or administrative considerations that would make such a calendar unworkable, as stated in policy text section 2.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "What is the purpose of providing community-wide social and orientation activities for students who observe holidays and move in on a non-conflicting day?",
+      "expected_output": "The purpose is to ensure that all students have an equivalent set of opportunities, despite the need to accommodate different religious holiday schedules.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "How do campuses determine which weekend day to use for residence hall move-in when there are multiple conflicting holidays?",
+      "expected_output": "Campuses must choose the weekend day that does not conflict with either observance of a one-day religious holiday or the first day of a multi-day religious holiday.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "Can the University adopt a new calendar that would create a conflict between a major religious holiday and residence hall move-in dates for new students, without providing written guidelines?",
+      "expected_output": "No, according to policy text section 3, campuses must abide by guidelines in such exceptional cases.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    },
+    {
+      "prompt": "Why is it important for the University to develop written guidelines for addressing religious holiday conflicts with residence hall move-in dates?",
+      "expected_output": "The guidelines ensure that the University's actions are fair and consistent across different student populations, despite potential conflicts between academic and religious schedules.",
+      "context": "[4] https://policy.ucop.edu/doc/2700513"
+    }
+  ]
+}

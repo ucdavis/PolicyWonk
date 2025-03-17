@@ -219,9 +219,47 @@ def create_test_dataset():
     return examples
 
 
+def get_policy_dataset():
+    """Get full policy dataset from database"""
+    from sqlalchemy import create_engine, text
+
+    # Get database connection string from environment variable
+    db_url = get_env_var("database_url")
+
+    # Create database engine
+    engine = create_engine(db_url)
+
+    # Query to fetch documents
+    query = """
+    select d.id, d.url, content
+    from document_contents
+    inner join public.documents d on d.id = document_contents.document_id
+    """
+
+    # Execute query and create Document objects
+    with engine.connect() as conn:
+        result = conn.execute(text(query))
+        documents = [
+            Document(
+                id=str(row.id),  # Convert to string since Document.id is str
+                url=row.url,
+                content=row.content
+            )
+            for row in result
+        ]
+
+    # Use environment variables for configuration
+    config = DatasetConfig()
+
+    generator = SyntheticDatasetGenerator(config)
+    examples = generator.process_documents(documents)  # Pass documents list
+    return examples
+
+
 if __name__ == "__main__":
     # Create test dataset
-    examples = create_test_dataset()
+    # examples = create_test_dataset()
+    examples = get_policy_dataset()
     logging.info(f"Generated {len(examples)} synthetic examples")
 
     for ex in examples:
