@@ -278,9 +278,10 @@ def get_policy_dataset():
 
     # Query to fetch documents
     query = """
-    select d.id, d.url, content
-    from document_contents
+    select d.id, d.url, content from document_contents
     inner join public.documents d on d.id = document_contents.document_id
+    WHERE meta->>'issuance_date' IS NOT NULL
+    AND meta->>'issuance_date' <> '';
     """
 
     # Execute query and create Document objects
