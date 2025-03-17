@@ -54,13 +54,18 @@ class SyntheticExample(BaseModel):
 class DatasetConfig(BaseModel):
     """Configuration for synthetic dataset generation"""
     max_examples_per_doc: int = Field(
-        default=int(get_env_var("max_examples_per_doc", "3")),
+        default=int(get_env_var("max_examples_per_doc", "2")),
         ge=1,
         description="Maximum number of examples to generate per document"
     )
     model_name: str = Field(
         default=get_env_var("llm_model_name", "llama3.2"),
         description="Ollama model to use"
+    )
+    model_url: str = Field(
+        default=get_env_var(
+            "llm_model_url", "http://host.docker.internal:11434"),
+        description="URL for the LLM API"
     )
     output_path: Path = Field(
         default=Path(get_env_var("output_path", "./data/synthetic.json"))
@@ -72,36 +77,64 @@ class DatasetConfig(BaseModel):
     )
 
     # Default prompt template for generating synthetic examples
-    prompt_template: str = Field(
-        default="""You are helping create a synthetic dataset for evaluating LLMs on policy document comprehension.
-        
-Given the following policy document content, generate appropriate question-answer pairs that test understanding and reasoning about the policies. Focus on questions that require analysis rather than simple fact extraction.
+    prompt_template: str = """
+You are helping create a synthetic dataset for evaluating LLMs on policy document comprehension.
 
-Important: Generate only meaningful Q&A pairs based on the content density, up to a maximum of {max_count}. Quality over quantity - only create pairs that test substantial policy understanding.
+**Goal**: Given the policy content, generate question-answer pairs that test genuine understanding and nuanced reasoning about the policy. Focus on questions that require analysis rather than simple fact extraction.
 
-Policy Content:
+**Maximum Q&A Pairs**: {max_count}  
+- Only generate as many pairs as the content truly supports. Quality over quantity.
+- If the policy has been rescinded or has no useful content, do not generate examples and just return an empty list of "qa_pairs".
+
+**Policy Content**:
 {content}
 
-Return your response in this exact JSON format:
+---
+
+**Important Instructions**:
+1. **Relevance & Accuracy**: Ensure each question and answer pair is directly grounded in the policy. The answers must be factually supported by the text.
+2. **Depth & Reasoning**: Aim for questions that require interpretation or application of the policy (e.g., scenario-based questions, questions on procedural details, or inquiries that highlight policy nuances).
+3. **Practicality**: Questions should sound like realistic inquiries a university administrator, manager, or employee might ask. Answers should be concise but precise.
+4. **Variety**: Include both straightforward clarifications (e.g., about policy scope) and more complex scenario-driven questions.
+5. **Format**: Return the final output in **valid JSON** under the key `"qa_pairs"` as shown in the example structure.
+
+---
+
+**Examples of High-Quality Q&A Pairs**  
+*(Use these as stylistic and structural guidance for your final output.)*
+
 {{
   "qa_pairs": [
     {{
-      "question": "A natural policy-related question",
-      "answer": "A clear, accurate answer based on the policy content"
+      "question": "A supervisor is insulting an employee during feedback. What should we do next?",
+      "answer": "Look for policies regarding harassment or abusive conduct in the workplace. After confirming the conduct meets criteria for abusive behavior, document the incidents and consult the appropriate office (e.g., HR or Employee Relations) to determine if early resolution or a formal investigation is necessary."
+    }},
+    {{
+      "question": "A consultant is belittling staff at a department meeting. They're not an employee.",
+      "answer": "Check any sections on third-party or contractor conduct. Even non-employees must follow workplace standards. Document the remarks, contact the relevant office (HR or whoever manages the consultant's contract), and decide whether informal mediation or formal action is needed."
+    }}
+  ]
+}}
+
+Your Task:
+
+Based on the policy text above, craft up to {max_count} realistic and meaningful question-answer pairs.
+Each pair must test substantive understanding or application of the policy.
+
+Return your response in this exact JSON format:
+
+{{
+  "qa_pairs": [
+    {{
+      "question": "Your policy-related question",
+      "answer": "Your corresponding answer"
     }},
     ...
   ]
 }}
 
-Remember to:
-- Make questions sound natural and realistic
-- Include both simple and complex reasoning questions
-- Focus on practical policy implications
-- Ensure answers are fully supported by the content
-- Only create high-quality pairs that test meaningful policy understanding
-- It's okay to generate fewer pairs if the content doesn't warrant more
-
-Response as JSON:""")
+ONLY RESPOND WITH VALID JSON
+"""
 
 
 class SyntheticDatasetGenerator:
@@ -138,9 +171,10 @@ class SyntheticDatasetGenerator:
                 # Call litellm
                 response = completion(
                     model=f"ollama/{self.config.model_name}",
-                    api_base="http://host.docker.internal:11434",
+                    api_base=self.config.model_url,
                     messages=[{"role": "user", "content": prompt}],
                     stream=False,
+                    drop_params=True,  # drop thinking params
                     response_format={
                         "type": "json_schema",
                         "json_schema": {"schema": ResponseModel.model_json_schema()}
@@ -149,8 +183,21 @@ class SyntheticDatasetGenerator:
                 )
                 logging.info("Received={}".format(response))
 
-                example_data = ResponseModel.model_validate_json(
-                    response.choices[0].message.content or "{}")
+                # let's cleanup the raw content before we try to parse it
+                raw_content = response.choices[0].message.content or "{}"
+
+                # Remove thinking content between <think> and </think> tags
+                import re
+                raw_content = re.sub(r'<think>.*?</think>', '',
+                                     raw_content, flags=re.DOTALL).strip()
+
+                # sometimes the model tries to put the response in a code block
+                json_match = re.search(
+                    r'```(?:json)?\s*([\s\S]*?)```', raw_content)
+                if json_match:
+                    raw_content = json_match.group(1).strip()
+
+                example_data = ResponseModel.model_validate_json(raw_content)
 
                 return example_data.qa_pairs
 
