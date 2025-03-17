@@ -54,12 +54,12 @@ class SyntheticExample(BaseModel):
 class DatasetConfig(BaseModel):
     """Configuration for synthetic dataset generation"""
     max_examples_per_doc: int = Field(
-        default=int(get_env_var("max_examples_per_doc", "10")),
+        default=int(get_env_var("max_examples_per_doc", "3")),
         ge=1,
         description="Maximum number of examples to generate per document"
     )
     model_name: str = Field(
-        default=get_env_var("llm_model_name", "llama2"),
+        default=get_env_var("llm_model_name", "llama3.2"),
         description="Ollama model to use"
     )
     output_path: Path = Field(
@@ -140,6 +140,7 @@ class SyntheticDatasetGenerator:
                     model=f"ollama/{self.config.model_name}",
                     api_base="http://host.docker.internal:11434",
                     messages=[{"role": "user", "content": prompt}],
+                    stream=False,
                     response_format={
                         "type": "json_schema",
                         "json_schema": {"schema": ResponseModel.model_json_schema()}
@@ -168,9 +169,11 @@ class SyntheticDatasetGenerator:
         for doc in tqdm(documents, desc="Processing documents"):
             qa_pairs = self.generate_qa_pairs(doc)
 
+            doc_context = f'[{doc.id}] {doc.url}'
+
             # Create synthetic examples from the QA pairs
             doc_qa_examples = [SyntheticExample(
-                prompt=qap.question, expected_output=qap.answer, context="") for qap in qa_pairs]
+                prompt=qap.question, expected_output=qap.answer, context=doc_context) for qap in qa_pairs]
 
             all_examples.extend(doc_qa_examples)
 
@@ -182,7 +185,8 @@ class SyntheticDatasetGenerator:
     def save_results(self, examples: List[SyntheticExample]):
         """Save results to JSON file"""
         try:
-            output = {"entries": [asdict(ex) for ex in examples]}
+            # Use model_dump() for Pydantic models instead of asdict()
+            output = {"entries": [ex.model_dump() for ex in examples]}
             with open(self.config.output_path, 'w') as f:
                 json.dump(output, f, indent=2)
         except Exception as e:
