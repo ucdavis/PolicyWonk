@@ -28,6 +28,15 @@ logging.basicConfig(
 )
 
 
+class QAPair(BaseModel):
+    question: str
+    answer: str
+
+
+class ResponseModel(BaseModel):
+    qa_pairs: List[QAPair]
+
+
 class Document(BaseModel):
     """Input document schema"""
     id: str
@@ -74,15 +83,15 @@ Policy Content:
 {content}
 
 Return your response in this exact JSON format:
-{
+{{
   "qa_pairs": [
-    {
+    {{
       "question": "A natural policy-related question",
       "answer": "A clear, accurate answer based on the policy content"
-    },
+    }},
     ...
   ]
-}
+}}
 
 Remember to:
 - Make questions sound natural and realistic
@@ -109,10 +118,12 @@ class SyntheticDatasetGenerator:
             max_count=max_count
         )
 
-    def generate_examples(self, doc: Document) -> List[SyntheticExample]:
+    def generate_qa_pairs(self, doc: Document) -> List[QAPair]:
         """Generate synthetic examples for a single document"""
         try:
             # Generate prompt
+            logging.info(f"Generating examples for document {doc.id}")
+
             prompt = self.generate_prompt(
                 # Truncate to avoid context length issues
                 content=doc.content[:4000],
@@ -129,86 +140,39 @@ class SyntheticDatasetGenerator:
                     model=f"ollama/{self.config.model_name}",
                     api_base="http://host.docker.internal:11434",
                     messages=[{"role": "user", "content": prompt}],
+                    response_format={
+                        "type": "json_schema",
+                        "json_schema": {"schema": ResponseModel.model_json_schema()}
+                    },
                     temperature=self.config.temperature,
                 )
-                logging.info("Got response from model")
-                logging.debug(f"Raw response: {response}")
+                logging.info("Received={}".format(response))
 
-                # Extract response text
-                response_text = response.choices[0].message.content
-                logging.debug(f"Response text: {response_text}")
+                example_data = ResponseModel.model_validate_json(
+                    response.choices[0].message.content or "{}")
 
-                try:
-                    # Try to parse as JSON
-                    examples_json = json.loads(response_text)
-                    if "qa_pairs" in examples_json:
-                        examples = [
-                            SyntheticExample(
-                                prompt=pair["question"],
-                                expected_output=pair["answer"],
-                                context=""
-                            )
-                            for pair in examples_json["qa_pairs"]
-                        ]
-                    else:
-                        # Fallback to parse_qa_pairs for non-JSON responses
-                        examples = []
-                        for line in response_text.split('\n'):
-                            if line.startswith('Q:'):
-                                q = line[2:].strip()
-                            elif line.startswith('A:') and 'q' in locals():
-                                a = line[2:].strip()
-                                examples.append(SyntheticExample(
-                                    prompt=q,
-                                    expected_output=a,
-                                    context=""
-                                ))
-
-                    return examples
-                except json.JSONDecodeError as e:
-                    logging.warning(f"Failed to parse JSON response: {e}")
-                    # Already handled by fallback parsing above
-                    return examples
+                return example_data.qa_pairs
 
             except Exception as e:
                 logging.error(f"Error calling model: {e}")
                 return []
-
-            # Extract and parse JSON response
-            response_json = json.loads(response.choices[0].message.content)
-            examples = [
-                SyntheticExample(
-                    prompt=pair["question"],
-                    expected_output=pair["answer"],
-                    context=""
-                )
-                for pair in response_json["qa_pairs"]
-            ]
-
-            logging.info(f"Extracted {len(examples)} examples")
-            logging.debug(f"Parsed examples: {examples}")
-
-            # Add document context and convert to SyntheticExample objects
-            return [
-                SyntheticExample(
-                    prompt=ex.prompt,
-                    expected_output=ex.expected_output,
-                    context=doc.url
-                )
-                for ex in examples
-            ]
         except Exception as e:
-            logging.error(
+            logging.exception(
                 f"Error generating examples for document {doc.id}: {e}")
             return []
 
     def process_documents(self, documents: List[Document]):
         """Process all documents and save results"""
-        all_examples = []
+        all_examples: List[SyntheticExample] = []
 
         for doc in tqdm(documents, desc="Processing documents"):
-            examples = self.generate_examples(doc)
-            all_examples.extend(examples)
+            qa_pairs = self.generate_qa_pairs(doc)
+
+            # Create synthetic examples from the QA pairs
+            doc_qa_examples = [SyntheticExample(
+                prompt=qap.question, expected_output=qap.answer, context="") for qap in qa_pairs]
+
+            all_examples.extend(doc_qa_examples)
 
             # Incrementally save results
             self.save_results(all_examples)
