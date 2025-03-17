@@ -1,7 +1,6 @@
 import React from 'react';
 
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-
 import Logo from '../layout/logo';
 
 interface ChatHeaderProps {

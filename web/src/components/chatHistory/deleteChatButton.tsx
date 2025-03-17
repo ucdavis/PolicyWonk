@@ -9,7 +9,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { deleteChatFromSidebar } from '../../lib/actions';
 import { checkActiveChat } from '../../lib/util';
 import { IconVariants, IconVariantOptions } from '../../models/animations';
-
 import AnimatedButton from '../ui/animatedButton';
 
 interface DeleteChatButtonProps {

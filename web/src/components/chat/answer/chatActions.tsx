@@ -5,14 +5,14 @@ import { useAIState } from 'ai/rsc';
 import { AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
-import FeedbackBar from './feedbackBar';
-import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 import { AI } from '../../../lib/aiProvider';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '../../../lib/util';
 import { GTagEvents } from '../../../models/gtag';
+import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 
+import FeedbackBar from './feedbackBar';
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';
 
