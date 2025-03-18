@@ -267,34 +267,51 @@ def create_test_dataset():
 
 
 def get_policy_dataset():
-    """Get full policy dataset from database"""
-    from sqlalchemy import create_engine, text
+    """Get full policy dataset from CSV file if it exists, otherwise from database"""
+    from pathlib import Path
+    csv_path = Path('./data/policies.csv')
 
-    # Get database connection string from environment variable
-    db_url = get_env_var("database_url")
-
-    # Create database engine
-    engine = create_engine(db_url)
-
-    # Query to fetch documents
-    query = """
-    select d.id, d.url, content from document_contents
-    inner join public.documents d on d.id = document_contents.document_id
-    WHERE meta->>'issuance_date' IS NOT NULL
-    AND meta->>'issuance_date' <> '';
-    """
-
-    # Execute query and create Document objects
-    with engine.connect() as conn:
-        result = conn.execute(text(query))
+    if csv_path.exists():
+        import pandas as pd
+        # Read CSV without headers and assign column names
+        df = pd.read_csv(csv_path, header=None, names=['id', 'url', 'content'])
         documents = [
             Document(
                 id=str(row.id),  # Convert to string since Document.id is str
-                url=row.url,
-                content=row.content
+                url=str(row.url),  # Ensure string type
+                content=str(row.content)  # Ensure string type
             )
-            for row in result
+            for row in df.itertuples(index=False)
         ]
+    else:
+        from sqlalchemy import create_engine, text
+
+        # Get database connection string from environment variable
+        db_url = get_env_var("database_url")
+
+        # Create database engine
+        engine = create_engine(db_url)
+
+        # Query to fetch documents
+        query = """
+        select d.id, d.url, content from document_contents
+        inner join public.documents d on d.id = document_contents.document_id
+        WHERE meta->>'issuance_date' IS NOT NULL
+        AND meta->>'issuance_date' <> '';
+        """
+
+        # Execute query and create Document objects
+        with engine.connect() as conn:
+            result = conn.execute(text(query))
+            documents = [
+                Document(
+                    # Convert to string since Document.id is str
+                    id=str(row.id),
+                    url=str(row.url),  # Ensure string type
+                    content=str(row.content)  # Ensure string type
+                )
+                for row in result
+            ]
 
     # Use environment variables for configuration
     config = DatasetConfig()
