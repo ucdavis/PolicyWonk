@@ -170,7 +170,7 @@ class SyntheticDatasetGenerator:
 
                 # Call litellm
                 response = completion(
-                    model=f"ollama/{self.config.model_name}",
+                    model=f"ollama_chat/{self.config.model_name}",
                     api_base=self.config.model_url,
                     messages=[{"role": "user", "content": prompt}],
                     stream=False,
