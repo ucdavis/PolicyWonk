@@ -269,9 +269,10 @@ def create_test_dataset():
 def get_policy_dataset():
     """Get full policy dataset from CSV file if it exists, otherwise from database"""
     from pathlib import Path
-    csv_path = Path('./data/policies.csv')
+    csv_path = Path('./data/policies_for_eval.csv')
 
     if csv_path.exists():
+        logging.info(f"Reading policies from CSV: {csv_path}")
         import pandas as pd
         # Read CSV without headers and assign column names
         df = pd.read_csv(csv_path, header=None, names=['id', 'url', 'content'])
@@ -284,6 +285,7 @@ def get_policy_dataset():
             for row in df.itertuples(index=False)
         ]
     else:
+        logging.info("Reading policies from database")
         from sqlalchemy import create_engine, text
 
         # Get database connection string from environment variable
