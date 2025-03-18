@@ -64,14 +64,14 @@ class DatasetConfig(BaseModel):
     )
     model_url: str = Field(
         default=get_env_var(
-            "llm_model_url", "http://host.docker.internal:11434"),
+            "model_url", "http://localhost:11434"),
         description="URL for the LLM API"
     )
     output_path: Path = Field(
         default=Path(get_env_var("output_path", "./data/synthetic.json"))
     )
     temperature: float = Field(
-        default=float(get_env_var("temperature", "0.7")),
+        default=float(get_env_var("temperature", "0.5")),
         ge=0,
         le=1.0
     )
