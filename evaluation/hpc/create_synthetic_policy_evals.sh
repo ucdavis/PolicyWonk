@@ -15,7 +15,7 @@ module load conda
 conda activate policywonkenv
 
 # Start ollama in the background
-~/ollama/bin/ollama serve &
+export OLLAMA_HOST=0.0.0.0 && ~/ollama/bin/ollama serve &
 
 # (Optional) Ensure the required packages are installed.
 # Uncomment the next line if you need to install from requirements.txt:

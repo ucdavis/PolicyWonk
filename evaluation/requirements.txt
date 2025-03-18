@@ -1,6 +1,7 @@
 litellm
 pydantic
 tqdm
+pandas
 python-dotenv
 sqlalchemy
 psycopg2-binary
