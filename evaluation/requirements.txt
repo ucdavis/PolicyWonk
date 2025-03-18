@@ -1,0 +1,6 @@
+litellm
+pydantic
+tqdm
+python-dotenv
+sqlalchemy
+psycopg2-binary
