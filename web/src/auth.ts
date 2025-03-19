@@ -32,7 +32,7 @@ export const {
   ],
   callbacks: {
     async jwt(params) {
-      console.log('jwt', params);
+      // console.log('jwt', params);
       // params.profile has user info -- params.profile.raw has the shibboleth claims
       // params.profile.requested.tenant has the tenant as defined by boxy -- might be nice for multi-tenant
       if (params.trigger === 'signIn') {
