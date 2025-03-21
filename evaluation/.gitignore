@@ -1,1 +1,4 @@
 data/
+
+# don't track config files
+.deepeval*
