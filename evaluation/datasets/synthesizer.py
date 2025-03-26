@@ -1,8 +1,6 @@
 import json
 import logging
-from typing import List
 from deepeval.synthesizer import Synthesizer
-from deepeval.models.providers.ollama_model import OllamaModel
 
 
 def run_synthesizer(contexts):
