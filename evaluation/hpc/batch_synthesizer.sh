@@ -6,13 +6,13 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128G
 #SBATCH --time=1-00:00:00
-#SBATCH --job-name=create-synth-policy-evals
+#SBATCH --job-name=batch_synthesizer
 
 # Load the conda module
 module load conda
 
 # Activate your pre-created conda environment (replace "myenv" with your env name)
-conda activate policywonkenv
+conda activate policywonk
 
 # Start ollama in the background
 export OLLAMA_HOST=0.0.0.0 && ~/ollama/bin/ollama serve &

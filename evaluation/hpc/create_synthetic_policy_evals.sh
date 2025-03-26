@@ -12,7 +12,7 @@
 module load conda
 
 # Activate your pre-created conda environment (replace "myenv" with your env name)
-conda activate policywonkenv
+conda activate policywonk
 
 # Start ollama in the background
 export OLLAMA_HOST=0.0.0.0 && ~/ollama/bin/ollama serve &
