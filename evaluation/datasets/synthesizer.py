@@ -1,45 +1,40 @@
+import json
 import logging
 from typing import List
 from deepeval.synthesizer import Synthesizer
 from deepeval.models.providers.ollama_model import OllamaModel
 
 
-def run_synthesizer(documents: List[str]):
-    # need to turn our list str into a list of lists, but each list is just a single str element
-    # deepeval expects you to be passing in chunks but we're just passing in the whole document
-
-    doc_context = [[doc] for doc in documents]
-
-    # TODO: Testing, just take the first few documents
-    doc_context = doc_context[:3]
+def run_synthesizer(contexts):
+    # TODO: Testing, just take the first few context arrays
+    contexts = contexts[:3]
 
     # generate synthetic data from our docs https://docs.confident-ai.com/docs/synthesizer-introduction
-    synthesizer = Synthesizer(model=OllamaModel())
+    synthesizer = Synthesizer()
     synthesizer.generate_goldens_from_contexts(
-        contexts=doc_context
+        contexts=contexts
     )
 
     dataframe = synthesizer.to_pandas()
+
+    # save the synthetic data to a csv file
+    synthesizer.save_as(file_type='json', directory='./data')
     print(dataframe)
 
 
 def get_policy_dataset():
-    """Get full policy dataset from CSV file"""
+    """Get full policy dataset from JSON file"""
     from pathlib import Path
-    csv_path = Path('./data/policies_for_eval.csv')
+    json_path = Path('./data/policy_chunks.json')
 
-    if csv_path.exists():
-        logging.info(f"Reading policies from CSV: {csv_path}")
-        import pandas as pd
-        # Read CSV without headers and assign column names
-        df = pd.read_csv(csv_path, header=None, names=['id', 'url', 'content'])
-        documents = [
-            str(row.content) for row in df.itertuples(index=False)
-        ]
+    if json_path.exists():
+        logging.info(f"Reading policies from JSON: {json_path}")
+        with open(json_path, 'r') as f:
+            contexts = json.load(f)
     else:
-        raise FileNotFoundError(f"CSV file not found: {csv_path}")
+        raise FileNotFoundError(f"CSV file not found: {json_path}")
 
-    return documents
+    return contexts
 
 
 if __name__ == "__main__":
