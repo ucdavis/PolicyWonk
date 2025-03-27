@@ -16,7 +16,7 @@ def get_env_var(key):
     return value
 
 
-def generate_policy_dataset_from_db():
+def generate_policy_dataset_from_db(source_name: str):
     # Get database connection string from environment variable
     db_url = get_env_var("eval_database_url")
 
@@ -25,9 +25,14 @@ def generate_policy_dataset_from_db():
 
     # Query for all entries in document_chunks table
     with engine.connect() as conn:
-        query = text(
-            "SELECT document_id, chunk_index, chunk_text FROM document_chunks")
-        results = conn.execute(query).fetchall()
+        query = text("""
+            SELECT document_id, chunk_index, chunk_text 
+            FROM document_chunks 
+            INNER JOIN public.documents d ON d.id = document_chunks.document_id 
+            INNER JOIN public.sources s ON s.id = d.source_id 
+            WHERE s.name = :source_name
+        """)
+        results = conn.execute(query, {"source_name": source_name}).fetchall()
 
     # Organize chunks by document_id and order by chunk_index
     documents = {}
@@ -55,4 +60,4 @@ def generate_policy_dataset_from_db():
 
 
 if __name__ == "__main__":
-    generate_policy_dataset_from_db()
+    generate_policy_dataset_from_db("UCOP Policies")
