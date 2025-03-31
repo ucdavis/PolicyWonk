@@ -18,8 +18,6 @@ def run_evaluation(dataset_name):
 
     goldens = dataset.goldens[0:3]  # Limit to first 3 for testing
 
-    test_cases: List[LLMTestCase] = []
-
     print(f"Evaluating {len(goldens)} goldens from {dataset_name}")
 
     # Create and append LLMTestCase for each golden
@@ -30,17 +28,20 @@ def run_evaluation(dataset_name):
             golden.input, context=golden.context or [])
         test_case = LLMTestCase(
             input=prompt_to_llm,
+            expected_output=golden.expected_output,
             actual_output=actual_output,
             retrieval_context=retrieval_context,
         )
-        test_cases.append(test_case)
+        dataset.add_test_case(test_case)
 
     # Define metrics
     answer_relevancy = AnswerRelevancyMetric(threshold=0.5)
     faithfulness = FaithfulnessMetric(threshold=0.5)
 
+    print(f"Running evaluation with {len(dataset.test_cases)} test cases")
+
     # Run evaluation with dataset.test_cases and dataset_name as the identifier
-    evaluate(test_cases=list(test_cases), metrics=[
+    evaluate(test_cases=dataset.test_cases, metrics=[  # type: ignore
              answer_relevancy, faithfulness], identifier=dataset_name)
 
 
