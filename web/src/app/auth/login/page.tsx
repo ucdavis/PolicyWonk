@@ -1,3 +1,4 @@
+'use server';
 import React from 'react';
 
 import { signIn } from '../../../auth';
@@ -9,7 +10,19 @@ export const generateMetadata = () => {
   };
 };
 
-const Login: React.FC = () => {
+// Server action to handle sign in based on tenant value
+async function signInHandler(formData: FormData) {
+  'use server';
+  // pull tenant from the button val
+  const tenant = formData.get('tenant') as string;
+
+  await signIn('boxyhq-saml', undefined, {
+    tenant,
+    product: 'policywonk',
+  });
+}
+
+const Login: React.FC = async () => {
   return (
     <>
       <div className='home-message'>
@@ -22,20 +35,39 @@ const Login: React.FC = () => {
         </p>
         <br />
         <br />
-        <form
-          action={async () => {
-            'use server';
-            // TODO: get the callbackUrl from the query params
-
-            await signIn('boxyhq-saml', undefined, {
-              tenant: 'ucdavis',
-              product: 'policywonk',
-            });
-          }}
-        >
+        <form action={signInHandler}>
           <div className='d-grid'>
-            <button type='submit' className='btn btn-primary btn-lg btn-block'>
-              UC Login
+            <button
+              type='submit'
+              name='tenant'
+              value='ucdavis'
+              className='btn btn-primary btn-lg btn-block m-2'
+            >
+              UC Davis
+            </button>
+            <button
+              type='submit'
+              name='tenant'
+              value='ucberkeley'
+              className='btn btn-primary btn-lg btn-block m-2'
+            >
+              UC Berkeley
+            </button>
+            <button
+              type='submit'
+              name='tenant'
+              value='ucsf'
+              className='btn btn-primary btn-lg btn-block m-2'
+            >
+              UC San Francisco
+            </button>
+            <button
+              type='submit'
+              name='tenant'
+              value='ucla'
+              className='btn btn-primary btn-lg btn-block m-2'
+            >
+              UCLA
             </button>
           </div>
         </form>
