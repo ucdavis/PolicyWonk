@@ -1,34 +1,30 @@
 'server only';
+
 import {
+  JsonValue,
   InputJsonValue,
   JsonObject,
-  JsonValue,
 } from '@prisma/client/runtime/library';
 import { Message } from 'ai';
 import { nanoid } from 'nanoid';
-import { Session } from 'next-auth';
 
-import { auth } from '../auth';
+import { auth } from '@/auth';
+import prisma from '@/lib/db';
 import {
-  WonkNotFound,
   WonkReturnObject,
   WonkUnauthorized,
   WonkSuccess,
+  WonkNotFound,
   WonkServerError,
-} from '../lib/error/error';
-import { ChatHistory, ChatHistoryMetadata, Feedback } from '../models/chat';
-import { Focus } from '../models/focus';
+} from '@/lib/error/error';
+import { ChatHistory, ChatHistoryMetadata, Feedback } from '@/models/chat';
+import { Focus } from '@/models/focus';
+import { WonkSession } from '@/models/session';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
 
-import prisma from '@/lib/db';
-
 const POLICY_ASSISTANT_SLUG = 'policywonk'; // just hardcode since we have only one assistant for now
-
-interface WonkSession extends Session {
-  userId: number;
-}
 
 export type ChatHistoryTitleEntry = {
   id: string;
@@ -45,9 +41,9 @@ const filterAndConvertMessages = (messages: JsonValue): Message[] => {
   return filteredMessages;
 };
 
-export const getChatHistory = async (
-  page: number
-): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
+export const getChatHistory = async (): Promise<
+  WonkReturnObject<ChatHistoryTitleEntry[]>
+> => {
   const session = (await auth()) as WonkSession;
   const userId = session.userId;
   if (!userId) {

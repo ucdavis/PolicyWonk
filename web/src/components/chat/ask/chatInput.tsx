@@ -40,7 +40,7 @@ const ChatInput = () => {
         id: nanoid(),
         display: (
           <>
-            <FocusBanner focus={aiState.focus} />
+            <FocusBanner focus={aiState.meta.focus} />
             <UserMessage
               user={session?.data?.user?.name || ''}
               content={question}
@@ -67,7 +67,7 @@ const ChatInput = () => {
         <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
       </WonkyErrorBoundary>
       <FocusBar
-        focus={aiState.focus}
+        focus={aiState.meta.focus}
         options={focuses}
         onSelection={onFocusSelection}
       />

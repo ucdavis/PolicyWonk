@@ -12,7 +12,7 @@ import { RegenerateShareButton, UnshareButton } from './shareButtons';
 import { ShareModalLoadingStates } from './shareModal';
 
 interface SharedUrlProps {
-  shareId: string | undefined;
+  shareId: string | undefined | null;
   isShared: boolean;
   handleRegenShare: () => void;
   handleUnshare: () => void;

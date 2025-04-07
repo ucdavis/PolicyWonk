@@ -3,19 +3,21 @@ import React from 'react';
 
 import { WonkReturnObject, isWonkSuccess } from '../../lib/error/error';
 import WonkyClientError from '../../lib/error/wonkyClientError';
-import { ChatHistory as ChatHistoryInterface } from '../../models/chat'; // TODO: rename
-import { getChatHistory } from '../../services/historyService';
+import {
+  ChatHistoryTitleEntry,
+  getChatHistory,
+} from '../../services/historyService';
 
 import ChatHistoryWrapper from './chatHistoryWrapper';
 
 const loadChatHistory = React.cache(
-  async (): Promise<WonkReturnObject<ChatHistoryInterface[]>> => {
+  async (): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
     return await getChatHistory();
   }
 );
 
 const ChatHistory: React.FC = async () => {
-  let chats: ChatHistoryInterface[] = [];
+  let chats: ChatHistoryTitleEntry[] = [];
   try {
     const result = await loadChatHistory();
 

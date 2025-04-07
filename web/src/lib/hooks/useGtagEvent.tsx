@@ -10,8 +10,8 @@ export const useGtagEvent = () => {
   const gtagEvent = useCallback(({ event, chat }: GTagEventProps) => {
     const eventObj: GTagEventVariables = {
       event,
-      focus: chat?.focus?.name,
-      sub_focus: chat?.focus?.subFocus,
+      focus: chat?.meta.focus?.name,
+      sub_focus: chat?.meta.focus?.subFocus,
       feedback: chat?.reaction,
       llm_model: chat?.llmModel,
     };

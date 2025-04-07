@@ -1,12 +1,13 @@
 'use client';
+import { ChatHistoryTitleEntry } from '@/services/historyService';
+
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-import { ChatHistory } from '../../models/chat';
 
 import ChatHistoryList from './chatHistoryList';
 
 interface ChatHistoryWrapperProps {
-  chats: ChatHistory[];
+  chats: ChatHistoryTitleEntry[];
 }
 
 // Wrapper for the chat history to handle errors

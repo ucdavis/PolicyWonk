@@ -43,7 +43,7 @@ export type WonkActions<T = any, R = any> = {
 export const submitUserMessage = async (userInput: string) => {
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
-  const focus = aiState.get().focus as Focus;
+  const focus = aiState.get().meta.focus as Focus;
 
   // before we actually do anything, stream loading UI (for the chat window)
   // user message is added on client
@@ -92,7 +92,7 @@ export const submitUserMessage = async (userInput: string) => {
     aiState.update({
       ...aiState.get(), // blank state
       // id is set on save to db
-      focus, // focus from the user
+      meta: { focus }, // focus from the user
       messages: [...aiState.get().messages, ...initialMessages],
     });
 
@@ -154,7 +154,7 @@ export const submitUserMessage = async (userInput: string) => {
             aiState.done({
               ...aiState.get(),
               id: chatId, // only once the chat has been saved to the db does the aiState.id get set
-              focus,
+              meta: { focus },
               messages: finalMessages,
             });
           })();
