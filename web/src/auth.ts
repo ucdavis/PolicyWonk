@@ -8,12 +8,13 @@ const SamlClaims = {
   name: 'urn:oid:2.16.840.1.113730.3.1.241',
   upn: 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6', // unique id - resembles email but isn't actually email
   email: 'urn:oid:0.9.2342.19200300.100.1.3',
+  affiliation: 'urn:oid:1.3.6.1.4.1.5923.1.1.1.9', // array scoped affiliations, ex: ["staff@ucdavis.edu"]
   nameIdentifier:
     'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier',
 };
 
 interface ProfileWithRaw extends Profile {
-  raw: Record<string, string>;
+  raw: Record<string, string | string[]>;
 }
 
 export const {
@@ -39,10 +40,24 @@ export const {
         // profile is only available on sign in
         const profileExtended = params.profile as ProfileWithRaw | undefined;
 
+        const rawAffiliations = profileExtended?.raw?.[SamlClaims.affiliation];
+        const affiliations: string[] = rawAffiliations
+          ? Array.isArray(rawAffiliations)
+            ? rawAffiliations
+            : [rawAffiliations]
+          : [];
+
+        const extractClaim = (
+          value: string | string[] | undefined
+        ): string | undefined => {
+          return Array.isArray(value) ? value[0] : value;
+        };
+
         const userFromToken: Partial<User> = {
-          name: profileExtended?.raw?.[SamlClaims.name],
-          email: profileExtended?.raw?.[SamlClaims.email],
-          upn: profileExtended?.raw?.[SamlClaims.upn],
+          name: extractClaim(profileExtended?.raw?.[SamlClaims.name]),
+          email: extractClaim(profileExtended?.raw?.[SamlClaims.email]),
+          upn: extractClaim(profileExtended?.raw?.[SamlClaims.upn]),
+          affiliations: affiliations.join(','),
         };
 
         const user = await ensureUserExists(userFromToken);
