@@ -29,7 +29,7 @@ const ChatInput = () => {
   const { submitUserMessage } = useActions<typeof AI>();
 
   const onFocusSelection = (focus: Focus) => {
-    setAIState((a) => ({ ...a, focus }));
+    setAIState((a) => ({ ...a, meta: { ...a.meta, focus } }));
   };
 
   const onQuestionSubmit = async (question: string) => {
