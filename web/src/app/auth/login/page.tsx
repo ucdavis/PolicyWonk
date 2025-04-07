@@ -4,25 +4,45 @@ import React from 'react';
 import { signIn } from '../../../auth';
 import Logo from '../../../components/layout/logo';
 
+// supported campuses for the login page w/ tenant values
+const campuses = [
+  { name: 'UC Davis', value: 'ucdavis' },
+  { name: 'UC Berkeley', value: 'ucberkeley' },
+  { name: 'UC San Francisco', value: 'ucsf' },
+  { name: 'UCLA', value: 'ucla' },
+];
+
 export const generateMetadata = () => {
   return {
     title: 'Login',
   };
 };
 
-// Server action to handle sign in based on tenant value
+// Server action to handle sign in based on tenant value and callbackUrl
 async function signInHandler(formData: FormData) {
   'use server';
-  // pull tenant from the button val
+  // pull tenant and callbackUrl from the submitted form data
   const tenant = formData.get('tenant') as string;
+  const callbackUrl = (formData.get('callbackUrl') as string) || '/';
 
-  await signIn('boxyhq-saml', undefined, {
-    tenant,
-    product: 'policywonk',
-  });
+  await signIn(
+    'boxyhq-saml',
+    { redirectTo: callbackUrl },
+    {
+      tenant,
+      product: 'policywonk',
+    }
+  );
 }
 
-const Login: React.FC = async () => {
+interface LoginProps {
+  searchParams: { callbackUrl?: string };
+}
+
+const Login: React.FC<LoginProps> = async ({ searchParams }) => {
+  // Get callbackUrl from URL query params
+  const callbackUrl = searchParams.callbackUrl || '/';
+
   return (
     <>
       <div className='home-message'>
@@ -36,39 +56,19 @@ const Login: React.FC = async () => {
         <br />
         <br />
         <form action={signInHandler}>
+          <input type='hidden' name='callbackUrl' value={callbackUrl} />
           <div className='d-grid'>
-            <button
-              type='submit'
-              name='tenant'
-              value='ucdavis'
-              className='btn btn-primary btn-lg btn-block m-2'
-            >
-              UC Davis
-            </button>
-            <button
-              type='submit'
-              name='tenant'
-              value='ucberkeley'
-              className='btn btn-primary btn-lg btn-block m-2'
-            >
-              UC Berkeley
-            </button>
-            <button
-              type='submit'
-              name='tenant'
-              value='ucsf'
-              className='btn btn-primary btn-lg btn-block m-2'
-            >
-              UC San Francisco
-            </button>
-            <button
-              type='submit'
-              name='tenant'
-              value='ucla'
-              className='btn btn-primary btn-lg btn-block m-2'
-            >
-              UCLA
-            </button>
+            {campuses.map((campus) => (
+              <button
+                key={campus.value}
+                type='submit'
+                name='tenant'
+                value={campus.value}
+                className='btn btn-primary btn-lg btn-block m-2'
+              >
+                {campus.name}
+              </button>
+            ))}
           </div>
         </form>
       </div>
