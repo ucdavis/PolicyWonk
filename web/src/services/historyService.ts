@@ -34,11 +34,11 @@ export type ChatHistoryTitleEntry = {
 
 const filterAndConvertMessages = (messages: JsonValue): Message[] => {
   // hard cast but we'll convert when we switch to useChat later
-  const filteredMessages = (messages as unknown as Message[]).filter(
-    (message) => message.role !== 'system'
-  );
+  return filterOutSystemMessages(messages as unknown as Message[]);
+};
 
-  return filteredMessages;
+const filterOutSystemMessages = (messages: Message[]): Message[] => {
+  return messages.filter((message) => message.role !== 'system');
 };
 
 export const getChatHistory = async (): Promise<
@@ -164,7 +164,7 @@ export const saveChat = async (
   const newChat = await prisma.chats.create({
     data: {
       ...chat,
-      messages: messages as unknown as InputJsonValue, // hack for now until we switch to useChat
+      messages: filterOutSystemMessages(messages) as unknown as InputJsonValue, // hack for now until we switch to useChat
     },
   });
 
