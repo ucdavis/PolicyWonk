@@ -91,7 +91,7 @@ const newChatSession = (
     meta: {
       focus: focus ?? focuses[0],
     },
-    userId: session.userId ?? 0,
+    userId: session.userId,
   };
 
   return chat;

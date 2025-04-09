@@ -85,6 +85,7 @@ export const getChat = async (
   const chat = await prisma.chats.findUnique({
     where: {
       id: chatId,
+      userId,
       active: true, // Only get active chats
     },
   });
