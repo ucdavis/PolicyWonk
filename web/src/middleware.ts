@@ -2,6 +2,8 @@ import { auth } from './auth';
 
 const unprotectedRoutes = ['/api/auth', '/auth', '/api/documents'];
 
+const externalApiRoutes = ['/api/chat/completions'];
+
 export default auth((req: any) => {
   const url = req.nextUrl;
   const route = req.nextUrl.pathname;
@@ -11,6 +13,9 @@ export default auth((req: any) => {
   if (!isLoggedIn) {
     // auth routes are unprotected
     if (unprotectedRoutes.some((pattern) => route.startsWith(pattern))) {
+      return;
+    } else if (externalApiRoutes.some((pattern) => route.startsWith(pattern))) {
+      // allow access to external API routes
       return;
     } else {
       // redirect to login page with callbackUrl

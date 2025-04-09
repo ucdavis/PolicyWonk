@@ -1,1 +1,5 @@
 data/
+
+# don't track config files
+.deepeval*
+temp_test_run_data.json

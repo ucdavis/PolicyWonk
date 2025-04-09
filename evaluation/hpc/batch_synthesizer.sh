@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=128G
 #SBATCH --time=1-00:00:00
-#SBATCH --job-name=create-synth-policy-evals
+#SBATCH --job-name=batch_synthesizer
 
 # Load the conda module
 module load conda
@@ -25,4 +25,4 @@ export OLLAMA_HOST=0.0.0.0 && ~/ollama/bin/ollama serve &
 cd ~/policywonk/evaluation
 
 # Run the main script
-python datasets/create_synthetic.py
+python datasets/synthesizer.py
