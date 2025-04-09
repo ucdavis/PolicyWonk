@@ -17,7 +17,8 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "always"
         },
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "eslint.workingDirectories": ["./web"]
       }
     }
   },

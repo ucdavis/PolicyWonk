@@ -2,17 +2,17 @@
 import React from 'react';
 
 import { Metadata, ResolvingMetadata } from 'next';
-import { Session } from 'next-auth';
 
-import { auth } from '../../../auth';
-import MainContent from '../../../components/chat/main';
-import { AI } from '../../../lib/aiProvider';
-import { isWonkSuccess } from '../../../lib/error/error';
-import WonkyPageError from '../../../lib/error/wonkyPageError';
-import { cleanMetadataTitle } from '../../../lib/util';
-import { ChatHistory, blankAIState } from '../../../models/chat';
-import { focuses, getFocusWithSubFocus } from '../../../models/focus';
-import { getChat } from '../../../services/historyService';
+import { auth } from '@/auth';
+import MainContent from '@/components/chat/main';
+import { AI } from '@/lib/aiProvider';
+import { isWonkSuccess } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
+import { cleanMetadataTitle } from '@/lib/util';
+import { ChatHistory, blankAIState } from '@/models/chat';
+import { getFocusWithSubFocus, focuses } from '@/models/focus';
+import { WonkSession } from '@/models/session';
+import { getChat } from '@/services/historyService';
 
 type HomePageProps = {
   params: {
@@ -65,7 +65,7 @@ const ChatPage = async ({
     }
     chat = result.data;
   } else {
-    const session = (await auth()) as Session;
+    const session = (await auth()) as WonkSession;
     chat = newChatSession(session, focus, subFocus);
   }
 
@@ -79,7 +79,7 @@ const ChatPage = async ({
 export default ChatPage;
 
 const newChatSession = (
-  session: Session,
+  session: WonkSession,
   focusParam?: string,
   subFocusParam?: string
 ) => {
@@ -88,9 +88,10 @@ const newChatSession = (
   const chat: ChatHistory = {
     ...blankAIState,
     // id is '' in state until submitUserMessage() is called
-    focus: focus ?? focuses[0],
-    user: session.user?.name ?? 'Unknown User',
-    userId: session.user?.id ?? 'Unknown User',
+    meta: {
+      focus: focus ?? focuses[0],
+    },
+    userId: session.userId,
   };
 
   return chat;

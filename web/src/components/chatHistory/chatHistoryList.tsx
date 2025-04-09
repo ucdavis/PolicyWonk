@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { ChatHistory } from '../../models/chat';
+import { ChatHistoryTitleEntry } from '@/services/historyService';
 
 import DeleteChatButton from './deleteChatButton';
 
 interface ChatHistoryListProps {
-  chats: ChatHistory[];
+  chats: ChatHistoryTitleEntry[];
 }
 
 // separate out rendering the chat list so we can animate it as a client component

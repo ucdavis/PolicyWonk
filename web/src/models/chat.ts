@@ -4,30 +4,36 @@ import { llmModel } from '../services/chatService';
 
 import { Focus, focuses } from './focus';
 
+export type ChatHistoryMetadata = {
+  focus: Focus;
+};
+
 export type ChatHistory = {
   id: string;
   active: boolean;
   title: string;
   messages: Message[];
-  focus: Focus;
+  meta: ChatHistoryMetadata;
+  assistantSlug: string;
   llmModel: string;
-  user: string;
-  userId: string;
+  userId: number;
   reaction?: Feedback;
-  timestamp: number;
-  shareId?: string;
+  timestamp: Date;
+  shareId?: string | null;
 };
 
 export const blankAIState: ChatHistory = {
   id: '', // don't use nanoid() here so we make sure to generate a new id when we create a new chat
   title: '',
   messages: [],
-  focus: focuses[0],
+  assistantSlug: 'policywonk',
+  meta: {
+    focus: focuses[0],
+  },
   llmModel: llmModel,
-  user: '',
-  userId: '',
+  userId: 0,
   reaction: undefined,
-  timestamp: Date.now(),
+  timestamp: new Date(),
   shareId: undefined,
   active: true,
 };

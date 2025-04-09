@@ -14,7 +14,7 @@ const DefaultQuestions: React.FC<DefaultQuestionsProps> = ({
 }) => {
   const [aiState] = useAIState();
 
-  const questions = getDefaultQuestions(aiState.focus);
+  const questions = getDefaultQuestions(aiState.meta.focus);
   return (
     <div className='d-grid d-md-block'>
       {questions.map((question, index) => (

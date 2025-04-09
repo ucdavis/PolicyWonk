@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export const useShareUrl = (shareId: string | undefined) => {
+export const useShareUrl = (shareId: string | undefined | null) => {
   const [url, setUrl] = React.useState('');
 
   React.useEffect(() => {

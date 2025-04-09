@@ -29,7 +29,7 @@ const ChatInput = () => {
   const { submitUserMessage } = useActions<typeof AI>();
 
   const onFocusSelection = (focus: Focus) => {
-    setAIState((a) => ({ ...a, focus }));
+    setAIState((a) => ({ ...a, meta: { ...a.meta, focus } }));
   };
 
   const onQuestionSubmit = async (question: string) => {
@@ -40,7 +40,7 @@ const ChatInput = () => {
         id: nanoid(),
         display: (
           <>
-            <FocusBanner focus={aiState.focus} />
+            <FocusBanner focus={aiState.meta.focus} />
             <UserMessage
               user={session?.data?.user?.name || ''}
               content={question}
@@ -67,7 +67,7 @@ const ChatInput = () => {
         <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
       </WonkyErrorBoundary>
       <FocusBar
-        focus={aiState.focus}
+        focus={aiState.meta.focus}
         options={focuses}
         onSelection={onFocusSelection}
       />

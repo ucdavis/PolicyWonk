@@ -1,147 +1,132 @@
 'server only';
-import { Message } from 'ai';
-import { MongoClient, WithId } from 'mongodb';
-import { nanoid } from 'nanoid';
-import { Session } from 'next-auth';
 
-import { auth } from '../auth';
 import {
-  WonkNotFound,
+  JsonValue,
+  InputJsonValue,
+  JsonObject,
+} from '@prisma/client/runtime/library';
+import { Message } from 'ai';
+import { nanoid } from 'nanoid';
+
+import { auth } from '@/auth';
+import prisma from '@/lib/db';
+import {
   WonkReturnObject,
-  WonkForbidden,
   WonkUnauthorized,
   WonkSuccess,
+  WonkNotFound,
   WonkServerError,
-} from '../lib/error/error';
-import { ChatHistory, Feedback } from '../models/chat';
-import { Focus } from '../models/focus';
+} from '@/lib/error/error';
+import { ChatHistory, ChatHistoryMetadata, Feedback } from '@/models/chat';
+import { Focus } from '@/models/focus';
+import { WonkSession } from '@/models/session';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
 
-const mongoConnectionString = process.env.MONGO_CONNECTION ?? '';
-const mongoDbName = process.env.MONGO_DB ?? 'policywonk';
-const mongoCollectionName = process.env.MONGO_COLLECTION ?? 'chats';
+const POLICY_ASSISTANT_SLUG = 'policywonk'; // just hardcode since we have only one assistant for now
 
-let _mongoClient: MongoClient;
-// TODO: separate out into actions and service
+export type ChatHistoryTitleEntry = {
+  id: string;
+  title: string;
+  timestamp: Date;
+};
 
-// all of our chats are stored in the "policywonk" db in the "chats" collection
-async function getChatsCollection() {
-  if (_mongoClient) {
-    return _mongoClient
-      .db(mongoDbName)
-      .collection<ChatHistory>(mongoCollectionName);
-  }
+const filterAndConvertMessages = (messages: JsonValue): Message[] => {
+  // hard cast but we'll convert when we switch to useChat later
+  return filterOutSystemMessages(messages as unknown as Message[]);
+};
 
-  // otherwise create a new one and make sure indexes are setup
-  _mongoClient = new MongoClient(mongoConnectionString);
-  const collection = _mongoClient
-    .db(mongoDbName)
-    .collection<ChatHistory>(mongoCollectionName);
+const filterOutSystemMessages = (messages: Message[]): Message[] => {
+  return messages.filter((message) => message.role !== 'system');
+};
 
-  await collection.createIndex({ timestamp: -1 });
-
-  return collection;
-}
-
-// mongo adds an unserilizable _id field to all objects, so we need to unwrap it
-function unwrapChat(chatWithId: WithId<ChatHistory>): ChatHistory {
-  const { _id, ...chat } = chatWithId;
-
-  return chat;
-}
-
-/**
- * Assumes the user is authenticated. Throws an error if the chat is not found or the user is not authorized.
- * @returns ChatHistory for the chat, with messages filtered to remove system messages.
- */
-export const getChat = async (
-  chatId: string
-): Promise<WonkReturnObject<ChatHistory>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+export const getChatHistory = async (): Promise<
+  WonkReturnObject<ChatHistoryTitleEntry[]>
+> => {
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
+  const chats = await prisma.chats.findMany({
+    where: {
+      userId,
+      active: true,
+    },
+    orderBy: {
+      timestamp: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      timestamp: true,
+    },
+  });
 
-  const queryFilter: Partial<ChatHistory> = {
-    id: chatId,
-    active: true,
-  };
+  return WonkSuccess(chats);
+};
 
-  const chat = await chatsDb.findOne(queryFilter);
+/**
+ * Gets a specific chat for the authenticated user.
+ * Assumes the user is authenticated. Throws an error if the chat is not found or the user is not authorized.
+ * @returns Chat object, with messages filtered to remove system messages.
+ */
+export const getChat = async (
+  chatId: string
+): Promise<WonkReturnObject<ChatHistory>> => {
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
+  if (!userId) {
+    return WonkUnauthorized();
+  }
+
+  const chat = await prisma.chats.findUnique({
+    where: {
+      id: chatId,
+      userId,
+      active: true, // Only get active chats
+    },
+  });
 
   if (!chat) {
     return WonkNotFound();
   }
 
-  if (chat.userId !== userId) {
-    return WonkForbidden();
-  }
-
-  chat.messages = chat.messages.filter((m) => m.role !== 'system');
-
-  return WonkSuccess(unwrapChat(chat));
+  return WonkSuccess({
+    ...chat,
+    messages: filterAndConvertMessages(chat.messages),
+    meta: chat.meta as ChatHistoryMetadata,
+  });
 };
 
 export const getSharedChat = async (
   shareId: string
 ): Promise<WonkReturnObject<ChatHistory>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    shareId: shareId,
-    active: true,
-  };
-
-  const chat = await chatsDb.findOne(
-    queryFilter,
-    { projection: { feedback: 0 } } // we don't need feedback for shared chats + unwrap chats
-  );
+  const chat = await prisma.chats.findFirst({
+    where: {
+      shareId: shareId,
+      active: true, // Only get active chats
+    },
+  });
 
   if (!chat) {
     return WonkNotFound();
   }
 
-  chat.messages = chat.messages.filter((m) => m.role !== 'system');
-
-  return WonkSuccess(unwrapChat(chat));
-};
-
-export const getChatHistory = async (): Promise<
-  WonkReturnObject<ChatHistory[]>
-> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
-
-  if (!userId) {
-    return WonkUnauthorized();
-  }
-
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    userId,
-    active: true,
-  };
-
-  const chats = (await chatsDb
-    .find(queryFilter)
-    .project({ messages: 0, _id: 0 }) // we don't need messages for the history + unwrap chats
-    .sort({ timestamp: -1 })
-    .toArray()) as ChatHistory[];
-
-  return WonkSuccess(chats);
+  return WonkSuccess({
+    ...chat,
+    messages: filterAndConvertMessages(chat.messages),
+    meta: chat.meta as ChatHistoryMetadata,
+  });
 };
 
 // save chats to db
@@ -152,31 +137,39 @@ export const saveChat = async (
   messages: Message[],
   focus: Focus
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as Session;
-  const user = session?.user;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
-  if (!user?.id) {
+  if (!userId) {
     return WonkUnauthorized();
   }
 
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
-    messages.find((m) => m.role === 'user')?.content ?? 'Unknown Title';
+    messages.find((m) => m.role === 'user')?.content.substring(0, 100) ??
+    'New Chat';
   const chat: ChatHistory = {
     id: chatId,
     active: true,
+    assistantSlug: POLICY_ASSISTANT_SLUG,
     title,
     messages,
-    focus,
+    meta: {
+      focus,
+    },
     llmModel,
-    user: user.name ?? 'Unknown User',
-    userId: user.id,
-    timestamp: Date.now(),
+    userId: userId,
+    timestamp: new Date(),
   };
 
-  const chatsDb = await getChatsCollection();
-  const res = await chatsDb.insertOne(chat);
-  if (!res.acknowledged) {
+  const newChat = await prisma.chats.create({
+    data: {
+      ...chat,
+      messages: filterOutSystemMessages(messages) as unknown as InputJsonValue, // hack for now until we switch to useChat
+    },
+  });
+
+  if (!newChat) {
     return WonkServerError();
   }
 
@@ -190,29 +183,49 @@ export const saveReaction = async (
   chatId: string,
   reaction: Feedback
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    id: chatId,
-    userId,
-    active: true,
-  };
-
-  const res = await chatsDb.updateOne(queryFilter, {
-    $set: {
-      reaction,
+  // 1. Find the chat first to ensure it exists and belongs to the user
+  const chat = await prisma.chats.findFirst({
+    where: {
+      id: chatId,
+      userId: userId,
+      active: true,
     },
+    select: { meta: true }, // Select only meta to update it
   });
-  if (res.modifiedCount === 0) {
+
+  if (!chat) {
+    return WonkNotFound();
+  }
+  // 2. Update the chat with the new reaction in the meta field
+  const currentMeta =
+    chat.meta && typeof chat.meta === 'object' && !Array.isArray(chat.meta)
+      ? chat.meta
+      : {};
+  const updatedMeta = { ...currentMeta, reaction: reaction };
+
+  const updatedChat = await prisma.chats.update({
+    where: {
+      id: chatId,
+      // No need for userId here again as we checked ownership above
+    },
+    data: {
+      meta: updatedMeta as JsonObject, // Update the meta field
+    },
+    select: { id: true }, // Select minimal fields
+  });
+
+  if (!updatedChat) {
+    // Should not happen if findFirst succeeded, but check anyway
     return WonkServerError();
   }
+
   // also log to elastic for now
   await logReaction(chatId, reaction);
 
@@ -222,64 +235,76 @@ export const saveReaction = async (
 export const saveShareChat = async (
   chatId: string
 ): Promise<WonkReturnObject<string>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    id: chatId,
-    userId,
-    active: true,
-  };
-
-  const chat = await chatsDb.findOne(queryFilter);
+  const chat = await prisma.chats.findFirst({
+    where: { id: chatId, userId: userId, active: true },
+    select: { id: true, shareId: true }, // Check if already shared
+  });
 
   if (!chat) {
     return WonkNotFound();
   }
 
-  const shareId = nanoid();
-  const res = await chatsDb.updateOne(queryFilter, {
-    $set: {
-      shareId,
+  // 2. Generate shareId and update
+  const shareId = nanoid(); // Generate unique ID
+
+  const updatedChat = await prisma.chats.update({
+    where: {
+      id: chatId,
     },
+    data: {
+      shareId: shareId,
+    },
+    select: { shareId: true }, // Select the updated shareId
   });
-  if (res.modifiedCount === 0) {
+
+  if (!updatedChat || !updatedChat.shareId) {
     return WonkServerError();
   }
 
-  return WonkSuccess(shareId);
+  return WonkSuccess(updatedChat.shareId);
 };
 
 export const removeShareChat = async (
   chatId: string
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    id: chatId,
-    userId,
-    active: true,
-  };
-
-  const res = await chatsDb.updateOne(queryFilter, {
-    $unset: {
-      shareId: '',
-    },
+  // 1. Verify chat existence and ownership
+  const chat = await prisma.chats.findFirst({
+    where: { id: chatId, userId: userId, active: true },
+    select: { id: true },
   });
-  if (res.modifiedCount === 0) {
+
+  if (!chat) {
+    // If not found or not owned, maybe it's already unshared or deleted.
+    // Return success or NotFound depending on desired behavior. Let's return NotFound.
+    return WonkNotFound();
+  }
+
+  // 2. Update the chat, setting shareId to null
+  const updatedChat = await prisma.chats.update({
+    where: {
+      id: chatId,
+    },
+    data: {
+      shareId: null, // Set shareId to null
+    },
+    select: { id: true }, // Minimal selection
+  });
+
+  if (!updatedChat) {
     return WonkServerError();
   }
 
@@ -289,29 +314,34 @@ export const removeShareChat = async (
 export const removeChat = async (
   chatId: string
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as Session;
-  const userId = session?.user?.id;
+  const session = (await auth()) as WonkSession;
+  const userId = session.userId;
 
   if (!userId) {
     return WonkUnauthorized();
   }
 
-  const chatsDb = await getChatsCollection();
-
-  const queryFilter: Partial<ChatHistory> = {
-    id: chatId,
-    userId,
-    active: true,
-  };
-
-  const res = await chatsDb.updateOne(queryFilter, {
-    $set: {
-      active: false,
+  // 1. Verify chat existence and ownership *before* updating
+  // Use updateMany for potentially slightly better performance if we don't need the record first
+  const result = await prisma.chats.updateMany({
+    where: {
+      id: chatId,
+      userId: userId,
+      active: true, // Only affect active chats
+    },
+    data: {
+      active: false, // Set active to false
     },
   });
-  if (res.modifiedCount === 0) {
-    return WonkServerError();
+
+  // updateMany returns a count of affected records
+  if (result.count === 0) {
+    // This means no chat matched the criteria (id, userId, active: true)
+    // It might already be inactive, deleted, or belong to another user.
+    // Return NotFound as the active chat wasn't found for this user.
+    return WonkNotFound();
   }
 
+  // If count > 0, the update was successful
   return WonkSuccess(true);
 };
