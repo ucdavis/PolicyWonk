@@ -9,7 +9,6 @@
     "start": "next start",
     "production": "next build && next start",
     "serve": "node_modules/next/dist/bin/next start",
-    "postinstall": "prisma generate",
     "lint": "next lint",
     "lint:fix": "next lint --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
