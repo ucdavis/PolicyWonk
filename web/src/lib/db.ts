@@ -3,7 +3,12 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  if (process.env.NODE_ENV === 'production') {
+    return new PrismaClient();
+  } else {
+    // log all queries in development
+    return new PrismaClient({ log: ['query', 'info', 'warn', 'error'] });
+  }
 };
 
 declare const globalThis: {

@@ -1,38 +1,22 @@
 'server only';
 import { createOpenAI } from '@ai-sdk/openai';
 import { EmbeddingModelV1Embedding } from '@ai-sdk/provider';
-import { Client, ClientOptions } from '@elastic/elasticsearch';
-import {
-  KnnQuery,
-  QueryDslQueryContainer,
-} from '@elastic/elasticsearch/lib/api/types';
 import { Message } from 'ai';
 
+import prisma from '@/lib/db';
+
 import { PolicyIndex } from '../models/chat';
-import { Focus, FocusScope } from '../models/focus';
+import { Focus } from '../models/focus';
 
 export const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-3.5-turbo';
+export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-4o';
 
 const embeddingModel = openai.embedding(
-  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large'
+  process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-small'
 );
-
-// get my vector store
-const config: ClientOptions = {
-  node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
-  auth: {
-    username: process.env.ELASTIC_SEARCHER_USERNAME ?? 'elastic',
-    password: process.env.ELASTIC_SEARCHER_PASSWORD ?? 'changeme',
-  },
-};
-
-const searchClient: Client = new Client(config);
-
-const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
 export const getEmbeddings = async (query: string) => {
   // get our embeddings
@@ -43,106 +27,55 @@ export const getEmbeddings = async (query: string) => {
   return embeddings.embeddings;
 };
 
-const generateFilter = (
-  focus: Focus
-): QueryDslQueryContainer | QueryDslQueryContainer[] => {
-  let allowedScopes: FocusScope[] = [];
-
+const generateFilter = (focus: Focus): string[] => {
   if (focus.name === 'core') {
-    allowedScopes = ['UCOP', 'UCDPOLICY'];
-
-    return {
-      terms: {
-        'metadata.scope.keyword': allowedScopes,
-      },
-    };
+    return ['UCOP', 'UCDPOLICYMANUAL'];
   } else if (focus.name === 'apm') {
-    allowedScopes = ['UCDAPM'];
-
-    return {
-      terms: {
-        'metadata.scope.keyword': allowedScopes,
-      },
-    };
+    return ['UCDAPM'];
   } else if (focus.name === 'unions') {
-    allowedScopes = ['UCCOLLECTIVEBARGAINING'];
-
-    // for unions we need to read the subfocus
-    if (focus.subFocus) {
-      // we could add more scopes here if we wanted to filter further
-      // but for now we'll just match the subfocus
-      return {
-        bool: {
-          must: [
-            {
-              terms: {
-                'metadata.keywords.keyword': [
-                  focus.subFocus.toLocaleUpperCase(),
-                ],
-              },
-            },
-            {
-              terms: {
-                'metadata.scope.keyword': allowedScopes,
-              },
-            },
-          ],
-        },
-      };
-    }
+    //TODO: need to handle union specific sub-filters (by union)
+    return ['UCCOLLECTIVEBARGAINING'];
   } else if (focus.name === 'knowledgebase') {
-    allowedScopes = ['UCDKB'];
-
-    return {
-      terms: {
-        'metadata.scope.keyword': allowedScopes,
-      },
-    };
+    return ['UCDKB'];
   }
-
-  // match nothing since we don't know what to do
-  return {
-    match_none: {},
-  };
+  // unknown focus returns an empty filter (no allowed types)
+  return [];
 };
 
 export const getSearchResults = async (
   embeddings: EmbeddingModelV1Embedding[],
   focus: Focus
-) => {
-  const searchResultMaxSize = 5;
+): Promise<PolicyIndex[]> => {
+  const searchResultMaxSize = 10;
+  const allowedTypes = generateFilter(focus);
 
-  const filter = generateFilter(focus);
+  const queryVector = embeddings[0];
 
-  // TODO: augment search w/ keyword search?
-  // get our search results
+  const rawResults: Array<{
+    doc_id: number;
+    title: string;
+    text: string;
+    meta: any;
+  }> = await prisma.$queryRaw`   
+    SELECT d.id as doc_id,
+           d.title,
+           dc.chunk_text as text,
+           d.meta as meta
+    FROM document_chunks dc
+    JOIN documents d ON dc.document_id = d.id
+    JOIN sources s ON d.source_id = s.id
+    WHERE s.type = ANY(${allowedTypes})
+    ORDER BY dc.embedding <=> ${queryVector}::vector
+    LIMIT ${searchResultMaxSize}`;
 
-  const knnQuery: KnnQuery = {
-    field: 'vector', // the field we want to search, created by PolicyAcquisition
-    query_vector: embeddings[0], // the query vector
-    k: searchResultMaxSize,
-    num_candidates: 200,
-    filter,
-  };
-
-  const searchResults = await searchClient.search<PolicyIndex>({
-    index: indexName,
-    size: searchResultMaxSize,
-    body: {
-      knn: knnQuery,
-    },
-  });
-
-  // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
-
-  // transform the results
-  const allResults: PolicyIndex[] = searchResults.hits.hits
-    .map((h, i) => ({
-      ...h._source,
-      id: h._id,
-      docNumber: i,
-    }))
-    .filter((r): r is PolicyIndex => r !== undefined);
+  const allResults: PolicyIndex[] = rawResults.map((h, i) => ({
+    id: h.doc_id.toString(),
+    docNumber: i,
+    text: h.text,
+    title: h.title,
+    metadata: h.meta,
+    vector: [],
+  }));
 
   return allResults;
 };

@@ -34,6 +34,10 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_users_upn'), table_name='users')
     op.create_unique_constraint(
         'users_ms_user_id_key', 'users', ['ms_user_id'])
+
+    # Update null ms_user_id values to an empty string before dropping the constraint
+    op.execute("UPDATE users SET ms_user_id = '' WHERE ms_user_id IS NULL")
+
     op.alter_column('users', 'ms_user_id',
                     existing_type=sa.VARCHAR(),
                     nullable=False)
