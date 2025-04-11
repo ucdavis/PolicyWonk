@@ -24,5 +24,13 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # first we need to remove any user_roles that are using these roles
+    op.execute("""
+        DELETE FROM user_roles
+        WHERE role_id IN (
+            SELECT id FROM roles WHERE name IN ('ADMIN', 'USER')
+        )
+    """)
+
     # remove ADMIN and USER roles
     op.execute("DELETE FROM roles WHERE name IN ('ADMIN', 'USER')")
