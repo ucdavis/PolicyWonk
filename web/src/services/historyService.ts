@@ -165,7 +165,7 @@ export const saveChat = async (
   const newChat = await prisma.chats.create({
     data: {
       ...chat,
-      messages: filterOutSystemMessages(messages) as unknown as InputJsonValue, // hack for now until we switch to useChat
+      messages: messages as unknown as InputJsonValue, // hack for now until we switch to useChat
     },
   });
 
