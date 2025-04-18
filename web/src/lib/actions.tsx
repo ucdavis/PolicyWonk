@@ -14,12 +14,12 @@ import { Feedback, UIStateNode } from '../models/chat';
 import { Focus } from '../models/focus';
 import {
   getEmbeddings,
-  getSearchResults,
   getSystemMessage,
   expandedTransformSearchResults,
   openai,
   llmModel,
   transformContentWithCitations,
+  getSearchResultsElastic,
 } from '../services/chatService';
 import {
   removeChat,
@@ -72,8 +72,9 @@ export const submitUserMessage = async (userInput: string) => {
     wonkThoughts.update('Getting embeddings...');
     const embeddings = await getEmbeddings(userInput);
 
+    // TODO: PWv2 will change to using search results from pgsql
     wonkThoughts.update('Searching for relevant documents...');
-    const searchResults = await getSearchResults(embeddings, focus);
+    const searchResults = await getSearchResultsElastic(embeddings, focus);
 
     const transformedResults = expandedTransformSearchResults(searchResults);
 
