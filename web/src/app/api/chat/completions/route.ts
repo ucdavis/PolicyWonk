@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { Focus } from '@/models/focus';
 import {
   getEmbeddings,
-  getSearchResults,
+  getSearchResultsPgSQL,
   expandedTransformSearchResults,
   getSystemMessage,
   openai,
@@ -53,7 +53,8 @@ export async function POST(req: Request) {
 const runPolicyWonkModel = async (input: string, focus: Focus) => {
   const embeddings = await getEmbeddings(input);
 
-  const searchResults = await getSearchResults(embeddings, focus);
+  // TODO: v2 uses pgsql - we aren't there yet but leaving this as v2 since v1 doesn't use the API
+  const searchResults = await getSearchResultsPgSQL(embeddings, focus);
 
   const transformedResults = expandedTransformSearchResults(searchResults);
 
