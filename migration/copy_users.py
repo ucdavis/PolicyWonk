@@ -13,7 +13,7 @@ def get_unique_user_ids(mongo_uri, db_name):
     client = MongoClient(mongo_uri)
     db = client[db_name]
     chats_collection = db['chats']
-    user_ids = chats_collection.distinct('UserId')
+    user_ids = chats_collection.distinct('userId')
     client.close()
     return user_ids
 
@@ -128,23 +128,33 @@ def add_user_to_pgsql(user: User, conn) -> None:
             cursor.close()
 
 
-if __name__ == "__main__":
-    # Example usage: Get auth token from environment variable
-    auth_token = """"""
+def migrate_user(user_id: str, auth_token: str, pg_conn) -> bool:
+    """
+    Fetches user info from Graph API, maps it, and adds it to PostgreSQL.
 
-    # user_id_to_fetch = "0a506fd0-7367-46d7-82fb-aa4c85b7c34b"
-    user_id_to_fetch = "20443e5e-6d32-45dd-93bc-0b1ac1284485"  # adam
-    graph_api_user_info = get_user_info_from_graph(
-        user_id_to_fetch, auth_token)
+    Args:
+        user_id: The Microsoft Graph user ID to migrate.
+        auth_token: A valid Microsoft Graph API access token.
+        pg_conn: An active psycopg2 connection object.
 
+    Returns:
+        True if the user was successfully processed (fetched and added/skipped), False otherwise.
+    """
+    print(f"\n--- Processing user ID: {user_id} ---")
+    graph_api_user_info = get_user_info_from_graph(user_id, auth_token)
     user_object: Optional[User] = None
 
     if graph_api_user_info:
-        print(
-            f"Successfully fetched user info for {user_id_to_fetch}:\n{graph_api_user_info}")
         try:
             ext_attrs = graph_api_user_info.get(
                 'onPremisesExtensionAttributes', {}) or {}
+            required_keys = ['id', 'displayName', 'mail', 'userPrincipalName']
+            if not all(key in graph_api_user_info and graph_api_user_info[key] for key in required_keys):
+                missing = [key for key in required_keys if not (
+                    key in graph_api_user_info and graph_api_user_info[key])]
+                print(
+                    f"Error: Missing required Graph API fields for user ID {user_id}. Missing: {missing}")
+                return False
             user_object = User(
                 ms_user_id=graph_api_user_info['id'],
                 display_name=graph_api_user_info['displayName'],
@@ -156,41 +166,95 @@ if __name__ == "__main__":
                 affiliations=ext_attrs.get('extensionAttribute8'),
                 departments=ext_attrs.get('extensionAttribute9')
             )
-
-            user_object.upn = f'{(user_object.kerberos or 'unknown').lower()}@ucdavis.edu'
-            print(
-                f"Mapped Graph API info to User object for UPN: {user_object.upn}\n{user_object.__dict__}")
+            if user_object.kerberos:
+                user_object.upn = f'{user_object.kerberos.lower()}@ucdavis.edu'
+            else:
+                print(
+                    f"Warning: Kerberos ID (extensionAttribute13) not found for user {user_id}. Using original UPN: {user_object.upn}")
         except KeyError as e:
             print(
-                f"Error mapping Graph API response to User object: Missing key {e}")
-            user_object = None
+                f"Error mapping Graph API response to User object for ID {user_id}: Missing key {e}")
+            return False
         except Exception as e:
-            print(f"An unexpected error occurred during mapping: {e}")
-            user_object = None
+            print(
+                f"An unexpected error occurred during mapping for ID {user_id}: {e}")
+            return False
     else:
-        print(f"Failed to fetch user info for {user_id_to_fetch}.")
+        print(
+            f"Failed to fetch user info for {user_id}. Skipping database add.")
+        return False
 
-    dsn = "dbname=policywonk user=root password=example host=postgres port=5432"
+    if user_object:
+        try:
+            add_user_to_pgsql(user_object, pg_conn)
+            return True
+        except Exception as e:
+            print(f"Failed to add user {user_object.upn} to PostgreSQL.")
+            return False
+    else:
+        print(
+            f"Skipping database add for user ID {user_id} as User object was not created.")
+        return False
+
+
+if __name__ == "__main__":
+
+    user_ids_to_migrate = get_unique_user_ids(MONGO_URI, MONGO_DB_NAME)
+    if not user_ids_to_migrate:
+        print("No user IDs found in MongoDB to migrate.")
+        exit(0)
+    else:
+        print(f"Found {len(user_ids_to_migrate)} unique user IDs in MongoDB.")
+    print("Starting migration process...")
 
     pg_conn = None
+    successful_migrations = 0
+    failed_migrations = 0
+
     try:
         print("Attempting to connect to PostgreSQL...")
         pg_conn = psycopg2.connect(dsn)
-        print("Connection successful.")
+        pg_conn.autocommit = False
+        print("PostgreSQL connection successful. Starting migration...")
 
-        if user_object and pg_conn:
-            print(f"Attempting to add user {user_object.upn} to PostgreSQL...")
-            add_user_to_pgsql(user_object, pg_conn)
-        elif not user_object:
-            print("Skipping PostgreSQL add: User object not created or mapping failed.")
-        elif not pg_conn:
-            print("Skipping PostgreSQL add: Database connection not established.")
-
+        for user_id in user_ids_to_migrate:
+            if not user_id:
+                print("Skipping empty user ID found in MongoDB.")
+                continue
+            try:
+                success = migrate_user(user_id, auth_token, pg_conn)
+                if success:
+                    successful_migrations += 1
+                else:
+                    failed_migrations += 1
+            except Exception as e:
+                print(
+                    f"!!! Critical error processing user ID {user_id}: {e}. Rolling back transaction for this user.")
+                failed_migrations += 1
+                if pg_conn:
+                    pg_conn.rollback()
+        if pg_conn:
+            print("\nCommitting successful changes to PostgreSQL...")
+            pg_conn.commit()
+            print("Commit successful.")
     except psycopg2.OperationalError as e:
         print(f"Unable to connect to the database: {e}")
+        failed_migrations = len(user_ids_to_migrate)
     except Exception as e:
-        print(f"An error occurred during PostgreSQL operation: {e}")
+        print(
+            f"An unexpected error occurred during the migration process: {e}")
+        if pg_conn:
+            print("Rolling back any pending changes...")
+            pg_conn.rollback()
+        failed_migrations = len(user_ids_to_migrate) - successful_migrations
     finally:
         if pg_conn:
             pg_conn.close()
             print("PostgreSQL connection closed.")
+
+    print("\n--- Migration Summary ---")
+    print(f"Total users found in MongoDB: {len(user_ids_to_migrate)}")
+    print(
+        f"Successfully processed (added or already exists): {successful_migrations}")
+    print(f"Failed to process: {failed_migrations}")
+    print("-------------------------")
