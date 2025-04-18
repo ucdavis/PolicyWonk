@@ -198,6 +198,10 @@ def migrate_user(user_id: str, auth_token: str, pg_conn) -> bool:
 
 
 if __name__ == "__main__":
+    MONGO_URI = "mongodb://"
+    MONGO_DB_NAME = "policywonk"  # Replace with your MongoDB database name
+    dsn = "dbname=policywonk user=root password=example host=postgres port=5432"
+    auth_token = """eyJ0...fA"""
 
     user_ids_to_migrate = get_unique_user_ids(MONGO_URI, MONGO_DB_NAME)
     if not user_ids_to_migrate:
