@@ -4,6 +4,11 @@ from copy_chats import get_chats, migrate_chat
 import psycopg2
 
 # --- CONFIG ---
+MONGO_URI = ""
+MONGO_DB_NAME = "policywonk"
+DSN = "dbname=policywonk user=root password=example host=postgres port=5432"
+# You may want to load this from a secure location or env var in production
+AUTH_TOKEN = """eyJ...PTfA"""
 
 if __name__ == "__main__":
     # --- USERS MIGRATION ---
