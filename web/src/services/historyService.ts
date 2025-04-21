@@ -45,10 +45,12 @@ export const getChatHistory = async (): Promise<
   WonkReturnObject<ChatHistoryTitleEntry[]>
 > => {
   const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-  if (!userId) {
+
+  if (!session || !session.userId) {
     return WonkUnauthorized();
   }
+
+  const userId = session.userId;
 
   const chats = await prisma.chats.findMany({
     where: {

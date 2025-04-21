@@ -7,9 +7,8 @@ import Logo from '../../../components/layout/logo';
 // supported campuses for the login page w/ tenant values
 const campuses = [
   { name: 'UC Davis', value: 'ucdavis' },
-  { name: 'UC Berkeley', value: 'ucberkeley' },
+  // { name: 'UC Berkeley', value: 'ucberkeley' },
   { name: 'UC San Francisco', value: 'ucsf' },
-  { name: 'UCLA', value: 'ucla' },
 ];
 
 export const generateMetadata = () => {
@@ -71,6 +70,19 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
             ))}
           </div>
         </form>
+        <div className='mt-4 text-center'>
+          <small>
+            Don&apos;t see your campus listed?{' '}
+            <a
+              href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Contact us
+            </a>{' '}
+            if you would like to use Policy Wonk.
+          </small>
+        </div>
       </div>
     </>
   );
