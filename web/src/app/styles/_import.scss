@@ -1,15 +1,8 @@
 @import "bootstrap/scss/_functions";
 @import "bootstrap/scss/_variables";
 @import "@ucdavis/gunrockin/sass/gunrockin.scss";
-
-$ucop-blue:#1295D8;
-$ucop-gold:#FFB511;
-
-$ucop-blue-light:#E3F0F7;
-$ucop-blue-medium:#ABD7EE;
-
-$primary-color: $ucop-blue;
-$secondary-color: $ucop-gold;
+$primary-color: $sunflower;
+$secondary-color: $putahcreek;
 
 $theme-colors: (
   primary: $primary-color,
@@ -24,15 +17,7 @@ $theme-colors: (
 @import "bootstrap/scss/bootstrap";
 @import "@ucdavis/gunrockin/sass/_typography.scss";
 
-$primary-bg: #FCFCFC;
-
-//variable sizes
-$header-height: 85px;
-$main-height: 90dvh;
-
-$max-chat-width: 48rem;
-
-$sidebar-width-open: 256px;
+$primary-bg: #FFF2CC;
 
 $borders: #e6e7e9;
 $primary-font: rgba(31, 31, 31, 0.99); //
