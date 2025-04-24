@@ -125,17 +125,5 @@
 footer {
   text-align: right;
   padding-top: 24px;
-}
-
-ul.footer-links {
-  padding-left: 0;
-  li {
-    display: inline;
-  }
-}
-
-.sidebar-footer {
-  max-width: $sidebar-width-open;
-  padding-top: 12px !important;
-  margin-top: auto;
+  padding-bottom:16px;
 }

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Image from 'next/image';
 
-// import Ucoplogo from '/public/media/uc-wordmark-blue-official.svg';
+import Ucoplogo from '/public/media/uc-wordmark-blue-official.svg';
 
 import FooterLinks from './footerLinks';
 // import UserNameDisplay from './userNameDisplay';
@@ -17,8 +17,6 @@ const Footer: React.FC = () => {
         {/* <Image width={85} src={Ucoplogogo} alt='UC Davis logo greyscale' /> */}
       </a>
       <p>Copyright &copy; All rights reserved.</p>
-
-      <div className='col text-end'>{/* <UserNameDisplay /> */}</div>
     </footer>
   );
 };

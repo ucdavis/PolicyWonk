@@ -6,6 +6,8 @@ config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatic
 import type { Metadata } from 'next';
 
 import './styles/main.scss';
+import SiteBrand from '@/components/layout/siteBrand';
+
 import ChatHistory from '../components/chatHistory/chatHistory';
 import MobileSidebar from '../components/layout/mobileSidebar';
 import Providers from '../components/layout/providers';
@@ -52,6 +54,7 @@ export default function RootLayout({
             </div>
 
             <div className='wonk-wrapper'>
+              <SiteBrand />
               <div className='wonk-container'>{children}</div>
             </div>
           </Providers>

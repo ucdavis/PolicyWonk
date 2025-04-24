@@ -15,12 +15,6 @@ const Sidebar: React.FC<SidebarProps> = ({ history }) => {
     <div className='wonk-sidebar-wrapper'>
       <header className='wonk-sidebar-header '>
         buttons for nav/new chat here
-        <h1 className='site-brand'>
-          <Link href='/'>
-            PolicyWonk <br />
-            <span className='subtitle'>A UC Davis Policy resource</span>
-          </Link>
-        </h1>
       </header>
       <div className='wonk-sidebar-main container'>
         <div className='chat-history-wrapper'>{history}</div>
