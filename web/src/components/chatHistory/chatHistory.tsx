@@ -29,8 +29,8 @@ const ChatHistory: React.FC = async () => {
     // same return as the fallback in the error boundary
     // but we have to do it here too, since the error boundary doesn't catch server errors
     return (
-      <div className='history-wrapper'>
-        <h2>Chat History</h2>
+      <div className='chat-history-wrapper'>
+        <h3 className='text-end'>Chat History</h3>
         <WonkyClientError
           thereWasAnErrorLoadingThe='chat history'
           type='text'
@@ -41,8 +41,8 @@ const ChatHistory: React.FC = async () => {
 
   return (
     <>
-      <div className='history-wrapper'>
-        <h2>Chat History</h2>
+      <h3 className='text-end'>Chat History</h3>
+      <div className='chat-history'>
         {!!chats && <ChatHistoryWrapper chats={chats} />}
       </div>
     </>

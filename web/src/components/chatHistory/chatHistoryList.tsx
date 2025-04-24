@@ -27,11 +27,11 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
   };
 
   return (
-    <ul className='history-list'>
+    <ul className='no-list-style'>
       <AnimatePresence initial={false}>
         {chats.map((chat) => (
           <motion.li
-            className={`history-list-group-item ${isActive(chat.id) ? 'active' : ''}`}
+            className={`chat-history-list-item ${isActive(chat.id) ? 'active' : ''}`}
             key={chat.id}
             initial={{ height: 0, opacity: 0 }}
             animate={{
