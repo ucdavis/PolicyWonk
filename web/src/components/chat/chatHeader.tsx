@@ -10,7 +10,7 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({ children }) => {
   return (
     <div className='chat-top-home'>
-      <h1>Ask Policy Wonk a question</h1>
+      <h1>Ask PolicyWonk a question</h1>
       <br />
       {/* <WonkyErrorBoundary>
         <Logo />

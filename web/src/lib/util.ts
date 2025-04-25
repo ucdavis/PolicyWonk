@@ -13,7 +13,7 @@ export const getFullQuestionAndAnswer = (messages: Message[]) => {
     .map((message) => {
       return message.role === 'user'
         ? `${message.content}`
-        : `Policy Wonk:\n${message.content}`;
+        : `PolicyWonk:\n${message.content}`;
     })
     .join('\n\n');
 

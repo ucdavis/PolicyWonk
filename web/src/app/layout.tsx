@@ -16,10 +16,10 @@ import GtagProvider from '../lib/gtagProvider';
 
 export const metadata: Metadata = {
   title: {
-    template: 'Policy Wonk | %s',
-    default: 'Policy Wonk',
+    template: 'PolicyWonk | %s',
+    default: 'PolicyWonk',
   },
-  description: 'Policy Wonk: UCD Policy Expert',
+  description: 'PolicyWonk: UCD Policy Expert',
 };
 
 export default function RootLayout({

@@ -44,7 +44,7 @@ const MobileSidebar: React.FC<SidebarProps> = ({ history }) => {
               <header>
                 <h1 className='logo'>
                   <Link href='/'>
-                    Policy Wonk <br />
+                    PolicyWonk <br />
                     <span className='subtitle'>Your UC Policy expert</span>
                   </Link>
                 </h1>

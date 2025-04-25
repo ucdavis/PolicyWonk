@@ -46,7 +46,7 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
     <>
       <div className='home-message'>
         <Logo />
-        <h1>Welcome to Policy Wonk</h1>
+        <h1>Welcome to PolicyWonk</h1>
         <p className='lede'>
           This tool will help you answer your UC Davis administrative policy and
           procedure questions, just login, type your question and voila
@@ -80,7 +80,7 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
             >
               Contact us
             </a>{' '}
-            if you would like to use Policy Wonk.
+            if you would like to use PolicyWonk.
           </small>
         </div>
       </div>

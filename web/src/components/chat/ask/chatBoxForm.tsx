@@ -67,7 +67,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
         </button>{' '}
       </form>
       <p className='disclaimer text-end mt-3 mb-2'>
-        Policy Wonk can make errors, view our{' '}
+        PolicyWonk can make errors, view our{' '}
         <Link
           className='discreet-link'
           href='https://iet.ucdavis.edu/aggie-ai/rocky/faq'
