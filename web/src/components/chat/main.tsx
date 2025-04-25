@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useUIState } from 'ai/rsc';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -101,7 +103,8 @@ const MainContent = () => {
                   }}
                   aria-label='Ask another question'
                 >
-                  Ask another question
+                  Ask another question{' '}
+                  <FontAwesomeIcon className='ms-1' icon={faPaperPlane} />
                 </button>
               </div>
             </div>

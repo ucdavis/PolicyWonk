@@ -1,13 +1,12 @@
 .btn {
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  letter-spacing: 0.025em;
-  text-decoration: none;
   text-transform: uppercase;
   transition: all 0.15s ease;
   font-family: $sans-bold;
 
+}
+.btn-icon {
+  padding: 0;
+    margin: 0;
 }
 .btn-primary {
   background-color: $primary-color;
