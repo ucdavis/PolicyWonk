@@ -66,7 +66,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>{' '}
       </form>
-      <p className='disclaimer text-center mt-3 mb-2'>
+      <p className='disclaimer text-end mt-3 mb-2'>
         Policy Wonk can make errors, view our{' '}
         <Link
           className='discreet-link'
