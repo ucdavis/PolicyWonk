@@ -26,7 +26,7 @@ margin-bottom:8px;
     .btn-link {
         padding-right:8px;
         font-size:0.9rem;
-        text-decoration: none;
+        
     }
     svg {
       margin-right:8px;
@@ -122,6 +122,7 @@ margin-bottom:8px;
   border:none;
   box-shadow:none;
   color:$secondary-font;
+  text-decoration: none;
   &:hover {
     color: $secondary-color;
     background-color: rgba(255,255,255,0.000001);
