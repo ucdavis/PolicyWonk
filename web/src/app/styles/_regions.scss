@@ -18,6 +18,7 @@ img.chat-portrait {
     margin:2px 0 0 2px;
   }
 }
+
 .external-links {
     a {
         font-size:1.1rem;
@@ -122,76 +123,12 @@ img.chat-portrait {
     background-color: #fefefef6;
     border-radius: 5px;
 }
-// focus-bar
 
-.focus-bar {
-    background-color:$primary-bg;
-    border:1px solid $borders;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    margin-bottom:-20px;
-    transition: background-color 100ms linear;
-    cursor: pointer;
-    margin-top:1%;
-    padding:6px 0;
-    &:hover {
-        background-color: #FFE599;
-    }
-    .btn-link {
-        padding-right:8px;
-        font-size:0.9rem;
-    }
-
+.user-message-row p {
+    background-color:#f1f1f1 ;
+    border-radius: 30px;
+    padding:16px;
 }
-
-.focus-option {
-  .btn-wonk {
-    width:100%;
-    text-align: left;
-    height:111px;
-    font-family: $sans-reg;
-    text-transform: none;
-    border-bottom:4px solid #fff;
-    display: flex;
-    flex-direction: column;
-    h4 {
-        font-family: $sans-bold;
-        color:$primary-font;
-        text-transform: uppercase;
-        font-size:1rem;
-    }
-    p {
-        font-size:0.9rem; 
-    }
-    &:hover {
-        border-bottom:4px solid $primary-color;
-    }
-    &.selected-focus {
-        background-color: $primary-bg;
-        border-bottom:4px solid $primary-bg;
-        &:hover {
-            background-color: $primary-bg !important;
-            border-bottom:4px solid $primary-color;
-        }
-        }
-  }
-
-}
-.focus-result {
-    background-color:#F7F7F7;
-    border:1px solid $borders;
-    margin-bottom:20px;
-    border-radius: 6px;
-    .btn-link {
-        
-        padding-right:8px;
-        cursor: initial;
-        &:hover {
-            color:$secondary-font;
-        }
-    }
-}
-
 
 // modal 
 .modal-header {
@@ -213,12 +150,11 @@ img.chat-portrait {
     text-align: right;
     padding: 4px 20px 4px 0;
     p {
-    
         color:#fff;
         font-family:$sans-bold;
         margin:0;
         padding:0;
-         font-size:0.8rem;
+        font-size:0.8rem;
     }
     
 }

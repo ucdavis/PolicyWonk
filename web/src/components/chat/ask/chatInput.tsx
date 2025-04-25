@@ -62,17 +62,17 @@ const ChatInput = () => {
   };
 
   return (
-    <>
-      <WonkyErrorBoundary>
+    <div className='wonk-chat-width'>
+      {/* <WonkyErrorBoundary>
         <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
-      </WonkyErrorBoundary>
+      </WonkyErrorBoundary> */}
       <FocusBar
         focus={aiState.meta.focus}
         options={focuses}
         onSelection={onFocusSelection}
       />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
-    </>
+    </div>
   );
 };
 

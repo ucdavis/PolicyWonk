@@ -20,7 +20,7 @@ $content-padding-value:36px 0 18px 0;
   width: 100%;
   position: relative;
   height: 100dvh;
-  border-bottom:16px solid $ucop-blue;
+  border-bottom:8px solid $ucop-blue;
   .wonk-header {
     background-color: #fff;
     width: 100%;
@@ -55,6 +55,9 @@ $content-padding-value:36px 0 18px 0;
       .wonk-chat-top {
         overflow-y: auto;
         padding-top: 16px;
+        & .chat-top-home {
+          margin-top:20%;
+        }
       }
       .footnotes {
         .sr-only {

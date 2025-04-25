@@ -1,6 +1,9 @@
 import React from 'react';
 
+import Image from 'next/image';
 import Link from 'next/link';
+
+import ucdavislogodark from '/public/media/ucdavis_dark.svg';
 
 const SiteBrand = () => {
   return (
@@ -11,6 +14,9 @@ const SiteBrand = () => {
         </Link>
 
         <p className='discreet m-0'>Beta v0.87</p>
+      </div>
+      <div className='text-end'>
+        <Image src={ucdavislogodark} alt='Logo' width={100} />
       </div>
     </div>
   );
