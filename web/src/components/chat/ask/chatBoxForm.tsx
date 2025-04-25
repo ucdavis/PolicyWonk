@@ -1,6 +1,9 @@
 'use client';
 import React from 'react';
 
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 interface ChatBoxFormProps {
   onQuestionSubmit: (question: string) => void;
 }
@@ -20,7 +23,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
   return (
     <form
       ref={formRef}
-      className='d-flex flex-column mt-3'
+      className='wonk-input-wrapper'
       onSubmit={async (e: any) => {
         e.preventDefault();
 
@@ -33,37 +36,35 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
         onQuestionSubmit(value);
       }}
     >
-      <div className='input-group'>
-        <div className='form-floating'>
-          <textarea
-            id='messageTextArea'
-            ref={inputRef}
-            tabIndex={0}
-            className='form-control wonk-input'
-            autoFocus
-            placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            spellCheck={false}
-            autoComplete='off'
-            autoCorrect='off'
-            name='message'
-            rows={1}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                formRef.current?.requestSubmit();
-              }
-            }}
-          ></textarea>
-          <label htmlFor='messageTextArea'>
-            Ask PolicyWonk a question; Change your focus by clicking on the
-            Focus Bar above
-          </label>
-        </div>
+      <div className='form-floating w-full'>
+        <textarea
+          id='messageTextArea'
+          ref={inputRef}
+          tabIndex={0}
+          className='form-control wonk-input'
+          autoFocus
+          placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          spellCheck={false}
+          autoComplete='off'
+          autoCorrect='off'
+          name='message'
+          rows={1}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              formRef.current?.requestSubmit();
+            }
+          }}
+        ></textarea>
+        <label htmlFor='messageTextArea'>
+          Ask PolicyWonk a question; Change your focus by clicking on the Focus
+          Bar above
+        </label>
       </div>
-      <button className='btn btn-primary mt-3' aria-label='Send message'>
-        Send
+      <button className='btn btn-prompt' aria-label='Send message'>
+        <FontAwesomeIcon icon={faPaperPlane} />
       </button>{' '}
     </form>
   );

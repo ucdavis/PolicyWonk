@@ -55,7 +55,9 @@ export default function RootLayout({
 
             <div className='wonk-wrapper'>
               <SiteBrand />
-              <div className='wonk-container'>{children}</div>
+              <div className='wonk-main container'>
+                <div className='wonk-chat-wrapper'>{children}</div>
+              </div>
             </div>
           </Providers>
         </main>

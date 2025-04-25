@@ -20,12 +20,62 @@ $content-padding-value:36px 0 18px 0;
   width: 100%;
   position: relative;
   height: 100dvh;
+  border-bottom:16px solid $ucop-blue;
   .wonk-header {
     background-color: #fff;
     width: 100%;
     z-index: 99;
     padding-top: 10px;
     padding-bottom: 8px;
+  }
+  .wonk-chat-width {
+  max-width: $max-chat-width;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 200px;
+  @include breakpoint(lg) {
+    width: 75%;
+  }
+}
+  .wonk-main {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    .wonk-chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: $main-height;
+      padding: 0 8px;
+      margin-left: -36px;
+      margin-right: -36px;
+      @include breakpoint(md) {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .wonk-chat-top {
+        overflow-y: auto;
+        padding-top: 16px;
+      }
+      .footnotes {
+        .sr-only {
+          display: none;
+        }
+      }
+    }
+    .wonk-input-wrapper {
+      position: relative; // for button to hover over input bar
+      display: flex;
+      align-items: flex-end;
+    }
+    .wonk-input {
+      background: $primary-bg;
+      border: none;
+      width: 100%;
+      box-shadow: $box-shadow;
+      border-bottom: 2px solid $ucop-blue;
+      padding-right: 54px;
+      max-height: 50vh;
+    }
   }
   .wonk-container {
   padding: $content-padding-value;

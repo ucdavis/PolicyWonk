@@ -144,3 +144,56 @@
 
 .form-floating>label {
 white-space:inherit !important; }
+
+.h-full-vh {
+  height: 100vh;
+}
+.w-full {
+  width: 100%;
+}
+
+.form-floating > .form-control:focus ~ label::after,
+.form-floating > .form-control:not(:placeholder-shown) ~ label::after,
+.form-floating > .form-control-plaintext ~ label::after,
+.form-floating > .form-select ~ label::after {
+  background-color: inherit;
+}
+.form-floating > label {
+  font-size: 1.1rem;
+  color: $secondary-font;
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-control-plaintext ~ label,
+.form-floating > .form-select ~ label {
+  color: rgba(var(--bs-body-color-rgb), 0.65);
+  transform: scale(0.65) translateY(-0.5rem) translateX(0.15rem);
+}
+.relative {
+  position: relative;
+}
+.btn-prompt {
+  border-radius: 50%;
+  background-color: $ucop-blue;
+  color: #fff;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 13px;
+  right: 13px;
+  .wonk-input-wrapper & {
+    &:not(.btn-check) + .btn:active,
+    &.btn:first-child:active,
+    &:active {
+      color: #fff;
+      background-color: darken($ucop-blue, 6);
+      border-color: darken($ucop-blue, 6);
+    }
+  }
+  &:hover {
+    color: #fff;
+    background-color: lighten($ucop-blue, 6);
+  }
+}

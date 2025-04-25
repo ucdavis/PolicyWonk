@@ -5,7 +5,7 @@ type WonkTopProps = {
 };
 
 const WonkTop: React.FC<WonkTopProps> = ({ children }) => {
-  return <div className='wonk-top'>{children}</div>;
+  return <div className='wonk-chat-top'>{children}</div>;
 };
 
 export default WonkTop;
