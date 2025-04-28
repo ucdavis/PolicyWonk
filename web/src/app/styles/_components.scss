@@ -23,7 +23,8 @@
   &:active,
   &:focus-visible {
     background-color: $primary-color;
-    border-left:8px solid $ucop-gold;
+    border-left:8px solid $ucop-gold !important;
+    color:#fff !important;
   }
 }
 .focus-bar {
@@ -130,15 +131,15 @@ margin-bottom:8px;
   color:$secondary-font;
   text-decoration: none;
   &:hover {
-    color: $secondary-color;
+    color: $primary-color;
     background-color: rgba(255,255,255,0.000001);
   }
   &:active {
-    color: $secondary-color !important;
+    color: $primary-color !important;
     background-color: rgba(255,255,255,0.000001) !important;
   }
   &:focus-visible {
-    color: $secondary-color !important;
+    color: $primary-color !important;
     background-color: rgba(255,255,255,0.000001) !important;
   }
   .focus-bar & {
