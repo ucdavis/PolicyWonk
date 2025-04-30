@@ -2,16 +2,18 @@
 // see: https://docs.fontawesome.com/web/use-with/react/use-with & https://github.com/FortAwesome/react-fontawesome/issues/134
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css'; // Import the CSS
-config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 import type { Metadata } from 'next';
+config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
+import { headers } from 'next/headers';
+
+import ChatSidebar from '@/components/layout/chatSidebar';
+import SiteBrand from '@/components/layout/siteBrand';
+import { checkMobileOnServer } from '@/lib/checkMobileOnServer';
 
 import './styles/main.scss';
-import SiteBrand from '@/components/layout/siteBrand';
 
 import ChatHistory from '../components/chatHistory/chatHistory';
-import MobileSidebar from '../components/layout/mobileSidebar';
 import Providers from '../components/layout/providers';
-import Sidebar from '../components/layout/sidebar';
 import GtagProvider from '../lib/gtagProvider';
 
 export const metadata: Metadata = {
@@ -27,6 +29,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = headers();
+  const isMobile = checkMobileOnServer(headersList);
   return (
     <html lang='en'>
       <head>
@@ -46,12 +50,9 @@ export default function RootLayout({
       <body>
         <main className='d-flex'>
           <Providers>
-            <div className='mobile-sidebar'>
-              <MobileSidebar history={<ChatHistory />} />
-            </div>
-            <div className='desktop-sidebar'>
-              <Sidebar history={<ChatHistory />} />
-            </div>
+            <ChatSidebar isMobile={isMobile}>
+              <ChatHistory />
+            </ChatSidebar>
 
             <div className='wonk-wrapper'>
               <SiteBrand />
