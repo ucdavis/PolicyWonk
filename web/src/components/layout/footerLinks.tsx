@@ -4,8 +4,6 @@ import React from 'react';
 
 import Link from 'next/link';
 
-// import Link from 'next/link';
-
 const FooterLinks: React.FC = () => {
   return (
     <div>
@@ -23,7 +21,7 @@ const FooterLinks: React.FC = () => {
           {''}|
         </li>
         <li>
-          <Link className='discreet-link ms-1' href='/about'>
+          <Link className='discreet-link ms-1' href='/disclaimer'>
             Disclaimer
           </Link>
         </li>
