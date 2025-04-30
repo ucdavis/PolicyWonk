@@ -4,8 +4,6 @@ import { faBars, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 
-import { buildVersion } from '../../models/static';
-
 import Footer from './footer';
 
 interface SidebarProps {
@@ -24,15 +22,12 @@ const Sidebar: React.FC<SidebarProps> = ({ history }) => {
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
-        <Link className='btn btn-icon btn-lg btn-link' href='#'>
+        <Link className='btn btn-icon btn-lg btn-link' href='/chat/new'>
           <FontAwesomeIcon icon={faPenToSquare} />
         </Link>
       </header>
       <div className='wonk-sidebar-main container'>
         <div className='chat-history-wrapper'>{history}</div>
-        {/* <div className='alert-tag'>
-          <p>BETA v{buildVersion}</p>
-        </div> */}
         <Footer />
       </div>
     </div>
