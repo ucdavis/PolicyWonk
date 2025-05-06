@@ -30,7 +30,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
   return (
     <>
       <motion.nav
-        className={`aggie-sidebar-wrapper${className ? ` ${className}` : ''}`}
+        className={`wonk-sidebar-wrapper${className ? ` ${className}` : ''}`}
         role='navigation'
         aria-label='Main sidebar'
         initial={false}
@@ -38,19 +38,19 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
         variants={isLargeScreen ? sidebarVariants : sidebarVariantsMobile}
         transition={transition}
         layout
-        layoutId='aggie-sidebar'
+        layoutId='wonk-sidebar'
         ref={sidebarRef}
       >
         {isOpen && (
           <motion.div
             layout='position'
-            className='aggie-sidebar-header d-flex align-items-center justify-content-between container'
+            className='wonk-sidebar-header d-flex align-items-center justify-content-between container'
           >
             <button
               className='btn btn-icon btn-lg btn-link'
               onClick={closeSidebar}
               aria-expanded={true}
-              aria-controls='aggie-sidebar-main'
+              aria-controls='wonk-sidebar-main'
               title='close sidebar'
             >
               <AggieIcon icon={faBars} isDecorative={true} />
@@ -74,9 +74,9 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div
-              key='aggie-sidebar-main'
-              id='aggie-sidebar-main'
-              className='aggie-sidebar-main container'
+              key='wonk-sidebar-main'
+              id='wonk-sidebar-main'
+              className='wonk-sidebar-main container'
               initial='hidden'
               animate='open'
               exit={isLargeScreen ? 'hidden' : ''}
@@ -101,7 +101,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
               className='btn-open-sidebar btn btn-icon btn-lg btn-link'
               onClick={openSidebar}
               aria-expanded={false}
-              aria-controls='aggie-sidebar-main'
+              aria-controls='wonk-sidebar-main'
               title='Open Sidebar'
             >
               <AggieIcon icon={faBars} isDecorative={true} />
