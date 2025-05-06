@@ -123,6 +123,12 @@
     }
   }
 }
+.btn-open-sidebar {
+  position: absolute;
+  top: 28px;
+  left: 1%;
+  z-index: 999;
+}
 footer {
   text-align: right;
   padding-top: 24px;
