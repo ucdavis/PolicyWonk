@@ -1,6 +1,14 @@
 'use server';
 import React from 'react';
 
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
+
+import FooterLinks from '@/components/layout/footerLinks';
+
+import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
+
 import { signIn } from '../../../auth';
 
 // supported campuses for the login page w/ tenant values
@@ -43,8 +51,8 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <div className='row'>
-        <div className='col-8 m-auto mt-5'>
+      <div className='mt-5 row justify-content-center'>
+        <div className='col-12 col-md-6'>
           <h1>Welcome to PolicyWonk</h1>
           <p className='lede'>
             This tool will help you answer your UC Davis administrative policy
@@ -83,6 +91,13 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
             </small>
           </div>
         </div>
+      </div>
+      <div className='login-footer mt-auto'>
+        <FooterLinks />
+        <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
+          <Image width={110} src={Ucoplogo} alt='UCOP logo' />
+        </a>
+        <p>Copyright &copy; All rights reserved.</p>
       </div>
     </>
   );
