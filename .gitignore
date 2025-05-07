@@ -42,3 +42,4 @@ __pycache__/
 
 # dev container artifacts
 .devcontainer/pg_data/
+web/package-lock.json

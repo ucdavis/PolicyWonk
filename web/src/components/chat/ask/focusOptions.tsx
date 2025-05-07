@@ -68,7 +68,7 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
       return <UnionSelection focus={focus} onSelection={subFocusSelection} />;
     } else {
       return (
-        <div className='container py-2'>
+        <div className='py-2'>
           <div className='row g-3'>
             {options.map((option) => (
               <div className='col-12 col-md-6 focus-option' key={option.name}>

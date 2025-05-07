@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useUIState } from 'ai/rsc';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -49,12 +51,9 @@ const MainContent = () => {
         <>
           <WonkTop>
             <ChatHeader>
-              Meet PolicyWonk, a resource for navigating UC Davis administrative
-              policies and procedures.
-              <br />
-              <Link className='btn btn-wonk mt-2' href='/about'>
+              {/* <Link className='btn btn-wonk mt-2' href='/about'>
                 Learn more
-              </Link>
+              </Link> */}
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
@@ -68,7 +67,7 @@ const MainContent = () => {
             >
               <ChatInput />
             </WonkyErrorBoundary>
-            <Disclaimer />
+            {/* <Disclaimer /> */}
           </WonkBottom>
         </>
       ) : (
@@ -95,16 +94,19 @@ const MainContent = () => {
               })}
           </WonkTop>
           <WonkBottom>
-            <div className='d-flex flex-column'>
-              <button
-                className='btn btn-primary mt-3 mb-3'
-                onClick={() => {
-                  onNewMessage();
-                }}
-                aria-label='Ask another question'
-              >
-                Ask another question
-              </button>
+            <div className='wonk-chat-width mt-5'>
+              <div>
+                <button
+                  className='btn btn-primary'
+                  onClick={() => {
+                    onNewMessage();
+                  }}
+                  aria-label='Ask another question'
+                >
+                  Ask another question{' '}
+                  <FontAwesomeIcon className='ms-1' icon={faPaperPlane} />
+                </button>
+              </div>
             </div>
           </WonkBottom>
         </>
