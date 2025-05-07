@@ -55,12 +55,11 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
         <div className='col-12 col-md-6'>
           <h1>Welcome to PolicyWonk</h1>
           <p className='lede'>
-            This tool will help you answer your UC Davis administrative policy
-            and procedure questions, just login, type your question and voila
-            PolicyWonk will do it’s best to answer it!
+            PolicyWonk will help you answer your UC administrative policy and
+            procedure questions, just login with your school below, type your
+            question and voila PolicyWonk will do it’s best to answer it!
           </p>
-          <br />
-          <br />
+          <h4>Available Campuses</h4>
           <form action={signInHandler}>
             <input type='hidden' name='callbackUrl' value={callbackUrl} />
             <div className='d-grid'>
@@ -70,7 +69,7 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
                   type='submit'
                   name='tenant'
                   value={campus.value}
-                  className='btn btn-primary btn-lg btn-block m-2'
+                  className='btn btn-primary btn-md btn-block m-1'
                 >
                   {campus.name}
                 </button>
