@@ -100,6 +100,35 @@ $content-padding-value:36px 0 18px 0;
  
 }
 }
+// static pages
+.static-page-scroll {
+  overflow-y: auto;
+}
+.wonk-static-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: $main-height;
+  margin-left: -36px;
+  margin-right: -36px;
+  @include breakpoint(md) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .static-page-wrapper {
+    padding-top: 40px;
+    padding-left: 24px;
+    padding-right: 24px;
+    p,
+    li {
+      max-width: 48rem;
+    }
+    @include breakpoint(md) {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+}
 
 .mobile-sidebar {
   display:inherit;
