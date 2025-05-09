@@ -1,22 +1,14 @@
 'use server';
 import React from 'react';
 
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 
 import FooterLinks from '@/components/layout/footerLinks';
+import { campuses } from '@/lib/constants';
 
 import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
 
 import { signIn } from '../../../auth';
-
-// supported campuses for the login page w/ tenant values
-const campuses = [
-  { name: 'UC Davis', value: 'ucdavis' },
-  // { name: 'UC Berkeley', value: 'ucberkeley' },
-  { name: 'UC San Francisco', value: 'ucsf' },
-];
 
 export const generateMetadata = () => {
   return {

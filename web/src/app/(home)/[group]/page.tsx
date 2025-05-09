@@ -19,11 +19,7 @@ const RedirectComponent: React.FC<RedirectComponentProps> = ({
     }
   }
 
-  console.log(
-    'Redirecting to /ucdavis/chat/new with params:',
-    params.toString()
-  );
-
+  // TODO: move to campus chooser
   const destination = `/ucdavis/chat/new?${params.toString()}`;
   redirect(destination);
 

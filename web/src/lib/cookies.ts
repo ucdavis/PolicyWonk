@@ -1,0 +1,27 @@
+// File: /workspace/web/src/lib/cookies.ts
+import { cookies } from 'next/headers';
+
+/**
+ * Sets the current group for the user
+ * @param groupId The group ID to set as the current group
+ */
+export function setCurrentGroup(groupId: string) {
+  cookies().set({
+    name: 'pw.group',
+    value: groupId,
+    path: '/',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  });
+}
+
+/**
+ * Gets the current group from the cookie
+ * @returns The current group ID or 'default' if not set
+ */
+export function getCurrentGroup(): string {
+  const groupCookie = cookies().get('pw.group');
+  return groupCookie?.value || 'default';
+}
