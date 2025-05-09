@@ -2,6 +2,8 @@ import React from 'react';
 
 import { redirect } from 'next/navigation';
 
+import { getCurrentGroup } from '@/lib/cookies';
+
 interface RedirectComponentProps {
   searchParams: { [key: string]: string | string[] };
 }
@@ -19,8 +21,9 @@ const RedirectComponent: React.FC<RedirectComponentProps> = ({
     }
   }
 
-  // TODO: move to campus chooser
-  const destination = `/ucdavis/chat/new?${params.toString()}`;
+  const group = getCurrentGroup();
+
+  const destination = `/${group}/chat/new?${params.toString()}`;
   redirect(destination);
 
   return null; // this component will never render

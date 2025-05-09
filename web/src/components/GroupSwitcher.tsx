@@ -10,7 +10,7 @@ interface GroupSwitcherProps {
 }
 
 export function GroupSwitcher({
-  currentGroup = 'default',
+  currentGroup = 'ucdavis',
   availableGroups,
 }: GroupSwitcherProps) {
   const [isUpdating, setIsUpdating] = useState(false);

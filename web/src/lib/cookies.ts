@@ -23,5 +23,5 @@ export function setCurrentGroup(groupId: string) {
  */
 export function getCurrentGroup(): string {
   const groupCookie = cookies().get('pw.group');
-  return groupCookie?.value || 'default';
+  return groupCookie?.value || 'ucdavis';
 }
