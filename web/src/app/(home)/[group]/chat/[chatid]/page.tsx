@@ -35,7 +35,7 @@ export async function generateMetadata(
   { params, searchParams }: HomePageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { group, chatid } = params;
+  const { chatid } = params;
 
   if (chatid === 'new') {
     return {
@@ -68,7 +68,7 @@ const ChatPage = async ({
     chat = result.data;
   } else {
     const session = (await auth()) as WonkSession;
-    chat = newChatSession(session, focus, subFocus);
+    chat = newChatSession(session, group, focus, subFocus);
   }
 
   return (
@@ -82,6 +82,7 @@ export default ChatPage;
 
 const newChatSession = (
   session: WonkSession,
+  group: string,
   focusParam?: string,
   subFocusParam?: string
 ) => {
@@ -90,6 +91,7 @@ const newChatSession = (
   const chat: ChatHistory = {
     ...blankAIState,
     // id is '' in state until submitUserMessage() is called
+    group,
     meta: {
       focus: focus ?? focuses[0],
     },
