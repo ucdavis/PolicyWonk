@@ -1,25 +1,38 @@
 'use server'; // since this is async
 import React from 'react';
 
+import { campusMap } from '@/lib/constants';
+
 import { WonkReturnObject, isWonkSuccess } from '../../lib/error/error';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import {
   ChatHistoryTitleEntry,
-  getChatHistory,
+  getChatHistoryForGroup,
 } from '../../services/historyService';
 
 import ChatHistoryWrapper from './chatHistoryWrapper';
 
-const loadChatHistory = React.cache(
-  async (): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
-    return await getChatHistory();
+interface ChatHistoryProps {
+  group: string;
+}
+
+const loadChatHistoryForGroup = React.cache(
+  async (group: string): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
+    return await getChatHistoryForGroup(group);
   }
 );
 
-const ChatHistory: React.FC = async () => {
+const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
+  // don't show anything if we don't have a group or if it isn't valid
+  if (!group || !campusMap[group]) {
+    return <></>;
+  }
+
+  // we have a valid group, so just show the chat history for that group
+
   let chats: ChatHistoryTitleEntry[] = [];
   try {
-    const result = await loadChatHistory();
+    const result = await loadChatHistoryForGroup(group);
 
     if (!isWonkSuccess(result)) {
       return <></>; // don't show anything on known errors
