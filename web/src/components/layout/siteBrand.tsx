@@ -5,12 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { campusMap, DEFAULT_GROUP } from '@/lib/constants';
+import { campusMap } from '@/lib/constants';
+import { getGroupFromPathname } from '@/lib/groups';
 
 const SiteBrand = () => {
   const pathname = usePathname();
-  const pathGroup = pathname?.split('/')[1];
-  const group = pathGroup && campusMap[pathGroup] ? pathGroup : DEFAULT_GROUP;
+  const group = getGroupFromPathname(pathname);
   const { logoPath, link } = campusMap[group];
   const chatHref = `/${group}/chat/new`;
 
@@ -25,7 +25,7 @@ const SiteBrand = () => {
       </div>
       <div className='text-end'>
         <Link href={link} target='_blank' rel='noopener noreferrer'>
-          <Image src={logoPath} alt='Logo' width={100} height={20} />
+          <Image src={logoPath} alt='Logo' width={100} height={21} />
         </Link>
       </div>
     </div>

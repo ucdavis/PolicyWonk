@@ -6,9 +6,13 @@ import { getCurrentGroup } from '@/lib/cookies';
 
 interface RedirectComponentProps {
   searchParams: { [key: string]: string | string[] };
+  params: {
+    group: string;
+  };
 }
 
 const RedirectComponent: React.FC<RedirectComponentProps> = ({
+  params: { group },
   searchParams,
 }) => {
   const params = new URLSearchParams();
@@ -21,7 +25,10 @@ const RedirectComponent: React.FC<RedirectComponentProps> = ({
     }
   }
 
-  const group = getCurrentGroup();
+  // if we have a group, let's use it, otherwise look at the cookie
+  if (!group) {
+    group = getCurrentGroup();
+  }
 
   const destination = `/${group}/chat/new?${params.toString()}`;
   redirect(destination);

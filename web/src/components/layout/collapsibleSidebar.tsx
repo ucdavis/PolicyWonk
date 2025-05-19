@@ -4,6 +4,9 @@ import React from 'react';
 import { faBars, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { AnimatePresence, motion, Transition, Variants } from 'framer-motion';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { getGroupFromPathname } from '@/lib/groups';
 
 import AggieIcon from '../ui/aggieIcon';
 
@@ -26,6 +29,11 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
 }) => {
   const { isOpen, openSidebar, closeSidebar, isLargeScreen, sidebarRef } =
     useCollapsibleSidebar();
+
+  const pathname = usePathname();
+  const group = getGroupFromPathname(pathname);
+
+  const newChatUrl = group ? `/${group}/chat/new` : '/chat/new';
 
   return (
     <>
@@ -63,7 +71,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
                     closeSidebar();
                   }
                 }}
-                href={'/chat/new'}
+                href={newChatUrl}
                 title='Start a new chat'
               >
                 <AggieIcon icon={faPenToSquare} isDecorative={true} />
