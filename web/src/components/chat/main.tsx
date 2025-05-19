@@ -4,13 +4,11 @@ import React from 'react';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useUIState } from 'ai/rsc';
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '../../lib/aiProvider';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
@@ -51,9 +49,8 @@ const MainContent = () => {
         <>
           <WonkTop>
             <ChatHeader>
-              {/* <Link className='btn btn-wonk mt-2' href='/about'>
-                Learn more
-              </Link> */}
+              <></>
+              {/* Empty children here */}
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
