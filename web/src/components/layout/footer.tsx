@@ -8,16 +8,19 @@ import Link from 'next/link';
 import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
 
 import FooterLinks from './footerLinks';
-// import UserNameDisplay from './userNameDisplay';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  group?: string;
+}
+
+const Footer: React.FC<FooterProps> = ({ group }) => {
   return (
     <footer>
       <div className='footer-campus-chooser mb-3'>
         <h3 className='mb-0'>Campus</h3>
         <Link href='/groups' passHref>
           <button className='btn btn-link btn-icon'>
-            UC Davis <FontAwesomeIcon icon={faCaretDown} />
+            {group || 'UNKNOWN'} <FontAwesomeIcon icon={faCaretDown} />
           </button>
         </Link>
       </div>

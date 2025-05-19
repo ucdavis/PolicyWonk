@@ -92,7 +92,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
               transition={transition}
             >
               {children}
-              <Footer />
+              <Footer group={group} />
             </motion.div>
           )}
         </AnimatePresence>

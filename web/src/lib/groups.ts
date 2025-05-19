@@ -6,3 +6,10 @@ export const getGroupFromPathname = (pathname: string) => {
 
   return group;
 };
+
+export const getGroupOrDefault = (group: string | undefined) => {
+  if (!group || !campusMap[group]) {
+    return DEFAULT_GROUP;
+  }
+  return group;
+};
