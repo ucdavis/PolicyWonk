@@ -43,8 +43,8 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <div className='mt-5 row justify-content-center'>
-        <div className='col-12 col-md-6'>
+      <div className='m-auto mt-5 row justify-content-center'>
+        <div className='col-12 col-md-6 login-wrapper'>
           <h1>Welcome to PolicyWonk</h1>
           <p className='lede'>
             PolicyWonk will help you answer your UC administrative policy and
@@ -81,14 +81,18 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
               if you would like to use PolicyWonk.
             </small>
           </div>
+          <div className='login-footer mt-auto'>
+            <FooterLinks />
+            <a
+              target='_blank'
+              rel='noopener noreferrer'
+              href='https://ucop.edu'
+            >
+              <Image width={110} src={Ucoplogo} alt='UCOP logo' />
+            </a>
+            <p>Copyright &copy; All rights reserved.</p>
+          </div>
         </div>
-      </div>
-      <div className='login-footer mt-auto'>
-        <FooterLinks />
-        <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
-          <Image width={110} src={Ucoplogo} alt='UCOP logo' />
-        </a>
-        <p>Copyright &copy; All rights reserved.</p>
       </div>
     </>
   );
