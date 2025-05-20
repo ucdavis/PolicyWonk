@@ -24,7 +24,7 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({ chats }) => {
       {chats.length ? (
         <ChatHistoryList chats={chats} />
       ) : (
-        <>No chat history found</>
+        <p className='text-end'>No chat history found</p>
       )}
     </WonkyErrorBoundary>
   );
