@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: 'PolicyWonk | %s',
     default: 'PolicyWonk',
   },
-  description: 'PolicyWonk: UCD Policy Expert',
+  description: 'PolicyWonk a UCOP policy tool',
 };
 
 export default function RootLayout({
