@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 
 import ChatSidebar from '@/components/layout/chatSidebar';
 import SiteBrand from '@/components/layout/siteBrand';
+import StaticNav from '@/components/layout/staticNav';
 import { checkMobileOnServer } from '@/lib/checkMobileOnServer';
 
 interface RootLayoutProps {
@@ -16,7 +17,9 @@ export default function StaticPageLayout({
 
   return (
     <>
-      <ChatSidebar isMobile={isMobile}>Static stuff</ChatSidebar>
+      <ChatSidebar isMobile={isMobile}>
+        <StaticNav />
+      </ChatSidebar>
       <div className='wonk-wrapper'>
         <SiteBrand />
         <div className='wonk-main container'>

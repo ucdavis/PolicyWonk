@@ -1,20 +1,36 @@
+'use client';
+
 import React from 'react';
 
-import DiscreetLinksList, { DiscreetLinks } from '../ui/discreetLinksList';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-interface SidebarNavProps {
-  links: DiscreetLinks[];
-  children?: React.ReactNode;
-}
+const navItems = [
+  { href: '/about', label: 'About' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/disclaimer', label: 'Disclaimer' },
+];
 
-const SidebarNavLinks: React.FC<SidebarNavProps> = ({ children, links }) => {
+const StaticNav: React.FC = () => {
+  const pathname = usePathname();
+
   return (
     <div className='static-nav-list mb-auto'>
       <h2>Navigation</h2>
-      <DiscreetLinksList links={links} />
-      {children}
+      <ul>
+        {navItems.map(({ href, label }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              className={`discreet-link${pathname === href ? ' active' : ''}`}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default SidebarNavLinks;
+export default StaticNav;
