@@ -53,12 +53,15 @@ class Chat(Base):
     # store focus and other meta data
     meta: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
+    group: Mapped[str] = mapped_column(String, nullable=False)
+
     assistant = relationship("Assistant", back_populates="chats")
 
     # Define indexes
     __table_args__ = (
         Index('idx_userid_active_timestamp', 'user_id', 'active', 'timestamp'),
-        Index('idx_id_active', 'id', 'active')
+        Index('idx_id_active', 'id', 'active'),
+        Index('idx_group', 'group')
     )
 
 

@@ -15,6 +15,7 @@ export type ChatHistory = {
   messages: Message[];
   meta: ChatHistoryMetadata;
   assistantSlug: string;
+  group: string;
   llmModel: string;
   userId: number;
   reaction?: Feedback;
@@ -30,6 +31,7 @@ export const blankAIState: ChatHistory = {
   meta: {
     focus: focuses[0],
   },
+  group: 'ucdavis',
   llmModel: llmModel,
   userId: 0,
   reaction: undefined,

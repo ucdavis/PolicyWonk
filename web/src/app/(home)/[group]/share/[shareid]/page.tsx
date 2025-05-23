@@ -3,16 +3,17 @@ import React from 'react';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
-import MainContent from '../../../components/chat/main';
-import { AI } from '../../../lib/aiProvider';
-import { WonkReturnObject, isWonkSuccess } from '../../../lib/error/error';
-import WonkyPageError from '../../../lib/error/wonkyPageError';
-import { cleanMetadataTitle } from '../../../lib/util';
-import { ChatHistory } from '../../../models/chat';
-import { getSharedChat } from '../../../services/historyService';
+import MainContent from '@/components/chat/main';
+import { AI } from '@/lib/aiProvider';
+import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
+import WonkyPageError from '@/lib/error/wonkyPageError';
+import { cleanMetadataTitle } from '@/lib/util';
+import { ChatHistory } from '@/models/chat';
+import { getSharedChat } from '@/services/historyService';
 
 type SharedPageProps = {
   params: {
+    group: string;
     shareid: string;
   };
 };

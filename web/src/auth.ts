@@ -1,6 +1,7 @@
 import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 
+import { setCurrentGroup } from './lib/cookies';
 import { User } from './models/user';
 import { ensureUserExists } from './services/userService';
 
@@ -21,6 +22,7 @@ export const {
   handlers: { GET, POST },
   auth,
   signIn,
+  signOut,
 } = NextAuth({
   providers: [
     BoxyHQSAMLProvider({
@@ -61,6 +63,9 @@ export const {
         };
 
         const user = await ensureUserExists(userFromToken);
+
+        // TODO: find user's group from affiliations. if we can't find it, go to a chooser
+        setCurrentGroup('ucdavis');
 
         const token = {
           ...params.token,

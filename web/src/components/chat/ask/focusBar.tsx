@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
@@ -33,7 +33,7 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
       <div className='focus-bar' onClick={() => setOpen(true)}>
         <div className='d-flex justify-content-start align-items-center'>
           <span className='btn btn-link'>
-            <FontAwesomeIcon icon={faFilter} />
+            <FontAwesomeIcon icon={faCaretDown} />
             Focus: {focus.name}
           </span>
           <span className='text-muted small'>{focus.description}</span>

@@ -49,11 +49,13 @@ model chats {
   shareId       String?    @map("share_id") @db.VarChar
   active        Boolean
   meta          Json?      @db.Json
+  group         String     @db.VarChar
   assistant     assistants @relation(fields: [assistantSlug], references: [slug], onDelete: NoAction, onUpdate: NoAction)
   user          users      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([id, active], map: "idx_id_active")
   @@index([userId, active, timestamp], map: "idx_userid_active_timestamp")
+  @@index([group], map: "idx_group")
 }
 
 model collections {

@@ -16,6 +16,7 @@ import { getChat } from '@/services/historyService';
 
 type HomePageProps = {
   params: {
+    group: string;
     chatid: string;
   };
   searchParams: {
@@ -35,6 +36,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { chatid } = params;
+
   if (chatid === 'new') {
     return {
       title: 'New Chat',
@@ -52,7 +54,7 @@ export async function generateMetadata(
 }
 
 const ChatPage = async ({
-  params: { chatid },
+  params: { group, chatid }, // Destructure group
   searchParams: { focus, subFocus },
 }: HomePageProps) => {
   let chat: ChatHistory;
@@ -66,7 +68,7 @@ const ChatPage = async ({
     chat = result.data;
   } else {
     const session = (await auth()) as WonkSession;
-    chat = newChatSession(session, focus, subFocus);
+    chat = newChatSession(session, group, focus, subFocus);
   }
 
   return (
@@ -80,6 +82,7 @@ export default ChatPage;
 
 const newChatSession = (
   session: WonkSession,
+  group: string,
   focusParam?: string,
   subFocusParam?: string
 ) => {
@@ -88,6 +91,7 @@ const newChatSession = (
   const chat: ChatHistory = {
     ...blankAIState,
     // id is '' in state until submitUserMessage() is called
+    group,
     meta: {
       focus: focus ?? focuses[0],
     },

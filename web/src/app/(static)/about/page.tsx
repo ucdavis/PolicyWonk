@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import Logo from '../../components/layout/logo';
-
 export const generateMetadata = () => {
   return {
     title: 'About',
@@ -11,11 +9,7 @@ export const generateMetadata = () => {
 const AboutPage = () => {
   return (
     <div>
-      <div className='about-logo'>
-        <Logo />
-      </div>
-      <h1>A UC Davis Policy Resource At Your Service!</h1>
-
+      <h1>About PolicyWonk</h1>
       <p>
         Welcome to <b>PolicyWonk</b>, a tool for navigating UC Davis policies!
         Whether you're a student, faculty, staff, or administrator, finding
@@ -46,7 +40,7 @@ const AboutPage = () => {
         policy and/or legal advice. Always consult with the Responsible
         Department, Campus Policy Coordinator, or the Office of Campus Counsel
       </p>
-      <hr />
+      <br />
       <h2>Using PolicyWonk</h2>
       <p>
         Use PolicyWonk by typing your question into the main textbox and then
@@ -65,7 +59,7 @@ const AboutPage = () => {
         from home" (though both will get you solid answers). You can always
         click "ask another question" to try again.
       </p>
-      <hr />
+      <br />
       <h2>Questions?</h2>
       <p>
         Questions about the PolicyWonk tool itself should be directed to its
@@ -86,7 +80,7 @@ const AboutPage = () => {
         Administrative Policy Office at{' '}
         <a href='mailto:policy@ucdavis.edu'>policy@ucdavis.edu</a>.
       </p>
-      <hr />
+      <br />
       <h2>Privacy</h2>
       <p>
         {' '}
@@ -127,7 +121,7 @@ const AboutPage = () => {
         future training of any OpenAI models. This practice is governed by the
         UC-wide OpenAI contract.
       </p>
-      <hr />
+      <br />
       <h2>Sources:</h2>
       <ul>
         <li>
@@ -154,7 +148,7 @@ const AboutPage = () => {
           </a>
         </li>
       </ul>
-      <hr />
+
       <p>
         Embark on a journey through university policies with PolicyWonk today!
       </p>
