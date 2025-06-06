@@ -44,13 +44,13 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
   const adjustedVariant = IconVariants;
   adjustedVariant.bounce = {
     ...adjustedVariant.bounce,
-    y: [0, -5, 0],
+    y: [0, -3, 0],
   };
   return (
     <div className='col-1 delete-chat-button'>
       {(isHovering || isLoading) && (
         <AnimatedButton
-          className='btn btn-link'
+          className='btn btn-link btn-trash'
           color='link'
           displayBeforeClick={
             <motion.div
@@ -62,7 +62,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
                   : IconVariantOptions.bounceStop
               }
             >
-              <FontAwesomeIcon icon={faTrash} size='lg' />
+              <FontAwesomeIcon icon={faTrash} size='md' />
             </motion.div>
           }
           onClick={() => handleRemoveChat(chatId)}

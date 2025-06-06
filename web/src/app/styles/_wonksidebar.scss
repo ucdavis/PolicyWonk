@@ -61,7 +61,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    margin: 18px -7px auto -16px;
+    margin: 18px -16px auto -16px;
   }
   .chat-history {
     overflow-y: auto;
@@ -87,23 +87,24 @@
         position: absolute;
         right: 0;
         top: 0;
-        width: 84px;
-        height: 100%;
-        background: linear-gradient(
-          to left,
-          $primary-bg 0%,
-          transparentize($primary-bg, 1) 100%
-        );
+        width: 0;
+      
       }
       a {
         color:$primary-font;
         text-decoration: none;
+        display: block;
         &:hover {
           color:$primary-font;
         }
       }
     }
   }
+}
+.btn-trash {
+  margin-left:-4px;
+  margin-bottom:-4px;
+ 
 }
 .static-nav-list {
   padding-left: 5%;
