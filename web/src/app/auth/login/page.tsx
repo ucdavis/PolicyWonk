@@ -1,15 +1,14 @@
 'use server';
 import React from 'react';
 
-import { signIn } from '../../../auth';
-import Logo from '../../../components/layout/logo';
+import Image from 'next/image';
 
-// supported campuses for the login page w/ tenant values
-const campuses = [
-  { name: 'UC Davis', value: 'ucdavis' },
-  // { name: 'UC Berkeley', value: 'ucberkeley' },
-  { name: 'UC San Francisco', value: 'ucsf' },
-];
+import FooterLinks from '@/components/layout/footerLinks';
+import { campuses } from '@/lib/constants';
+
+import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
+
+import { signIn } from '../../../auth';
 
 export const generateMetadata = () => {
   return {
@@ -44,44 +43,55 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <div className='home-message'>
-        <Logo />
-        <h1>Welcome to Policy Wonk</h1>
-        <p className='lede'>
-          This tool will help you answer your UC Davis administrative policy and
-          procedure questions, just login, type your question and voila
-          PolicyWonk will do it’s best to answer it!
-        </p>
-        <br />
-        <br />
-        <form action={signInHandler}>
-          <input type='hidden' name='callbackUrl' value={callbackUrl} />
-          <div className='d-grid'>
-            {campuses.map((campus) => (
-              <button
-                key={campus.value}
-                type='submit'
-                name='tenant'
-                value={campus.value}
-                className='btn btn-primary btn-lg btn-block m-2'
+      <div className='m-auto mt-5 row justify-content-center'>
+        <div className='col-12 col-md-6 login-wrapper'>
+          <h1>Welcome to PolicyWonk</h1>
+          <p className='lede'>
+            PolicyWonk will help you answer your UC administrative policy and
+            procedure questions, just login with your school below, type your
+            question and voila PolicyWonk will do it’s best to answer it!
+          </p>
+          <h4>Available Campuses</h4>
+          <form action={signInHandler}>
+            <input type='hidden' name='callbackUrl' value={callbackUrl} />
+            <div className='d-grid'>
+              {campuses.map((campus) => (
+                <button
+                  key={campus.value}
+                  type='submit'
+                  name='tenant'
+                  value={campus.value}
+                  className='btn btn-primary btn-md btn-block m-1'
+                >
+                  {campus.name}
+                </button>
+              ))}
+            </div>
+          </form>
+          <div className='mt-4 text-center'>
+            <small>
+              Don&apos;t see your campus listed?{' '}
+              <a
+                href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'
+                target='_blank'
+                rel='noopener noreferrer'
               >
-                {campus.name}
-              </button>
-            ))}
+                Contact us
+              </a>{' '}
+              if you would like to use PolicyWonk.
+            </small>
           </div>
-        </form>
-        <div className='mt-4 text-center'>
-          <small>
-            Don&apos;t see your campus listed?{' '}
+          <div className='login-footer mt-auto'>
+            <FooterLinks />
             <a
-              href='https://caeshelp.ucdavis.edu/?appname=PolicyWonk'
               target='_blank'
               rel='noopener noreferrer'
+              href='https://ucop.edu'
             >
-              Contact us
-            </a>{' '}
-            if you would like to use Policy Wonk.
-          </small>
+              <Image width={110} src={Ucoplogo} alt='UCOP logo' />
+            </a>
+            <p>Copyright &copy; All rights reserved.</p>
+          </div>
         </div>
       </div>
     </>

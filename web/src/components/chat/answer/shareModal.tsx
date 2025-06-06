@@ -27,7 +27,7 @@ const ShareModal: React.FC = () => {
   const gtagEvent = useGtagEvent();
   const { shareChat, unshareChat } = useActions<typeof AI>();
   const [aiState] = useAIState<typeof AI>();
-  const { id: chatId, shareId } = aiState;
+  const { id: chatId, shareId, group } = aiState;
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<ShareModalLoadingStates>('');
@@ -97,6 +97,7 @@ const ShareModal: React.FC = () => {
           >
             <SharedUrl
               shareId={shareId}
+              group={group}
               isShared={isShared}
               handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
               handleUnshare={handleUnshare}

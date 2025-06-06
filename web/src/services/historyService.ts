@@ -41,6 +41,36 @@ const filterOutSystemMessages = (messages: Message[]): Message[] => {
   return messages.filter((message) => message.role !== 'system');
 };
 
+export const getChatHistoryForGroup = async (
+  group: string
+): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
+  const session = (await auth()) as WonkSession;
+
+  if (!session || !session.userId) {
+    return WonkUnauthorized();
+  }
+
+  const userId = session.userId;
+
+  const chats = await prisma.chats.findMany({
+    where: {
+      userId,
+      active: true,
+      group,
+    },
+    orderBy: {
+      timestamp: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      timestamp: true,
+    },
+  });
+
+  return WonkSuccess(chats);
+};
+
 export const getChatHistory = async (): Promise<
   WonkReturnObject<ChatHistoryTitleEntry[]>
 > => {
@@ -137,6 +167,7 @@ export const saveChat = async (
   // session: Session,
   chatId: string,
   messages: Message[],
+  group: string,
   focus: Focus
 ): Promise<WonkReturnObject<boolean>> => {
   const session = (await auth()) as WonkSession;
@@ -156,6 +187,7 @@ export const saveChat = async (
     assistantSlug: POLICY_ASSISTANT_SLUG,
     title,
     messages,
+    group,
     meta: {
       focus,
     },

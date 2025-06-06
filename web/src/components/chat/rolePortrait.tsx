@@ -13,7 +13,7 @@ export const WonkPortrait = React.memo(function WonkPortrait({
       <Policywonksvg
         width={42}
         height={42}
-        alt={'Policy Wonk portrait'}
+        alt={'PolicyWonk portrait'}
         className={`${isLoading ? 'wonk-portrait-loading' : ''} chat-portrait`}
       />
     </div>
