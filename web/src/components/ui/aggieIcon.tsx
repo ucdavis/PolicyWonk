@@ -27,7 +27,11 @@ const AggieIcon: React.FC<AggieIconProps> = ({
   const id = React.useId();
   return (
     <>
-      <FontAwesomeIcon {...deferred} aria-hidden={true} aria-labelledby={id} />
+      <FontAwesomeIcon
+        {...deferred}
+        aria-hidden={isDecorative}
+        aria-labelledby={!isDecorative ? id : undefined}
+      />
       {label && !isDecorative && (
         <VisuallyHidden id={id}>{label}</VisuallyHidden>
       )}
