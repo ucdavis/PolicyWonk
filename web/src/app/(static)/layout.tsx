@@ -5,13 +5,13 @@ import SiteBrand from '@/components/layout/siteBrand';
 import StaticNav from '@/components/layout/staticNav';
 import { checkMobileOnServer } from '@/lib/checkMobileOnServer';
 
-interface RootLayoutProps {
+interface StaticPageLayoutProps {
   children: React.ReactNode;
 }
 
 export default function StaticPageLayout({
   children,
-}: Readonly<RootLayoutProps>) {
+}: Readonly<StaticPageLayoutProps>) {
   const headersList = headers();
   const isMobile = checkMobileOnServer(headersList);
 
