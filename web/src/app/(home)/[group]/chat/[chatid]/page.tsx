@@ -6,8 +6,9 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
-import { isWonkSuccess } from '@/lib/error/error';
+import { isWonkSuccess, WonkStatusCodes } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
+import { isValidGroupFormat, isValidGroupName } from '@/lib/groups';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { getFocusWithSubFocus, focuses } from '@/models/focus';
@@ -58,6 +59,11 @@ const ChatPage = async ({
   searchParams: { focus, subFocus },
 }: HomePageProps) => {
   let chat: ChatHistory;
+
+  // first, let's make sure we have a valid group
+  if (!isValidGroupName(group)) {
+    return <WonkyPageError status={WonkStatusCodes.NOT_FOUND} />;
+  }
 
   if (chatid !== 'new') {
     // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page

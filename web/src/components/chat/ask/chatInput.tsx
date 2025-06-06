@@ -6,7 +6,6 @@ import { nanoid } from 'nanoid';
 import { useSession } from 'next-auth/react';
 
 import { AI } from '../../../lib/aiProvider';
-import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { Focus, focuses } from '../../../models/focus';
 import { GTagEvents } from '../../../models/gtag';
@@ -14,7 +13,6 @@ import FocusBanner from '../answer/focusBanner';
 import { UserMessage } from '../userMessage';
 
 import ChatBoxForm from './chatBoxForm';
-import DefaultQuestions from './defaultQuestions';
 import FocusBar from './focusBar';
 
 // Container for all of components that can be used to send messages to the chat
@@ -63,9 +61,7 @@ const ChatInput = () => {
 
   return (
     <div className='wonk-chat-width'>
-      {/* <WonkyErrorBoundary>
-        <DefaultQuestions onQuestionSubmit={onQuestionSubmit} />
-      </WonkyErrorBoundary> */}
+      {/* Default questions could go here */}
       <FocusBar
         focus={aiState.meta.focus}
         options={focuses}

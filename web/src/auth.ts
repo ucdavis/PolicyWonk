@@ -2,6 +2,7 @@ import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 
 import { setCurrentGroup } from './lib/cookies';
+import { getGroupNameFromAffiliation } from './lib/groups';
 import { User } from './models/user';
 import { ensureUserExists } from './services/userService';
 
@@ -64,8 +65,9 @@ export const {
 
         const user = await ensureUserExists(userFromToken);
 
-        // TODO: find user's group from affiliations. if we can't find it, go to a chooser
-        setCurrentGroup('ucdavis');
+        // Set the current group (cookie) based on the user's affiliation
+        const groupFromAffiliation = getGroupNameFromAffiliation(affiliations);
+        setCurrentGroup(groupFromAffiliation);
 
         const token = {
           ...params.token,
