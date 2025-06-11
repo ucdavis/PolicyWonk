@@ -58,6 +58,14 @@ const generateFilterElastic = (
         'metadata.scope.keyword': allowedScopes,
       },
     };
+  } else if (focus.name === 'ucop') {
+    allowedScopes = ['UCOP'];
+
+    return {
+      terms: {
+        'metadata.scope.keyword': allowedScopes,
+      },
+    };
   } else if (focus.name === 'apm') {
     allowedScopes = ['UCDAPM'];
 
