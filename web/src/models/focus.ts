@@ -29,25 +29,25 @@ export const focuses: Focus[] = [
     name: 'apm',
     description: 'Academic Personnel Manual',
     group: 'ucdavis',
-    priority: 2,
+    priority: 3,
   },
   {
     name: 'unions',
     description: 'UCOP Union Contracts',
     group: 'all',
-    priority: 3,
+    priority: 4,
   },
   {
     name: 'knowledgebase',
     description: 'UC Davis Knowledge Base',
     group: 'ucdavis',
-    priority: 4,
+    priority: 5,
   },
   {
     name: 'ucop',
-    description: 'UCOP Policies',
+    description: 'UCOP Policies (policies.ucop.edu)',
     group: 'all',
-    priority: 1,
+    priority: 2,
   },
 ];
 
