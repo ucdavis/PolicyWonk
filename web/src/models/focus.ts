@@ -13,7 +13,7 @@ export type Focus = {
   name: FocusName;
   subFocus?: string; // optional detail for specific focus types
   description: string;
-  group: string; // groups that this focus applies to, or 'all'
+  groups: string[]; // groups that this focus applies to, or include 'all'
   priority?: number; // optional priority for sorting, lower is more important
 };
 
@@ -22,31 +22,31 @@ export const focuses: Focus[] = [
     name: 'core',
     description:
       'UC & UC Davis Admin (PPM), Personnel (PPSM), Delegations of Authority (DA) Policies',
-    group: 'ucdavis',
+    groups: ['ucdavis'],
     priority: 1,
   },
   {
     name: 'apm',
     description: 'Academic Personnel Manual',
-    group: 'ucdavis',
+    groups: ['ucdavis'],
     priority: 3,
   },
   {
     name: 'unions',
     description: 'UCOP Union Contracts',
-    group: 'all',
+    groups: ['all'],
     priority: 4,
   },
   {
     name: 'knowledgebase',
     description: 'UC Davis Knowledge Base',
-    group: 'ucdavis',
+    groups: ['ucdavis'],
     priority: 5,
   },
   {
     name: 'ucop',
     description: 'UCOP Policies (policies.ucop.edu)',
-    group: 'all',
+    groups: ['all'],
     priority: 2,
   },
 ];
@@ -116,7 +116,7 @@ export const getUnionDescription = (union: Union): string => {
 export const getFocusesForGroup = (group: string): Focus[] => {
   // always get 'all' focuses, then add in the group-specific ones
   const groupFocuses = focuses.filter(
-    (f) => f.group === 'all' || f.group === group
+    (f) => f.groups.includes('all') || f.groups.includes(group)
   );
 
   // sort by priority, if defined, otherwise by name
