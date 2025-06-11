@@ -43,7 +43,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
     // but we have to do it here too, since the error boundary doesn't catch server errors
     return (
       <div className='chat-history-wrapper'>
-        <h3 className='text-end'>Chat History</h3>
+        <h3 className='text-end me-4'>Chat History</h3>
         <div className='chat-history'>
           <WonkyClientError
             thereWasAnErrorLoadingThe='chat history'
@@ -57,7 +57,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
   return (
     <>
       <div className='chat-history-wrapper'>
-        <h3 className='text-end'>Chat History</h3>
+        <h3 className='text-end me-4'>Chat History</h3>
         <div className='chat-history'>
           {!!chats && <ChatHistoryWrapper chats={chats} />}
         </div>

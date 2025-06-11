@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useUIState } from 'ai/rsc';
 import { usePathname, useRouter } from 'next/navigation';
@@ -91,7 +91,7 @@ const MainContent = () => {
               })}
           </WonkTop>
           <WonkBottom>
-            <div className='wonk-chat-width mt-5'>
+            <div className='wonk-chat-width mt-auto pt-4'>
               <div>
                 <button
                   className='btn btn-primary'
@@ -101,7 +101,7 @@ const MainContent = () => {
                   aria-label='Ask another question'
                 >
                   Ask another question{' '}
-                  <FontAwesomeIcon className='ms-1' icon={faPaperPlane} />
+                  <FontAwesomeIcon className='ms-1' icon={faPenToSquare} />
                 </button>
               </div>
             </div>

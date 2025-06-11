@@ -48,6 +48,7 @@ $content-padding-value:36px 0 18px 0;
       padding: 0 8px;
       margin-left: -36px;
       margin-right: -36px;
+     
       @include breakpoint(md) {
         margin-left: 0;
         margin-right: 0;
