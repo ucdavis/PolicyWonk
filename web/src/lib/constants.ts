@@ -11,6 +11,12 @@ export interface Campus {
 
 export const campuses: Campus[] = [
   {
+    name: 'UC Office of the President',
+    value: 'ucop',
+    logoPath: '/media/groups/ucop.svg',
+    link: 'https://www.ucop.edu/',
+  },
+  {
     name: 'UC Davis',
     value: 'ucdavis',
     logoPath: '/media/groups/ucdavis.svg',

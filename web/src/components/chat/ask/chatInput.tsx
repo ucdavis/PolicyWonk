@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 
 import { AI } from '../../../lib/aiProvider';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
-import { Focus, focuses } from '../../../models/focus';
+import { Focus } from '../../../models/focus';
 import { GTagEvents } from '../../../models/gtag';
 import FocusBanner from '../answer/focusBanner';
 import { UserMessage } from '../userMessage';
@@ -63,8 +63,8 @@ const ChatInput = () => {
     <div className='wonk-chat-width'>
       {/* Default questions could go here */}
       <FocusBar
+        group={aiState.group}
         focus={aiState.meta.focus}
-        options={focuses}
         onSelection={onFocusSelection}
       />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />

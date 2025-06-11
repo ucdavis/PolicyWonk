@@ -5,18 +5,25 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
-import { Focus, focuses } from '../../../models/focus';
+import { Focus, getFocusesForGroup } from '../../../models/focus';
 
 import FocusOptions from './focusOptions';
 
 interface FocusBarProps {
+  group: string; // group name, used to filter focuses
   focus: Focus; // currently selected focus
-  options: Focus[]; // available focus options
   onSelection: (selection: Focus) => void;
 }
 
-const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
+const FocusBar: React.FC<FocusBarProps> = ({ group, focus, onSelection }) => {
   const [open, setOpen] = React.useState(false);
+
+  const filteredFocuses = getFocusesForGroup(group);
+
+  // if the focus is not in the list of focuses for the group, we default to the first one
+  if (!filteredFocuses.some((f) => f.name === focus.name)) {
+    onSelection(filteredFocuses[0]);
+  }
 
   const onFocusSelection = (selection?: Focus) => {
     // on any selection we close the modal
@@ -44,7 +51,7 @@ const FocusBar: React.FC<FocusBarProps> = ({ focus, options, onSelection }) => {
           focus={focus}
           open={open}
           onSelection={onFocusSelection}
-          options={focuses}
+          options={filteredFocuses}
         />
       </WonkyErrorBoundary>
     </>
