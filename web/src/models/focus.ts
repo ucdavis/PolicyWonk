@@ -1,5 +1,5 @@
 // top-level focus types
-export type FocusName = 'core' | 'apm' | 'unions' | 'knowledgebase';
+export type FocusName = 'core' | 'apm' | 'unions' | 'knowledgebase' | 'ucop';
 
 // individual focus scopes which tie to specific policy groups in the index
 export type FocusScope =
@@ -13,6 +13,8 @@ export type Focus = {
   name: FocusName;
   subFocus?: string; // optional detail for specific focus types
   description: string;
+  group: string; // groups that this focus applies to, or 'all'
+  priority?: number; // optional priority for sorting, lower is more important
 };
 
 export const focuses: Focus[] = [
@@ -20,18 +22,32 @@ export const focuses: Focus[] = [
     name: 'core',
     description:
       'UC & UC Davis Admin (PPM), Personnel (PPSM), Delegations of Authority (DA) Policies',
+    group: 'ucdavis',
+    priority: 1,
   },
   {
     name: 'apm',
     description: 'Academic Personnel Manual',
+    group: 'ucdavis',
+    priority: 2,
   },
   {
     name: 'unions',
     description: 'UCOP Union Contracts',
+    group: 'all',
+    priority: 3,
   },
   {
     name: 'knowledgebase',
     description: 'UC Davis Knowledge Base',
+    group: 'ucdavis',
+    priority: 4,
+  },
+  {
+    name: 'ucop',
+    description: 'UCOP Policies',
+    group: 'all',
+    priority: 1,
   },
 ];
 
@@ -95,4 +111,19 @@ export const getFocusWithSubFocus = (
 
 export const getUnionDescription = (union: Union): string => {
   return union ? `${union.value} (${union.key})` : '';
+};
+
+export const getFocusesForGroup = (group: string): Focus[] => {
+  // always get 'all' focuses, then add in the group-specific ones
+  const groupFocuses = focuses.filter(
+    (f) => f.group === 'all' || f.group === group
+  );
+
+  // sort by priority, if defined, otherwise by name
+  return groupFocuses.sort((a, b) => {
+    if (a.priority && b.priority) {
+      return a.priority - b.priority; // sort by priority if both have it
+    }
+    return a.name.localeCompare(b.name); // fallback to alphabetical order
+  });
 };
