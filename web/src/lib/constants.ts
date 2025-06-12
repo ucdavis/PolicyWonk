@@ -13,25 +13,25 @@ export const campuses: Campus[] = [
   {
     name: 'UC Office of the President',
     value: 'ucop',
-    logoPath: '/media/groups/ucop.svg',
+    logoPath: '/media/groups/ucop.png',
     link: 'https://www.ucop.edu/',
   },
   {
     name: 'UC Davis',
     value: 'ucdavis',
-    logoPath: '/media/groups/ucdavis.svg',
+    logoPath: '/media/groups/ucdavis.png',
     link: 'https://www.ucdavis.edu/',
   },
   {
     name: 'UC Berkeley',
     value: 'ucb',
-    logoPath: '/media/groups/ucb.svg',
+    logoPath: '/media/groups/ucb.png',
     link: 'https://www.berkeley.edu/',
   },
   {
     name: 'UC San Francisco',
     value: 'ucsf',
-    logoPath: '/media/groups/ucsf.svg',
+    logoPath: '/media/groups/ucsf.png',
     link: 'https://www.ucsf.edu/',
   },
 ];

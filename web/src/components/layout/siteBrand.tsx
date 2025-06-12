@@ -24,7 +24,12 @@ const SiteBrand = () => {
         <p className='discreet m-0'>Beta v0.87</p>
       </div>
       <div className='text-end'>
-        <Link href={link} target='_blank' rel='noopener noreferrer'>
+        <Link
+          className='campus-link'
+          href={link}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
           <Image src={logoPath} alt='Logo' width={100} height={100} />
         </Link>
       </div>
