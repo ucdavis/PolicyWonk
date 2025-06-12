@@ -47,29 +47,31 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     y: [0, -3, 0],
   };
   return (
-    <div className='col-1 delete-chat-button'>
-      {(isHovering || isLoading) && (
-        <AnimatedButton
-          className='btn btn-link btn-trash'
-          color='link'
-          displayBeforeClick={
-            <motion.div
-              variants={IconVariants}
-              initial={false}
-              animate={
-                isLoading
-                  ? adjustedVariant.bounce
-                  : IconVariantOptions.bounceStop
-              }
-            >
-              <FontAwesomeIcon icon={faTrash} size='1x' />
-            </motion.div>
-          }
-          onClick={() => handleRemoveChat(chatId)}
-          title={'Delete share link'}
-          disabled={isLoading}
-        />
-      )}
+    <div className='col-1'>
+      <div className='delete-chat-button'>
+        {(isHovering || isLoading) && (
+          <AnimatedButton
+            className='btn btn-link btn-trash'
+            color='link'
+            displayBeforeClick={
+              <motion.div
+                variants={IconVariants}
+                initial={false}
+                animate={
+                  isLoading
+                    ? adjustedVariant.bounce
+                    : IconVariantOptions.bounceStop
+                }
+              >
+                <FontAwesomeIcon icon={faTrash} size='1x' />
+              </motion.div>
+            }
+            onClick={() => handleRemoveChat(chatId)}
+            title={'Delete share link'}
+            disabled={isLoading}
+          />
+        )}
+      </div>
     </div>
   );
 };

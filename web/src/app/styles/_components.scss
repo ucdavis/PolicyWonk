@@ -71,7 +71,6 @@ margin-bottom:8px;
         }
         }
   }
-
 }
 .focus-result {
     background-color:#F7F7F7;
@@ -79,7 +78,6 @@ margin-bottom:8px;
     margin-bottom:20px;
     border-radius: 6px;
     .btn-link {
-        
         padding-right:8px;
         cursor: initial;
         &:hover {
@@ -96,11 +94,6 @@ margin-bottom:8px;
 .btn-link:disabled, .btn-link.disabled {
   color:#ADB3B8;
   background-color: rgba(255,255,255,0.00009);
-}
-.delete-chat-button {
-  position:absolute;
-  right:18px;
-  z-index: 9999;
 }
 .btn-feedback {
   border: none;

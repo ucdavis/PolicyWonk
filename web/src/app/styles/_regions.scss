@@ -86,14 +86,6 @@ img.chat-portrait {
                 }
             }
 
-            div.history-fade {
-                position: absolute;
-                right: 0;
-                top: 0;
-                width: 84px;
-                height: 100%;
-                background: linear-gradient(to left, $primary-bg 0%, transparentize($primary-bg, 1.0) 100%);
-            }
             
         }
         
