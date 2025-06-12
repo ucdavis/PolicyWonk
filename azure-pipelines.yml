@@ -1,0 +1,96 @@
+# Monorepo filter: only run when anything in web/ changes or you trigger manually
+trigger:
+  branches: { include: ["main"] } # CI when you merge
+  paths: { include: ["web/**"] }
+
+pr:
+  branches: { include: ["main"] } # PR validation
+  paths: { include: ["web/**"] }
+
+variables:
+  acrName: policywonkcontainers
+  acrLoginServer: $(acrName).azurecr.io
+  imageName: policywonk
+  imageTag: $(Build.SourceVersion) # commit SHA
+  fullImage: $(acrLoginServer)/$(imageName):$(imageTag)
+
+stages:
+  # ───────────────────────── 1) CI-only build ─────────────────────────
+  - stage: BuildOnly
+    displayName: Build (no push)
+    jobs:
+      - job: Build
+        displayName: Docker build
+        pool: { vmImage: "ubuntu-latest" }
+        steps:
+          - checkout: self
+          - task: Docker@2
+            displayName: Build image
+            inputs:
+              command: build # <-- build only
+              dockerfile: web/Dockerfile
+              repository: $(imageName)
+              arguments: -t $(fullImage)
+
+  # ───────────────── 2) Push + deploy (main branch only) ──────────────
+  - stage: PushAndDeploy
+    displayName: Push & deploy
+    dependsOn: BuildOnly
+    condition: |
+      and(
+        succeeded(),
+        eq(variables['Build.SourceBranch'], 'refs/heads/main')     # only push on main changes
+      )
+    variables:
+      imageToDeploy: $(fullImage)
+
+    jobs:
+      # ---- 2a Push to ACR (prod sub) ----
+      - job: Push
+        displayName: Push image
+        pool: { vmImage: "ubuntu-latest" }
+        steps:
+          - checkout: none
+          - task: Docker@2
+            displayName: Login & Push
+            inputs:
+              command: login
+              containerRegistry: CaesProductionDeployPrincipal
+          - task: Docker@2
+            displayName: Push layer
+            inputs:
+              command: push
+              repository: $(imageName)
+              tags: |
+                $(imageTag)
+
+      # ---- 2b Deploy to TEST ----
+      - deployment: DeployTest
+        displayName: Deploy to TEST
+        environment: test
+        pool: { vmImage: "ubuntu-latest" }
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebAppContainer@2
+                  inputs:
+                    azureSubscription: CaesTestDeploy
+                    appName: policywonk-test
+                    containers: $(imageToDeploy)
+
+      # ---- 2c Deploy to PROD (manual gate) ----
+      - deployment: DeployProd
+        displayName: Deploy to PROD
+        environment: prod # add Approvals & Checks in UI
+        dependsOn: DeployTest
+        pool: { vmImage: "ubuntu-latest" }
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebAppContainer@2
+                  inputs:
+                    azureSubscription: CaesProductionDeployPrincipal
+                    appName: policywonk
+                    containers: $(imageToDeploy)
