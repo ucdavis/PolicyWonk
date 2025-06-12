@@ -32,35 +32,32 @@
     overflow-y: auto;
     .chat-history-list-item {
       list-style: none;
-      white-space: nowrap;
       position: relative;
-      text-align: left;
-      display: block;
-      color: $primary-font;
-      text-decoration: none;
+      border-left:4px solid #fff;
       cursor: pointer;
+      &:hover {
+        background-color: $ucop-blue-light;
+        border-color:$primary-color;
+      }
+      &.active {
+        background-color: $ucop-blue-medium;
+        border-color:$primary-color;
+      }
       a {
         color:$primary-font;
         font-size: 0.9rem;
         text-decoration: none;
         display: block;
-        padding: 8px 10px 6px 24px;
-        &:hover {
-          color:$primary-font;
-        }
+        white-space: nowrap;
+        padding:8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .delete-chat-button {
-        position: absolute;
-        right: 7%;
-        bottom: 3px;
+
         z-index: 9999;
       }
-      &:hover {
-        background-color: $ucop-blue-medium;
-      }
-      &.active {
-        background-color: $ucop-blue-light;
-      }
+     
       
     }
   }
@@ -97,6 +94,7 @@ footer {
   text-align: right;
   padding-top: 24px;
   padding-bottom:16px;
+  padding-right:16px;
   margin-top:auto;
 }
 ul.footer-links {

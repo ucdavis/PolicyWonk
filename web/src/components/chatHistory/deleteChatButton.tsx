@@ -47,7 +47,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     y: [0, -3, 0],
   };
   return (
-    <div className='col-1'>
+    <div className='col-1 text-end'>
       <div className='delete-chat-button'>
         {(isHovering || isLoading) && (
           <AnimatedButton
