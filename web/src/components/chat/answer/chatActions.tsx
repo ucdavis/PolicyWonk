@@ -28,29 +28,26 @@ const ChatActions: React.FC = () => {
 
   return (
     <>
-      <div className='row mb-3'>
-        <div className='col-1'>{/* empty */}</div>
-        <div className='col-11'>
-          <WonkyErrorBoundary>
-            <CopyToClipboardButton
-              id='gtag-copy-chat'
-              value={fullQuestionAndAnswer}
-              onClick={() => {
-                gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
-              }}
-            />
-          </WonkyErrorBoundary>
-          {!onSharedPage && (
-            <>
-              <WonkyErrorBoundary>
-                <FeedbackButtons />
-              </WonkyErrorBoundary>
-              <WonkyErrorBoundary>
-                <ShareModal />
-              </WonkyErrorBoundary>
-            </>
-          )}
-        </div>
+      <div className='d-flex'>
+        <WonkyErrorBoundary>
+          <CopyToClipboardButton
+            id='gtag-copy-chat'
+            value={fullQuestionAndAnswer}
+            onClick={() => {
+              gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
+            }}
+          />
+        </WonkyErrorBoundary>
+        {!onSharedPage && (
+          <>
+            <WonkyErrorBoundary>
+              <FeedbackButtons />
+            </WonkyErrorBoundary>
+            <WonkyErrorBoundary>
+              <ShareModal />
+            </WonkyErrorBoundary>
+          </>
+        )}
       </div>
       <AnimatePresence initial={false}>
         {!onSharedPage && !!aiState.reaction && (

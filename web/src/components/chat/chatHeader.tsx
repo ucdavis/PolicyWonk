@@ -1,7 +1,7 @@
 import React from 'react';
 
-import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-import Logo from '../layout/logo';
+// import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
+// import Logo from '../layout/logo';
 
 interface ChatHeaderProps {
   children: React.ReactNode;
@@ -9,10 +9,12 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ children }) => {
   return (
-    <div className='home-message'>
-      <WonkyErrorBoundary>
+    <div className='chat-top-home'>
+      <h1>Ask PolicyWonk a question</h1>
+      <br />
+      {/* <WonkyErrorBoundary>
         <Logo />
-      </WonkyErrorBoundary>
+      </WonkyErrorBoundary> */}
       <p className='lede'>{children}</p>
     </div>
   );

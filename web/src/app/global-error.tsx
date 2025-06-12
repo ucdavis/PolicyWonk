@@ -1,9 +1,12 @@
-'use client';
+'use server';
 import React from 'react';
 
+import { headers } from 'next/headers';
+
+import ChatSidebar from '@/components/layout/chatSidebar';
+import { checkMobileOnServer } from '@/lib/checkMobileOnServer';
+
 import ChatHeader from '../components/chat/chatHeader';
-import MobileSidebar from '../components/layout/mobileSidebar';
-import Sidebar from '../components/layout/sidebar';
 import WonkyClientError from '../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../lib/error/wonkyErrorBoundary';
 
@@ -11,19 +14,16 @@ import WonkyErrorBoundary from '../lib/error/wonkyErrorBoundary';
  * Global error page. This will only show up in production.
  */
 
-const GlobalError: React.FC = () => {
+const GlobalError: React.FC = async () => {
+  const headersList = headers();
+  const isMobile = checkMobileOnServer(headersList);
   return (
     <html lang='en'>
       <body>
         <main className='d-flex'>
-          <div className='mobile-sidebar'>
-            <WonkyErrorBoundary>
-              <MobileSidebar history={null} />
-            </WonkyErrorBoundary>
-          </div>
-          <div className='desktop-sidebar'>
-            <Sidebar history={null} />
-          </div>
+          <WonkyErrorBoundary>
+            <ChatSidebar isMobile={isMobile} />
+          </WonkyErrorBoundary>
 
           <div className='wonk-wrapper'>
             <div className='wonk-container'>

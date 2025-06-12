@@ -31,6 +31,7 @@ import {
 
 import { AI } from './aiProvider';
 import { WonkServerError, isWonkSuccess } from './error/error';
+import { isValidGroupName } from './groups';
 
 // to add an action, add it to this type and also in the aiProvider
 export type WonkActions<T = any, R = any> = {
@@ -44,6 +45,11 @@ export const submitUserMessage = async (userInput: string) => {
   // provided by <AI> in the page.tsx
   const aiState = getMutableAIState<typeof AI>();
   const focus = aiState.get().meta.focus as Focus;
+  const group = aiState.get().group;
+
+  if (!isValidGroupName(group)) {
+    return WonkServerError();
+  }
 
   // before we actually do anything, stream loading UI (for the chat window)
   // user message is added on client
@@ -147,7 +153,7 @@ export const submitUserMessage = async (userInput: string) => {
             const chatId = nanoid();
             // save the chat to the db
             // TODO: handle errors
-            const result = await saveChat(chatId, finalMessages, focus);
+            const result = await saveChat(chatId, finalMessages, group, focus);
             if (!isWonkSuccess(result)) {
               return WonkServerError();
             }

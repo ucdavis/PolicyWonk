@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -13,6 +14,7 @@ import { ShareModalLoadingStates } from './shareModal';
 
 interface SharedUrlProps {
   shareId: string | undefined | null;
+  group: string;
   isShared: boolean;
   handleRegenShare: () => void;
   handleUnshare: () => void;
@@ -22,13 +24,14 @@ interface SharedUrlProps {
 
 const SharedUrl: React.FC<SharedUrlProps> = ({
   shareId,
+  group,
   isShared,
   handleRegenShare,
   handleUnshare,
   handleCopyShareUrl,
   isLoading,
 }) => {
-  const url = useShareUrl(shareId);
+  const url = useShareUrl(shareId, group);
 
   return (
     <AnimatePresence mode='popLayout'>

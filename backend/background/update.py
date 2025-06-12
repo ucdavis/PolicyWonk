@@ -162,6 +162,7 @@ def cleanup_old_attempts(session: Session) -> None:
             IndexAttempt.error_details: "Indexing attempt took too long or was interrupted",
         }
     )
+    session.commit()
 
 
 async def update__main() -> None:

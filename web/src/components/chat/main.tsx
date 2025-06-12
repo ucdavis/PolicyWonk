@@ -1,14 +1,14 @@
 'use client';
 import React from 'react';
 
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAIState, useUIState } from 'ai/rsc';
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '../../lib/aiProvider';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
-import Disclaimer from '../layout/disclaimer';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
@@ -49,12 +49,8 @@ const MainContent = () => {
         <>
           <WonkTop>
             <ChatHeader>
-              Meet PolicyWonk, a resource for navigating UC Davis administrative
-              policies and procedures.
-              <br />
-              <Link className='btn btn-wonk mt-2' href='/about'>
-                Learn more
-              </Link>
+              <></>
+              {/* Empty children here */}
             </ChatHeader>
           </WonkTop>
           <WonkBottom>
@@ -68,7 +64,7 @@ const MainContent = () => {
             >
               <ChatInput />
             </WonkyErrorBoundary>
-            <Disclaimer />
+            {/* <Disclaimer /> */}
           </WonkBottom>
         </>
       ) : (
@@ -95,16 +91,19 @@ const MainContent = () => {
               })}
           </WonkTop>
           <WonkBottom>
-            <div className='d-flex flex-column'>
-              <button
-                className='btn btn-primary mt-3 mb-3'
-                onClick={() => {
-                  onNewMessage();
-                }}
-                aria-label='Ask another question'
-              >
-                Ask another question
-              </button>
+            <div className='wonk-chat-width mt-auto pt-4'>
+              <div>
+                <button
+                  className='btn btn-primary'
+                  onClick={() => {
+                    onNewMessage();
+                  }}
+                  aria-label='Ask another question'
+                >
+                  Ask another question{' '}
+                  <FontAwesomeIcon className='ms-1' icon={faPenToSquare} />
+                </button>
+              </div>
             </div>
           </WonkBottom>
         </>

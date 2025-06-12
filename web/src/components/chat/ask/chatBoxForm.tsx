@@ -1,6 +1,10 @@
 'use client';
 import React from 'react';
 
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
+
 interface ChatBoxFormProps {
   onQuestionSubmit: (question: string) => void;
 }
@@ -18,23 +22,23 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
   }, []);
 
   return (
-    <form
-      ref={formRef}
-      className='d-flex flex-column mt-3'
-      onSubmit={async (e: any) => {
-        e.preventDefault();
+    <>
+      <form
+        ref={formRef}
+        className='wonk-input-wrapper'
+        onSubmit={async (e: any) => {
+          e.preventDefault();
 
-        const value = input.trim();
-        setInput('');
-        if (!value) {
-          return;
-        }
+          const value = input.trim();
+          setInput('');
+          if (!value) {
+            return;
+          }
 
-        onQuestionSubmit(value);
-      }}
-    >
-      <div className='input-group'>
-        <div className='form-floating'>
+          onQuestionSubmit(value);
+        }}
+      >
+        <div className='form-floating w-full'>
           <textarea
             id='messageTextArea'
             ref={inputRef}
@@ -56,16 +60,22 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
               }
             }}
           ></textarea>
-          <label htmlFor='messageTextArea'>
-            Ask PolicyWonk a question; Change your focus by clicking on the
-            Focus Bar above
-          </label>
+          <label htmlFor='messageTextArea'>Ask a question</label>
         </div>
-      </div>
-      <button className='btn btn-primary mt-3' aria-label='Send message'>
-        Send
-      </button>{' '}
-    </form>
+        <button className='btn btn-prompt' aria-label='Send message'>
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>{' '}
+      </form>
+      <p className='disclaimer text-end mt-3 mb-2'>
+        PolicyWonk can make errors, view our{' '}
+        <Link
+          className='discreet-link'
+          href='https://iet.ucdavis.edu/aggie-ai/rocky/faq'
+        >
+          Disclaimer.
+        </Link>
+      </p>
+    </>
   );
 };
 

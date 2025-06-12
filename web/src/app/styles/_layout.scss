@@ -1,9 +1,86 @@
 $responsive-sidebar-sm: 0px;
 $responsive-sidebar-lg: 360px;
 $content-padding-value:36px 0 18px 0;
+.container {
+  width: 100%;
+  max-width: 1440px;
+  padding: 0 40px;
+  margin: 0 auto;
+  @include breakpoint(md) {
+    padding: 0 56px;
+  }
+  @include breakpoint(lg) {
+    padding: 0 72px;
+  }
+  .wonk-sidebar-wrapper & {
+    padding: 0 16px;
+  }
+}
 .wonk-wrapper {
-  height:100vh;
-  width:100%;
+  width: 100%;
+  position: relative;
+  height: 100dvh;
+  border-bottom:8px solid $ucop-blue;
+  .wonk-header {
+    background-color: #fff;
+    width: 100%;
+    z-index: 99;
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+  .wonk-chat-width {
+  max-width: $max-chat-width;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 200px;
+  @include breakpoint(lg) {
+    width: 75%;
+  }
+}
+  .wonk-main {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    .wonk-chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: $main-height;
+      padding: 0 8px;
+      margin-left: -36px;
+      margin-right: -36px;
+     
+      @include breakpoint(md) {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .wonk-chat-top {
+        overflow-y: auto;
+        padding-top: 16px;
+        & .chat-top-home {
+          margin-top:20%;
+        }
+      }
+      .footnotes {
+        .sr-only {
+          display: none;
+        }
+      }
+    }
+    .wonk-input-wrapper {
+      position: relative; // for button to hover over input bar
+      display: flex;
+      align-items: flex-end;
+    }
+    .wonk-input {
+      background: $primary-bg;
+      border: none;
+      width: 100%;
+      box-shadow: $box-shadow;
+      border-bottom: 2px solid $ucop-blue;
+      padding-right: 54px;
+      max-height: 50vh;
+    }
+  }
   .wonk-container {
   padding: $content-padding-value;
   max-width: 1024px;
@@ -24,26 +101,36 @@ $content-padding-value:36px 0 18px 0;
  
 }
 }
-.sidebar-wrapper {
-  background-color: $primary-bg;
-  width:$responsive-sidebar-sm;
-  border-right:1px solid $borders;
-  position: fixed;
-    @include breakpoint(lg) {
-    width:$responsive-sidebar-lg;
+// static pages
+.static-page-scroll {
+  overflow-y: auto;
+}
+.wonk-static-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: $main-height;
+  margin-left: -36px;
+  margin-right: -36px;
+  @include breakpoint(md) {
+    margin-left: 0;
+    margin-right: 0;
   }
-  .sidebar-container {
-    text-align: right;
-    padding:$content-padding-value;
-    margin-right:5%;
-    display: flex;
-    flex-direction: column;
-    height:100vh;
-    header {
-      margin-bottom:auto;
+  .static-page-wrapper {
+    padding-top: 40px;
+    padding-left: 24px;
+    padding-right: 24px;
+    p,
+    li {
+      max-width: 48rem;
+    }
+    @include breakpoint(md) {
+      padding-left: 8px;
+      padding-right: 8px;
     }
   }
 }
+
 .mobile-sidebar {
   display:inherit;
   @include breakpoint(lg) {
@@ -76,10 +163,4 @@ $content-padding-value:36px 0 18px 0;
 }
 .offcanvas-body {
   padding:0;
-}
-footer {
-  p {
-    color:$secondary-font;
-    font-size:0.9rem;
-  }
 }

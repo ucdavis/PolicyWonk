@@ -1,5 +1,5 @@
 // top-level focus types
-export type FocusName = 'core' | 'apm' | 'unions' | 'knowledgebase';
+export type FocusName = 'core' | 'apm' | 'unions' | 'knowledgebase' | 'ucop';
 
 // individual focus scopes which tie to specific policy groups in the index
 export type FocusScope =
@@ -13,6 +13,8 @@ export type Focus = {
   name: FocusName;
   subFocus?: string; // optional detail for specific focus types
   description: string;
+  groups: string[]; // groups that this focus applies to, or include 'all'
+  priority?: number; // optional priority for sorting, lower is more important
 };
 
 export const focuses: Focus[] = [
@@ -20,18 +22,32 @@ export const focuses: Focus[] = [
     name: 'core',
     description:
       'UC & UC Davis Admin (PPM), Personnel (PPSM), Delegations of Authority (DA) Policies',
+    groups: ['ucdavis'],
+    priority: 1,
   },
   {
     name: 'apm',
     description: 'Academic Personnel Manual',
+    groups: ['ucdavis'],
+    priority: 3,
   },
   {
     name: 'unions',
     description: 'UCOP Union Contracts',
+    groups: ['all'],
+    priority: 4,
   },
   {
     name: 'knowledgebase',
     description: 'UC Davis Knowledge Base',
+    groups: ['ucdavis'],
+    priority: 5,
+  },
+  {
+    name: 'ucop',
+    description: 'UCOP Policies (policies.ucop.edu)',
+    groups: ['all'],
+    priority: 2,
   },
 ];
 
@@ -95,4 +111,19 @@ export const getFocusWithSubFocus = (
 
 export const getUnionDescription = (union: Union): string => {
   return union ? `${union.value} (${union.key})` : '';
+};
+
+export const getFocusesForGroup = (group: string): Focus[] => {
+  // always get 'all' focuses, then add in the group-specific ones
+  const groupFocuses = focuses.filter(
+    (f) => f.groups.includes('all') || f.groups.includes(group)
+  );
+
+  // sort by priority, if defined, otherwise by name
+  return groupFocuses.sort((a, b) => {
+    if (a.priority && b.priority) {
+      return a.priority - b.priority; // sort by priority if both have it
+    }
+    return a.name.localeCompare(b.name); // fallback to alphabetical order
+  });
 };

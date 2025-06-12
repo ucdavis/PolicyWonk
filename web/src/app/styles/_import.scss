@@ -3,7 +3,14 @@
 @import "@ucdavis/gunrockin/sass/gunrockin.scss";
 $primary-color: $sunflower;
 $secondary-color: $putahcreek;
+$ucop-blue:#1295D8;
+$ucop-gold:#FFB511;
 
+$ucop-blue-light:#E3F0F7;
+$ucop-blue-medium:#ABD7EE;
+
+$primary-color: $ucop-blue;
+$secondary-color: $ucop-gold;
 $theme-colors: (
   primary: $primary-color,
   secondary: $secondary-color,
@@ -17,15 +24,28 @@ $theme-colors: (
 @import "bootstrap/scss/bootstrap";
 @import "@ucdavis/gunrockin/sass/_typography.scss";
 
-$primary-bg: #FFF2CC;
+$primary-bg: #FCFCFC;
+
+
+//variable sizes
+$header-height: 85px;
+$main-height: 90dvh;
+
+$max-chat-width: 48rem;
+
+$sidebar-width-open: 256px;
 
 $borders: #e6e7e9;
 $primary-font: rgba(31, 31, 31, 0.99); //
 $secondary-font: rgba(31, 31, 31, 0.7); //
 $tertiary-font: rgba(31, 31, 31, 0.48); //
 
-$box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
-  0 1px 1px rgba(0, 0, 0, 0.075);
+$box-shadow:
+  0 1px 1px hsl(0deg 0% 33% / 0.075),
+  0 2px 2px hsl(0deg 0% 33% / 0.075),
+  0 4px 4px hsl(0deg 0% 33% / 0.075),
+  0 8px 8px hsl(0deg 0% 33% / 0.075),
+  0 16px 16px hsla(0, 0%, 33%, 0.075);
 
 $danger: $merlot;
 $error-color: $danger;
