@@ -56,7 +56,9 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
           >
             <div className='row'>
               <div className='col-11'>
-                <Link href={`/chat/${chat.id}`}>{chat.title}</Link>
+                <Link href={`/${chat.group}/chat/${chat.id}`}>
+                  {chat.title}
+                </Link>
               </div>
               <DeleteChatButton
                 chatId={chat.id}
