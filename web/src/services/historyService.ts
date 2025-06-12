@@ -29,6 +29,7 @@ const POLICY_ASSISTANT_SLUG = 'policywonk'; // just hardcode since we have only 
 export type ChatHistoryTitleEntry = {
   id: string;
   title: string;
+  group: string;
   timestamp: Date;
 };
 
@@ -64,6 +65,7 @@ export const getChatHistoryForGroup = async (
     select: {
       id: true,
       title: true,
+      group: true,
       timestamp: true,
     },
   });
@@ -92,6 +94,7 @@ export const getChatHistory = async (): Promise<
     },
     select: {
       id: true,
+      group: true,
       title: true,
       timestamp: true,
     },
