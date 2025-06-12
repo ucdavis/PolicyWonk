@@ -91,8 +91,8 @@ const MainContent = () => {
               })}
           </WonkTop>
           <WonkBottom>
-            <div className='wonk-chat-width'>
-              <div>
+            <div className='wonk-chat-width mt-auto'>
+              <div className='pt-4'>
                 <button
                   className='btn btn-primary'
                   onClick={() => {
