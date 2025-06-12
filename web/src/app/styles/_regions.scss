@@ -138,7 +138,7 @@ img.chat-portrait {
     }
 }
 // modal 
-.modal-header {
+.modal-header, .card-header {
     padding:16px 16px 10px 16px !important;
     background-color:$ucop-blue-light;
     h5.modal-title {
@@ -147,7 +147,9 @@ img.chat-portrait {
         
     }
 }
-
+.list-group-item-action:hover, .list-group-item-action:focus {
+    border-bottom:1px solid $secondary-color;
+}
 .alert-tag {
     position: absolute;
     top: 100px;
