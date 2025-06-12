@@ -7,10 +7,10 @@ $content-padding-value:36px 0 18px 0;
   padding: 0 40px;
   margin: 0 auto;
   @include breakpoint(md) {
-    padding: 0 56px;
+    padding: 0 40px;
   }
   @include breakpoint(lg) {
-    padding: 0 64px;
+    padding: 0 48px;
   }
   .wonk-sidebar-wrapper & {
     padding: 0 16px;
