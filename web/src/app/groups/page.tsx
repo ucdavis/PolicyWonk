@@ -35,7 +35,7 @@ export default function GroupsPage() {
       <div className='row justify-content-center'>
         <div className='col-md-8'>
           <div className='card'>
-            <div className='card-header bg-primary text-white'>
+            <div className='card-header'>
               <h2 className='mb-0'>Select a Campus</h2>
             </div>
             <div className='card-body'>
