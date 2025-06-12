@@ -62,7 +62,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
                   : IconVariantOptions.bounceStop
               }
             >
-              <FontAwesomeIcon icon={faTrash} size='md' />
+              <FontAwesomeIcon icon={faTrash} size='1x' />
             </motion.div>
           }
           onClick={() => handleRemoveChat(chatId)}

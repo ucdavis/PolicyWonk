@@ -8,7 +8,7 @@ import MainContent from '@/components/chat/main';
 import { AI } from '@/lib/aiProvider';
 import { isWonkSuccess, WonkStatusCodes } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
-import { isValidGroupFormat, isValidGroupName } from '@/lib/groups';
+import { isValidGroupName } from '@/lib/groups';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
 import { getFocusWithSubFocus, focuses } from '@/models/focus';
