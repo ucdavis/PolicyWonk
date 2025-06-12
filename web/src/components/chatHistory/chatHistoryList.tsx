@@ -54,8 +54,8 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
               setIsHovering(null);
             }}
           >
-            <div className='row'>
-              <div className='col-11'>
+            <div className='row gx-0'>
+              <div className='col-10'>
                 <Link href={`/${chat.group}/chat/${chat.id}`}>
                   {chat.title}
                 </Link>
@@ -65,7 +65,6 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
                 isHovering={isHovering === chat.id}
               />
             </div>
-            <div className='history-fade' />
           </motion.li>
         ))}
       </AnimatePresence>

@@ -71,21 +71,24 @@ margin-bottom:8px;
         }
         }
   }
-
 }
 .focus-result {
-    background-color:#F7F7F7;
-    border:1px solid $borders;
-    margin-bottom:20px;
-    border-radius: 6px;
-    .btn-link {
-        
-        padding-right:8px;
-        cursor: initial;
-        &:hover {
-            color:$secondary-font;
-        }
-    }
+  position: absolute;
+  top:-9%;
+  border-left:3px solid $borders;
+  padding-left:8px;
+  h4 {
+    text-transform: uppercase;
+    font-size:0.9rem;
+    color:$secondary-font;
+    margin-bottom:0;
+  }
+  p {
+    font-size:0.8rem;
+    margin:0;
+    color:$secondary-font;
+  }
+
 }
 
 .btn:disabled, .btn.disabled, fieldset:disabled .btn {
@@ -96,11 +99,6 @@ margin-bottom:8px;
 .btn-link:disabled, .btn-link.disabled {
   color:#ADB3B8;
   background-color: rgba(255,255,255,0.00009);
-}
-.delete-chat-button {
-  position:absolute;
-  right:18px;
-  z-index: 9999;
 }
 .btn-feedback {
   border: none;

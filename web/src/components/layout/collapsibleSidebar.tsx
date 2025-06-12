@@ -84,7 +84,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
             <motion.div
               key='wonk-sidebar-main'
               id='wonk-sidebar-main'
-              className='wonk-sidebar-main container'
+              className='wonk-sidebar-main'
               initial='hidden'
               animate='open'
               exit={isLargeScreen ? 'hidden' : ''}

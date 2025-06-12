@@ -7,10 +7,10 @@ $content-padding-value:36px 0 18px 0;
   padding: 0 40px;
   margin: 0 auto;
   @include breakpoint(md) {
-    padding: 0 56px;
+    padding: 0 40px;
   }
   @include breakpoint(lg) {
-    padding: 0 72px;
+    padding: 0 48px;
   }
   .wonk-sidebar-wrapper & {
     padding: 0 16px;
@@ -25,8 +25,6 @@ $content-padding-value:36px 0 18px 0;
     background-color: #fff;
     width: 100%;
     z-index: 99;
-    padding-top: 10px;
-    padding-bottom: 8px;
   }
   .wonk-chat-width {
   max-width: $max-chat-width;
@@ -34,7 +32,7 @@ $content-padding-value:36px 0 18px 0;
   width: 100%;
   min-width: 200px;
   @include breakpoint(lg) {
-    width: 75%;
+    width: 85%;
   }
 }
   .wonk-main {
@@ -98,7 +96,7 @@ $content-padding-value:36px 0 18px 0;
   .wonk-top {
     margin-bottom:auto;
   }
- 
+
 }
 }
 // static pages
