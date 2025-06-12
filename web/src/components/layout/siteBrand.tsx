@@ -30,7 +30,7 @@ const SiteBrand = () => {
           target='_blank'
           rel='noopener noreferrer'
         >
-          <Image src={logoPath} alt='Logo' width={100} height={100} />
+          <Image src={logoPath} alt='Logo' width={100} height={45} />
         </Link>
       </div>
     </div>
