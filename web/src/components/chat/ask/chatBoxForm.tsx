@@ -14,19 +14,28 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // focus on the input when the component mounts
+  // Focus on mount
   React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, []);
 
+  // Adjust textarea height
+  const adjustHeight = () => {
+    const textarea = inputRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
   return (
     <>
       <form
         ref={formRef}
         className='wonk-input-wrapper'
-        onSubmit={async (e: any) => {
+        onSubmit={async (e) => {
           e.preventDefault();
 
           const value = input.trim();
@@ -43,11 +52,14 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
             id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
-            className='form-control wonk-input'
+            className='form-control wonk-input resize-none overflow-hidden'
             autoFocus
             placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              adjustHeight();
+            }}
             spellCheck={false}
             autoComplete='off'
             autoCorrect='off'
@@ -64,7 +76,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
         </div>
         <button className='btn btn-prompt' aria-label='Send message'>
           <FontAwesomeIcon icon={faPaperPlane} />
-        </button>{' '}
+        </button>
       </form>
       <p className='disclaimer text-end mt-3 mb-2'>
         PolicyWonk can make errors, view our{' '}
