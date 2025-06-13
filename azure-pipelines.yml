@@ -14,7 +14,7 @@ variables:
   acrLoginServer: policywonkcontainers.azurecr.io
   imageRepo: policywonk
   imageTag: $(Build.SourceVersion)                     # commit SHA
-  fullImage: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 stages:
