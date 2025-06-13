@@ -39,7 +39,7 @@ const FocusBar: React.FC<FocusBarProps> = ({ group, focus, onSelection }) => {
     <>
       <div className='focus-bar' onClick={() => setOpen(true)}>
         <div className='d-flex justify-content-start align-items-center'>
-          <span className='btn btn-link'>
+          <span className='btn btn-link ps-0'>
             <FontAwesomeIcon icon={faCaretDown} />
             Focus: {focus.name}
           </span>
