@@ -1,6 +1,7 @@
-# azure-pipelines.yml ───────────────────────────────────────────────
-# Monorepo: reacts only to changes under web/
-
+# We'll build on `main` and PR changes. 
+# Main only, we push to ACR (docker container) and deploy to test
+# Then prod deployment will start after proper approvals (setup via GUI)
+# Monorepo and for now, only get changes under web/**
 trigger:
   branches: { include: ['main'] }
   paths:    { include: ['web/**'] }
@@ -14,83 +15,86 @@ variables:
   imageRepo: policywonk
   imageTag: $(Build.SourceVersion)                     # commit SHA
   fullImage: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 stages:
-# ─────────────────────────── 1) BUILD ONLY ──────────────────────────
-- stage: BuildOnly
-  displayName: Build (no push)
+# ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
+- stage: BuildPush
+  displayName: Build and push on main changes
   jobs:
-  - job: Build
-    displayName: Docker build
-    pool: { vmImage: 'ubuntu-latest' }
+  - job: BuildPushJob
+    displayName: Build (always) / Push (main only)
+    pool: { vmImage: ubuntu-latest }
     steps:
     - checkout: self
+
+    # --- Build image (always) ---
     - task: Docker@2
       displayName: docker build
       inputs:
         command: build
         dockerfile: web/Dockerfile
         repository: $(imageRepo)
-        arguments: -t $(fullImage)     # tag locally for tests/lint, but not pushed
+        arguments: -t $(imageUri)
 
-# ───────────── 2) PUSH + DEPLOY  (runs only on refs/heads/main) ─────────────
-- stage: PushAndDeploy
-  dependsOn: BuildOnly
-  condition: |
-    and(
-      succeeded(),
-      eq(variables['Build.SourceBranch'], 'refs/heads/main')
-    )
-  variables:
-    imageToDeploy: $(fullImage)
-
-  jobs:
-  # ---- 2a BUILD & PUSH to ACR (PROD subscription) ----
-  - job: Push
-    displayName: Build & push image
-    pool: { vmImage: 'ubuntu-latest' }
-    steps:
-    - checkout: self
+    # --- Login & push image (only on main) ---
     - task: Docker@2
-      displayName: buildAndPush
+      displayName: docker push
+      condition: eq(variables.isMain, 'True')
       inputs:
-        command: buildAndPush
-        dockerfile: web/Dockerfile
+        command: push
         repository: $(imageRepo)
         tags: |
           $(imageTag)
-        containerRegistry: CaesProductionPolicyWonkContainerConnection    # 🔑 Docker-registry SC pointing at policywonkcontainers
+        containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
 
-  # ---- 2b DEPLOY to TEST subscription ----
+    # --- Export image URI to later stages (only if we pushed) ---
+    - bash: echo "##vso[task.setvariable variable=imageUri;isOutput=true]$(imageUri)"
+      name: setImage
+      condition: eq(variables.isMain, 'True')
+
+  # expose output
+  variables:
+    imageFromBuild: $[stageDependencies.BuildPush.BuildPushJob.outputs['setImage.imageUri']]
+
+# ─────────────────────── 2) DEPLOY to TEST ───────────────────────
+- stage: DeployTest
+  displayName: Deploy to TEST
+  dependsOn: BuildPush
+  condition: eq(variables.isMain, 'True')      # skip on PRs
+  variables:
+    image: $[stageDependencies.BuildPush.variables.imageFromBuild]
+  jobs:
   - deployment: DeployTest
-    displayName: Deploy to TEST
-    environment: test                           # no approvals
-    dependsOn: Push
-    pool: { vmImage: 'ubuntu-latest' }
+    environment: test
+    pool: { vmImage: ubuntu-latest }
     strategy:
       runOnce:
         deploy:
           steps:
           - task: AzureWebAppContainer@1
-            displayName: Web App (TEST)
             inputs:
-              azureSubscription: CaesTestDeploy   # ARM SC -> test subscription
+              azureSubscription: CaesTestDeploy
               appName: policywonk-test
-              containers: $(imageToDeploy)
+              containers: $(image)
 
-  # ---- 2c DEPLOY to PROD (manual gate) ----
+# ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
+- stage: DeployProd
+  displayName: Deploy to PROD
+  dependsOn: DeployTest
+  condition: eq(variables.isMain, 'True')
+  variables:
+    image: $[stageDependencies.BuildPush.variables.imageFromBuild]
+  jobs:
   - deployment: DeployProd
-    displayName: Deploy to PROD
-    environment: prod                          # add “Approvals & checks” in UI
-    dependsOn: DeployTest
-    pool: { vmImage: 'ubuntu-latest' }
+    environment: prod                 # Add manual approvers here
+    pool: { vmImage: ubuntu-latest }
     strategy:
       runOnce:
         deploy:
           steps:
           - task: AzureWebAppContainer@1
-            displayName: Web App (PROD)
             inputs:
-              azureSubscription: CaesProductionDeployPrincipal  # ARM SC -> prod subscription
+              azureSubscription: CaesProductionDeployPrincipal
               appName: policywonk
-              containers: $(imageToDeploy)
+              containers: $(image)
