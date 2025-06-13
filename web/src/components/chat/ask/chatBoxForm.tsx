@@ -30,6 +30,8 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
     }
   };
 
+  React.useLayoutEffect(adjustHeight, [input]); // fires on every state update incl. clear
+
   return (
     <>
       <form
