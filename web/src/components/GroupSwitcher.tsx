@@ -36,7 +36,7 @@ export function GroupSwitcher({
     <div className='group-switcher'>
       <div className='mb-3'>
         <label htmlFor='groupSelect' className='form-label'>
-          Current Group:
+          Current Location:
         </label>
         <select
           id='groupSelect'

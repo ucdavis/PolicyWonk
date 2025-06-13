@@ -50,7 +50,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     <div className='list-actions'>
       {(isHovering || isLoading) && (
         <AnimatedButton
-          className='btn btn-link btn-trash'
+          className='btn btn-link'
           color='link'
           style={{ width: '24px', height: '24px', padding: 0 }} // lock button size
           displayBeforeClick={
@@ -74,7 +74,7 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
             </motion.div>
           }
           onClick={() => handleRemoveChat(chatId)}
-          title={'Delete share link'}
+          title={'Delete chathistory link'}
           disabled={isLoading}
         />
       )}

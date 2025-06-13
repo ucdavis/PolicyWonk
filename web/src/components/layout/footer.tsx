@@ -17,7 +17,7 @@ const Footer: React.FC<FooterProps> = ({ group }) => {
   return (
     <footer>
       <div className='footer-campus-chooser mb-3'>
-        <h3 className='mb-0'>Campus</h3>
+        <h3 className='mb-0'>Location</h3>
         <Link href='/groups' passHref>
           <button className='btn btn-link btn-icon'>
             {group || 'UNKNOWN'} <FontAwesomeIcon icon={faCaretDown} />

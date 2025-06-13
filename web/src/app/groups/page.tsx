@@ -36,11 +36,12 @@ export default function GroupsPage() {
         <div className='col-md-8'>
           <div className='card'>
             <div className='card-header'>
-              <h2 className='mb-0'>Select a Campus</h2>
+              <h2 className='mb-0'>Select a location</h2>
             </div>
             <div className='card-body'>
               <p className='lead mb-4'>
-                Choose which campus you want to use for your PolicyWonk session:
+                Choose which location you want to use for your PolicyWonk
+                session:
               </p>
 
               <div className='list-group'>
@@ -68,7 +69,7 @@ export default function GroupsPage() {
             </div>
             <div className='card-footer text-muted'>
               <small>
-                Your selected campus will determine which policies and
+                Your selected location will determine which policies and
                 procedures are most relevant to your queries.
               </small>
             </div>
