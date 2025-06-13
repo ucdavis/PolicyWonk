@@ -24,7 +24,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   const isLoading = loadingState === GTagEvents.SHARE;
   return (
     <Button
-      color='primary'
+      color='secondary'
       onClick={handleShare}
       disabled={loadingState !== ''}
     >

@@ -25,6 +25,7 @@ $content-padding-value:36px 0 18px 0;
     background-color: #fff;
     width: 100%;
     z-index: 99;
+    margin:8px 0;
   }
   .wonk-chat-width {
   max-width: $max-chat-width;
@@ -56,11 +57,7 @@ $content-padding-value:36px 0 18px 0;
         padding-top: 16px;
         & .chat-top-home {
           margin-top:20%;
-        }
-      }
-      .footnotes {
-        .sr-only {
-          display: none;
+          margin-bottom:10%;
         }
       }
     }
@@ -127,38 +124,4 @@ $content-padding-value:36px 0 18px 0;
       padding-right: 8px;
     }
   }
-}
-
-.mobile-sidebar {
-  display:inherit;
-  @include breakpoint(lg) {
-    display: none;
-  }
-}
-.mobilesidebar-wrapper {
-  background-color: $primary-bg;
-  border-right:1px solid $borders;
-  .mobilesidebar-container {
-    text-align: right;
-    padding-top:0;
-    margin-right:5%;
-    display: flex;
-    flex-direction: column;
-    header {
-      margin-bottom:auto;
-    }
-  }
-}
-.desktop-sidebar{
-  display:none;
-  @include breakpoint(lg) {
-    display: inherit;
-  }
-
-}
-.offcanvas {
-    background-color:$primary-bg;
-}
-.offcanvas-body {
-  padding:0;
 }

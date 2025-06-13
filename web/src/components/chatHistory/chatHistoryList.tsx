@@ -55,7 +55,7 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
             }}
           >
             <div className='row gx-0'>
-              <div className='col-10'>
+              <div className='col-11'>
                 <Link href={`/${chat.group}/chat/${chat.id}`}>
                   {chat.title}
                 </Link>

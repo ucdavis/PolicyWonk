@@ -47,13 +47,21 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     y: [0, -1, 0],
   };
   return (
-    <div className='col-2'>
+    <div className='list-actions'>
       {(isHovering || isLoading) && (
         <AnimatedButton
           className='btn btn-link btn-trash'
           color='link'
+          style={{ width: '24px', height: '24px', padding: 0 }} // lock button size
           displayBeforeClick={
             <motion.div
+              style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }} // lock icon size container
               variants={IconVariants}
               initial={false}
               animate={
