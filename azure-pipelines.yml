@@ -1,0 +1,87 @@
+# We'll build on `main` and PR changes. 
+# Main only, we push to ACR (docker container) and deploy to test
+# Then prod deployment will start after proper approvals (setup via GUI)
+# Monorepo and for now, only get changes under web/**
+trigger:
+  branches: { include: ['main'] }
+  paths:    { include: ['web/**'] }
+
+pr:
+  branches: { include: ['main'] }
+  paths:    { include: ['web/**'] }
+
+variables:
+  acrLoginServer: policywonkcontainers.azurecr.io
+  imageRepo: policywonk
+  imageTag: $(Build.SourceVersion)                     # commit SHA
+  imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+stages:
+# ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
+- stage: BuildPush
+  displayName: Build and push on main changes
+  jobs:
+  - job: BuildPushJob
+    displayName: Build (always) / Push (main only)
+    pool: { vmImage: ubuntu-latest }
+    steps:
+    - checkout: self
+
+    # --- Build image (always) ---
+    - task: Docker@2
+      displayName: docker build
+      inputs:
+        command: build
+        dockerfile: web/Dockerfile
+        repository: $(imageRepo)
+        arguments: -t $(imageUri)
+
+    # --- Login & push image (only on main) ---
+    - task: Docker@2
+      displayName: docker push
+      condition: eq(variables.isMain, 'True')
+      inputs:
+        command: push
+        repository: $(imageRepo)
+        tags: |
+          $(imageTag)
+        containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
+
+# ─────────────────────── 2) DEPLOY to TEST ───────────────────────
+- stage: DeployTest
+  displayName: Deploy to TEST
+  dependsOn: BuildPush
+  condition: eq(variables.isMain, 'True')      # skip on PRs
+  jobs:
+  - deployment: DeployTest
+    environment: test
+    pool: { vmImage: ubuntu-latest }
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebAppContainer@1
+            inputs:
+              azureSubscription: CaesTestDeploy
+              appName: policywonk-test
+              containers: $(imageUri)
+
+# ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
+- stage: DeployProd
+  displayName: Deploy to PROD
+  dependsOn: DeployTest
+  condition: eq(variables.isMain, 'True')
+  jobs:
+  - deployment: DeployProd
+    environment: prod                 # Add manual approvers here
+    pool: { vmImage: ubuntu-latest }
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebAppContainer@1
+            inputs:
+              azureSubscription: CaesProductionDeployPrincipal
+              appName: policywonk
+              containers: $(imageUri)
