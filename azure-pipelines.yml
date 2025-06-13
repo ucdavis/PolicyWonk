@@ -48,22 +48,11 @@ stages:
           $(imageTag)
         containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
 
-    # --- Export image URI to later stages (only if we pushed) ---
-    - bash: echo "##vso[task.setvariable variable=imageUri;isOutput=true]$(imageUri)"
-      name: setImage
-      condition: eq(variables.isMain, 'True')
-
-  # expose output
-  variables:
-    imageFromBuild: $[stageDependencies.BuildPush.BuildPushJob.outputs['setImage.imageUri']]
-
 # ─────────────────────── 2) DEPLOY to TEST ───────────────────────
 - stage: DeployTest
   displayName: Deploy to TEST
   dependsOn: BuildPush
   condition: eq(variables.isMain, 'True')      # skip on PRs
-  variables:
-    image: $[stageDependencies.BuildPush.variables.imageFromBuild]
   jobs:
   - deployment: DeployTest
     environment: test
@@ -76,15 +65,13 @@ stages:
             inputs:
               azureSubscription: CaesTestDeploy
               appName: policywonk-test
-              containers: $(image)
+              containers: $(imageUri)
 
 # ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
 - stage: DeployProd
   displayName: Deploy to PROD
   dependsOn: DeployTest
   condition: eq(variables.isMain, 'True')
-  variables:
-    image: $[stageDependencies.BuildPush.variables.imageFromBuild]
   jobs:
   - deployment: DeployProd
     environment: prod                 # Add manual approvers here
@@ -97,4 +84,4 @@ stages:
             inputs:
               azureSubscription: CaesProductionDeployPrincipal
               appName: policywonk
-              containers: $(image)
+              containers: $(imageUri)
