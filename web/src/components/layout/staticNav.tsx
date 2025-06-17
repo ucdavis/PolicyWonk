@@ -15,8 +15,8 @@ const StaticNav: React.FC = () => {
   const pathname = usePathname();
 
   return (
-    <div className='static-nav-list mb-auto'>
-      <h2>Navigation</h2>
+    <div className='static-nav-list'>
+      <h3>Navigation</h3>
       <ul>
         {navItems.map(({ href, label }) => (
           <li key={href}>

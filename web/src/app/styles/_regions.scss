@@ -19,19 +19,6 @@ img.chat-portrait {
   }
 }
 
-.external-links {
-    a {
-        font-size:1.1rem;
-        color:$tertiary-font;
-        &:hover {
-            color:$secondary-color;
-        }
-    }
-    .svg-inline--fa {
-        height:1rem;
-        vertical-align: -0.125em;
-}
-}
 .form-control:focus {
     border-color: lighten($primary-color, 7);
     outline: 0;
@@ -39,59 +26,7 @@ img.chat-portrait {
 }
 
 
-.login-card {
-    margin-top:35%;
-}
-// chat history
 
-.history-wrapper {
-    margin-top:15%;
-    h2 {
-        font-size:0.9rem;
-        text-transform: uppercase;
-        color:$secondary-font;
-    }
-    .history-list {
-        max-height:75vh;
-        overflow-y: scroll;
-        width: calc(100% + 15px);
-        padding:0;
-        @include breakpoint(lg) {
-                max-height:80vh;
-            }
-        .history-list-group-item {
-            list-style: none;
-            overflow: hidden;
-            white-space: nowrap;
-            position: relative;
-            text-align: left;
-            &:hover {
-                background-color:#FFECB2;
-            }
-            &.active {
-                background-color:#FFD966;
-            }
-            a {
-                font-size:0.8rem;
-                padding:6px 10px 6px 24px;
-                display:block;
-                color:$primary-font;
-                text-decoration: none;
-                margin-bottom:4px;
-                @include breakpoint(md) {
-                    font-size:0.9rem;
-                }
-                @include breakpoint(lg) {
-                    font-size:1rem;
-                }
-            }
-
-            
-        }
-        
-    }
-
-}
 
 // scrollbars
 ::-webkit-scrollbar {
@@ -144,39 +79,4 @@ img.chat-portrait {
         
     }
 }
-.list-group-item-action:hover, .list-group-item-action:focus {
-    border-bottom:1px solid $secondary-color;
-}
-.alert-tag {
-    position: absolute;
-    top: 100px;
-    left: 240px;
-    background-color: $secondary-color;
-    width: 120px;
-    text-align: right;
-    padding: 4px 20px 4px 0;
-    p {
-        color:#fff;
-        font-family:$sans-bold;
-        margin:0;
-        padding:0;
-        font-size:0.8rem;
-    }
-    
-}
-.alert-tag-mobile {
-    left:279px;
-    top:107px;
-}
-// about
 
-.about-logo img{
-    width:100px;
-}
-// login
-
-.login-wrapper {
-    display: flex;
-    flex-direction: column;
-    height:85vh;
-}
