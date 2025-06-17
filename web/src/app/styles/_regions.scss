@@ -116,11 +116,16 @@ img.chat-portrait {
     border-radius: 5px;
 }
 
-.user-message-row p {
-    background-color:#f1f1f1 ;
-    border-radius: 30px;
-    padding:16px;
+.user-message-row {
+    justify-content: end;
+    display: flex;
+    p {
+        background-color:#f1f1f1 ;
+        border-radius: 30px;
+        padding:16px;
+    }
 }
+
 .chat-row {
     margin-bottom: 2%;
     max-width: 48rem;

@@ -11,7 +11,7 @@ export const UserMessage = ({
 }) => {
   return (
     <div className='chat-row'>
-      <div className='d-flex user-message-row'>
+      <div className='user-message-row'>
         <WonkyErrorBoundary
           fallback={
             <WonkyClientError
