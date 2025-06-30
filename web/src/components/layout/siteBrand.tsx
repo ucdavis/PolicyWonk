@@ -21,7 +21,7 @@ const SiteBrand = () => {
           <h1 className='mb-0'>PolicyWonk</h1>
         </Link>
 
-        <p className='discreet m-0'>Beta v0.87</p>
+        <p className='discreet m-0'>Beta</p>
       </div>
       <div className='text-end'>
         <Link
