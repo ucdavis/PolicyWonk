@@ -1,8 +1,126 @@
-@import "bootstrap/scss/_functions";
-@import "bootstrap/scss/_variables";
-@import "@ucdavis/gunrockin/sass/gunrockin.scss";
-$primary-color: $sunflower;
-$secondary-color: $putahcreek;
+
+
+// fonts
+@font-face {
+  font-family: 'proxima-nova-r';
+  src: url('https://ucdcdn.azureedge.net/public/media/fonts/proximanova-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+@font-face {
+  font-family: 'proxima-nova-i';
+  src: url('https://ucdcdn.azureedge.net/public/media/fonts/proximanova-regularit-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+@font-face {
+  font-family: 'proxima-nova-b';
+  src: url('https://ucdcdn.azureedge.net/public/media/fonts/proximanova-bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+@font-face {
+  font-family: 'ryman';
+  src: url('https://ucdcdn.azureedge.net/public/media/fonts/ryman-eco-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+
+
+$sans-italic:   "proxima-nova-i",Arial,sans-serif;
+$sans-bold:     "proxima-nova-b",Arial,sans-serif;
+$sans-reg:      "proxima-nova-r",Arial,sans-serif;
+$ryman:         "ryman",Georgia,serif;
+
+$recpool:         #6FCFEB;
+$tahoe:           #00B2E3;
+$gunrock:         #0047BA;
+$bodega:          #003A5D;
+
+$rain:            #03F9E6;
+$arboretum:       #00C4B3;
+$putahcreek:      #008EAA;
+$delta:           #00524C;
+
+$farmersmarket:   #AADA91;
+$sage:            #6CCA98;
+$quad:            #3DAE2B;
+$redwood:         #266041;
+
+$goldenstate:     #FFFF3B;
+$sunflower:       #FFDC00;
+$poppy:           #F18A00;
+$california:      #8A532F;
+
+$rose:            #FF8189;
+$strawberry:      #F93549;
+$doubledecker:    #C10230;
+$merlot:          #79242F;
+
+$thiebauldicing:  #F095CD;
+$redbud:          #C6007E;
+$pinot:           #76236C;
+$cabernet:        #481268;
+
+$primary-font: rgba(31,31,31,.99); //
+$secondary-font: rgba(31,31,31,.80); //
+$tertiary-font: rgba(31,31,31,.40); //
+
+
+$box-shadow: 0 0 0 1px rgba(49, 49, 93, 0.03), 0 2px 5px 0 rgba(49, 49, 93, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+
+// breakpoints
+
+@mixin breakpoint($point) {
+  @if $point==sm {
+      @media (min-width: 576px) {
+          @content ;
+      }
+  }
+  @if $point==md {
+      @media (min-width: 768px) {
+          @content ;
+      }
+  }
+  @if $point==lg {
+      @media (min-width: 992px) {
+          @content ;
+      }
+  }
+  @if $point==xl {
+      @media (min-width: 1200px) {
+          @content ;
+      }
+  }
+  @if $point==smmax {
+      @media (max-width: 576px) {
+          @content ;
+      }
+  }
+  @if $point==mdmax {
+      @media (max-width: 768px) {
+          @content ;
+      }
+  }
+  @if $point==lgmax {
+      @media (max-width: 992px) {
+          @content ;
+      }
+  }
+  @if $point==xlmax {
+      @media (max-width: 1200px) {
+          @content ;
+      }
+  }
+}
+
+
+
+//custom
 $ucop-blue:#1295D8;
 $ucop-gold:#FFB511;
 
@@ -22,10 +140,35 @@ $theme-colors: (
   success-text-emphasis: $california
 );
 @import "bootstrap/scss/bootstrap";
-@import "@ucdavis/gunrockin/sass/_typography.scss";
 
 $primary-bg: #FCFCFC;
 
+
+// typo
+html {
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+  line-height: 1.5;
+}
+body {
+  font-family: $sans-reg;
+  color:$primary-font;
+}
+ul, ol {
+&.no-list-style {
+  list-style-type: none;
+  padding-left:0px;
+}
+}
+.discreet {
+color:$tertiary-font;
+}
+p {
+line-height: 1.6;
+}
+h1,h2,h3,h4,h5,h6 {
+font-family: $sans-reg;
+}
 
 //variable sizes
 $header-height: 85px;
@@ -36,9 +179,7 @@ $max-chat-width: 48rem;
 $sidebar-width-open: 256px;
 
 $borders: #e6e7e9;
-$primary-font: rgba(31, 31, 31, 0.99); //
-$secondary-font: rgba(31, 31, 31, 0.7); //
-$tertiary-font: rgba(31, 31, 31, 0.48); //
+
 
 $box-shadow:
   0 1px 1px hsl(0deg 0% 33% / 0.075),
@@ -69,3 +210,4 @@ $error-color: $danger;
 .list-group-item-action:hover, .list-group-item-action:focus {
   background-color:$primary-bg !important;
 }
+
