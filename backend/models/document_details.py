@@ -15,11 +15,14 @@ class DocumentDetails:
         description="",
         content="",
         last_modified="",
+        direct_download_url: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ):
         self.title = title
         self.filename = sanitize_filename(title)
         self.url = url
+        # some documents may not have a direct download URL, in which case it will be None
+        self.direct_download_url = direct_download_url
         # description is a short summary of the document
         self.description = description
         # content is the full text of the document. do not include in metadata

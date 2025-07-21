@@ -79,23 +79,20 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """
         policy_links = await self.get_nested_links(page, url)
         for policy in policy_links:
-            pdf_src, _ = await self.get_src_and_title(page, policy.url)
-            if pdf_src:
-                pdf_url = urljoin(base_url, pdf_src)
-                policy.url = pdf_url
+            await self.populate_document_details(page, policy)
         return policy_links
 
     def sanitize_filename(self, filename: str) -> str:
         """Sanitize the filename by removing or replacing invalid characters."""
         return re.sub(r'[\\/*?:"<>|]', "", filename)
 
-    async def get_src_and_title(self, page: Page, url: str) -> Tuple[Optional[str], Optional[str]]:
+    async def populate_document_details(self, page: Page, policy: DocumentDetails):
         """
         Source is a special /download/ URL that contains the policy document.
         ex: `https://ucdavispolicy.ellucid.com/pman/documents/view/1703/active/`
         can be found at `https://ucdavispolicy.ellucid.com/pman/documents/download/1703`
         """
-        await page.goto(url)
+        await page.goto(policy.url)
         try:
             await page.wait_for_selector(".doc_title", timeout=10000)
         except PlaywrightTimeoutError as e:
@@ -109,17 +106,19 @@ class UcdPolicyManualDocumentStream(DocumentStream):
             strip=True) if title_element else "Untitled"
 
         # convert the 'view' page URL to the download link
-        match = re.search(r'/documents/view/(\d+)', url)
+        match = re.search(r'/documents/view/(\d+)', policy.url)
         if match:
             doc_id = match.group(1)
             # Replace 'view' with 'download' and use only the document ID
             download_url = re.sub(r'/documents/view/\d+.*',
-                                  f'/documents/download/{doc_id}', url)
+                                  f'/documents/download/{doc_id}', policy.url)
         else:
-            logger.error(f"Could not extract document ID from URL: {url}")
+            logger.error(
+                f"Could not extract document ID from URL: {policy.url}")
             download_url = None
 
-        return (download_url, title)
+        policy.title = title
+        policy.direct_download_url = download_url
 
     async def get_links(self, page: Page, url: str) -> List[DocumentDetails]:
         await page.goto(url)
