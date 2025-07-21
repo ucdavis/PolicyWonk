@@ -17,7 +17,7 @@ logger = setup_logger()
 # UCD Policies are on `https://ucdavispolicy.ellucid.com`
 # There are several different binders each with their own set of policies
 base_url = "https://ucdavispolicy.ellucid.com"
-home_url_minus_binder = f"{base_url}/manuals/binder"
+home_url_minus_binder = f"{base_url}/pman/manuals/binder"
 
 # make a dictionary of the different binders
 binders = {
@@ -47,10 +47,24 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """
         Get the list of UC Davis policies to index.
 
+        - Must start from the homepage so the site can setup your session 
         - The policies are organized by binders.
         - Each policy page contains an iframe with the actual PDF source.
         """
         async with get_browser_page(user_agent) as page:
+            # before anything else, we need to navigate to the homepage
+            await page.goto(base_url)
+
+            # wait until the page is loaded and we see "UC Davis Administrative Policy Manuals"
+            try:
+                await page.wait_for_selector(
+                    "h1:has-text('UC Davis Administrative Policy Manuals')", timeout=10000)
+            except PlaywrightTimeoutError as e:
+                logger.error(f"Error waiting for homepage: {e}")
+                return
+
+            logger.info("PMAN Homepage loaded successfully")
+
             for binder in self.get_policy_binders():
                 _, binder_url = binder
                 policy_links = await self.get_ucd_policy_links(page, binder_url)
@@ -65,34 +79,45 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """
         policy_links = await self.get_nested_links(page, url)
         for policy in policy_links:
-            pdf_src, _ = await self.get_iframe_src_and_title(page, policy.url)
-            if pdf_src:
-                pdf_url = urljoin(base_url, pdf_src)
-                policy.url = pdf_url
+            await self.populate_document_details(page, policy)
         return policy_links
 
     def sanitize_filename(self, filename: str) -> str:
         """Sanitize the filename by removing or replacing invalid characters."""
         return re.sub(r'[\\/*?:"<>|]', "", filename)
 
-    async def get_iframe_src_and_title(self, page: Page, url: str) -> Tuple[Optional[str], Optional[str]]:
-        await page.goto(url)
+    async def populate_document_details(self, page: Page, policy: DocumentDetails):
+        """
+        We need to pull the real doc source out of the iframe src element
+        Then we change that URL to a direct download link.
+        """
+        await page.goto(policy.url)
         try:
             await page.wait_for_selector("#document-viewer", timeout=10000)
         except PlaywrightTimeoutError as e:
             logger.error(f"Error waiting for iframe: {e}")
-            return None, None
+            return
 
         content = await page.content()
         soup = BeautifulSoup(content, "html.parser")
-        iframe = soup.find(id="document-viewer")
         title_element = soup.find(class_="doc_title")
-        title = title_element.get_text(
+        policy.title = title_element.get_text(
             strip=True) if title_element else "Untitled"
 
-        src = str(iframe.get("src")) if isinstance(iframe, Tag) else None
+        iframe = soup.find(id="document-viewer")
 
-        return (src, title)
+        iframe_src = str(iframe.get("src")) if isinstance(
+            iframe, Tag) else None
+
+        if not iframe_src or "view/" not in iframe_src:
+            logger.error(
+                f"Invalid iframe source for policy: {policy.url} - {iframe_src}")
+            return
+
+        # Set the direct download URL by replacing "view/" with "download/"
+
+        policy.direct_download_url = urljoin(
+            base_url, iframe_src.replace("/view/", "/download/"))
 
     async def get_links(self, page: Page, url: str) -> List[DocumentDetails]:
         await page.goto(url)

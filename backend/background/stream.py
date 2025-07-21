@@ -77,7 +77,7 @@ class DocumentProcessor:
         token_count = 0
 
         for document_details in batch:
-            # - get the content from the document url
+            # - get the content from the document url (or direct_download_url if available)
             # - get the doc from the db and check if it has changed
             # - include hash, content_length (of entire non-chunked content) and other metadata
             # - chunk and vectorize the content, store in vector db
@@ -93,12 +93,13 @@ class DocumentProcessor:
                 log_memory_usage(logger)
 
                 # get the raw content from the document url
+                download_url = document_details.direct_download_url or document_details.url
                 local_file_path, content_type = download_document(
-                    document_details.url, temp_dir)
+                    download_url, temp_dir)
 
                 if not local_file_path:
                     logger.error(
-                        f"Failed to download document at {document_details.url}. ")
+                        f"Failed to download document at {download_url}. ")
                     continue
 
                 # ingest raw content into nice markdown
