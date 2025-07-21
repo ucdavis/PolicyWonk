@@ -109,7 +109,7 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         iframe_src = str(iframe.get("src")) if isinstance(
             iframe, Tag) else None
 
-        if not iframe_src or not iframe_src.find("view/"):
+        if not iframe_src or "view/" not in iframe_src:
             logger.error(
                 f"Invalid iframe source for policy: {policy.url} - {iframe_src}")
             return
