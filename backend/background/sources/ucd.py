@@ -21,10 +21,10 @@ home_url_minus_binder = f"{base_url}/pman/manuals/binder"
 
 # make a dictionary of the different binders
 binders = {
-    # "11": "ucdppm",
-    # "13": "ucdppsm",
+    "11": "ucdppm",
+    "13": "ucdppsm",
     "243": "ucdinterim",
-    # "15": "ucddelegation",
+    "15": "ucddelegation",
 }
 
 # never navigate into these folders
@@ -88,37 +88,36 @@ class UcdPolicyManualDocumentStream(DocumentStream):
 
     async def populate_document_details(self, page: Page, policy: DocumentDetails):
         """
-        Source is a special /download/ URL that contains the policy document.
-        ex: `https://ucdavispolicy.ellucid.com/pman/documents/view/1703/active/`
-        can be found at `https://ucdavispolicy.ellucid.com/pman/documents/download/1703`
+        We need to pull the real doc source out of the iframe src element
+        Then we change that URL to a direct download link.
         """
         await page.goto(policy.url)
         try:
-            await page.wait_for_selector(".doc_title", timeout=10000)
+            await page.wait_for_selector("#document-viewer", timeout=10000)
         except PlaywrightTimeoutError as e:
             logger.error(f"Error waiting for iframe: {e}")
-            return None, None
+            return
 
         content = await page.content()
         soup = BeautifulSoup(content, "html.parser")
         title_element = soup.find(class_="doc_title")
-        title = title_element.get_text(
+        policy.title = title_element.get_text(
             strip=True) if title_element else "Untitled"
 
-        # convert the 'view' page URL to the download link
-        match = re.search(r'/documents/view/(\d+)', policy.url)
-        if match:
-            doc_id = match.group(1)
-            # Replace 'view' with 'download' and use only the document ID
-            download_url = re.sub(r'/documents/view/\d+.*',
-                                  f'/documents/download/{doc_id}', policy.url)
-        else:
-            logger.error(
-                f"Could not extract document ID from URL: {policy.url}")
-            download_url = None
+        iframe = soup.find(id="document-viewer")
 
-        policy.title = title
-        policy.direct_download_url = download_url
+        iframe_src = str(iframe.get("src")) if isinstance(
+            iframe, Tag) else None
+
+        if not iframe_src or not iframe_src.find("view/"):
+            logger.error(
+                f"Invalid iframe source for policy: {policy.url} - {iframe_src}")
+            return
+
+        # Set the direct download URL by replacing "view/" with "download/"
+
+        policy.direct_download_url = urljoin(
+            base_url, iframe_src.replace("/view/", "/download/"))
 
     async def get_links(self, page: Page, url: str) -> List[DocumentDetails]:
         await page.goto(url)
