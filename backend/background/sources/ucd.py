@@ -79,7 +79,7 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """
         policy_links = await self.get_nested_links(page, url)
         for policy in policy_links:
-            pdf_src, _ = await self.get_iframe_src_and_title(page, policy.url)
+            pdf_src, _ = await self.get_src_and_title(page, policy.url)
             if pdf_src:
                 pdf_url = urljoin(base_url, pdf_src)
                 policy.url = pdf_url
@@ -89,24 +89,37 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """Sanitize the filename by removing or replacing invalid characters."""
         return re.sub(r'[\\/*?:"<>|]', "", filename)
 
-    async def get_iframe_src_and_title(self, page: Page, url: str) -> Tuple[Optional[str], Optional[str]]:
+    async def get_src_and_title(self, page: Page, url: str) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Source is a special /download/ URL that contains the policy document.
+        ex: `https://ucdavispolicy.ellucid.com/pman/documents/view/1703/active/`
+        can be found at `https://ucdavispolicy.ellucid.com/pman/documents/download/1703`
+        """
         await page.goto(url)
         try:
-            await page.wait_for_selector("#document-viewer", timeout=10000)
+            await page.wait_for_selector(".doc_title", timeout=10000)
         except PlaywrightTimeoutError as e:
             logger.error(f"Error waiting for iframe: {e}")
             return None, None
 
         content = await page.content()
         soup = BeautifulSoup(content, "html.parser")
-        iframe = soup.find(id="document-viewer")
         title_element = soup.find(class_="doc_title")
         title = title_element.get_text(
             strip=True) if title_element else "Untitled"
 
-        src = str(iframe.get("src")) if isinstance(iframe, Tag) else None
+        # convert the 'view' page URL to the download link
+        match = re.search(r'/documents/view/(\d+)', url)
+        if match:
+            doc_id = match.group(1)
+            # Replace 'view' with 'download' and use only the document ID
+            download_url = re.sub(r'/documents/view/\d+.*',
+                                  f'/documents/download/{doc_id}', url)
+        else:
+            logger.error(f"Could not extract document ID from URL: {url}")
+            download_url = None
 
-        return (src, title)
+        return (download_url, title)
 
     async def get_links(self, page: Page, url: str) -> List[DocumentDetails]:
         await page.goto(url)
