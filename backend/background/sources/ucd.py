@@ -17,14 +17,14 @@ logger = setup_logger()
 # UCD Policies are on `https://ucdavispolicy.ellucid.com`
 # There are several different binders each with their own set of policies
 base_url = "https://ucdavispolicy.ellucid.com"
-home_url_minus_binder = f"{base_url}/manuals/binder"
+home_url_minus_binder = f"{base_url}/pman/manuals/binder"
 
 # make a dictionary of the different binders
 binders = {
-    "11": "ucdppm",
-    "13": "ucdppsm",
+    # "11": "ucdppm",
+    # "13": "ucdppsm",
     "243": "ucdinterim",
-    "15": "ucddelegation",
+    # "15": "ucddelegation",
 }
 
 # never navigate into these folders
@@ -47,10 +47,24 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         """
         Get the list of UC Davis policies to index.
 
+        - Must start from the homepage so the site can setup your session 
         - The policies are organized by binders.
         - Each policy page contains an iframe with the actual PDF source.
         """
         async with get_browser_page(user_agent) as page:
+            # before anything else, we need to navigate to the homepage
+            await page.goto(base_url)
+
+            # wait until the page is loaded and we see "UC Davis Administrative Policy Manuals"
+            try:
+                await page.wait_for_selector(
+                    "h1:has-text('UC Davis Administrative Policy Manuals')", timeout=10000)
+            except PlaywrightTimeoutError as e:
+                logger.error(f"Error waiting for homepage: {e}")
+                return
+
+            logger.info("PMAN Homepage loaded successfully")
+
             for binder in self.get_policy_binders():
                 _, binder_url = binder
                 policy_links = await self.get_ucd_policy_links(page, binder_url)
