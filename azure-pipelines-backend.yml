@@ -10,9 +10,10 @@ pr:
   branches: { include: ["main"] }
   paths: { include: ["backend/**"] }
 
+# TODO - move these into the variable group
 variables:
   - group: Backend-Dev
-  - name: acrLoginServer # TODO: move these into variable group
+  - name: acrLoginServer
     value: policywonkcontainers.azurecr.io
   - name: imageRepo
     value: policybackend
@@ -22,6 +23,8 @@ variables:
     value: $(acrLoginServer)/$(imageRepo):$(imageTag)
   - name: isMain
     value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - name: acrName
+    value: policywonkcontainers
 
 stages:
   # ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
@@ -75,11 +78,8 @@ stages:
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
-                      acr_name=${{ variables.acrLoginServer%%.* }}
-
-                      # Pull a throw-away credential *at run-time* from the ACR
-                      read acr_user acr_pass <<<"$(az acr credential show \
-                        -n "$acr_name" --query '[username,passwords[0].value]' -o tsv)"
+                      read acr_user acr_pass <<<"$(az acr credential show -n $(acrName) \
+                        --query '[username,passwords[0].value]' -o tsv)"
 
                       az container create \
                         --resource-group policywonk-dev \
