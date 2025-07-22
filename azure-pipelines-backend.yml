@@ -68,19 +68,28 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: AzureContainerInstance@1
-                  displayName: Deploy ACI from ACR image
+                - task: AzureCLI@2
+                  displayName: Deploy backend to ACI
                   inputs:
-                    azureSubscription: CaesTestDeploy
-                    resourceGroup: policywonk-dev
-                    containerType: SingleContainer
-                    containerName: policywonk-dev-backend
-                    imageName: $(imageUri) # e.g. policywonkcontainers.azurecr.io/policybackend:<sha>
-                    cpu: "1"
-                    memory: "8"
-                    dockerRegistryType: AzureContainerRegistry
-                    dockerRegistryEndpoint: CaesProductionPolicyWonkContainerConnection
-                    environmentVariables: |
-                      LLM_API_KEY=$(LLM_API_KEY)
-                      LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL)
-                      DATABASE_URL=$(DATABASE_URL)
+                    azureSubscription: CaesTestDeploy # ARM connection (no extra login block)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      acr_name=${{ variables.acrLoginServer%%.* }}
+
+                      # Pull a throw-away credential *at run-time* from the ACR
+                      read acr_user acr_pass <<<"$(az acr credential show \
+                        -n "$acr_name" --query '[username,passwords[0].value]' -o tsv)"
+
+                      az container create \
+                        --resource-group policywonk-dev \
+                        --name policywonk-dev-backend \
+                        --image $(imageUri) \
+                        --cpu 1 --memory 8 \
+                        --registry-login-server $(acrLoginServer) \
+                        --registry-username "$acr_user" \
+                        --registry-password "$acr_pass" \
+                        --environment-variables \
+                          LLM_API_KEY=$(LLM_API_KEY) \
+                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
+                          DATABASE_URL=$(DATABASE_URL)
