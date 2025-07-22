@@ -1,0 +1,82 @@
+# We'll build on `main` and PR changes.
+# Main only, we push to ACR (docker container) and deploy to test
+# Then prod deployment will start after proper approvals (setup via GUI)
+# Monorepo and for now, only get changes under backend/**
+trigger:
+  branches: { include: ["main"] }
+  paths: { include: ["backend/**"] }
+
+pr:
+  branches: { include: ["main"] }
+  paths: { include: ["backend/**"] }
+
+variables:
+  - group: Backend-Dev # uses variables from this group
+    acrLoginServer: policywonkcontainers.azurecr.io # move into group?
+    imageRepo: policybackend
+    imageTag: $(Build.SourceVersion) # commit SHA
+    imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
+    isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+
+stages:
+  # ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
+  - stage: BuildPush
+    displayName: Build and push on main changes
+    jobs:
+      - job: BuildPushJob
+        displayName: Build (always) / Push (main only)
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - checkout: self
+
+          # --- Build image (always) ---
+          - task: Docker@2
+            displayName: docker build
+            inputs:
+              command: build
+              dockerfile: backend/Dockerfile
+              repository: $(imageRepo)
+              arguments: -t $(imageUri)
+
+          # --- Login & push image (only on main) ---
+          - task: Docker@2
+            displayName: docker push
+            condition: eq(variables.isMain, 'True')
+            inputs:
+              command: push
+              repository: $(imageRepo)
+              tags: |
+                $(imageTag)
+              containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
+
+  # ─────────────────────── 2) DEPLOY to TEST ───────────────────────
+  - stage: DeployTest
+    displayName: Deploy to TEST
+    dependsOn: BuildPush
+    condition: eq(variables.isMain, 'True') # skip on PRs
+    jobs:
+      - deployment: DeployTest
+        environment: test
+        pool: { vmImage: ubuntu-latest }
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: Deploy backend to Azure Container Instance
+                  inputs:
+                    azureSubscription: CaesProductionDeployPrincipal
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az container create \
+                        --resource-group policywonk-dev \
+                        --name policywonk-dev-backend \
+                        --image $(imageUri) \
+                        --cpu 1 \
+                        --memory 8 \
+                        --registry-login-server $(acrLoginServer) \
+                        --environment-variables \
+                          LLM_API_KEY=$(LLM_API_KEY) \
+                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
+                          DATABASE_URL=$(DATABASE_URL)
