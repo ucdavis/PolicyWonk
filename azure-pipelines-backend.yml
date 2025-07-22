@@ -63,25 +63,24 @@ stages:
       - deployment: DeployTest
         environment: test
         pool: { vmImage: ubuntu-latest }
+
         strategy:
           runOnce:
             deploy:
               steps:
-                - task: AzureCLI@2
-                  displayName: Deploy backend to Azure Container Instance
+                - task: AzureContainerInstance@1
+                  displayName: Deploy ACI from ACR image
                   inputs:
                     azureSubscription: CaesTestDeploy
-                    scriptType: bash
-                    scriptLocation: inlineScript
-                    inlineScript: |
-                      az container create \
-                        --resource-group policywonk-dev \
-                        --name policywonk-dev-backend \
-                        --image $(imageUri) \
-                        --cpu 1 \
-                        --memory 8 \
-                        --registry-login-server $(acrLoginServer) \
-                        --environment-variables \
-                          LLM_API_KEY=$(LLM_API_KEY) \
-                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
-                          DATABASE_URL=$(DATABASE_URL)
+                    resourceGroup: policywonk-dev
+                    containerType: SingleContainer
+                    containerName: policywonk-dev-backend
+                    imageName: $(imageUri) # e.g. policywonkcontainers.azurecr.io/policybackend:<sha>
+                    cpu: "1"
+                    memory: "8"
+                    dockerRegistryType: AzureContainerRegistry
+                    dockerRegistryEndpoint: CaesProductionPolicyWonkContainerConnection
+                    environmentVariables: |
+                      LLM_API_KEY=$(LLM_API_KEY)
+                      LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL)
+                      DATABASE_URL=$(DATABASE_URL)
