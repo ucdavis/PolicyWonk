@@ -70,7 +70,7 @@ stages:
                 - task: AzureCLI@2
                   displayName: Deploy backend to Azure Container Instance
                   inputs:
-                    azureSubscription: CaesProductionDeployPrincipal
+                    azureSubscription: CaesTestDeploy
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
