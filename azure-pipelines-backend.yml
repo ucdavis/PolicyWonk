@@ -11,12 +11,17 @@ pr:
   paths: { include: ["backend/**"] }
 
 variables:
-  - group: Backend-Dev # uses variables from this group
-    acrLoginServer: policywonkcontainers.azurecr.io # move into group?
-    imageRepo: policybackend
-    imageTag: $(Build.SourceVersion) # commit SHA
-    imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
-    isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - group: Backend-Dev
+  - name: acrLoginServer # TODO: move these into variable group
+    value: policywonkcontainers.azurecr.io
+  - name: imageRepo
+    value: policybackend
+  - name: imageTag
+    value: $(Build.SourceVersion)
+  - name: imageUri
+    value: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  - name: isMain
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 stages:
   # ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
