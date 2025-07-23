@@ -83,6 +83,7 @@ stages:
                         --name policywonk-dev-backend \
                         --image $(imageUri) \
                         --cpu 1 --memory 8 \
+                        --os-type Linux \
                         --registry-login-server $(acrLoginServer) \
                         --registry-username "$ACR_USER" \
                         --registry-password "$ACR_PASS" \
