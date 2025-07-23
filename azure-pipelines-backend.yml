@@ -78,18 +78,18 @@ stages:
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
-                      read acr_user acr_pass <<<"$(az acr credential show -n $(acrName) \
-                        --query '[username,passwords[0].value]' -o tsv)"
-
                       az container create \
                         --resource-group policywonk-dev \
                         --name policywonk-dev-backend \
                         --image $(imageUri) \
                         --cpu 1 --memory 8 \
                         --registry-login-server $(acrLoginServer) \
-                        --registry-username "$acr_user" \
-                        --registry-password "$acr_pass" \
+                        --registry-username "$ACR_USER" \
+                        --registry-password "$ACR_PASS" \
                         --environment-variables \
                           LLM_API_KEY=$(LLM_API_KEY) \
                           LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
                           DATABASE_URL=$(DATABASE_URL)
+                  env:
+                    ACR_USER: $(ACR_USER)
+                    ACR_PASS: $(ACR_PASS)
