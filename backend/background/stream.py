@@ -103,7 +103,12 @@ class DocumentProcessor:
                     continue
 
                 # ingest raw content into nice markdown
-                document_details.content = await ingest_path_to_markdown(local_file_path)
+                try:
+                    document_details.content = await ingest_path_to_markdown(local_file_path)
+                except Exception as e:
+                    logger.error(
+                        f"Failed to ingest document {download_url}: {str(e)}")
+                    continue
 
                 num_docs_indexed += 1
 
