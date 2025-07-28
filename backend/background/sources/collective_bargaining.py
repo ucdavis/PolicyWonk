@@ -299,7 +299,3 @@ if __name__ == "__main__":
         print(f"Total documents found: {count}")
 
     asyncio.run(main())
-            print("---")
-        print(f"Total documents found: {count}")
-
-    asyncio.run(main())
