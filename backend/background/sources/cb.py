@@ -69,8 +69,22 @@ class UcnetCollectiveBargainingStream(DocumentStream):
             if not button:
                 continue
 
-            union_name = await button.inner_text()
-            logger.info(f"Processing accordion {i}: {union_name.strip()}")
+            union_name = (await button.inner_text()).strip()
+            logger.info(f"Processing accordion {i}: {union_name}")
+
+            # Determine if this is a systemwide union or a local campus
+            # Campus names typically contain "UC" followed by campus name
+            is_campus = any(campus_indicator in union_name for campus_indicator in [
+                "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
+                "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
+                "UC Santa Cruz", "UC San Francisco", "Lawrence Berkeley"
+            ])
+
+            if is_campus:
+                # This is a local campus accordion, skip it in systemwide processing
+                logger.info(
+                    f"Skipping campus accordion in systemwide: {union_name}")
+                continue
 
             # Click to expand the accordion if it's not already expanded
             try:
@@ -81,7 +95,7 @@ class UcnetCollectiveBargainingStream(DocumentStream):
 
             # Look for links in this accordion section
             links = await accordion.query_selector_all("a")
-            logger.info(f"Found {len(links)} links in {union_name.strip()}")
+            logger.info(f"Found {len(links)} links in {union_name}")
 
             for link in links:
                 link_text = (await link.inner_text()).strip()
@@ -90,7 +104,7 @@ class UcnetCollectiveBargainingStream(DocumentStream):
                 if not href or not link_text:
                     continue
 
-                logger.info(f"Processing link: {link_text}")
+                logger.info(f"Processing systemwide link: {link_text}")
 
                 # Parse the link text to extract code and name (format: "CODE — Name")
                 match = re.match(r"^(\w+)\s+—\s+(.*)", link_text)
@@ -145,38 +159,71 @@ class UcnetCollectiveBargainingStream(DocumentStream):
         """Extract local bargaining unit contracts."""
         policy_details_list: List[DocumentDetails] = []
 
-        # Extract local units - they are in the accordion sections under "Local agreements by location"
-        # Look for h3 headings that represent campuses
-        campus_headings = await page.query_selector_all("xpath=//h3[contains(., 'UC')] | //h3[contains(., 'UCLA')] | //h3[contains(., 'UC ')]")
+        # Extract local units - they are in the accordion sections that represent campuses
+        accordion_sections = await page.query_selector_all(".wp-block-ns-accordion__item")
+        logger.info(
+            f"Processing {len(accordion_sections)} accordion sections for local units")
 
-        for heading in campus_headings:
-            campus_name = (await heading.inner_text()).strip()
-            logger.info(f"Processing campus: {campus_name}")
-
-            # Find the UL immediately following the heading
-            ul = await heading.query_selector("xpath=following-sibling::ul[1]")
-            if not ul:
+        for i, accordion in enumerate(accordion_sections):
+            button = await accordion.query_selector(".wp-block-ns-accordion__item-toggle")
+            if not button:
                 continue
 
-            items = await ul.query_selector_all("li")
-            for li in items:
-                text = (await li.inner_text()).strip()
-                match = re.match(r"^(\w+)\s+—\s+(.*)", text)
-                if not match:
-                    continue
-                code, name = match.groups()
+            union_name = (await button.inner_text()).strip()
+            logger.info(
+                f"Checking accordion {i} for local units: {union_name}")
 
+            # Determine if this is a local campus accordion
+            # Campus names typically contain "UC" followed by campus name
+            campus_indicators = [
+                "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
+                "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
+                "UC Santa Cruz", "UC San Francisco", "Lawrence Berkeley"
+            ]
+
+            is_campus = any(
+                campus_indicator in union_name for campus_indicator in campus_indicators)
+
+            if not is_campus:
+                # This is not a campus accordion, skip it in local processing
+                continue
+
+            campus_name = union_name
+            logger.info(f"Processing local campus: {campus_name}")
+
+            # Click to expand the accordion if it's not already expanded
+            try:
+                await button.click()
+                await page.wait_for_timeout(500)  # Wait for expansion
+            except:
+                pass
+
+            # Look for links in this accordion section
+            links = await accordion.query_selector_all("a")
+            logger.info(f"Found {len(links)} links in {campus_name}")
+
+            for link in links:
+                link_text = (await link.inner_text()).strip()
+                href = await link.get_attribute("href")
+
+                if not href or not link_text:
+                    continue
+
+                logger.info(f"Processing local link: {link_text}")
+
+                # Parse the link text to extract code and name (format: "CODE — Name")
+                match = re.match(r"^(\w+)\s+—\s+(.*)", link_text)
+                if not match:
+                    logger.warning(
+                        f"Link text doesn't match expected format: {link_text}")
+                    continue
+
+                code, name = match.groups()
                 logger.info(
                     f"Found local unit: {code} - {name} at {campus_name}")
 
-                link_el = await li.query_selector("a")
-                if not link_el:
-                    continue
-                href = await link_el.get_attribute("href")
-                if not href:
-                    continue
-
-                contract_url = href.rstrip("/")
+                # The href should be the contract page URL
+                contract_url = href
                 if not contract_url.startswith("http"):
                     contract_url = f"https://ucnet.universityofcalifornia.edu{contract_url}"
 
@@ -246,11 +293,12 @@ if __name__ == "__main__":
         print("Starting async main...")
         count = 0
         async for doc in UcnetCollectiveBargainingStream(source):
-            count += 1
-            print(f"Document {count}: {doc.title}")
-            print(f"URL: {doc.url}")
-            print(f"Metadata: {doc.metadata}")
-            print("---")
-        print(f"Total documents found: {count}")
+            if doc.metadata.get("responsible_office") != "ucop":
+                count += 1
+                print(f"Document {count}: {doc.title}")
+                print(f"URL: {doc.url}")
+                print(f"Metadata: {doc.metadata}")
+                print("---")
+        print(f"Total non-systemwide documents found: {count}")
 
     asyncio.run(main())
