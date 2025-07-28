@@ -181,22 +181,41 @@ export const getSearchResultsPgSQL = async (
 
   const queryVector = embeddings[0];
 
-  const rawResults: Array<{
+  let rawResults: Array<{
     doc_id: number;
     title: string;
     text: string;
     meta: any;
-  }> = await prisma.$queryRaw`   
-    SELECT d.id as doc_id,
-           d.title,
-           dc.chunk_text as text,
-           d.meta as meta
-    FROM document_chunks dc
-    JOIN documents d ON dc.document_id = d.id
-    JOIN sources s ON d.source_id = s.id
-    WHERE s.type = ANY(${allowedTypes})
-    ORDER BY dc.embedding <=> ${queryVector}::vector
-    LIMIT ${searchResultMaxSize}`;
+  }>;
+
+  if (focus.subFocus) {
+    // If subFocus is defined, add keyword filtering (for unions)
+    rawResults = await prisma.$queryRaw`   
+      SELECT d.id as doc_id,
+             d.title,
+             dc.chunk_text as text,
+             d.meta as meta
+      FROM document_chunks dc
+      JOIN documents d ON dc.document_id = d.id
+      JOIN sources s ON d.source_id = s.id
+      WHERE s.type = ANY(${allowedTypes})
+        AND d.meta->'keywords' ? ${focus.subFocus.toLocaleUpperCase()}
+      ORDER BY dc.embedding <=> ${queryVector}::vector
+      LIMIT ${searchResultMaxSize}`;
+  } else {
+    // Original query without keyword filtering (for everything else)
+    rawResults = await prisma.$queryRaw`   
+      SELECT d.id as doc_id,
+             d.title,
+             dc.chunk_text as text,
+             d.meta as meta
+      FROM document_chunks dc
+      JOIN documents d ON dc.document_id = d.id
+      JOIN sources s ON d.source_id = s.id
+      WHERE s.type = ANY(${allowedTypes})
+      ORDER BY dc.embedding <=> ${queryVector}::vector
+      LIMIT ${searchResultMaxSize}`;
+  }
 
   const allResults: PolicyIndex[] = rawResults.map((h, i) => ({
     id: h.doc_id.toString(),
