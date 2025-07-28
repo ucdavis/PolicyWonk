@@ -199,7 +199,7 @@ export const getSearchResultsPgSQL = async (
       JOIN documents d ON dc.document_id = d.id
       JOIN sources s ON d.source_id = s.id
       WHERE s.type = ANY(${allowedTypes})
-        AND d.meta->'keywords' ? ${focus.subFocus.toLocaleUpperCase()}
+        AND d.meta->'keywords' ? ${focus.subFocus.toUpperCase()}
       ORDER BY dc.embedding <=> ${queryVector}::vector
       LIMIT ${searchResultMaxSize}`;
   } else {

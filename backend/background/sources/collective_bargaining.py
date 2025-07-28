@@ -20,6 +20,12 @@ BARGAINING_UNITS_URL = (
 
 
 class UcnetCollectiveBargainingStream(DocumentStream):
+    CAMPUS_INDICATORS = [
+        "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
+        "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
+        "UC Santa Cruz", "UC San Francisco", "Lawrence Berkeley"
+    ]
+
     def __init__(self, source: Source) -> None:
         super().__init__(source)
         self.max_retries: int = 3
@@ -75,11 +81,8 @@ class UcnetCollectiveBargainingStream(DocumentStream):
             # Determine if this is a systemwide union or a local campus
             # Campus names typically contain "UC" followed by campus name
             # not the best method but works for current structure
-            is_campus = any(campus_indicator in union_name for campus_indicator in [
-                "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
-                "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
-                "UC Santa Cruz", "UC San Francisco", "Lawrence Berkeley"
-            ])
+            is_campus = any(
+                campus_indicator in union_name for campus_indicator in self.CAMPUS_INDICATORS)
 
             if is_campus:
                 # This is a local campus accordion, skip it in systemwide processing
@@ -176,14 +179,8 @@ class UcnetCollectiveBargainingStream(DocumentStream):
 
             # Determine if this is a local campus accordion
             # Campus names typically contain "UC" followed by campus name
-            campus_indicators = [
-                "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
-                "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
-                "UC Santa Cruz", "UC San Francisco", "Lawrence Berkeley"
-            ]
-
             is_campus = any(
-                campus_indicator in union_name for campus_indicator in campus_indicators)
+                campus_indicator in union_name for campus_indicator in self.CAMPUS_INDICATORS)
 
             if not is_campus:
                 # This is not a campus accordion, skip it in local processing
@@ -298,6 +295,10 @@ if __name__ == "__main__":
             print(f"Document {count}: {doc.title}")
             print(f"URL: {doc.url}")
             print(f"Metadata: {doc.metadata}")
+            print("---")
+        print(f"Total documents found: {count}")
+
+    asyncio.run(main())
             print("---")
         print(f"Total documents found: {count}")
 
