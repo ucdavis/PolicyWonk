@@ -1,8 +1,8 @@
 import asyncio
 import re
 from dotenv import load_dotenv
-from typing import List, AsyncIterator, Optional, Sequence, cast
-from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
+from typing import List, AsyncIterator
+from playwright.async_api import Page
 from background.sources.shared import user_agent, get_browser_page
 
 from background.logger import setup_logger
@@ -74,6 +74,7 @@ class UcnetCollectiveBargainingStream(DocumentStream):
 
             # Determine if this is a systemwide union or a local campus
             # Campus names typically contain "UC" followed by campus name
+            # not the best method but works for current structure
             is_campus = any(campus_indicator in union_name for campus_indicator in [
                 "UC Berkeley", "UC Davis", "UC Irvine", "UC Los Angeles", "UCLA",
                 "UC Merced", "UC Riverside", "UC San Diego", "UC Santa Barbara",
@@ -293,12 +294,11 @@ if __name__ == "__main__":
         print("Starting async main...")
         count = 0
         async for doc in UcnetCollectiveBargainingStream(source):
-            if doc.metadata.get("responsible_office") != "ucop":
-                count += 1
-                print(f"Document {count}: {doc.title}")
-                print(f"URL: {doc.url}")
-                print(f"Metadata: {doc.metadata}")
-                print("---")
-        print(f"Total non-systemwide documents found: {count}")
+            count += 1
+            print(f"Document {count}: {doc.title}")
+            print(f"URL: {doc.url}")
+            print(f"Metadata: {doc.metadata}")
+            print("---")
+        print(f"Total documents found: {count}")
 
     asyncio.run(main())
