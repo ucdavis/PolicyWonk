@@ -5,6 +5,7 @@ from typing import List
 
 from background.logger import log_memory_usage, setup_logger
 from background.sources.apm import UcdApmStream
+from background.sources.collective_bargaining import UcnetCollectiveBargainingStream
 from background.sources.document_stream import DocumentStream
 from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.shared import download_document, num_tokens
@@ -33,6 +34,8 @@ class DocumentIngestStream():
             return UcdPolicyManualDocumentStream(source)
         elif source.type == SourceType.UCDAPM:
             return UcdApmStream(source)
+        elif source.type == SourceType.UCCONTRACTS:
+            return UcnetCollectiveBargainingStream(source)
         # TODO: Add other source types here
         else:
             raise ValueError(f"Unsupported source type {source.type}")
