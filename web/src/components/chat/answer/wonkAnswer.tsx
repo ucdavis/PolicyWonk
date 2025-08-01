@@ -9,9 +9,10 @@ import { GTagEvents } from '../../../models/gtag';
 
 interface WonkAnswerProps {
   text: string;
+  onCitationClick?: (citationHref: string) => void;
 }
 
-const WonkAnswer: React.FC<WonkAnswerProps> = ({ text }) => {
+const WonkAnswer: React.FC<WonkAnswerProps> = ({ text, onCitationClick }) => {
   const gtagEvent = useGtagEvent();
 
   const sanitizedText = sanitizeMarkdown(text);
@@ -25,10 +26,12 @@ const WonkAnswer: React.FC<WonkAnswerProps> = ({ text }) => {
           if (props.href?.startsWith('http')) {
             return (
               <a
-                onClick={() => {
-                  gtagEvent({
-                    event: GTagEvents.CITATION_EXTERNAL,
-                  });
+                className='citation-link text-blue-600 hover:underline'
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onCitationClick && props.href) {
+                    onCitationClick(props.href || '');
+                  }
                 }}
                 {...props}
                 target='_blank'
@@ -70,7 +73,19 @@ const WonkAnswer: React.FC<WonkAnswerProps> = ({ text }) => {
             );
           } else {
             // regular links (like mailto:)
-            return <a {...props} />;
+            return (
+              <a
+                className='citation-link text-blue-600 hover:underline cursor-pointer'
+                onClick={(e) => {
+                  e.preventDefault(); // prevent actual navigation
+                  if (onCitationClick && props.href) {
+                    onCitationClick(props.href);
+                  }
+                }}
+              >
+                {props.children}
+              </a>
+            );
           }
         },
       }}

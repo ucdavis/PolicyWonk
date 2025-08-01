@@ -20,6 +20,7 @@ import {
   llmModel,
   transformContentWithCitations,
   getSearchResultsElastic,
+  getDocumentContents,
 } from '../services/chatService';
 import {
   removeChat,
@@ -119,21 +120,27 @@ export const submitUserMessage = async (userInput: string) => {
       // `text` is called when an AI returns a text response (as opposed to a tool call).
       // Its content is streamed from the LLM, so this function will be called
       // multiple times with `content` being incremental. `delta` is the new text to append.
-      text: ({ content, done, delta }) => {
+      text: async ({ content, done, delta }) => {
         if (done) {
           textStream.done();
 
-          // once we are finished, we need to modify the content to transform the citations
-          const finalContent = transformContentWithCitations(
+          const { transformedText, citations } = transformContentWithCitations(
             content,
             searchResults
           );
+          const citationDocs = await Promise.all(
+            citations.map(async ({ url, title }) => {
+              const doc = await getDocumentContents(url, title);
+              return doc ? { ...doc, url } : null;
+            })
+          ).then((docs) => docs.filter((doc) => doc !== null));
 
           const finalNode = (
             <WonkMessage
-              content={finalContent}
+              content={transformedText}
               isLoading={false}
               wonkThoughts={''}
+              citationDocs={citationDocs} // passing raw contents of source
             />
           );
 
@@ -145,7 +152,7 @@ export const submitUserMessage = async (userInput: string) => {
             {
               id: nanoid(), // new id for the message
               role: 'assistant',
-              content: finalContent,
+              content: transformedText,
             },
           ];
           (async () => {

@@ -108,3 +108,36 @@ ul.footer-links {
     display: inline;
   }
 }
+
+// source sidebar styles 
+.source-sidebar-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 500px; 
+  background-color: $primary-bg;
+  transform: translateX(100%); 
+  transition: transform 0.3s ease-in-out; 
+  z-index: 50;
+
+  &.open {
+    transform: translateX(0); 
+  }
+
+  .source-sidebar-header {
+    height: 60px;
+    background-color: $ucop-blue-light;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid $borders;
+  }
+
+  .source-sidebar-main {
+    padding: 16px;
+    overflow-y: auto;
+    height: calc(100vh - 60px); 
+  }
+}
