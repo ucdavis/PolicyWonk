@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
@@ -28,16 +30,12 @@ const SourceSidebar: React.FC<SourceSidebarProps> = ({
               href={selectedDoc?.url}
               target='_blank'
               rel='noopener noreferrer'
-              className='hover:underline text-blue-600'
             >
               {selectedDoc?.title}
             </a>
           </h2>
-          <button
-            onClick={onClose}
-            className='sidebar-close text-gray-600 hover:text-black'
-          >
-            ✕ Close
+          <button onClick={onClose} className='sidebar-close'>
+            <FontAwesomeIcon icon={faClose} />
           </button>
         </div>
         <div className='source-sidebar-main'>
