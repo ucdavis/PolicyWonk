@@ -269,7 +269,8 @@ export const expandedTransformSearchResults = (
 export const transformContentWithCitations = (
   docText: string,
   policies: PolicyIndex[]
-) => {
+  // modified to return url and title of source to pass to getDocumentContents
+): { transformedText: string; citations: { url: string; title: string }[] } => {
   // our content contains citations in the form <c:1234>
   // we need to replace those w/ markdown citations
   // markdown citations replace inline in the form of [^1]
@@ -280,7 +281,7 @@ export const transformContentWithCitations = (
 
   // if there are no citations, we don't need to do anything
   if (citations.length === 0) {
-    return docText;
+    return { transformedText: docText, citations: [] };
   }
 
   // 2. replace the citations in the text w/ markdown citations and keep track of the citations
@@ -305,6 +306,10 @@ export const transformContentWithCitations = (
   const usedPolicies = policies.filter((p) =>
     usedCitationDocNums.has(p.docNumber)
   );
+  const citationMetadata = usedPolicies.map((p) => ({
+    url: p.metadata.url,
+    title: p.metadata.title,
+  }));
 
   const citationFootnoteMarkdown = usedPolicies
     .map((p) => {
@@ -315,8 +320,31 @@ export const transformContentWithCitations = (
   // 4. add the citations to the end of the document
   transformedText += `\n\n## Citations\n${citationFootnoteMarkdown}\n`;
 
-  return transformedText;
+  return { transformedText, citations: citationMetadata };
 };
+
+export async function getDocumentContents(title: string): Promise<{
+  url: string;
+  content: string;
+} | null> {
+  const documentContents = await prisma.documentContents.findFirst({
+    where: {
+      AND: [{ document: { title: title } }],
+    },
+    include: {
+      document: true,
+    },
+  });
+
+  if (!documentContents || !documentContents.content) {
+    return null;
+  }
+
+  return {
+    url: documentContents.document.url ?? '',
+    content: documentContents.content,
+  };
+}
 
 export const getSystemMessage = (docText: string) => {
   if (!docText) {
