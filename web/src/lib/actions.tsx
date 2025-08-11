@@ -129,12 +129,12 @@ export const submitUserMessage = async (userInput: string) => {
             searchResults
           );
           const citationDocs = await Promise.all(
-            citations.map(async ({ url, title }) => {
-              const doc = await getDocumentContents(url, title);
-              return doc ? { ...doc, url } : null;
+            citations.map(async ({ title }) => {
+              const doc = await getDocumentContents(title);
+              return doc ? { ...doc, title } : null;
             })
           ).then((docs) => docs.filter((doc) => doc !== null));
-
+          console.log('citationDocs', citationDocs);
           const finalNode = (
             <WonkMessage
               content={transformedText}

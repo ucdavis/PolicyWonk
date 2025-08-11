@@ -304,16 +304,13 @@ export const transformContentWithCitations = (
   return { transformedText, citations: citationMetadata };
 };
 
-export async function getDocumentContents(
-  url: string,
-  title: string
-): Promise<{
-  title: string;
+export async function getDocumentContents(title: string): Promise<{
+  url: string;
   content: string;
 } | null> {
   const documentContents = await prisma.documentContents.findFirst({
     where: {
-      AND: [{ document: { url: url } }, { document: { title: title } }],
+      AND: [{ document: { title: title } }],
     },
     include: {
       document: true,
@@ -325,7 +322,7 @@ export async function getDocumentContents(
   }
 
   return {
-    title: documentContents.document.title,
+    url: documentContents.document.url ?? '',
     content: documentContents.content,
   };
 }
