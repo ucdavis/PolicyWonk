@@ -18,13 +18,10 @@
           "source.fixAll.eslint": "always"
         },
         "editor.formatOnSave": true,
-        "eslint.workingDirectories": ["./web"]
+        "eslint.workingDirectories": [
+          "./web"
+        ]
       }
-    }
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
     }
   },
   // Uncomment the following lines to use Playwright (not currently used in this project)
