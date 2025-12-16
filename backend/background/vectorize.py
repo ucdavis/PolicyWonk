@@ -3,11 +3,13 @@ import os
 
 from dotenv import load_dotenv
 from langchain_core.embeddings import FakeEmbeddings
+from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
+from backend.background.util.elastic import ELASTIC_INDEX, es_client
 from background.logger import setup_logger
-from db.models import Document, DocumentChunk, DocumentContent, Source
-from db.mutations import delete_chunks_and_content
+from db.models import Document, DocumentContent, Source
+from db.mutations import delete_doc_content
 from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
@@ -47,14 +49,7 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         document_details.content)
 
     # now we need to chunk the content into smaller pieces so it can be vectorized
-    # langchain uses character sizes so token sizes are about 1/4 the character size
-    chunk_size_in_tokens = 500
-    chunk_overlap_in_tokens = 50
-    chunk_size = chunk_size_in_tokens * 4
-    chunk_overlap = chunk_overlap_in_tokens * 4
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap
-    )
+    text_splitter = RecursiveCharacterTextSplitter()
 
     chunks = text_splitter.split_documents(md_header_splits)
 
@@ -69,34 +64,25 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     else:
         embeddings = FakeEmbeddings(size=1536)
 
-    # mass embeddings for all chunks
-    embedded_vectors = embeddings.embed_documents(
-        [chunk.page_content for chunk in chunks])
+    store = ElasticsearchStore(
+        embedding=embeddings,
+        index_name=ELASTIC_INDEX,
+        es_connection=es_client,
+    )
 
-    # 3. remove any existing content or chunks related to the doc
+    # TODO: add metadata to the chunks?
+    # metadata_from_parent = {
+    #     "doc_length": document_details.metadata.get("content_length", 0),
+    #     "doc_tokens": document_details.metadata.get("token_count", 0),
+    # }
+
+    # should be ok without batching since we are doing per doc
+    store.add_documents(chunks)
+
+    # 3. remove any existing content related to the doc
     if db_document:
-        # remove existing content and chunks
-        delete_chunks_and_content(session, db_document)
-
-    # 4. store the new content and vectors
-    metadata_from_parent = {
-        "doc_length": document_details.metadata.get("content_length", 0),
-        "doc_tokens": document_details.metadata.get("token_count", 0),
-    }
-    doc_chunks = [
-        DocumentChunk(
-            chunk_index=i,
-            chunk_text=chunk.page_content,
-            embedding=embedded_vectors[i],
-            meta={
-                # add in desired metadata from the parent doc
-                **metadata_from_parent,
-                # add in metadata from the chunk and group the headers so they aren't spread around
-                **(group_headers(chunk.metadata) if hasattr(chunk, 'metadata') and chunk.metadata else {}),
-            }
-        )
-        for i, chunk in enumerate(chunks)]
-
+        delete_doc_content(session, db_document)
+   
     doc_content = DocumentContent(content=document_details.content)
 
     # get the metadata for this doc
@@ -116,7 +102,6 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     session.add(db_document)
 
     # now that we've flushed the changes and have a docId we can continue
-    db_document.chunks = doc_chunks
     db_document.content = doc_content
 
     return db_document

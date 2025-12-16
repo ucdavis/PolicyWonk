@@ -27,7 +27,7 @@ def create_index_attempt(session: Session, source: Source, start_time: datetime)
     return attempt
 
 
-def delete_chunks_and_content(session: Session, document: Document) -> None:
+def delete_doc_content(session: Session, document: Document) -> None:
     # delete all derived content for the document
     session.execute(delete(DocumentContent).where(
         DocumentContent.document_id == document.id))
