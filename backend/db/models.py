@@ -12,8 +12,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import String
 
 from db.constants import IndexStatus, RefreshFrequency, RoleName, SourceStatus, SourceType
-from pgvector.sqlalchemy import Vector
-
 
 class Base(DeclarativeBase):
     pass
@@ -242,43 +240,8 @@ class Document(Base):
         DateTime, nullable=True
     )
 
-    chunks: Mapped[List["DocumentChunk"]] = relationship(
-        "DocumentChunk", back_populates="document")
-
     content: Mapped["DocumentContent"] = relationship(
         "DocumentContent", back_populates="document", uselist=False, cascade="all, delete-orphan")
-
-
-class DocumentChunk(Base):
-    __tablename__ = "document_chunks"
-    __table_args__ = (
-        # Index for similarity search on the vector column
-        Index(
-            "document_chunks_embedding_idx",
-            "embedding",
-            postgresql_using="hnsw",
-            postgresql_ops={"embedding": "vector_cosine_ops"}
-        ),
-    )
-
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True)
-    # Reference to the main document (documents.id is a string)
-    document_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("documents.id"), nullable=False)
-    # The order/index of the chunk
-    chunk_index: Mapped[int] = mapped_column(Integer, nullable=False)
-    # The actual text of this chunk
-    chunk_text: Mapped[str] = mapped_column(Text, nullable=False)
-    # The vector embedding for this chunk (adjust dimension as needed)
-    embedding: Mapped[List[float]] = mapped_column(
-        Vector(1536), nullable=False)
-    # Optional metadata stored as JSONB
-    meta: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
-
-    # Back-reference to the Document
-    document: Mapped["Document"] = relationship(
-        "Document", back_populates="chunks")
 
 
 class DocumentContent(Base):
