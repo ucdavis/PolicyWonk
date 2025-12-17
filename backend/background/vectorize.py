@@ -61,6 +61,7 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         "token_count", parent_metadata.get("tokens", 0)))
     parent_metadata.setdefault("url", document_details.url)
     parent_metadata.setdefault("title", document_details.title)
+    parent_metadata.setdefault("source_id", source.id)
 
     for chunk in chunks:
         chunk_meta = dict(getattr(chunk, "metadata", None) or {})
