@@ -29,3 +29,41 @@ Pack up the backend with repomix to get a full representation of the backend cod
 ```bash
 npx repomix backend --ignore "experiments/,.env"
 ```
+
+# Running locally (outside of devcontainer)
+
+First time, create a venv
+
+```bash
+uv venv --python 3.12
+```
+
+Activate the venv
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies
+
+```bash
+uv pip install -r requirements.txt
+```
+
+Install playwright browsers (so that it is installed in the venv)
+
+```bash
+python -m playwright install chromium
+```
+
+Weird dependency issue w/ psycopg -- I needed to point to my openssl before running above
+
+```bash
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/libpq/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/libpq/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig:/opt/homebrew/opt/libpq/lib/pkgconfig"
+```
+
+## Browsing
+
+Locally
