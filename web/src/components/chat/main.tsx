@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
 
+import { useAIState, useUIState } from '@ai-sdk/rsc';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useAIState, useUIState } from 'ai/rsc';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { AI } from '../../lib/aiProvider';

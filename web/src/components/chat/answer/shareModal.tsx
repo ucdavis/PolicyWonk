@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 
+import { useActions, useAIState } from '@ai-sdk/rsc';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperPlane as faPaperPlaneSolid } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useActions, useAIState } from 'ai/rsc';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { AI } from '../../../lib/aiProvider';

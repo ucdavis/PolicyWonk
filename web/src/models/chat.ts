@@ -1,8 +1,14 @@
-import { Message } from 'ai';
-
 import { llmModel } from '../services/chatService';
 
 import { Focus, focuses } from './focus';
+
+export type ChatMessageRole = 'system' | 'user' | 'assistant';
+
+export type ChatMessage = {
+  id: string;
+  role: ChatMessageRole;
+  content: string;
+};
 
 export type ChatHistoryMetadata = {
   focus: Focus;
@@ -12,7 +18,7 @@ export type ChatHistory = {
   id: string;
   active: boolean;
   title: string;
-  messages: Message[];
+  messages: ChatMessage[];
   meta: ChatHistoryMetadata;
   assistantSlug: string;
   group: string;

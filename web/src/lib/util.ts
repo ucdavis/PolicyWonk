@@ -1,6 +1,6 @@
-import { Message } from 'ai';
+import type { ChatMessage } from '@/models/chat';
 
-export const getFullQuestionAndAnswer = (messages: Message[]) => {
+export const getFullQuestionAndAnswer = (messages: ChatMessage[]) => {
   if (!messages) {
     // TODO: throw error
     return '';

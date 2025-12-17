@@ -1,7 +1,8 @@
 'use server';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
-import { Message } from 'ai';
 import { Session } from 'next-auth';
+
+import type { ChatMessage } from '@/models/chat';
 
 import { auth } from '../auth';
 
@@ -69,7 +70,7 @@ const ensureLogIndexExists = async () => {
   logIndexExists = true;
 };
 
-export const logMessages = async (chatId: string, messages: Message[]) => {
+export const logMessages = async (chatId: string, messages: ChatMessage[]) => {
   const session = (await auth()) as Session;
 
   const user = session?.user?.name ?? 'Unknown User';
@@ -80,7 +81,7 @@ export const logMessages = async (chatId: string, messages: Message[]) => {
 // use elasticsearch to log the user's query and the results
 export const logResponse = async (
   id: string,
-  messages: Message[],
+  messages: ChatMessage[],
   model: string,
   user: string
 ) => {
@@ -137,6 +138,6 @@ interface ChatLog {
   llm_model: string; // LLM model used for the chat session
   reaction: string; // User's reaction or empty
   timestamp: Date; // Timestamp for when the log was created
-  messages: Message[]; // Array of Message objects
+  messages: ChatMessage[]; // Array of chat messages
   metadata: Metadata; // Flexible key/value pairs for arbitrary metadata
 }

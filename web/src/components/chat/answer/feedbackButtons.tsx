@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
 
+import { useAIState, useActions } from '@ai-sdk/rsc';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import {
   faThumbsUp as faThumbsUpSolid,
   faThumbsDown as faThumbsDownSolid,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useAIState, useActions } from 'ai/rsc';
 
 import { AI } from '../../../lib/aiProvider';
 import { throwConfettiAt } from '../../../lib/confetti';

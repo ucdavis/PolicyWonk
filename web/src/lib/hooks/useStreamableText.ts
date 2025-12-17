@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { StreamableValue, readStreamableValue } from 'ai/rsc';
+import { StreamableValue, readStreamableValue } from '@ai-sdk/rsc';
 
 interface StreamableTextOptions {
   shouldAppend?: boolean;
