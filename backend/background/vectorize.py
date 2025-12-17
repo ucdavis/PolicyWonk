@@ -65,8 +65,9 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     for chunk in chunks:
         chunk_meta = dict(getattr(chunk, "metadata", None) or {})
         # Merge in document-level metadata without dropping existing chunk/header keys.
-        chunk_meta.update(parent_metadata)
-        chunk.metadata = chunk_meta
+        merged_meta = dict(parent_metadata)
+        merged_meta.update(chunk_meta)
+        chunk.metadata = merged_meta
 
     # log the chunks
     logger.info(
@@ -154,7 +155,7 @@ def delete_by_url(source_id: int, url: str) -> dict:
 
     Args:
         source_id (int): The source ID to filter by
-        urls (List[str]): List of URLs to delete
+        url (str): URL to delete
 
     Returns:
         dict: Result of the deletion operation
