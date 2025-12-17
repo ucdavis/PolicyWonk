@@ -1,7 +1,7 @@
 alembic==1.13.2
 autopep8==2.3.1
 beautifulsoup4
-docling
+docling==2.65.0
 langchain==0.3.20
 langchain-elasticsearch==0.3.2
 langchain-openai==0.3.7
