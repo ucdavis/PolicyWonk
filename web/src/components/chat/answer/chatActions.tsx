@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { useAIState } from 'ai/rsc';
+import { useAIState } from '@ai-sdk/rsc';
 import { AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 

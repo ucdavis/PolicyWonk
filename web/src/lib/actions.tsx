@@ -1,16 +1,15 @@
 'use server';
-import { Message } from 'ai';
 import {
   createStreamableUI,
   createStreamableValue,
   getMutableAIState,
   streamUI,
-} from 'ai/rsc';
+} from '@ai-sdk/rsc';
 import { nanoid } from 'nanoid';
 import { redirect } from 'next/navigation';
 
 import { WonkMessage } from '../components/chat/answer/wonkMessage';
-import { Feedback, UIStateNode } from '../models/chat';
+import type { ChatMessage, Feedback, UIStateNode } from '../models/chat';
 import { Focus } from '../models/focus';
 import {
   getEmbeddings,
@@ -86,7 +85,7 @@ export const submitUserMessage = async (userInput: string) => {
 
     const systemMessage = getSystemMessage(transformedResults);
 
-    const initialMessages: Message[] = [
+    const initialMessages: ChatMessage[] = [
       systemMessage, // system message with full document info
       {
         id: nanoid(), // new id for the user message
@@ -110,10 +109,9 @@ export const submitUserMessage = async (userInput: string) => {
       model: openai(llmModel),
       initial: textNode,
       messages: [
-        ...aiState.get().messages.map((m: any) => ({
+        ...aiState.get().messages.map((m) => ({
           role: m.role,
           content: m.content,
-          name: m.name,
         })),
       ],
       // `text` is called when an AI returns a text response (as opposed to a tool call).
@@ -140,7 +138,7 @@ export const submitUserMessage = async (userInput: string) => {
           // finally, close out the initial UI stream with the final node
           chatWindowUI.done(finalNode);
 
-          const finalMessages: Message[] = [
+          const finalMessages: ChatMessage[] = [
             ...aiState.get().messages,
             {
               id: nanoid(), // new id for the message

@@ -1,16 +1,14 @@
 'server only';
 import { createOpenAI } from '@ai-sdk/openai';
-import { EmbeddingModelV1Embedding } from '@ai-sdk/provider';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import {
   KnnQuery,
   QueryDslQueryContainer,
 } from '@elastic/elasticsearch/lib/api/types';
-import { Message } from 'ai';
 
 import prisma from '@/lib/db';
 
-import { PolicyIndex } from '../models/chat';
+import type { ChatMessage, PolicyIndex } from '../models/chat';
 import { Focus, FocusScope } from '../models/focus';
 
 export const openai = createOpenAI({
@@ -36,7 +34,7 @@ const searchClient: Client = new Client(config);
 
 const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
-export const getEmbeddings = async (query: string) => {
+export const getEmbeddings = async (query: string): Promise<number[][]> => {
   // get our embeddings
   const embeddings = await embeddingModel.doEmbed({
     values: [query],
@@ -132,7 +130,7 @@ const generateFilterPgSQL = (focus: Focus): string[] => {
 };
 
 export const getSearchResultsElastic = async (
-  embeddings: EmbeddingModelV1Embedding[],
+  embeddings: number[][],
   focus: Focus
 ) => {
   const searchResultMaxSize = 5;
@@ -173,7 +171,7 @@ export const getSearchResultsElastic = async (
 };
 
 export const getSearchResultsPgSQL = async (
-  embeddings: EmbeddingModelV1Embedding[],
+  embeddings: number[][],
   focus: Focus
 ): Promise<PolicyIndex[]> => {
   const searchResultMaxSize = 10;
@@ -326,7 +324,7 @@ export const getSystemMessage = (docText: string) => {
       role: 'system',
       content:
         "Reply with: Sorry, I couldn't find enough information to answer your question",
-    } as Message;
+    } as ChatMessage;
   }
 
   return {
@@ -348,5 +346,5 @@ ${docText}
 Write a response to the user's last input in high quality natural english. Use the symbol <c:id> to indicate when a fact comes from a document in the search result. 
 e.g ""my fact <c:0>"" for a fact from "Document: 0" or ""external citation <c:2>"" for a fact from "Document: 2".
 `,
-  } as Message;
+  } as ChatMessage;
 };

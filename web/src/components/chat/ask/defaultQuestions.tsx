@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 
-import { useAIState } from 'ai/rsc';
+import { useAIState } from '@ai-sdk/rsc';
 
 import { Focus } from '../../../models/focus';
 

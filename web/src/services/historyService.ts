@@ -5,7 +5,6 @@ import {
   InputJsonValue,
   JsonObject,
 } from '@prisma/client/runtime/library';
-import { Message } from 'ai';
 import { nanoid } from 'nanoid';
 
 import { auth } from '@/auth';
@@ -17,7 +16,12 @@ import {
   WonkNotFound,
   WonkServerError,
 } from '@/lib/error/error';
-import { ChatHistory, ChatHistoryMetadata, Feedback } from '@/models/chat';
+import {
+  ChatHistory,
+  ChatHistoryMetadata,
+  ChatMessage,
+  Feedback,
+} from '@/models/chat';
 import { Focus } from '@/models/focus';
 import { WonkSession } from '@/models/session';
 
@@ -33,12 +37,12 @@ export type ChatHistoryTitleEntry = {
   timestamp: Date;
 };
 
-const filterAndConvertMessages = (messages: JsonValue): Message[] => {
+const filterAndConvertMessages = (messages: JsonValue): ChatMessage[] => {
   // hard cast but we'll convert when we switch to useChat later
-  return filterOutSystemMessages(messages as unknown as Message[]);
+  return filterOutSystemMessages(messages as unknown as ChatMessage[]);
 };
 
-const filterOutSystemMessages = (messages: Message[]): Message[] => {
+const filterOutSystemMessages = (messages: ChatMessage[]): ChatMessage[] => {
   return messages.filter((message) => message.role !== 'system');
 };
 
@@ -169,7 +173,7 @@ export const getSharedChat = async (
 export const saveChat = async (
   // session: Session,
   chatId: string,
-  messages: Message[],
+  messages: ChatMessage[],
   group: string,
   focus: Focus
 ): Promise<WonkReturnObject<boolean>> => {
