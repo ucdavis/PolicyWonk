@@ -44,6 +44,14 @@ Activate the venv
 source .venv/bin/activate
 ```
 
+Weird dependency issue w/ psycopg -- I needed to point to my openssl before running pip install
+
+```bash
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/libpq/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/libpq/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig:/opt/homebrew/opt/libpq/lib/pkgconfig"
+```
+
 Install dependencies
 
 ```bash
@@ -54,14 +62,6 @@ Install playwright browsers (so that it is installed in the venv)
 
 ```bash
 python -m playwright install chromium
-```
-
-Weird dependency issue w/ psycopg -- I needed to point to my openssl before running above
-
-```bash
-export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/libpq/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/libpq/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig:/opt/homebrew/opt/libpq/lib/pkgconfig"
 ```
 
 ## Browsing
