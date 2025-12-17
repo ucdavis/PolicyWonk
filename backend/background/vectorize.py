@@ -85,6 +85,10 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         es_connection=es_client,
     )
 
+    # delete any existing vectors for this doc
+    delete_by_url(source.id, document_details.url)
+
+    # add the new vectors for the doc
     # should be ok without batching since we are doing per doc
     store.add_documents(chunks)
 
@@ -107,7 +111,7 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     db_document.url = document_details.url
     db_document.meta = metadata
 
-    # add the doc
+    # add the doc to elastic
     session.add(db_document)
 
     # now that we've flushed the changes and have a docId we can continue
@@ -142,3 +146,35 @@ def group_headers(metadata: dict) -> dict:
     if headers:
         new_meta["headers"] = headers
     return new_meta
+
+
+def delete_by_url(source_id: int, url: str) -> dict:
+    """
+    Delete document from Elasticsearch by URL and source ID.
+
+    Args:
+        source_id (int): The source ID to filter by
+        urls (List[str]): List of URLs to delete
+
+    Returns:
+        dict: Result of the deletion operation
+    """
+    if not url:
+        return {"deleted": 0}
+
+    result = es_client.delete_by_query(
+        index=ELASTIC_INDEX,
+        conflicts="proceed",  # continue deleting even if there are version conflicts
+        body={
+            "query": {
+                "bool": {
+                    "must": [
+                        {"term": {"metadata.url.keyword": url}},
+                        {"term": {"metadata.source_id": source_id}}
+                    ]
+                }
+            }
+        }
+    )
+
+    return {"deleted": result.get("deleted", 0)}
