@@ -53,6 +53,21 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
 
     chunks = text_splitter.split_documents(md_header_splits)
 
+    # Add parent/document-level metadata to each chunk so it is stored in Elasticsearch.
+    parent_metadata = dict(document_details.metadata or {})
+    parent_metadata.setdefault("doc_length", parent_metadata.get(
+        "content_length", len(document_details.content or "")))
+    parent_metadata.setdefault("doc_tokens", parent_metadata.get(
+        "token_count", parent_metadata.get("tokens", 0)))
+    parent_metadata.setdefault("url", document_details.url)
+    parent_metadata.setdefault("title", document_details.title)
+
+    for chunk in chunks:
+        chunk_meta = dict(getattr(chunk, "metadata", None) or {})
+        # Merge in document-level metadata without dropping existing chunk/header keys.
+        chunk_meta.update(parent_metadata)
+        chunk.metadata = chunk_meta
+
     # log the chunks
     logger.info(
         f"Document {document_details.url} has {len(chunks)} chunks")
@@ -69,12 +84,6 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         index_name=ELASTIC_INDEX,
         es_connection=es_client,
     )
-
-    # TODO: add metadata to the chunks?
-    # metadata_from_parent = {
-    #     "doc_length": document_details.metadata.get("content_length", 0),
-    #     "doc_tokens": document_details.metadata.get("token_count", 0),
-    # }
 
     # should be ok without batching since we are doing per doc
     store.add_documents(chunks)
