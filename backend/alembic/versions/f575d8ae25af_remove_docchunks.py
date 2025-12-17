@@ -10,6 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from pgvector.sqlalchemy import Vector
 
 # revision identifiers, used by Alembic.
 revision: str = 'f575d8ae25af'
@@ -37,7 +38,7 @@ def downgrade() -> None:
                               autoincrement=False, nullable=False),
                     sa.Column('chunk_text', sa.TEXT(),
                               autoincrement=False, nullable=False),
-                    sa.Column('embedding', sa.NullType(),
+                    sa.Column('embedding', Vector(1536),
                               autoincrement=False, nullable=False),
                     sa.Column('meta', postgresql.JSON(astext_type=sa.Text()),
                               autoincrement=False, nullable=True),
