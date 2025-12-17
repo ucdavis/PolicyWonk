@@ -6,7 +6,7 @@ from langchain_core.embeddings import FakeEmbeddings
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
-from backend.background.util.elastic import ELASTIC_INDEX, es_client
+from background.util.elastic import ELASTIC_INDEX, es_client
 from background.logger import setup_logger
 from db.models import Document, DocumentContent, Source
 from db.mutations import delete_doc_content
@@ -82,7 +82,7 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     # 3. remove any existing content related to the doc
     if db_document:
         delete_doc_content(session, db_document)
-   
+
     doc_content = DocumentContent(content=document_details.content)
 
     # get the metadata for this doc

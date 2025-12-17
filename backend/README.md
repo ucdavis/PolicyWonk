@@ -6,6 +6,12 @@
 
 3. (optional) Run `python dev/reset_db.py` to seed the database with some test data (WARNING: removes any old data).
 
+## Installing Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
 # Browsing / Scraping
 
 Playing with using playwright for browser automation instead of selenium (mostly for ease of setup)
