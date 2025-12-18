@@ -3,11 +3,13 @@ import os
 
 from dotenv import load_dotenv
 from langchain_core.embeddings import FakeEmbeddings
+from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
+from background.util.elastic import ELASTIC_INDEX, es_client
 from background.logger import setup_logger
-from db.models import Document, DocumentChunk, DocumentContent, Source
-from db.mutations import delete_chunks_and_content
+from db.models import Document, DocumentContent, Source
+from db.mutations import delete_doc_content
 from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
@@ -47,16 +49,26 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
         document_details.content)
 
     # now we need to chunk the content into smaller pieces so it can be vectorized
-    # langchain uses character sizes so token sizes are about 1/4 the character size
-    chunk_size_in_tokens = 500
-    chunk_overlap_in_tokens = 50
-    chunk_size = chunk_size_in_tokens * 4
-    chunk_overlap = chunk_overlap_in_tokens * 4
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap
-    )
+    text_splitter = RecursiveCharacterTextSplitter()
 
     chunks = text_splitter.split_documents(md_header_splits)
+
+    # Add parent/document-level metadata to each chunk so it is stored in Elasticsearch.
+    parent_metadata = dict(document_details.metadata or {})
+    parent_metadata.setdefault("doc_length", parent_metadata.get(
+        "content_length", len(document_details.content or "")))
+    parent_metadata.setdefault("doc_tokens", parent_metadata.get(
+        "token_count", parent_metadata.get("tokens", 0)))
+    parent_metadata.setdefault("url", document_details.url)
+    parent_metadata.setdefault("title", document_details.title)
+    parent_metadata.setdefault("source_id", source.id)
+
+    for chunk in chunks:
+        chunk_meta = dict(getattr(chunk, "metadata", None) or {})
+        # Merge in document-level metadata without dropping existing chunk/header keys.
+        merged_meta = dict(parent_metadata)
+        merged_meta.update(chunk_meta)
+        chunk.metadata = merged_meta
 
     # log the chunks
     logger.info(
@@ -69,33 +81,22 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     else:
         embeddings = FakeEmbeddings(size=1536)
 
-    # mass embeddings for all chunks
-    embedded_vectors = embeddings.embed_documents(
-        [chunk.page_content for chunk in chunks])
+    store = ElasticsearchStore(
+        embedding=embeddings,
+        index_name=ELASTIC_INDEX,
+        es_connection=es_client,
+    )
 
-    # 3. remove any existing content or chunks related to the doc
+    # delete any existing vectors for this doc
+    delete_by_url(source.id, document_details.url)
+
+    # add the new vectors for the doc
+    # should be ok without batching since we are doing per doc
+    store.add_documents(chunks)
+
+    # 3. remove any existing content related to the doc
     if db_document:
-        # remove existing content and chunks
-        delete_chunks_and_content(session, db_document)
-
-    # 4. store the new content and vectors
-    metadata_from_parent = {
-        "doc_length": document_details.metadata.get("content_length", 0),
-        "doc_tokens": document_details.metadata.get("token_count", 0),
-    }
-    doc_chunks = [
-        DocumentChunk(
-            chunk_index=i,
-            chunk_text=chunk.page_content,
-            embedding=embedded_vectors[i],
-            meta={
-                # add in desired metadata from the parent doc
-                **metadata_from_parent,
-                # add in metadata from the chunk and group the headers so they aren't spread around
-                **(group_headers(chunk.metadata) if hasattr(chunk, 'metadata') and chunk.metadata else {}),
-            }
-        )
-        for i, chunk in enumerate(chunks)]
+        delete_doc_content(session, db_document)
 
     doc_content = DocumentContent(content=document_details.content)
 
@@ -112,11 +113,10 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     db_document.url = document_details.url
     db_document.meta = metadata
 
-    # add the doc
+    # add the doc to elastic
     session.add(db_document)
 
     # now that we've flushed the changes and have a docId we can continue
-    db_document.chunks = doc_chunks
     db_document.content = doc_content
 
     return db_document
@@ -148,3 +148,35 @@ def group_headers(metadata: dict) -> dict:
     if headers:
         new_meta["headers"] = headers
     return new_meta
+
+
+def delete_by_url(source_id: int, url: str) -> dict:
+    """
+    Delete document from Elasticsearch by URL and source ID.
+
+    Args:
+        source_id (int): The source ID to filter by
+        url (str): URL to delete
+
+    Returns:
+        dict: Result of the deletion operation
+    """
+    if not url:
+        return {"deleted": 0}
+
+    result = es_client.delete_by_query(
+        index=ELASTIC_INDEX,
+        conflicts="proceed",  # continue deleting even if there are version conflicts
+        body={
+            "query": {
+                "bool": {
+                    "must": [
+                        {"term": {"metadata.url.keyword": url}},
+                        {"term": {"metadata.source_id": source_id}}
+                    ]
+                }
+            }
+        }
+    )
+
+    return {"deleted": result.get("deleted", 0)}

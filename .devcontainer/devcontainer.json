@@ -13,18 +13,16 @@
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "python.formatting.provider": "autopep8",
+        "python.defaultInterpreterPath": "/home/vscode/.venv/bin/python",
         "python.analysis.typeCheckingMode": "basic",
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": "always"
         },
         "editor.formatOnSave": true,
-        "eslint.workingDirectories": ["./web"]
+        "eslint.workingDirectories": [
+          "./web"
+        ]
       }
-    }
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
     }
   },
   // Uncomment the following lines to use Playwright (not currently used in this project)
@@ -33,7 +31,11 @@
     // Mount to persist Playwright's browser cache
     "source=playwright-cache,target=/root/.cache/ms-playwright,type=volume"
   ],
+  "containerEnv": {
+    "VIRTUAL_ENV": "/home/vscode/.venv"
+  },
   "remoteEnv": {
-    "PYTHONPATH": "/workspace/backend"
+    "PYTHONPATH": "/workspace/backend",
+    "PATH": "/home/vscode/.venv/bin:${containerEnv:PATH}"
   }
 }

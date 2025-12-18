@@ -4,7 +4,7 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from db.constants import IndexStatus
-from db.models import Document, DocumentChunk, DocumentContent, IndexAttempt, Source
+from db.models import Document, DocumentContent, IndexAttempt, Source
 
 
 def create_index_attempt(session: Session, source: Source, start_time: datetime) -> IndexAttempt:
@@ -27,10 +27,7 @@ def create_index_attempt(session: Session, source: Source, start_time: datetime)
     return attempt
 
 
-def delete_chunks_and_content(session: Session, document: Document) -> None:
-    # delete all chunks and content for the document
-    session.execute(delete(DocumentChunk).where(
-        DocumentChunk.document_id == document.id))
-
+def delete_doc_content(session: Session, document: Document) -> None:
+    # delete all derived content for the document
     session.execute(delete(DocumentContent).where(
         DocumentContent.document_id == document.id))
