@@ -115,7 +115,8 @@ async def get_browser_page(user_agent: str) -> AsyncGenerator[Page, None]:
     opens a new page, and ensures that the browser is closed after use.
     """
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch()
+        # set arg (headless=False) for local debugging (opens a visible browser window)
+        browser = await playwright.chromium.launch(headless=True)
         context = await browser.new_context(user_agent=user_agent)
         page: Page = await context.new_page()
         try:
