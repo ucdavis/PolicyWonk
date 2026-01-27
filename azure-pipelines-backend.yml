@@ -90,7 +90,11 @@ stages:
                         --environment-variables \
                           LLM_API_KEY=$(LLM_API_KEY) \
                           LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
-                          DATABASE_URL=$(DATABASE_URL)
+                          DATABASE_URL=$(DATABASE_URL) \
+                          ELASTIC_URL=$(ELASTIC_URL) \
+                          ELASTIC_WRITE_USERNAME=$(ELASTIC_WRITE_USERNAME) \
+                          ELASTIC_WRITE_PASSWORD=$(ELASTIC_WRITE_PASSWORD) \
+                          ELASTIC_INDEX=$(ELASTIC_INDEX)
                   env:
                     ACR_USER: $(ACR_USER)
                     ACR_PASS: $(ACR_PASS)
