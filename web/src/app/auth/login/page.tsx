@@ -6,11 +6,9 @@ import Image from 'next/image';
 import FooterLinks from '@/components/layout/footerLinks';
 import { campuses } from '@/lib/constants';
 
-import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
-
 import { signIn } from '../../../auth';
 
-export const generateMetadata = () => {
+export const generateMetadata = async () => {
   return {
     title: 'Login',
   };
@@ -37,7 +35,8 @@ interface LoginProps {
   searchParams: { callbackUrl?: string };
 }
 
-const Login: React.FC<LoginProps> = async ({ searchParams }) => {
+const Login: React.FC<LoginProps> = async (props) => {
+  const searchParams = await props.searchParams;
   // Get callbackUrl from URL query params
   const callbackUrl = searchParams.callbackUrl || '/';
 
@@ -88,7 +87,12 @@ const Login: React.FC<LoginProps> = async ({ searchParams }) => {
               rel='noopener noreferrer'
               href='https://ucop.edu'
             >
-              <Image width={110} src={Ucoplogo} alt='UCOP logo' />
+              <Image
+                width={110}
+                height={55}
+                src='/media/uc_wordmark_blue_official.svg'
+                alt='UCOP logo'
+              />
             </a>
             <p>Copyright &copy; All rights reserved.</p>
           </div>

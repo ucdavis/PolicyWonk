@@ -9,10 +9,10 @@ interface StaticPageLayoutProps {
   children: React.ReactNode;
 }
 
-export default function StaticPageLayout({
+export default async function StaticPageLayout({
   children,
 }: Readonly<StaticPageLayoutProps>) {
-  const headersList = headers();
+  const headersList = await headers();
   const isMobile = checkMobileOnServer(headersList);
 
   return (

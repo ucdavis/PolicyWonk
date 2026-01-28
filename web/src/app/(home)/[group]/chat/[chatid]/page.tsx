@@ -16,14 +16,14 @@ import { WonkSession } from '@/models/session';
 import { getChat } from '@/services/historyService';
 
 type HomePageProps = {
-  params: {
+  params: Promise<{
     group: string;
     chatid: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     focus?: string;
     subFocus?: string;
-  };
+  }>;
 };
 
 const getCachedChat = React.cache(async (chatid: string) => {
@@ -33,9 +33,10 @@ const getCachedChat = React.cache(async (chatid: string) => {
 });
 
 export async function generateMetadata(
-  { params, searchParams }: HomePageProps,
+  props: HomePageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const params = await props.params;
   const { chatid } = params;
 
   if (chatid === 'new') {
@@ -54,10 +55,15 @@ export async function generateMetadata(
   };
 }
 
-const ChatPage = async ({
-  params: { group, chatid }, // Destructure group
-  searchParams: { focus, subFocus },
-}: HomePageProps) => {
+const ChatPage = async (props: HomePageProps) => {
+  const searchParams = await props.searchParams;
+
+  const { focus, subFocus } = searchParams;
+
+  const params = await props.params;
+
+  const { group, chatid } = params;
+
   let chat: ChatHistory;
 
   // first, let's make sure we have a valid group

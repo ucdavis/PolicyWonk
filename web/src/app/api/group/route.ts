@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    cookies().set({
+    (await cookies()).set({
       name: 'pw.group',
       value: groupId,
       path: '/',

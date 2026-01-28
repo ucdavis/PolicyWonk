@@ -1,22 +1,28 @@
-'use server';
-import React from 'react';
-
-import { headers } from 'next/headers';
+'use client';
+import React, { useEffect, useState } from 'react';
 
 import ChatSidebar from '@/components/layout/chatSidebar';
-import { checkMobileOnServer } from '@/lib/checkMobileOnServer';
-
 import ChatHeader from '../components/chat/chatHeader';
 import WonkyClientError from '../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../lib/error/wonkyErrorBoundary';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 992);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
 
 /**
  * Global error page. This will only show up in production.
  */
 
-const GlobalError: React.FC = async () => {
-  const headersList = headers();
-  const isMobile = checkMobileOnServer(headersList);
+const GlobalError: React.FC = () => {
+  const isMobile = useIsMobile();
   return (
     <html lang='en'>
       <body>
