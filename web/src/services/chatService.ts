@@ -1,10 +1,7 @@
 'server only';
 import { createOpenAI } from '@ai-sdk/openai';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
-import {
-  KnnQuery,
-  QueryDslQueryContainer,
-} from '@elastic/elasticsearch/lib/api/types';
+import { estypes } from '@elastic/elasticsearch';
 
 import prisma from '@/lib/db';
 
@@ -45,7 +42,7 @@ export const getEmbeddings = async (query: string): Promise<number[][]> => {
 
 const generateFilterElastic = (
   focus: Focus
-): QueryDslQueryContainer | QueryDslQueryContainer[] => {
+): estypes.QueryDslQueryContainer | estypes.  QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
   if (focus.name === 'core') {
@@ -140,7 +137,7 @@ export const getSearchResultsElastic = async (
   // TODO: augment search w/ keyword search?
   // get our search results
 
-  const knnQuery: KnnQuery = {
+  const knnQuery: estypes.KnnQuery = {
     field: 'vector', // the field we want to search, created by PolicyAcquisition
     query_vector: embeddings[0], // the query vector
     k: searchResultMaxSize,

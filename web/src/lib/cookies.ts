@@ -7,12 +7,13 @@ import { isValidGroupFormat } from './groups';
  * Sets the current group for the user
  * @param groupId The group ID to set as the current group
  */
-export function setCurrentGroup(groupId: string) {
+export async function setCurrentGroup(groupId: string) {
   if (isValidGroupFormat(groupId) === false) {
     throw new Error(`Invalid group format: ${groupId}`);
   }
+  const cookieStore = await cookies();
 
-  cookies().set({
+  cookieStore.set({
     name: 'pw.group',
     value: groupId,
     path: '/',
@@ -27,8 +28,9 @@ export function setCurrentGroup(groupId: string) {
  * Gets the current group from the cookie
  * @returns The current group ID or 'default' if not set
  */
-export function getCurrentGroup(): string {
-  const groupCookie = cookies().get('pw.group');
+export async function getCurrentGroup(): Promise<string> {
+  const cookieStore = await cookies();
+  const groupCookie = cookieStore.get('pw.group');
 
   const validGroup =
     groupCookie?.value && isValidGroupFormat(groupCookie.value);

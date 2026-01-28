@@ -11,7 +11,7 @@ interface RedirectComponentProps {
   };
 }
 
-const RedirectComponent: React.FC<RedirectComponentProps> = ({
+const RedirectComponent: React.FC<RedirectComponentProps> = async ({
   params: { group },
   searchParams,
 }) => {
@@ -27,7 +27,7 @@ const RedirectComponent: React.FC<RedirectComponentProps> = ({
 
   // if we have a group, let's use it, otherwise look at the cookie
   if (!group) {
-    group = getCurrentGroup();
+    group = await getCurrentGroup();
   }
 
   const destination = `/${group}/chat/new?${params.toString()}`;

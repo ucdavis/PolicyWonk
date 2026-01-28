@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 
 import { useUIState, useActions, useAIState } from '@ai-sdk/rsc';
 import { nanoid } from 'nanoid';

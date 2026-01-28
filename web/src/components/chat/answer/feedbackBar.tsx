@@ -17,8 +17,8 @@ const FeedbackBar: React.FC<FeedbackBarProps> = ({}) => {
         transition: {
           stiffness: 90,
           damping: 7,
+          type: 'spring',
         },
-        type: 'spring',
       }}
     >
       <div className='col-1'>{/* empty */}</div>

@@ -12,10 +12,10 @@ import { ChatHistory } from '@/models/chat';
 import { getSharedChat } from '@/services/historyService';
 
 type SharedPageProps = {
-  params: {
+  params: Promise<{
     group: string;
     shareid: string;
-  };
+  }>;
 };
 
 const getCachedSharedChat = React.cache(
@@ -25,9 +25,10 @@ const getCachedSharedChat = React.cache(
 );
 
 export async function generateMetadata(
-  { params }: SharedPageProps,
+  props: SharedPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const params = await props.params;
   const { shareid } = params;
   const result = await getCachedSharedChat(shareid);
 
@@ -39,7 +40,11 @@ export async function generateMetadata(
   };
 }
 
-const SharePage = async ({ params: { shareid } }: SharedPageProps) => {
+const SharePage = async (props: SharedPageProps) => {
+  const params = await props.params;
+
+  const { shareid } = params;
+
   // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page
   const result = await getCachedSharedChat(shareid);
 

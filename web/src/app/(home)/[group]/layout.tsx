@@ -17,14 +17,19 @@ export const metadata: Metadata = {
   description: 'PolicyWonk: UCD Policy Expert',
 };
 
-export default function RootLayout({
-  children,
-  params: { group },
-}: Readonly<{
-  children: React.ReactNode;
-  params: { group: string };
-}>) {
-  const headersList = headers();
+export default async function RootLayout(
+  props: Readonly<{
+    children: React.ReactNode;
+    params: Promise<{ group: string }>;
+  }>
+) {
+  const params = await props.params;
+
+  const { group } = params;
+
+  const { children } = props;
+
+  const headersList = await headers();
   const isMobile = checkMobileOnServer(headersList);
 
   return (

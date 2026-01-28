@@ -8,9 +8,8 @@ interface RedirectComponentProps {
   searchParams: { [key: string]: string | string[] };
 }
 
-const RedirectComponent: React.FC<RedirectComponentProps> = ({
-  searchParams,
-}) => {
+const RedirectComponent: React.FC<RedirectComponentProps> = async (props) => {
+  const searchParams = await props.searchParams;
   const params = new URLSearchParams();
 
   for (const [key, value] of Object.entries(searchParams)) {
@@ -21,7 +20,7 @@ const RedirectComponent: React.FC<RedirectComponentProps> = ({
     }
   }
 
-  const group = getCurrentGroup();
+  const group = await getCurrentGroup();
 
   const destination = `/${group}/chat/new?${params.toString()}`;
   redirect(destination);
