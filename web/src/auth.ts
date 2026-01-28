@@ -67,7 +67,7 @@ export const {
 
         // Set the current group (cookie) based on the user's affiliation
         const groupFromAffiliation = getGroupNameFromAffiliation(affiliations);
-        setCurrentGroup(groupFromAffiliation);
+        await setCurrentGroup(groupFromAffiliation);
 
         const token = {
           ...params.token,
