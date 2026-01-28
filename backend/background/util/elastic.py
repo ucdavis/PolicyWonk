@@ -18,7 +18,7 @@ ELASTIC_WRITE_PASSWORD = os.getenv("ELASTIC_WRITE_PASSWORD", "")
 ELASTIC_INDEX = os.getenv("ELASTIC_INDEX", "vectorstore_test")
 
 # Setup for Embeddings
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "")
 
 USE_DEV_SETTINGS = os.getenv("USE_DEV_SETTINGS", "false").lower() == "true"
@@ -37,7 +37,7 @@ else:
     # In prod use openAI embeddings
     embeddings = OpenAIEmbeddings(
         model=LLM_EMBEDDING_MODEL,
-        api_key=OPENAI_API_KEY,
+        api_key=LLM_API_KEY,
     )
 
 
