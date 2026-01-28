@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 
 import ChatHeader from '../components/chat/chatHeader';
 import WonkTop from '../components/layout/wonkTop';

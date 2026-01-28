@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default async function RootLayout(
   props: Readonly<{
     children: React.ReactNode;
-    params: { group: string };
+    params: Promise<{ group: string }>;
   }>
 ) {
   const params = await props.params;
