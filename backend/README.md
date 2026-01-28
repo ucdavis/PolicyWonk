@@ -64,6 +64,12 @@ Install playwright browsers (so that it is installed in the venv)
 python -m playwright install chromium
 ```
 
+Now you can run stuff (from `backend`) e.g.
+
+```bash
+python -m background.sources.ucd
+```
+
 ## Browsing
 
-Locally
+Locally you can set headless=False in `backend/background/sources/shared.py` to see the browser window when browsing.
