@@ -105,7 +105,7 @@ stages:
   - stage: DeployProd
     displayName: Deploy to PROD
     dependsOn: DeployTest
-    condition: eq(variables.isMain, 'True') # skip on PRs
+    condition: and(succeeded('DeployTest'), eq(variables.isMain, 'True')) # skip on PRs / only after TEST succeeds
     jobs:
       - deployment: DeployProd
         environment: prod # Add manual approvers here
