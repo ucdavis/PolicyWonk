@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 
 import ChatSidebar from '@/components/layout/chatSidebar';
-import ChatHeader from '../components/chat/chatHeader';
-import WonkyClientError from '../lib/error/wonkyClientError';
-import WonkyErrorBoundary from '../lib/error/wonkyErrorBoundary';
+import ChatHeader from '@/components/chat/chatHeader';
+import WonkyClientError from '@/lib/error/wonkyClientError';
+import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);

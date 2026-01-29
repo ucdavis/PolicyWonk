@@ -3,8 +3,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { estypes } from '@elastic/elasticsearch';
 
-import prisma from '@/lib/db';
-
 import type { ChatMessage, PolicyIndex } from '../models/chat';
 import { Focus, FocusScope } from '../models/focus';
 
@@ -42,7 +40,7 @@ export const getEmbeddings = async (query: string): Promise<number[][]> => {
 
 const generateFilterElastic = (
   focus: Focus
-): estypes.QueryDslQueryContainer | estypes.  QueryDslQueryContainer[] => {
+): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
   if (focus.name === 'core') {
@@ -111,21 +109,6 @@ const generateFilterElastic = (
   };
 };
 
-const generateFilterPgSQL = (focus: Focus): string[] => {
-  if (focus.name === 'core') {
-    return ['UCOP', 'UCDPOLICYMANUAL'];
-  } else if (focus.name === 'apm') {
-    return ['UCDAPM'];
-  } else if (focus.name === 'unions') {
-    //TODO: need to handle union specific sub-filters (by union)
-    return ['UCCOLLECTIVEBARGAINING'];
-  } else if (focus.name === 'knowledgebase') {
-    return ['UCDKB'];
-  }
-  // unknown focus returns an empty filter (no allowed types)
-  return [];
-};
-
 export const getSearchResultsElastic = async (
   embeddings: number[][],
   focus: Focus
@@ -163,63 +146,6 @@ export const getSearchResultsElastic = async (
       docNumber: i,
     }))
     .filter((r): r is PolicyIndex => r !== undefined);
-
-  return allResults;
-};
-
-export const getSearchResultsPgSQL = async (
-  embeddings: number[][],
-  focus: Focus
-): Promise<PolicyIndex[]> => {
-  const searchResultMaxSize = 10;
-  const allowedTypes = generateFilterPgSQL(focus);
-
-  const queryVector = embeddings[0];
-
-  let rawResults: Array<{
-    doc_id: number;
-    title: string;
-    text: string;
-    meta: any;
-  }>;
-
-  if (focus.subFocus) {
-    // If subFocus is defined, add keyword filtering (for unions)
-    rawResults = await prisma.$queryRaw`   
-      SELECT d.id as doc_id,
-             d.title,
-             dc.chunk_text as text,
-             d.meta as meta
-      FROM document_chunks dc
-      JOIN documents d ON dc.document_id = d.id
-      JOIN sources s ON d.source_id = s.id
-      WHERE s.type = ANY(${allowedTypes})
-        AND d.meta->'keywords' ? ${focus.subFocus.toUpperCase()}
-      ORDER BY dc.embedding <=> ${queryVector}::vector
-      LIMIT ${searchResultMaxSize}`;
-  } else {
-    // Original query without keyword filtering (for everything else)
-    rawResults = await prisma.$queryRaw`   
-      SELECT d.id as doc_id,
-             d.title,
-             dc.chunk_text as text,
-             d.meta as meta
-      FROM document_chunks dc
-      JOIN documents d ON dc.document_id = d.id
-      JOIN sources s ON d.source_id = s.id
-      WHERE s.type = ANY(${allowedTypes})
-      ORDER BY dc.embedding <=> ${queryVector}::vector
-      LIMIT ${searchResultMaxSize}`;
-  }
-
-  const allResults: PolicyIndex[] = rawResults.map((h, i) => ({
-    id: h.doc_id.toString(),
-    docNumber: i,
-    text: h.text,
-    title: h.title,
-    metadata: h.meta,
-    vector: [],
-  }));
 
   return allResults;
 };
