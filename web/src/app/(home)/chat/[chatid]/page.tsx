@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import { isWonkSuccess } from '@/lib/error/error';
 import { getChat } from '@/services/historyService';
 
-const ChatHandler = async ({ params }: { params: { chatid: string } }) => {
+const ChatHandler = async (props: { params: Promise<{ chatid: string }> }) => {
+  const params = await props.params;
   const { chatid } = params;
 
   if (chatid === 'new') {

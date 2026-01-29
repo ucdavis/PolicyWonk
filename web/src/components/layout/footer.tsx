@@ -5,8 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import Ucoplogo from '/public/media/uc_wordmark_blue_official.svg';
-
 import FooterLinks from './footerLinks';
 
 interface FooterProps {
@@ -26,7 +24,12 @@ const Footer: React.FC<FooterProps> = ({ group }) => {
       </div>
       <FooterLinks />
       <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
-        <Image width={110} src={Ucoplogo} alt='UCOP logo' />
+        <Image
+          width={110}
+          height={55}
+          src='/media/uc_wordmark_blue_official.svg'
+          alt='UCOP logo'
+        />
       </a>
       <p>Copyright &copy; All rights reserved.</p>
     </footer>

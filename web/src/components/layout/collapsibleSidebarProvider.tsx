@@ -5,7 +5,7 @@ interface SidebarContextProps {
   openSidebar: () => void;
   closeSidebar: () => void;
   isLargeScreen: boolean;
-  sidebarRef: React.RefObject<HTMLDivElement>;
+  sidebarRef: React.RefObject<HTMLDivElement | null>;
   onNavigate: (callback: () => void) => void;
 }
 
