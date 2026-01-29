@@ -72,4 +72,4 @@ python -m background.sources.ucd
 
 ## Browsing
 
-Locally you can set headless=False in `backend/background/sources/shared.py` to see the browser window when browsing.
+Locally you can set headless=False in `backend/background/sources/shared.py` to see the browser window when browsing
