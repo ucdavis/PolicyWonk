@@ -3,8 +3,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { estypes } from '@elastic/elasticsearch';
 
-import prisma from '@/lib/db';
-
 import type { ChatMessage, PolicyIndex } from '../models/chat';
 import { Focus, FocusScope } from '../models/focus';
 
@@ -109,21 +107,6 @@ const generateFilterElastic = (
   return {
     match_none: {},
   };
-};
-
-const generateFilterPgSQL = (focus: Focus): string[] => {
-  if (focus.name === 'core') {
-    return ['UCOP', 'UCDPOLICYMANUAL'];
-  } else if (focus.name === 'apm') {
-    return ['UCDAPM'];
-  } else if (focus.name === 'unions') {
-    //TODO: need to handle union specific sub-filters (by union)
-    return ['UCCOLLECTIVEBARGAINING'];
-  } else if (focus.name === 'knowledgebase') {
-    return ['UCDKB'];
-  }
-  // unknown focus returns an empty filter (no allowed types)
-  return [];
 };
 
 export const getSearchResultsElastic = async (
