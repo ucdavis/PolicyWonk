@@ -12,7 +12,6 @@ pr:
 
 # TODO - move these into the variable group
 variables:
-  - group: Backend-Dev
   - name: acrLoginServer
     value: policywonkcontainers.azurecr.io
   - name: imageRepo
@@ -66,6 +65,8 @@ stages:
       - deployment: DeployTest
         environment: test
         pool: { vmImage: ubuntu-latest }
+        variables:
+          - group: Backend-Dev
 
         strategy:
           runOnce:
@@ -81,6 +82,51 @@ stages:
                       az container create \
                         --resource-group policywonk-dev \
                         --name policywonk-dev-backend \
+                        --image $(imageUri) \
+                        --cpu 1 --memory 8 \
+                        --os-type Linux \
+                        --registry-login-server $(acrLoginServer) \
+                        --registry-username "$ACR_USER" \
+                        --registry-password "$ACR_PASS" \
+                        --environment-variables \
+                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
+                          ELASTIC_URL=$(ELASTIC_URL) \
+                          ELASTIC_INDEX=$(ELASTIC_INDEX) \
+                        --secure-environment-variables \
+                          LLM_API_KEY=$(LLM_API_KEY) \
+                          DATABASE_URL=$(DATABASE_URL) \
+                          ELASTIC_WRITE_USERNAME=$(ELASTIC_WRITE_USERNAME) \
+                          ELASTIC_WRITE_PASSWORD=$(ELASTIC_WRITE_PASSWORD)
+                  env:
+                    ACR_USER: $(ACR_USER)
+                    ACR_PASS: $(ACR_PASS)
+
+  # ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
+  - stage: DeployProd
+    displayName: Deploy to PROD
+    dependsOn: DeployTest
+    condition: eq(variables.isMain, 'True') # skip on PRs
+    jobs:
+      - deployment: DeployProd
+        environment: prod # Add manual approvers here
+        pool: { vmImage: ubuntu-latest }
+        variables:
+          - group: Backend-Prod
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: Deploy backend to ACI
+                  inputs:
+                    azureSubscription: CaesProductionDeployPrincipal # ARM connection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az container create \
+                        --resource-group policy \
+                        --name policywonk-prod-backend \
                         --image $(imageUri) \
                         --cpu 1 --memory 8 \
                         --os-type Linux \
