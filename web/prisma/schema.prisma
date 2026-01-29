@@ -89,19 +89,6 @@ model defaultQuestions {
   @@map("default_questions")
 }
 
-model documentChunks {
-  id         Int                   @id @default(autoincrement())
-  documentId Int                   @map("document_id")
-  chunkIndex Int                   @map("chunk_index")
-  chunkText  String                @map("chunk_text")
-  embedding  Unsupported("vector")
-  meta       Json?                 @db.Json
-  document   documents             @relation(fields: [documentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([embedding])
-  @@map("document_chunks")
-}
-
 model documentContents {
   documentId Int       @id @map("document_id")
   content    String
@@ -117,7 +104,6 @@ model documents {
   meta             Json?             @db.Json
   sourceId         Int               @map("source_id")
   lastUpdated      DateTime?         @map("last_updated") @db.Timestamp(6)
-  documentChunks   documentChunks[]
   documentContents documentContents?
   source           sources           @relation(fields: [sourceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 

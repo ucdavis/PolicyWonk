@@ -42,7 +42,7 @@ export const getEmbeddings = async (query: string): Promise<number[][]> => {
 
 const generateFilterElastic = (
   focus: Focus
-): estypes.QueryDslQueryContainer | estypes.  QueryDslQueryContainer[] => {
+): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
   if (focus.name === 'core') {
@@ -163,63 +163,6 @@ export const getSearchResultsElastic = async (
       docNumber: i,
     }))
     .filter((r): r is PolicyIndex => r !== undefined);
-
-  return allResults;
-};
-
-export const getSearchResultsPgSQL = async (
-  embeddings: number[][],
-  focus: Focus
-): Promise<PolicyIndex[]> => {
-  const searchResultMaxSize = 10;
-  const allowedTypes = generateFilterPgSQL(focus);
-
-  const queryVector = embeddings[0];
-
-  let rawResults: Array<{
-    doc_id: number;
-    title: string;
-    text: string;
-    meta: any;
-  }>;
-
-  if (focus.subFocus) {
-    // If subFocus is defined, add keyword filtering (for unions)
-    rawResults = await prisma.$queryRaw`   
-      SELECT d.id as doc_id,
-             d.title,
-             dc.chunk_text as text,
-             d.meta as meta
-      FROM document_chunks dc
-      JOIN documents d ON dc.document_id = d.id
-      JOIN sources s ON d.source_id = s.id
-      WHERE s.type = ANY(${allowedTypes})
-        AND d.meta->'keywords' ? ${focus.subFocus.toUpperCase()}
-      ORDER BY dc.embedding <=> ${queryVector}::vector
-      LIMIT ${searchResultMaxSize}`;
-  } else {
-    // Original query without keyword filtering (for everything else)
-    rawResults = await prisma.$queryRaw`   
-      SELECT d.id as doc_id,
-             d.title,
-             dc.chunk_text as text,
-             d.meta as meta
-      FROM document_chunks dc
-      JOIN documents d ON dc.document_id = d.id
-      JOIN sources s ON d.source_id = s.id
-      WHERE s.type = ANY(${allowedTypes})
-      ORDER BY dc.embedding <=> ${queryVector}::vector
-      LIMIT ${searchResultMaxSize}`;
-  }
-
-  const allResults: PolicyIndex[] = rawResults.map((h, i) => ({
-    id: h.doc_id.toString(),
-    docNumber: i,
-    text: h.text,
-    title: h.title,
-    metadata: h.meta,
-    vector: [],
-  }));
 
   return allResults;
 };
