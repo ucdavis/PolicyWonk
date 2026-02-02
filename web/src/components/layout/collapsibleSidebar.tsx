@@ -66,10 +66,11 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
             {!hideNewChatButton && (
               <Link
                 className='btn btn-icon btn-lg btn-link'
-                onClick={(e) => {
+                onClick={() => {
                   if (window.location.pathname === newChatUrl) {
-                    e.preventDefault();
                     window.location.assign(newChatUrl);
+                  } else if (!isLargeScreen) {
+                    closeSidebar();
                   }
                 }}
                 href={newChatUrl}
