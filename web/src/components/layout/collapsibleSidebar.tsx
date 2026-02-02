@@ -68,7 +68,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
                 className='btn btn-icon btn-lg btn-link'
                 onClick={() => {
                   if (window.location.pathname === newChatUrl) {
-                    window.location.assign(newChatUrl);
+                    window.location.assign(newChatUrl); // next navigation prevents reloading the same page
                   } else if (!isLargeScreen) {
                     closeSidebar();
                   }
