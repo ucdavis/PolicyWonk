@@ -172,8 +172,13 @@ def cleanup_old_attempts(session: Session) -> None:
 async def update__main() -> None:
     """Main function to run the update loop."""
     logger.info("Starting Indexing Loop")
-    ensure_elasticsearch_index()
-    verify_elasticsearch_index_mapping()
+    if not ensure_elasticsearch_index():
+        logger.error("Elasticsearch index setup failed. Exiting.")
+        raise SystemExit(1)
+
+    if not verify_elasticsearch_index_mapping():
+        logger.error("Elasticsearch index mapping verification failed. Exiting.")
+        raise SystemExit(1)
     await update_loop()
 
 
