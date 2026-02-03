@@ -115,15 +115,40 @@ def verify_elasticsearch_index_mapping() -> bool:
         mappings = es_client.indices.get_mapping(index=ELASTIC_INDEX)
         index_mapping = mappings.get(ELASTIC_INDEX, {}).get("mappings", {})
         properties = index_mapping.get("properties", {})
-        missing_fields = [
-            field for field in ("text", "vector", "metadata") if field not in properties
-        ]
-        if missing_fields:
+
+        vector_mapping = properties.get("vector")
+        if not vector_mapping:
             logger.warning(
-                f"Elasticsearch index {ELASTIC_INDEX} missing fields: {missing_fields}"
+                f"Elasticsearch index {ELASTIC_INDEX} missing required field: vector"
             )
             return False
-        logger.info(f"Elasticsearch index {ELASTIC_INDEX} mappings look healthy")
+
+        if vector_mapping.get("type") != "dense_vector":
+            logger.warning(
+                f"Elasticsearch index {ELASTIC_INDEX} has unexpected vector type: {vector_mapping.get('type')}"
+            )
+            return False
+
+        dims = vector_mapping.get("dims")
+        if not isinstance(dims, int) or dims <= 0:
+            logger.warning(
+                f"Elasticsearch index {ELASTIC_INDEX} has invalid vector dims: {dims}"
+            )
+            return False
+
+        # These are typically created via dynamic mappings on first ingest when using
+        # elasticsearch.helpers.vectorstore.DenseVectorStrategy.
+        missing_optional_fields = [
+            field for field in ("text", "metadata") if field not in properties
+        ]
+        if missing_optional_fields:
+            logger.info(
+                f"Elasticsearch index {ELASTIC_INDEX} does not yet have fields: {missing_optional_fields}"
+            )
+
+        logger.info(
+            f"Elasticsearch index {ELASTIC_INDEX} mappings look healthy (vector dims={dims})"
+        )
         return True
     except Exception as e:
         logger.error(f"Failed to verify mappings for {ELASTIC_INDEX}: {e}")
