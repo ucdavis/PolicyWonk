@@ -6,6 +6,7 @@ from elasticsearch import Elasticsearch
 from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from langchain_core.embeddings import FakeEmbeddings
+from pydantic import SecretStr
 
 from background.logger import setup_logger
 load_dotenv()  # This loads the environment variables from .env
@@ -20,7 +21,7 @@ ELASTIC_INDEX = os.getenv("ELASTIC_INDEX", "vectorstore_test")
 
 # Setup for Embeddings
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "")
+LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "text-embedding-3-small")
 
 USE_DEV_SETTINGS = os.getenv("USE_DEV_SETTINGS", "false").lower() == "true"
 FAKE_EMBEDDINGS_SIZE = int(os.getenv("FAKE_EMBEDDINGS_SIZE", "1536"))
@@ -49,15 +50,15 @@ es_client = Elasticsearch(
 
 if USE_AZURE_EMBEDDINGS:
     embeddings = AzureOpenAIEmbeddings(
-        model=LLM_EMBEDDING_MODEL or "text-embedding-ada-002",
+        model=LLM_EMBEDDING_MODEL,
         azure_endpoint=AZURE_OPENAI_ENDPOINT,
-        api_key=AZURE_OPENAI_API_KEY,
+        api_key=SecretStr(AZURE_OPENAI_API_KEY),
         azure_deployment=AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT,
     )
 elif USE_OPENAI_EMBEDDINGS:
     embeddings = OpenAIEmbeddings(
         model=LLM_EMBEDDING_MODEL,
-        api_key=LLM_API_KEY,
+        api_key=SecretStr(LLM_API_KEY),
     )
 else:
     if not USE_DEV_SETTINGS and not (LLM_API_KEY and LLM_EMBEDDING_MODEL):
