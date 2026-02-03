@@ -1,12 +1,8 @@
 from datetime import datetime, timezone
-import os
 
-from dotenv import load_dotenv
-from langchain_core.embeddings import FakeEmbeddings
+from elasticsearch import NotFoundError
 from langchain_elasticsearch import ElasticsearchStore
-from langchain_openai import OpenAIEmbeddings
-from pydantic import SecretStr
-from background.util.elastic import ELASTIC_INDEX, es_client
+from background.util.elastic import ELASTIC_INDEX, embeddings, es_client
 from background.logger import setup_logger
 from db.models import Document, DocumentContent, Source
 from db.mutations import delete_doc_content
@@ -14,19 +10,7 @@ from models.document_details import DocumentDetails
 from sqlalchemy.orm import Session
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
-load_dotenv()
-
 logger = setup_logger()
-
-# make sure we have the necessary environment variables
-# LLM_API_EMBEDDING_URL = os.getenv("LLM_API_EMBEDDING_URL")
-LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "")
-USE_REAL_EMBEDDINGS = bool(LLM_API_KEY and LLM_EMBEDDING_MODEL)
-
-if not USE_REAL_EMBEDDINGS:
-    logger.warning(
-        "No LLM_API_KEY or LLM_EMBEDDING_MODEL environment variables found. Using fake embeddings.")
 
 # Markdown headers we want to split on
 HEADER_CONFIG = [("#", "h1"), ("##", "h2"), ("###", "h3")]
@@ -73,13 +57,6 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     # log the chunks
     logger.info(
         f"Document {document_details.url} has {len(chunks)} chunks")
-
-    # 2. vectorize the chunks
-    if USE_REAL_EMBEDDINGS:
-        embeddings = OpenAIEmbeddings(
-            model=LLM_EMBEDDING_MODEL, api_key=SecretStr(LLM_API_KEY))
-    else:
-        embeddings = FakeEmbeddings(size=1536)
 
     store = ElasticsearchStore(
         embedding=embeddings,
@@ -164,19 +141,25 @@ def delete_by_url(source_id: int, url: str) -> dict:
     if not url:
         return {"deleted": 0}
 
-    result = es_client.delete_by_query(
-        index=ELASTIC_INDEX,
-        conflicts="proceed",  # continue deleting even if there are version conflicts
-        body={
-            "query": {
-                "bool": {
-                    "must": [
-                        {"term": {"metadata.url.keyword": url}},
-                        {"term": {"metadata.source_id": source_id}}
-                    ]
+    try:
+        result = es_client.delete_by_query(
+            index=ELASTIC_INDEX,
+            conflicts="proceed",  # continue deleting even if there are version conflicts
+            body={
+                "query": {
+                    "bool": {
+                        "must": [
+                            {"term": {"metadata.url.keyword": url}},
+                            {"term": {"metadata.source_id": source_id}},
+                        ]
+                    }
                 }
-            }
-        }
-    )
+            },
+        )
+    except NotFoundError:
+        logger.warning(
+            f"Elasticsearch index {ELASTIC_INDEX} not found when deleting by URL."
+        )
+        return {"deleted": 0}
 
     return {"deleted": result.get("deleted", 0)}

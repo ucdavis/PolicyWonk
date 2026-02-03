@@ -12,6 +12,10 @@ from sqlalchemy.orm import Session
 
 from background.logger import setup_logger
 from background.stream import DocumentIngestStream, DocumentProcessor
+from background.util.elastic import (
+    ensure_elasticsearch_index,
+    verify_elasticsearch_index_mapping,
+)
 from db.mutations import create_index_attempt
 from db.models import IndexAttempt, Source
 from db.constants import IndexStatus, RefreshFrequency, SourceStatus
@@ -168,6 +172,13 @@ def cleanup_old_attempts(session: Session) -> None:
 async def update__main() -> None:
     """Main function to run the update loop."""
     logger.info("Starting Indexing Loop")
+    if not ensure_elasticsearch_index():
+        logger.error("Elasticsearch index setup failed. Exiting.")
+        raise SystemExit(1)
+
+    if not verify_elasticsearch_index_mapping():
+        logger.error("Elasticsearch index mapping verification failed. Exiting.")
+        raise SystemExit(1)
     await update_loop()
 
 
