@@ -25,12 +25,12 @@ const MainContent = () => {
   React.useEffect(() => {
     if (
       // on first response from AI
-      pathname === '/chat/new' &&
+      pathname === `/${aiState.group}/chat/new` &&
       aiState.id !== '' // id is set only once the chat has been saved to the db
     ) {
       // reloads the sidebar, which repulls from the db now that the chat has been saved
       router.refresh();
-      window.history.pushState({}, '', `/chat/${aiState.id}`);
+      window.history.pushState({}, '', `/ucdavis/chat/${aiState.id}`); // change to group
     }
   }, [aiState.messages, router, aiState.id, pathname]);
 
