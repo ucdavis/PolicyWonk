@@ -114,6 +114,9 @@ export const submitUserMessage = async (userInput: string) => {
           content: m.content,
         })),
       ],
+      providerOptions: {
+        openai: { reasoningEffort: 'low' },
+      },
       // `text` is called when an AI returns a text response (as opposed to a tool call).
       // Its content is streamed from the LLM, so this function will be called
       // multiple times with `content` being incremental. `delta` is the new text to append.
