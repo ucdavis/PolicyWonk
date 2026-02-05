@@ -10,7 +10,7 @@ export const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-4o';
+export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-5.2';
 
 const embeddingModel = openai.embedding(
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large'
