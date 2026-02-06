@@ -48,6 +48,7 @@ def request_with_retry(url, retries=5, backoff_factor=1, **kwargs):
                 logger.warning(
                     f"Request to {url} returned status code {response.status_code} on attempt {attempt + 1}"
                 )
+                response.close()
         except requests.exceptions.RequestException as e:
             logger.warning(
                 f"Request to {url} failed on attempt {attempt + 1} with exception: {e}"
@@ -69,7 +70,7 @@ def download_document(url: str, dir: str) -> tuple[Optional[str], Optional[str]]
     """ Download the document and return a path to the downloaded file and the content type """
     headers = {"User-Agent": user_agent}
     response = request_with_retry(
-        url, headers=headers, allow_redirects=True, timeout=60
+        url, headers=headers, allow_redirects=True, timeout=60, stream=True
     )
 
     if not response:
@@ -80,11 +81,48 @@ def download_document(url: str, dir: str) -> tuple[Optional[str], Optional[str]]
 
     content_type = response.headers.get("Content-Type")
 
+    max_download_bytes_raw = os.getenv("INGEST_MAX_DOWNLOAD_BYTES")
+    if max_download_bytes_raw:
+        try:
+            max_download_bytes = int(max_download_bytes_raw)
+        except ValueError:
+            logger.warning(
+                "Invalid INGEST_MAX_DOWNLOAD_BYTES=%r; ignoring.", max_download_bytes_raw
+            )
+            max_download_bytes = None
+
+        if max_download_bytes is not None:
+            content_length = response.headers.get("Content-Length")
+            if content_length:
+                try:
+                    content_length_int = int(content_length)
+                except ValueError:
+                    content_length_int = None
+
+                if (
+                    content_length_int is not None
+                    and content_length_int > max_download_bytes
+                ):
+                    logger.error(
+                        "Download aborted for %s: Content-Length=%s exceeds INGEST_MAX_DOWNLOAD_BYTES=%s",
+                        url,
+                        content_length_int,
+                        max_download_bytes,
+                    )
+                    response.close()
+                    return None, None
+
     unique_filename = f"{uuid.uuid4()}"
     file_path = os.path.join(dir, unique_filename)
 
     with open(file_path, "wb") as file:
-        file.write(response.content)
+        try:
+            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                if not chunk:
+                    continue
+                file.write(chunk)
+        finally:
+            response.close()
 
     return file_path, content_type
 

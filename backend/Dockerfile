@@ -4,6 +4,13 @@ FROM python:3.12-slim
 # Set a working directory
 WORKDIR /app
 
+# Constrain thread oversubscription for 1 vCPU workers
+ENV OMP_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    NUMEXPR_NUM_THREADS=1 \
+    TOKENIZERS_PARALLELISM=false
+
 # Install dependencies required for psycopg2
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

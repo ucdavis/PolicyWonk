@@ -148,6 +148,8 @@ class DocumentProcessor:
 
                 # TODO: do we want to commit here? or just keep flushing? Seems to me we might want to comit after each doc?
                 self.session.commit()
+                # Avoid retaining large markdown strings in memory across the batch.
+                document_details.content = ""
 
         # end of batch
         logger.info(
