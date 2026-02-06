@@ -2,6 +2,8 @@ import asyncio
 import os
 import threading
 from functools import partial
+from typing import Any, Literal, cast
+import importlib.util
 
 from docling.document_converter import DocumentConverter
 
@@ -11,7 +13,8 @@ logger = setup_logger()
 
 
 _DEFAULT_DOCLING_CONVERTER: DocumentConverter | None = None
-_PDF_OCR_DOCLING_CONVERTERS: dict[str, DocumentConverter] = {}
+_OcrBackend = Literal["onnxruntime", "openvino", "paddle", "torch"]
+_PDF_OCR_DOCLING_CONVERTERS: dict[_OcrBackend, DocumentConverter] = {}
 _DOCLING_INIT_LOCK = threading.Lock()
 _DOCLING_CONVERT_LOCK = threading.Lock()
 
@@ -52,7 +55,7 @@ def _get_default_docling_converter() -> DocumentConverter:
         return _DEFAULT_DOCLING_CONVERTER
 
 
-def _get_pdf_ocr_docling_converter(ocr_backend: str) -> DocumentConverter:
+def _get_pdf_ocr_docling_converter(ocr_backend: _OcrBackend) -> DocumentConverter:
     """
     Create or reuse a PDF-only DocumentConverter configured for OCR-heavy PDFs.
     """
@@ -170,16 +173,18 @@ def _pdf_to_markdown_docling_ocr(document_path: str, page_count: int) -> str:
         )
         requested_backend = "torch"
 
-    ocr_backend = requested_backend
+    ocr_backend: _OcrBackend = cast(_OcrBackend, "torch")
     if requested_backend == "onnxruntime":
-        try:
-            import onnxruntime  # noqa: F401
-        except Exception:
+        if importlib.util.find_spec("onnxruntime") is None:
             logger.warning(
                 "INGEST_PDF_OCR_BACKEND=onnxruntime requested, but onnxruntime is not installed. "
                 "Falling back to RapidOCR torch backend."
             )
-            ocr_backend = "torch"
+            ocr_backend = cast(_OcrBackend, "torch")
+        else:
+            ocr_backend = cast(_OcrBackend, "onnxruntime")
+    else:
+        ocr_backend = cast(_OcrBackend, "torch")
 
     converter = _get_pdf_ocr_docling_converter(ocr_backend=ocr_backend)
 
