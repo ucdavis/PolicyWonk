@@ -9,8 +9,8 @@ langchain-text-splitters==0.3.6
 pgvector==0.3.6
 psycopg2==2.9.9
 pytest-playwright
-PyMuPDF==1.25.2
-pymupdf4llm==0.0.17
+PyMuPDF==1.26.7
+pymupdf4llm==0.2.9
 python-dotenv==1.0.1
 sentry-sdk==2.14.0
 SQLAlchemy==2.0.33

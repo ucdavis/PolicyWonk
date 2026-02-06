@@ -2,7 +2,7 @@ import asyncio
 import os
 import threading
 from functools import partial
-from typing import Any, Literal, cast
+from typing import Literal, Protocol, cast
 import importlib.util
 
 from docling.document_converter import DocumentConverter
@@ -17,6 +17,19 @@ _OcrBackend = Literal["onnxruntime", "openvino", "paddle", "torch"]
 _PDF_OCR_DOCLING_CONVERTERS: dict[_OcrBackend, DocumentConverter] = {}
 _DOCLING_INIT_LOCK = threading.Lock()
 _DOCLING_CONVERT_LOCK = threading.Lock()
+
+
+class _MuPdfTextPage(Protocol):
+    def extractTEXT(self) -> str: ...
+
+
+class _MuPdfPage(Protocol):
+    def get_textpage(self) -> _MuPdfTextPage: ...
+
+
+class _MuPdfDocument(Protocol):
+    page_count: int
+    def load_page(self, page_id: int) -> _MuPdfPage: ...
 
 
 def _get_int_env(name: str, default: int) -> int:
@@ -106,7 +119,8 @@ def _detect_pdf_text_layer_stats(document_path: str) -> tuple[int, float]:
     sample_pages = max(1, _get_int_env("INGEST_PDF_SAMPLE_PAGES", 3))
 
     with fitz.open(document_path) as doc:
-        page_count = int(doc.page_count)
+        mupdf_doc = cast(_MuPdfDocument, doc)
+        page_count = int(mupdf_doc.page_count)
         if page_count <= 0:
             return 0, 0.0
 
@@ -114,8 +128,9 @@ def _detect_pdf_text_layer_stats(document_path: str) -> tuple[int, float]:
         text_chars = 0
         for i in range(sampled):
             try:
-                page = doc.load_page(i)
-                text_chars += len((page.get_text("text") or "").strip())
+                page = mupdf_doc.load_page(i)
+                page_text = page.get_textpage().extractTEXT()
+                text_chars += len((page_text or "").strip())
             except Exception:
                 # treat failures as "no text" for the sample page
                 continue
