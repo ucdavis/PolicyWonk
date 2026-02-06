@@ -22,6 +22,7 @@ ELASTIC_INDEX = os.getenv("ELASTIC_INDEX", "vectorstore_test")
 # Setup for Embeddings
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "text-embedding-3-small")
+LLM_EMBEDDINGS_CHUNK_SIZE = int(os.getenv("LLM_EMBEDDINGS_CHUNK_SIZE", "64"))
 
 USE_DEV_SETTINGS = os.getenv("USE_DEV_SETTINGS", "false").lower() == "true"
 FAKE_EMBEDDINGS_SIZE = int(os.getenv("FAKE_EMBEDDINGS_SIZE", "1536"))
@@ -54,11 +55,13 @@ if USE_AZURE_EMBEDDINGS:
         azure_endpoint=AZURE_OPENAI_ENDPOINT,
         api_key=SecretStr(AZURE_OPENAI_API_KEY),
         azure_deployment=AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT,
+        chunk_size=LLM_EMBEDDINGS_CHUNK_SIZE,
     )
 elif USE_OPENAI_EMBEDDINGS:
     embeddings = OpenAIEmbeddings(
         model=LLM_EMBEDDING_MODEL,
         api_key=SecretStr(LLM_API_KEY),
+        chunk_size=LLM_EMBEDDINGS_CHUNK_SIZE,
     )
 else:
     if not USE_DEV_SETTINGS and not (LLM_API_KEY and LLM_EMBEDDING_MODEL):

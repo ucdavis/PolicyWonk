@@ -68,7 +68,8 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     delete_by_url(source.id, document_details.url)
 
     # add the new vectors for the doc
-    # should be ok without batching since we are doing per doc
+    # We rely on the embeddings client's internal batching (see LLM_EMBEDDINGS_CHUNK_SIZE)
+    # to avoid exceeding provider "tokens per request" limits on large documents.
     store.add_documents(chunks)
 
     # 3. remove any existing content related to the doc
