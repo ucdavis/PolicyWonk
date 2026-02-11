@@ -7,7 +7,11 @@ export type FocusScope =
   | 'UCDPOLICY'
   | 'UCDAPM'
   | 'UCCOLLECTIVEBARGAINING'
-  | 'UCDKB';
+  | 'UCDKB'
+  | '1' // UCOP source_id
+  | '2' // UCDPOLICY source_id
+  | '3' // UCDAPM source_id
+  | '4'; // UCCOLLECTIVEBARGAINING source_id
 
 export type Focus = {
   name: FocusName;

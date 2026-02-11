@@ -43,14 +43,11 @@ const generateFilterElastic = (
 ): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
-  const fieldName = process.env.ELASTIC_INDEX?.toLocaleLowerCase().includes(
-    'v2'
-  )
-    ? 'metadata.source_id.keyword'
-    : 'metadata.scope.keyword';
+  const isV2 = process.env.ELASTIC_INDEX?.toLocaleLowerCase().includes('v2');
+  const fieldName = isV2 ? 'metadata.source_id' : 'metadata.scope.keyword';
 
   if (focus.name === 'core') {
-    allowedScopes = ['UCOP', 'UCDPOLICY'];
+    allowedScopes = isV2 ? ['1', '2'] : ['UCOP', 'UCDPOLICY'];
 
     return {
       terms: {
@@ -58,15 +55,13 @@ const generateFilterElastic = (
       },
     };
   } else if (focus.name === 'ucop') {
-    allowedScopes = ['UCOP'];
-
     return {
       terms: {
-        [fieldName]: allowedScopes,
+        [fieldName]: ['1'],
       },
     };
   } else if (focus.name === 'apm') {
-    allowedScopes = ['UCDAPM'];
+    allowedScopes = isV2 ? ['3'] : ['UCDAPM'];
 
     return {
       terms: {
@@ -74,7 +69,7 @@ const generateFilterElastic = (
       },
     };
   } else if (focus.name === 'unions') {
-    allowedScopes = ['UCCOLLECTIVEBARGAINING'];
+    allowedScopes = isV2 ? ['4'] : ['UCCOLLECTIVEBARGAINING'];
 
     // for unions we need to read the subfocus
     if (focus.subFocus) {
