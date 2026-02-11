@@ -43,7 +43,9 @@ const generateFilterElastic = (
 ): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
-  const fieldName = indexName.includes('v2')
+  const fieldName = process.env.ELASTIC_INDEX?.toLocaleLowerCase().includes(
+    'v2'
+  )
     ? 'metadata.source_id.keyword'
     : 'metadata.scope.keyword';
 
