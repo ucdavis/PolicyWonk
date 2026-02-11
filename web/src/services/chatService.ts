@@ -43,12 +43,16 @@ const generateFilterElastic = (
 ): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
+  const fieldName = indexName.includes('v2')
+    ? 'metadata.source_id.keyword'
+    : 'metadata.scope.keyword';
+
   if (focus.name === 'core') {
     allowedScopes = ['UCOP', 'UCDPOLICY'];
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'ucop') {
@@ -56,7 +60,7 @@ const generateFilterElastic = (
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'apm') {
@@ -64,7 +68,7 @@ const generateFilterElastic = (
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'unions') {
@@ -86,7 +90,7 @@ const generateFilterElastic = (
             },
             {
               terms: {
-                'metadata.scope.keyword': allowedScopes,
+                [fieldName]: allowedScopes,
               },
             },
           ],
@@ -98,7 +102,7 @@ const generateFilterElastic = (
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   }
