@@ -60,7 +60,7 @@ stages:
   - stage: DeployTest
     displayName: Deploy to TEST
     dependsOn: BuildPush
-    condition: eq(variables.isMain, 'True') # skip on PRs
+    condition: and(succeeded('BuildPush'), eq(variables.isMain, 'True')) # skip on PRs / only after BuildPush succeeds
     jobs:
       - deployment: DeployTest
         environment: test
