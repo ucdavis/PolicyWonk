@@ -46,6 +46,11 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     parent_metadata.setdefault("url", document_details.url)
     parent_metadata.setdefault("title", document_details.title)
     parent_metadata.setdefault("source_id", source.id)
+    # Ensure we store a JSON-serializable value (SourceType is an Enum).
+    parent_metadata.setdefault(
+        "source_type",
+        getattr(source.type, "value", str(source.type)),
+    )
 
     for chunk in chunks:
         chunk_meta = dict(getattr(chunk, "metadata", None) or {})
