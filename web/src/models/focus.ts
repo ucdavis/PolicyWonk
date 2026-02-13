@@ -8,10 +8,8 @@ export type FocusScope =
   | 'UCDAPM'
   | 'UCCOLLECTIVEBARGAINING'
   | 'UCDKB'
-  | '1' // UCOP source_id
-  | '2' // UCDPOLICY source_id
-  | '3' // UCDAPM source_id
-  | '4'; // UCCOLLECTIVEBARGAINING source_id
+  | 'UCDPOLICYMANUAL' // index v2
+  | 'UCCONTRACTS'; // index v2
 
 export type Focus = {
   name: FocusName;

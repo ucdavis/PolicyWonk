@@ -47,7 +47,7 @@ const generateFilterElastic = (
   const fieldName = isV2 ? 'metadata.source_id' : 'metadata.scope.keyword';
 
   if (focus.name === 'core') {
-    allowedScopes = isV2 ? ['1', '2'] : ['UCOP', 'UCDPOLICY'];
+    allowedScopes = isV2 ? ['UCOP', 'UCDPOLICYMANUAL'] : ['UCOP', 'UCDPOLICY'];
 
     return {
       terms: {
@@ -57,19 +57,17 @@ const generateFilterElastic = (
   } else if (focus.name === 'ucop') {
     return {
       terms: {
-        [fieldName]: ['1'],
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'apm') {
-    allowedScopes = isV2 ? ['3'] : ['UCDAPM'];
-
     return {
       terms: {
         [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'unions') {
-    allowedScopes = isV2 ? ['4'] : ['UCCOLLECTIVEBARGAINING'];
+    allowedScopes = isV2 ? ['UCCONTRACTS'] : ['UCCOLLECTIVEBARGAINING'];
 
     // for unions we need to read the subfocus
     if (focus.subFocus) {
