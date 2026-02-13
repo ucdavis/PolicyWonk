@@ -43,32 +43,35 @@ const generateFilterElastic = (
 ): estypes.QueryDslQueryContainer | estypes.QueryDslQueryContainer[] => {
   let allowedScopes: FocusScope[] = [];
 
+  const isV2 = indexName.includes('v2');
+  const fieldName = isV2
+    ? 'metadata.source_type.keyword'
+    : 'metadata.scope.keyword';
+
   if (focus.name === 'core') {
-    allowedScopes = ['UCOP', 'UCDPOLICY'];
+    allowedScopes = isV2 ? ['UCOP', 'UCDPOLICYMANUAL'] : ['UCOP', 'UCDPOLICY'];
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'ucop') {
     allowedScopes = ['UCOP'];
-
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'apm') {
     allowedScopes = ['UCDAPM'];
-
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'unions') {
-    allowedScopes = ['UCCOLLECTIVEBARGAINING'];
+    allowedScopes = isV2 ? ['UCCONTRACTS'] : ['UCCOLLECTIVEBARGAINING'];
 
     // for unions we need to read the subfocus
     if (focus.subFocus) {
@@ -86,7 +89,7 @@ const generateFilterElastic = (
             },
             {
               terms: {
-                'metadata.scope.keyword': allowedScopes,
+                [fieldName]: allowedScopes,
               },
             },
           ],
@@ -98,7 +101,7 @@ const generateFilterElastic = (
 
     return {
       terms: {
-        'metadata.scope.keyword': allowedScopes,
+        [fieldName]: allowedScopes,
       },
     };
   }

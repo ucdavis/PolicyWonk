@@ -7,7 +7,9 @@ export type FocusScope =
   | 'UCDPOLICY'
   | 'UCDAPM'
   | 'UCCOLLECTIVEBARGAINING'
-  | 'UCDKB';
+  | 'UCDKB'
+  | 'UCDPOLICYMANUAL' // index v2
+  | 'UCCONTRACTS'; // index v2
 
 export type Focus = {
   name: FocusName;
