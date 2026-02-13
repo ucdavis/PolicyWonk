@@ -44,7 +44,9 @@ const generateFilterElastic = (
   let allowedScopes: FocusScope[] = [];
 
   const isV2 = process.env.ELASTIC_INDEX?.toLocaleLowerCase().includes('v2');
-  const fieldName = isV2 ? 'metadata.source_id' : 'metadata.scope.keyword';
+  const fieldName = isV2
+    ? 'metadata.source_type.keyword'
+    : 'metadata.scope.keyword';
 
   if (focus.name === 'core') {
     allowedScopes = isV2 ? ['UCOP', 'UCDPOLICYMANUAL'] : ['UCOP', 'UCDPOLICY'];
@@ -55,12 +57,14 @@ const generateFilterElastic = (
       },
     };
   } else if (focus.name === 'ucop') {
+    allowedScopes = ['UCOP'];
     return {
       terms: {
         [fieldName]: allowedScopes,
       },
     };
   } else if (focus.name === 'apm') {
+    allowedScopes = ['UCDAPM'];
     return {
       terms: {
         [fieldName]: allowedScopes,
