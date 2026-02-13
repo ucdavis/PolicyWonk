@@ -12,6 +12,12 @@
 pip install -r requirements.txt
 ```
 
+Optional dev/test deps:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
 # Browsing / Scraping
 
 Playing with using playwright for browser automation instead of selenium (mostly for ease of setup)
