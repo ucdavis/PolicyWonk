@@ -29,8 +29,8 @@ const MainContent = () => {
       aiState.id !== '' // id is set only once the chat has been saved to the db
     ) {
       // reloads the sidebar, which repulls from the db now that the chat has been saved
+      router.push(`/${aiState.group}/chat/${aiState.id}`);
       router.refresh();
-      window.history.pushState({}, '', `/ucdavis/chat/${aiState.id}`); // change to group
     }
   }, [aiState.messages, router, aiState.id, pathname]);
 
