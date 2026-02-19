@@ -29,7 +29,7 @@ const MainContent = () => {
       aiState.id !== '' // id is set only once the chat has been saved to the db
     ) {
       // reloads the sidebar, which repulls from the db now that the chat has been saved
-      router.push(`/${aiState.group}/chat/${aiState.id}`);
+      router.replace(`/${aiState.group}/chat/${aiState.id}`);
       router.refresh();
     }
   }, [aiState.messages, router, aiState.id, pathname]);
