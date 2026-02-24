@@ -5,8 +5,16 @@ import Image from 'next/image';
 
 import FooterLinks from '@/components/layout/footerLinks';
 import { campuses } from '@/lib/constants';
+import {
+  DEV_AUTH_BYPASS_PROVIDER_ID,
+  getDevAuthUserId,
+  isDevAuthBypassEnabled,
+} from '@/lib/devAuthBypass';
 
 import { signIn } from '../../../auth';
+
+const devAuthBypassEnabled = isDevAuthBypassEnabled();
+const devAuthUserId = getDevAuthUserId();
 
 export const generateMetadata = async () => {
   return {
@@ -31,6 +39,22 @@ async function signInHandler(formData: FormData) {
   );
 }
 
+// Server action to handle dev-only sign in using credentials provider.
+async function devBypassSignInHandler(formData: FormData) {
+  'use server';
+  if (!devAuthBypassEnabled) {
+    throw new Error('Dev auth bypass is disabled');
+  }
+
+  const callbackUrl = (formData.get('callbackUrl') as string) || '/';
+  const userId = (formData.get('userId') as string) || devAuthUserId;
+
+  await signIn(
+    DEV_AUTH_BYPASS_PROVIDER_ID,
+    { redirectTo: callbackUrl, userId } as any
+  );
+}
+
 interface LoginProps {
   searchParams: { callbackUrl?: string };
 }
@@ -51,6 +75,23 @@ const Login: React.FC<LoginProps> = async (props) => {
             question and voila PolicyWonk will do it’s best to answer it!
           </p>
           <h4>Available Campuses</h4>
+          {devAuthBypassEnabled && (
+            <>
+              <h4 className='mt-4'>Development</h4>
+              <form action={devBypassSignInHandler}>
+                <input type='hidden' name='callbackUrl' value={callbackUrl} />
+                <input type='hidden' name='userId' value={devAuthUserId} />
+                <div className='d-grid'>
+                  <button
+                    type='submit'
+                    className='btn btn-outline-secondary btn-md btn-block m-1'
+                  >
+                    Dev login (user {devAuthUserId})
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
           <form action={signInHandler}>
             <input type='hidden' name='callbackUrl' value={callbackUrl} />
             <div className='d-grid'>
