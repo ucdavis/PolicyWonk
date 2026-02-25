@@ -22,9 +22,8 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({
   chats: initialChats,
 }) => {
   const pathname = usePathname();
-  const [chats, setChats] = React.useState<ChatHistoryTitleEntry[]>(
-    initialChats
-  );
+  const [chats, setChats] =
+    React.useState<ChatHistoryTitleEntry[]>(initialChats);
 
   React.useEffect(() => {
     setChats(initialChats);

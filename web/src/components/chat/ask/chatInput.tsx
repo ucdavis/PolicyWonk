@@ -24,11 +24,7 @@ const ChatInput: FC<ChatInputProps> = ({
 }: ChatInputProps) => {
   return (
     <div className='wonk-chat-width'>
-      <FocusBar
-        group={group}
-        focus={focus}
-        onSelection={onFocusSelection}
-      />
+      <FocusBar group={group} focus={focus} onSelection={onFocusSelection} />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </div>
   );

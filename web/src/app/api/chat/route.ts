@@ -1,11 +1,20 @@
+import {
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamText,
+} from 'ai';
 import { nanoid } from 'nanoid';
-import { convertToModelMessages, streamText } from 'ai';
 
 import { auth } from '@/auth';
-import { isWonkSuccess } from '@/lib/error/error';
 import { createCitationsTransform } from '@/lib/chat/citationsTransform';
+import { isWonkSuccess } from '@/lib/error/error';
 import { isValidGroupName } from '@/lib/groups';
-import { focuses, getFocusWithSubFocus, getFocusesForGroup } from '@/models/focus';
+import {
+  focuses,
+  getFocusWithSubFocus,
+  getFocusesForGroup,
+} from '@/models/focus';
 import type { WonkSession } from '@/models/session';
 import {
   expandedTransformSearchResults,
@@ -59,7 +68,7 @@ export async function POST(req: Request) {
   const focus =
     requestedFocus && focusOptions.some((f) => f.name === requestedFocus.name)
       ? requestedFocus
-      : focusOptions[0] ?? focuses[0];
+      : (focusOptions[0] ?? focuses[0]);
 
   const lastUserMessage = Array.isArray(messages)
     ? [...messages].reverse().find((m) => m?.role === 'user')
@@ -74,49 +83,70 @@ export async function POST(req: Request) {
 
   let chatSaved = false;
 
-  const embeddings = await getEmbeddings(userInput);
-  const searchResults = await getSearchResultsElastic(embeddings, focus);
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      const writeThought = (thought: string) => {
+        writer.write({
+          type: 'data-aggiethought',
+          data: thought,
+          transient: true,
+        });
+      };
 
-  const transformedResults = expandedTransformSearchResults(searchResults);
-  const systemMessage = getSystemMessage(transformedResults);
+      writeThought('Getting embeddings...');
+      const embeddings = await getEmbeddings(userInput);
 
-  const modelMessages = await convertToModelMessages(
-    Array.isArray(messages) ? messages : []
-  );
+      writeThought('Searching for relevant documents...');
+      const searchResults = await getSearchResultsElastic(embeddings, focus);
 
-  const result = streamText({
-    model: openai(llmModel),
-    system: systemMessage.content,
-    messages: modelMessages,
-    providerOptions: {
-      openai: { reasoningEffort: 'low' },
+      const transformedResults = expandedTransformSearchResults(searchResults);
+      const systemMessage = getSystemMessage(transformedResults);
+
+      const modelMessages = await convertToModelMessages(
+        Array.isArray(messages) ? messages : []
+      );
+
+      writeThought('Search complete, getting your answer...');
+
+      const result = streamText({
+        model: openai(llmModel),
+        system: systemMessage.content,
+        messages: modelMessages,
+        providerOptions: {
+          openai: { reasoningEffort: 'medium' },
+        },
+        experimental_transform: createCitationsTransform({
+          policies: searchResults,
+          onAssistantTextComplete: async (assistantText) => {
+            const saveResult = await saveChat(
+              chatId,
+              [
+                systemMessage,
+                { id: nanoid(), role: 'user', content: userInput },
+                { id: nanoid(), role: 'assistant', content: assistantText },
+              ],
+              group,
+              focus
+            );
+
+            chatSaved = isWonkSuccess(saveResult);
+          },
+        }),
+      });
+
+      writer.merge(
+        result.toUIMessageStream({
+          messageMetadata: ({ part }) => {
+            if (part.type === 'finish' && chatSaved) {
+              return { chatId };
+            }
+
+            return undefined;
+          },
+        })
+      );
     },
-    experimental_transform: createCitationsTransform({
-      policies: searchResults,
-      onAssistantTextComplete: async (assistantText) => {
-        const saveResult = await saveChat(
-          chatId,
-          [
-            systemMessage,
-            { id: nanoid(), role: 'user', content: userInput },
-            { id: nanoid(), role: 'assistant', content: assistantText },
-          ],
-          group,
-          focus
-        );
-
-        chatSaved = isWonkSuccess(saveResult);
-      },
-    }),
   });
 
-  return result.toUIMessageStreamResponse({
-    messageMetadata: ({ part }) => {
-      if (part.type === 'finish' && chatSaved) {
-        return { chatId };
-      }
-
-      return undefined;
-    },
-  });
+  return createUIMessageStreamResponse({ stream });
 }

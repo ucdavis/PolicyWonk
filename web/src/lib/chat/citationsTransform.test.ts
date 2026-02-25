@@ -1,7 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
 import type { TextStreamPart } from 'ai';
+import { describe, expect, it, vi } from 'vitest';
 
-import { createCitationsTransform, type CitationPolicy } from './citationsTransform';
+import {
+  createCitationsTransform,
+  type CitationPolicy,
+} from './citationsTransform';
 
 const runTransform = async ({
   chunks,
@@ -47,9 +50,18 @@ const runTransform = async ({
 
 describe('createCitationsTransform', () => {
   const basePolicies: CitationPolicy[] = [
-    { docNumber: 0, metadata: { title: 'Doc 0', url: 'https://example.com/0' } },
-    { docNumber: 2, metadata: { title: 'Doc 2', url: 'https://example.com/2' } },
-    { docNumber: 7, metadata: { title: 'Doc 7', url: 'https://example.com/7' } },
+    {
+      docNumber: 0,
+      metadata: { title: 'Doc 0', url: 'https://example.com/0' },
+    },
+    {
+      docNumber: 2,
+      metadata: { title: 'Doc 2', url: 'https://example.com/2' },
+    },
+    {
+      docNumber: 7,
+      metadata: { title: 'Doc 7', url: 'https://example.com/7' },
+    },
   ];
 
   it('replaces <c:id> markers and appends citation footnotes', async () => {
@@ -149,4 +161,3 @@ describe('createCitationsTransform', () => {
     expect(outputText).not.toContain('## Citations');
   });
 });
-

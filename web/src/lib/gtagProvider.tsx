@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { GoogleTagManager } from '@next/third-parties/google';
 
 const GtagProvider: React.FC = ({}) => {

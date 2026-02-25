@@ -8,8 +8,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { throwConfettiAt } from '../../../lib/confetti';
 import { submitFeedback } from '../../../lib/actions';
+import { throwConfettiAt } from '../../../lib/confetti';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';

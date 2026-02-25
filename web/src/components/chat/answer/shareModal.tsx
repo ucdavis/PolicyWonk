@@ -110,10 +110,10 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
               isShared={isShared}
               handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
               handleUnshare={handleUnshare}
-                handleCopyShareUrl={handleCopyShareUrl}
-                isLoading={isLoading}
-              />
-            </WonkyErrorBoundary>
+              handleCopyShareUrl={handleCopyShareUrl}
+              isLoading={isLoading}
+            />
+          </WonkyErrorBoundary>
         </ModalBody>
         <ModalFooter>
           {!isShared && (

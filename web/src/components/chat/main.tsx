@@ -7,19 +7,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { usePathname, useRouter } from 'next/navigation';
 
-import type { Focus } from '../../models/focus';
-import type { ChatHistory } from '../../models/chat';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
+import { useGtagEvent } from '../../lib/hooks/useGtagEvent';
+import type { ChatHistory } from '../../models/chat';
+import type { Focus } from '../../models/focus';
+import { GTagEvents } from '../../models/gtag';
 import WonkBottom from '../layout/wonkBottom';
 import WonkTop from '../layout/wonkTop';
 
-import FocusBanner from './answer/focusBanner';
 import ChatActions from './answer/chatActions';
+import FocusBanner from './answer/focusBanner';
+import { WonkMessage } from './answer/wonkMessage';
 import ChatInput from './ask/chatInput';
 import ChatHeader from './chatHeader';
 import { UserMessage } from './userMessage';
-import { WonkMessage } from './answer/wonkMessage';
 
 type MainContentProps = {
   initialChat: ChatHistory;
@@ -53,8 +55,12 @@ const chatMessagesToUIMessages = (messages: ChatHistory['messages']) => {
 const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const gtagEvent = useGtagEvent();
   const [chat, setChat] = React.useState<ChatHistory>(initialChat);
+  const [currentStatusMessage, setCurrentStatusMessage] =
+    React.useState<string>('');
   const lastRedirectedChatIdRef = React.useRef<string | null>(null);
+  const didLogNewChatEventRef = React.useRef<boolean>(false);
 
   const initialMessages = React.useMemo(
     () => chatMessagesToUIMessages(initialChat.messages),
@@ -69,6 +75,16 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   const { messages, sendMessage, status, error } = useChat({
     transport,
     messages: initialMessages,
+    onData: (dataPart) => {
+      if (dataPart.type !== 'data-aggiethought') {
+        return;
+      }
+
+      const thought = dataPart.data;
+      if (typeof thought === 'string') {
+        setCurrentStatusMessage(thought);
+      }
+    },
   });
 
   const chatIdFromMetadata = React.useMemo(() => {
@@ -86,6 +102,12 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     const chatId = (lastAssistantMessage.metadata as any).chatId;
     return typeof chatId === 'string' ? chatId : null;
   }, [messages]);
+
+  React.useEffect(() => {
+    if (status === 'ready') {
+      setCurrentStatusMessage('');
+    }
+  }, [status]);
 
   React.useEffect(() => {
     if (
@@ -125,6 +147,15 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   };
 
   const onQuestionSubmit = async (question: string) => {
+    if (
+      !didLogNewChatEventRef.current &&
+      pathname === `/${chat.group}/chat/new`
+    ) {
+      didLogNewChatEventRef.current = true;
+      gtagEvent({ event: GTagEvents.NEW_CHAT, chat });
+    }
+
+    setCurrentStatusMessage('Starting...');
     await sendMessage(
       { text: question },
       {
@@ -187,7 +218,9 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
               const text = getTextFromMessage(message);
               const isLastMessage = index === messages.length - 1;
               const isLoadingAnswer =
-                isLastMessage && message.role === 'assistant' && status !== 'ready';
+                isLastMessage &&
+                message.role === 'assistant' &&
+                status !== 'ready';
 
               return (
                 <div key={message.id}>
@@ -202,7 +235,11 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
                     {message.role === 'user' ? (
                       <UserMessage content={text} />
                     ) : (
-                      <WonkMessage content={text} isLoading={isLoadingAnswer}>
+                      <WonkMessage
+                        content={text}
+                        isLoading={isLoadingAnswer}
+                        thought={isLoadingAnswer ? currentStatusMessage : null}
+                      >
                         {chat.id && status === 'ready' && (
                           <ChatActions
                             chat={chat}
@@ -216,6 +253,14 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
                 </div>
               );
             })}
+            {status !== 'ready' &&
+              messages[messages.length - 1]?.role !== 'assistant' && (
+                <div className='wonk-chat-width'>
+                  <p className='text-muted mb-0'>
+                    {currentStatusMessage || 'PolicyWonk is thinking…'}
+                  </p>
+                </div>
+              )}
           </WonkTop>
           <WonkBottom>
             <div className='wonk-chat-width mt-auto'>

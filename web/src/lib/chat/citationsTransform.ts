@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid';
 import type { StreamTextTransform, TextStreamPart } from 'ai';
+import { nanoid } from 'nanoid';
 
 export type CitationPolicy = {
   docNumber: number;
@@ -61,16 +61,13 @@ export const createCitationsTransform = ({
           }
 
           const toEmit = combined.slice(0, cutoffIndex);
-          const transformed = toEmit.replace(
-            /<c:(\d+)>/g,
-            (_match, docNum) => {
-              const parsed = Number(docNum);
-              if (Number.isInteger(parsed)) {
-                usedCitationDocNums.add(parsed);
-              }
-              return `[^${docNum}]`;
+          const transformed = toEmit.replace(/<c:(\d+)>/g, (_match, docNum) => {
+            const parsed = Number(docNum);
+            if (Number.isInteger(parsed)) {
+              usedCitationDocNums.add(parsed);
             }
-          );
+            return `[^${docNum}]`;
+          });
 
           assistantText += transformed;
 
@@ -91,7 +88,8 @@ export const createCitationsTransform = ({
           if (usedPolicies.length > 0) {
             const citationFootnoteMarkdown = usedPolicies
               .map(
-                (p) => `[^${p.docNumber}]: [${p.metadata.title}](${p.metadata.url})`
+                (p) =>
+                  `[^${p.docNumber}]: [${p.metadata.title}](${p.metadata.url})`
               )
               .join('\n');
 

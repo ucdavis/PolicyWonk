@@ -49,10 +49,10 @@ async function devBypassSignInHandler(formData: FormData) {
   const callbackUrl = (formData.get('callbackUrl') as string) || '/';
   const userId = (formData.get('userId') as string) || devAuthUserId;
 
-  await signIn(
-    DEV_AUTH_BYPASS_PROVIDER_ID,
-    { redirectTo: callbackUrl, userId } as any
-  );
+  await signIn(DEV_AUTH_BYPASS_PROVIDER_ID, {
+    redirectTo: callbackUrl,
+    userId,
+  } as any);
 }
 
 interface LoginProps {

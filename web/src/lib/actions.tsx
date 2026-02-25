@@ -2,8 +2,8 @@
 
 import { redirect } from 'next/navigation';
 
-import type { Feedback } from '@/models/chat';
 import { WonkServerError, isWonkSuccess } from '@/lib/error/error';
+import type { Feedback } from '@/models/chat';
 import {
   removeChat,
   removeShareChat,
@@ -52,4 +52,3 @@ export const deleteChatFromSidebar = async (
     redirect('/');
   }
 };
-
