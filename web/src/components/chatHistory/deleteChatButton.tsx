@@ -41,10 +41,12 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     }
   };
 
-  const adjustedVariant = IconVariants;
-  adjustedVariant.bounce = {
-    ...adjustedVariant.bounce,
-    y: [0, -1, 0],
+  const adjustedVariant = {
+    ...IconVariants,
+    bounce: {
+      ...IconVariants.bounce,
+      y: [0, -1, 0],
+    },
   };
   return (
     <div className='list-actions'>

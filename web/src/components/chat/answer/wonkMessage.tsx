@@ -1,31 +1,33 @@
 'use client';
 
-import { StreamableValue } from '@ai-sdk/rsc';
+import type { ReactNode } from 'react';
 
 import WonkyClientError from '../../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
-import { useStreamableText } from '../../../lib/hooks/useStreamableText';
 
-import ChatActions from './chatActions';
 import WonkAnswer from './wonkAnswer';
 
 export const WonkMessage = ({
   content,
   isLoading,
-  wonkThoughts,
+  thought,
+  children,
 }: {
-  content: string | StreamableValue<string>;
+  content: string;
   isLoading: boolean;
-  wonkThoughts: StreamableValue<string> | string;
+  thought?: string | null;
+  children?: ReactNode;
 }) => {
-  const text = useStreamableText(content);
-  const wonkText = useStreamableText(wonkThoughts, { shouldAppend: false });
-
   return (
     <div className='chat-row'>
       <div className='d-flex'>
         <div>
-          {text ? (
+          {isLoading && !content && (
+            <p className='text-muted mb-2'>
+              {thought || 'PolicyWonk is thinking…'}
+            </p>
+          )}
+          {content ? (
             <WonkyErrorBoundary
               fallback={
                 <WonkyClientError
@@ -34,14 +36,12 @@ export const WonkMessage = ({
                 />
               }
             >
-              <WonkAnswer text={text} />
+              <WonkAnswer text={content} />
             </WonkyErrorBoundary>
-          ) : (
-            wonkText
-          )}
+          ) : null}
         </div>
       </div>
-      {!isLoading && <ChatActions />}
+      {!isLoading && children}
     </div>
   );
 };

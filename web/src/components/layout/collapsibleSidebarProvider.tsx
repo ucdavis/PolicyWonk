@@ -66,7 +66,6 @@ export const CollapsibleSidebarProvider: React.FC<{
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

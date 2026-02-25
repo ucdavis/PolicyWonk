@@ -2,9 +2,17 @@ import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 
 import { setCurrentGroup } from './lib/cookies';
+import {
+  DEV_AUTH_BYPASS_PROVIDER_ID,
+  getDevAuthBypassProvider,
+  getDevAuthGroup,
+  isDevAuthBypassEnabled,
+} from './lib/devAuthBypass';
 import { getGroupNameFromAffiliation } from './lib/groups';
 import { User } from './models/user';
 import { ensureUserExists } from './services/userService';
+
+const devAuthBypassProvider = getDevAuthBypassProvider();
 
 const SamlClaims = {
   name: 'urn:oid:2.16.840.1.113730.3.1.241',
@@ -26,6 +34,7 @@ export const {
   signOut,
 } = NextAuth({
   providers: [
+    ...(devAuthBypassProvider ? [devAuthBypassProvider] : []),
     BoxyHQSAMLProvider({
       authorization: { params: { scope: '' } }, // This is needed for OAuth 2.0 flow, otherwise default to openid (from docs)
       issuer: process.env.SSO_ISSUER_URL,
@@ -40,6 +49,31 @@ export const {
       // params.profile has user info -- params.profile.raw has the shibboleth claims
       // params.profile.requested.tenant has the tenant as defined by boxy -- might be nice for multi-tenant
       if (params.trigger === 'signIn') {
+        if (params.account?.provider === DEV_AUTH_BYPASS_PROVIDER_ID) {
+          if (!isDevAuthBypassEnabled()) {
+            throw new Error('Dev auth bypass is disabled');
+          }
+
+          const userId = Number(params.user?.id);
+          if (!Number.isInteger(userId) || userId <= 0) {
+            throw new Error('Invalid dev bypass user id');
+          }
+
+          await setCurrentGroup(getDevAuthGroup());
+
+          return {
+            ...params.token,
+            name: params.user?.name,
+            email: params.user?.email,
+            userId,
+          };
+        }
+
+        // Only BoxyHQ SAML sign-ins should reach the logic below.
+        if (params.account?.provider !== 'boxyhq-saml') {
+          return params.token;
+        }
+
         // profile is only available on sign in
         const profileExtended = params.profile as ProfileWithRaw | undefined;
 

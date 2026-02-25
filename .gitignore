@@ -43,3 +43,10 @@ __pycache__/
 # dev container artifacts
 .devcontainer/pg_data/
 web/package-lock.json
+
+# playwright-cli artifacts
+.playwright-cli/
+
+# Codex/Cursor agent artifacts
+web/.agents/
+web/skills-lock.json

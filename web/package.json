@@ -3,18 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "echo \"Use http://localhost:3001\" to view the app",
+    "predev": "echo \"Use http://localhost:3000\" to view the app",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "production": "next build && next start",
     "serve": "node_modules/next/dist/bin/next start",
     "lint": "eslint .",
+    "test": "vitest run",
     "lint:fix": "eslint --fix . && prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
-    "@ai-sdk/openai": "^2.0.88",
-    "@ai-sdk/rsc": "^1.0.117",
+    "@ai-sdk/openai": "^3.0.33",
+    "@ai-sdk/react": "^3.0.101",
     "@elastic/elasticsearch": "^8.12.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -23,7 +24,7 @@
     "@next/third-parties": "16.1.5",
     "@prisma/client": "^6.5.0",
     "@ucdavis/gunrockin": "^1.1.3",
-    "ai": "5.0.114",
+    "ai": "^6.0.99",
     "bootstrap": "^5.3.3",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^12.29.2",
@@ -53,7 +54,8 @@
     "prettier": "^3.2.5",
     "prisma": "^6.5.0",
     "sass": "^1.72.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "@types/react": "19.2.10",

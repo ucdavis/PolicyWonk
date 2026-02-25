@@ -82,8 +82,6 @@ export async function GET(request: NextRequest) {
       where: prismaFilter,
     });
 
-    console.log('total:', total);
-
     // If no documents found, return an empty result set.
     if (docs.length === 0) {
       return NextResponse.json({

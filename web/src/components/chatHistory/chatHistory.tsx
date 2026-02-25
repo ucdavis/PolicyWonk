@@ -31,14 +31,24 @@ const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
   // we have a valid group, so just show the chat history for that group
 
   let chats: ChatHistoryTitleEntry[] = [];
+  let status: 'ok' | 'skip' | 'error' = 'ok';
   try {
     const result = await loadChatHistoryForGroup(group);
 
     if (!isWonkSuccess(result)) {
-      return <></>; // don't show anything on known errors
+      status = 'skip'; // don't show anything on known errors
+    } else {
+      chats = result.data;
     }
-    chats = result.data;
   } catch (error) {
+    status = 'error';
+  }
+
+  if (status === 'skip') {
+    return null;
+  }
+
+  if (status === 'error') {
     // same return as the fallback in the error boundary
     // but we have to do it here too, since the error boundary doesn't catch server errors
     return (
@@ -59,7 +69,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
       <div className='chat-history-wrapper'>
         <h3 className='text-end me-3'>Chat History</h3>
         <div className='chat-history'>
-          {!!chats && <ChatHistoryWrapper chats={chats} />}
+          {!!chats && <ChatHistoryWrapper group={group} chats={chats} />}
         </div>
       </div>
     </>

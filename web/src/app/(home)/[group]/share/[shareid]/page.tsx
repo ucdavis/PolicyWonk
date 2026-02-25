@@ -3,12 +3,13 @@ import React from 'react';
 
 import { Metadata, ResolvingMetadata } from 'next';
 
+import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI } from '@/lib/aiProvider';
 import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory } from '@/models/chat';
+import type { WonkSession } from '@/models/session';
 import { getSharedChat } from '@/services/historyService';
 
 type SharedPageProps = {
@@ -28,6 +29,11 @@ export async function generateMetadata(
   props: SharedPageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const session = (await auth()) as WonkSession;
+  if (!session?.userId) {
+    return { title: 'Chat' };
+  }
+
   const params = await props.params;
   const { shareid } = params;
   const result = await getCachedSharedChat(shareid);
@@ -53,11 +59,11 @@ const SharePage = async (props: SharedPageProps) => {
   }
 
   return (
-    <AI initialAIState={result.data}>
+    <>
       <h5>Shared Chat</h5>
       <hr />
-      <MainContent />
-    </AI>
+      <MainContent initialChat={result.data} />
+    </>
   );
 };
 

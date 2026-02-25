@@ -1,14 +1,13 @@
 'use client';
 import React from 'react';
 
-import { useAIState } from '@ai-sdk/rsc';
 import { AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
-import { AI } from '../../../lib/aiProvider';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { getFullQuestionAndAnswer } from '../../../lib/util';
+import type { ChatHistory } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
 import CopyToClipboardButton from '../../ui/copyToClipboardButton';
 
@@ -16,14 +15,23 @@ import FeedbackBar from './feedbackBar';
 import FeedbackButtons from './feedbackButtons';
 import ShareModal from './shareModal';
 
-const ChatActions: React.FC = () => {
+interface ChatActionsProps {
+  chat: ChatHistory;
+  onReactionUpdate: (reaction: ChatHistory['reaction']) => void;
+  onShareIdUpdate: (shareId: ChatHistory['shareId']) => void;
+}
+
+const ChatActions: React.FC<ChatActionsProps> = ({
+  chat,
+  onReactionUpdate,
+  onShareIdUpdate,
+}) => {
   const gtagEvent = useGtagEvent();
   const pathname = usePathname();
   const onSharedPage = pathname.includes('/share/');
-  const [aiState] = useAIState<typeof AI>();
   const fullQuestionAndAnswer = React.useMemo(
-    () => getFullQuestionAndAnswer(aiState.messages),
-    [aiState.messages]
+    () => getFullQuestionAndAnswer(chat.messages),
+    [chat.messages]
   );
 
   return (
@@ -34,23 +42,26 @@ const ChatActions: React.FC = () => {
             id='gtag-copy-chat'
             value={fullQuestionAndAnswer}
             onClick={() => {
-              gtagEvent({ event: GTagEvents.COPY_CHAT, chat: aiState });
+              gtagEvent({ event: GTagEvents.COPY_CHAT, chat });
             }}
           />
         </WonkyErrorBoundary>
         {!onSharedPage && (
           <>
             <WonkyErrorBoundary>
-              <FeedbackButtons />
+              <FeedbackButtons
+                chat={chat}
+                onReactionUpdate={onReactionUpdate}
+              />
             </WonkyErrorBoundary>
             <WonkyErrorBoundary>
-              <ShareModal />
+              <ShareModal chat={chat} onShareIdUpdate={onShareIdUpdate} />
             </WonkyErrorBoundary>
           </>
         )}
       </div>
       <AnimatePresence initial={false}>
-        {!onSharedPage && !!aiState.reaction && (
+        {!onSharedPage && !!chat.reaction && (
           <WonkyErrorBoundary>
             <FeedbackBar />
           </WonkyErrorBoundary>
