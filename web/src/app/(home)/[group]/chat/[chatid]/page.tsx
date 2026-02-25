@@ -5,7 +5,6 @@ import { Metadata, ResolvingMetadata } from 'next';
 
 import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
-import { AI } from '@/lib/aiProvider';
 import { isWonkSuccess, WonkStatusCodes } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
 import { isValidGroupName } from '@/lib/groups';
@@ -83,11 +82,7 @@ const ChatPage = async (props: HomePageProps) => {
     chat = newChatSession(session, group, focus, subFocus);
   }
 
-  return (
-    <AI initialAIState={chat}>
-      <MainContent />
-    </AI>
-  );
+  return <MainContent initialChat={chat} />;
 };
 
 export default ChatPage;
@@ -102,7 +97,7 @@ const newChatSession = (
 
   const chat: ChatHistory = {
     ...blankAIState,
-    // id is '' in state until submitUserMessage() is called
+    // id is '' in state until the chat is saved
     group,
     meta: {
       focus: focus ?? focuses[0],

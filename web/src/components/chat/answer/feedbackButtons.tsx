@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 
-import { useAIState, useActions } from '@ai-sdk/rsc';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons';
 import {
   faThumbsUp as faThumbsUpSolid,
@@ -9,8 +8,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { AI } from '../../../lib/aiProvider';
 import { throwConfettiAt } from '../../../lib/confetti';
+import { submitFeedback } from '../../../lib/actions';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
@@ -18,40 +17,41 @@ import AnimatedButton from '../../ui/animatedButton';
 
 export type FeedbackLoadingStates = '' | Feedback;
 
-interface FeedbackButtonsProps {}
+interface FeedbackButtonsProps {
+  chat: ChatHistory;
+  onReactionUpdate: (reaction: Feedback | undefined) => void;
+}
 
-const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({}) => {
-  const [aiState, setAIState] = useAIState<typeof AI>();
-  const { id: chatId, reaction: feedback } = aiState;
-  const { submitFeedback } = useActions<typeof AI>();
+const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
+  chat,
+  onReactionUpdate,
+}) => {
+  const { id: chatId, reaction: feedback } = chat;
   const gtagEvent = useGtagEvent();
 
   const thumbsUpRef = React.useRef<HTMLButtonElement>(null);
 
   const onFeedback = async (newFeedback: Feedback) => {
-    const newAiState: ChatHistory = {
-      ...aiState,
+    const updatedChat: ChatHistory = {
+      ...chat,
       reaction: newFeedback,
     };
-    // optimistically update the AI state
-    setAIState(newAiState);
+    // optimistically update state
+    onReactionUpdate(newFeedback);
 
     gtagEvent({
       event:
         newFeedback === 'thumbs_up'
           ? GTagEvents.FEEDBACK_THUMBS_UP
           : GTagEvents.FEEDBACK_THUMBS_DOWN,
-      chat: newAiState,
+      chat: updatedChat,
     });
 
     try {
       await submitFeedback(chatId, newFeedback);
     } catch (e) {
       // TODO: handle error
-      setAIState((currentAIState) => ({
-        ...currentAIState,
-        reaction: undefined, // unset the reaction on error
-      }));
+      onReactionUpdate(undefined);
     }
   };
 

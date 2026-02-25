@@ -1,16 +1,16 @@
 'use client';
 import React from 'react';
 
-import { useActions, useAIState } from '@ai-sdk/rsc';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperPlane as faPaperPlaneSolid } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
-import { AI } from '../../../lib/aiProvider';
+import { shareChat, unshareChat } from '../../../lib/actions';
 import WonkyClientError from '../../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
+import type { ChatHistory } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
 import AnimatedButton from '../../ui/animatedButton';
 
@@ -23,15 +23,18 @@ export type ShareModalLoadingStates =
   | GTagEvents.REGEN_SHARE
   | GTagEvents.UNSHARE;
 
-const ShareModal: React.FC = () => {
+interface ShareModalProps {
+  chat: ChatHistory;
+  onShareIdUpdate: (shareId: ChatHistory['shareId']) => void;
+}
+
+const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
   const gtagEvent = useGtagEvent();
-  const { shareChat, unshareChat } = useActions<typeof AI>();
-  const [aiState] = useAIState<typeof AI>();
-  const { id: chatId, shareId, group } = aiState;
+  const { id: chatId, shareId, group } = chat;
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<ShareModalLoadingStates>('');
-  const isShared = shareId !== undefined;
+  const isShared = !!shareId;
 
   const handleShare = async (
     type: GTagEvents.SHARE | GTagEvents.REGEN_SHARE
@@ -39,23 +42,29 @@ const ShareModal: React.FC = () => {
     setIsLoading(type);
     gtagEvent({
       event: type,
-      chat: aiState,
+      chat,
     });
-    // TODO: handle errors
-    await shareChat(chatId);
-    setIsLoading('');
+    try {
+      const newShareId = await shareChat(chatId);
+      onShareIdUpdate(newShareId);
+    } finally {
+      setIsLoading('');
+    }
   };
 
   const handleUnshare = async () => {
     setIsLoading(GTagEvents.UNSHARE);
-    gtagEvent({ event: GTagEvents.UNSHARE, chat: aiState });
-    // TODO: handle errors
-    await unshareChat(chatId);
-    setIsLoading('');
+    gtagEvent({ event: GTagEvents.UNSHARE, chat });
+    try {
+      await unshareChat(chatId);
+      onShareIdUpdate(undefined);
+    } finally {
+      setIsLoading('');
+    }
   };
 
   const handleCopyShareUrl = () => {
-    gtagEvent({ event: GTagEvents.COPY_SHARE, chat: aiState });
+    gtagEvent({ event: GTagEvents.COPY_SHARE, chat });
   };
 
   const toggle = () => {
@@ -76,7 +85,7 @@ const ShareModal: React.FC = () => {
         isOpen={isOpen}
         toggle={toggle}
         onOpened={() => {
-          gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat: aiState });
+          gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat });
         }}
       >
         <ModalHeader toggle={toggle}>Share Chat</ModalHeader>
@@ -101,10 +110,10 @@ const ShareModal: React.FC = () => {
               isShared={isShared}
               handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
               handleUnshare={handleUnshare}
-              handleCopyShareUrl={handleCopyShareUrl}
-              isLoading={isLoading}
-            />
-          </WonkyErrorBoundary>
+                handleCopyShareUrl={handleCopyShareUrl}
+                isLoading={isLoading}
+              />
+            </WonkyErrorBoundary>
         </ModalBody>
         <ModalFooter>
           {!isShared && (
