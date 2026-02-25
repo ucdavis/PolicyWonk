@@ -91,16 +91,12 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     if (
       // on first response from AI
       pathname === `/${chat.group}/chat/new` &&
+      status === 'ready' &&
       chatIdFromMetadata && // id is only sent once the chat has been saved to the db
       lastRedirectedChatIdRef.current !== chatIdFromMetadata
     ) {
       lastRedirectedChatIdRef.current = chatIdFromMetadata;
       router.replace(`/${chat.group}/chat/${chatIdFromMetadata}`);
-      // The sidebar uses `React.cache`, so force a refresh after navigation to
-      // ensure history reflects the newly saved chat.
-      setTimeout(() => {
-        router.refresh();
-      }, 0);
     }
 
     if (!chat.id && chatIdFromMetadata) {
@@ -109,7 +105,7 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
         id: chatIdFromMetadata,
       }));
     }
-  }, [router, pathname, chat.group, chat.id, chatIdFromMetadata]);
+  }, [router, pathname, chat.group, chat.id, chatIdFromMetadata, status]);
 
   const onNewMessage = () => {
     let newRoute = `/?focus=${chat.meta.focus.name}`;
