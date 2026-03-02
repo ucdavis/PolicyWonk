@@ -56,6 +56,10 @@ $content-padding-value:36px 0 18px 0;
       .wonk-chat-top {
         overflow-y: auto;
         padding-top: 16px;
+        &:focus {
+          outline: none;
+        }
+
         & .chat-top-home {
           margin-top:20%;
           margin-bottom:10%;
