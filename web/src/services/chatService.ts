@@ -114,29 +114,52 @@ const generateFilterElastic = (
 
 export const getSearchResultsElastic = async (
   embeddings: number[][],
-  focus: Focus
+  focus: Focus,
+  userInput: string
 ) => {
   const searchResultMaxSize = 5;
 
   const filter = generateFilterElastic(focus);
 
-  // TODO: augment search w/ keyword search?
-  // get our search results
+  const baseTextQuery: estypes.QueryDslQueryContainer = {
+    function_score: {
+      query: {
+        multi_match: {
+          query: userInput,
+          fields: ['metadata.title', 'metadata.keywords', 'text'],
+        },
+      },
+      boost_mode: 'multiply' as const,
+      score_mode: 'multiply' as const,
+    },
+  };
+
+  const textQuery: estypes.QueryDslQueryContainer = {
+    bool: { must: [baseTextQuery], filter },
+  };
 
   const knnQuery: estypes.KnnQuery = {
-    field: 'vector', // the field we want to search, created by PolicyAcquisition
-    query_vector: embeddings[0], // the query vector
+    field: 'vector',
+    query_vector: embeddings[0],
     k: searchResultMaxSize,
     num_candidates: 200,
     filter,
   };
 
+  const fullSearchQueryBody = {
+    query: textQuery,
+    knn: knnQuery,
+    rank: {
+      rrf: {
+        rank_constant: searchResultMaxSize * 2,
+      },
+    },
+  };
+
   const searchResults = await searchClient.search<PolicyIndex>({
     index: indexName,
     size: searchResultMaxSize,
-    body: {
-      knn: knnQuery,
-    },
+    body: fullSearchQueryBody,
   });
 
   // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
