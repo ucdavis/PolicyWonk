@@ -97,7 +97,11 @@ export async function POST(req: Request) {
       const embeddings = await getEmbeddings(userInput);
 
       writeThought('Searching for relevant documents...');
-      const searchResults = await getSearchResultsElastic(embeddings, focus);
+      const searchResults = await getSearchResultsElastic(
+        embeddings,
+        focus,
+        userInput
+      );
 
       const transformedResults = expandedTransformSearchResults(searchResults);
       const systemMessage = getSystemMessage(transformedResults);
