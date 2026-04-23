@@ -3,6 +3,8 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { estypes } from '@elastic/elasticsearch';
 
+import prisma from '@/lib/db';
+
 import type { ChatMessage, PolicyIndex } from '../models/chat';
 import { Focus, FocusScope } from '../models/focus';
 
@@ -118,6 +120,7 @@ export const getSearchResultsElastic = async (
   userInput: string
 ) => {
   const searchResultMaxSize = 5;
+  const MAX_DOC_TOKENS = 20000;
 
   const filter = generateFilterElastic(focus);
 
@@ -173,7 +176,103 @@ export const getSearchResultsElastic = async (
     }))
     .filter((r): r is PolicyIndex => r !== undefined);
 
-  return allResults;
+  // deduplication + filter out large documents by token count
+  const getEligibleDocs = (results: PolicyIndex[]) => {
+    const docs = new Set<string>();
+
+    results.forEach((result) => {
+      const url = result.metadata.url;
+      if (
+        !url ||
+        result.metadata.doc_tokens === null ||
+        result.metadata.doc_tokens === undefined
+      ) {
+        return;
+      }
+
+      // filter out documents greater token limit
+      if (result.metadata.doc_tokens > MAX_DOC_TOKENS) {
+        return;
+      }
+
+      docs.add(url);
+    });
+
+    return docs;
+  };
+
+  const eligibleDocs = getEligibleDocs(allResults);
+  const contextResults = await addFullDocument(allResults, eligibleDocs);
+
+  return contextResults;
+};
+
+export const getDocumentByUrl = async (url: string): Promise<string | null> => {
+  if (!url) {
+    return null;
+  }
+
+  const document = await prisma.documents.findFirst({
+    where: { url },
+    select: {
+      documentContents: {
+        select: {
+          content: true,
+        },
+      },
+    },
+  });
+
+  return document?.documentContents?.content ?? null;
+};
+
+export const addFullDocument = async (
+  results: PolicyIndex[],
+  eligibleDocs: Set<string>
+): Promise<PolicyIndex[]> => {
+  const filteredDocs = new Map<string, string>();
+  const MAX_FULL_DOCS = 1;
+  for (const url of eligibleDocs) {
+    if (filteredDocs.size >= MAX_FULL_DOCS) {
+      break;
+    }
+
+    const fullDocument = await getDocumentByUrl(url);
+    if (!fullDocument) {
+      continue;
+    }
+
+    filteredDocs.set(url, fullDocument);
+  }
+
+  if (filteredDocs.size === 0) {
+    return results;
+  }
+
+  const finalResults: PolicyIndex[] = [];
+  const insertedPromotedUrls = new Set<string>();
+
+  for (const result of results) {
+    const url = result.metadata.url;
+
+    if (!filteredDocs.has(url)) {
+      finalResults.push(result);
+      continue;
+    }
+
+    if (insertedPromotedUrls.has(url)) {
+      continue;
+    }
+
+    finalResults.push({
+      ...result,
+      text: filteredDocs.get(url)!,
+    });
+
+    insertedPromotedUrls.add(url);
+  }
+
+  return finalResults;
 };
 
 export const expandedTransformSearchResults = (
