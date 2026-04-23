@@ -75,4 +75,5 @@ export type PolicyMetadata = {
   subject_areas: string[];
   hash: string;
   scope: string;
+  doc_tokens: number;
 };
