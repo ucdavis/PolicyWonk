@@ -182,7 +182,11 @@ export const getSearchResultsElastic = async (
 
     results.forEach((result) => {
       const url = result.metadata.url;
-      if (!url) {
+      if (
+        !url ||
+        result.metadata.doc_tokens === null ||
+        result.metadata.doc_tokens === undefined
+      ) {
         return;
       }
 
