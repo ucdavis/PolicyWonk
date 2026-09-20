@@ -2,6 +2,8 @@
 
 Azure Pipelines builds and deploys PolicyWonk. GitHub hosts the code, required PR checks, and CodeQL security scanning.
 
+GitHub CodeQL default setup scans JavaScript/TypeScript and Python, with weekly scheduled analysis. `github-codeql.json` records its configuration. GitHub Actions language scanning is removed together with the last workflow file; otherwise CodeQL fails because there are no Actions sources. Revisit the configured languages if workflows are added later.
+
 ## Environments and components
 
 The Next.js application serves the website and chat requests. The Python backend is a continuously running policy ingestion worker in Azure Container Instances, not an HTTP API.

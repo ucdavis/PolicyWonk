@@ -22,6 +22,8 @@ az deployment group what-if   --subscription 105dede4-4731-492e-8c28-5121226319b
 
 After approving the preview, `az deployment group create` with the same arguments provisions the identities and grants. Use subscription `003283b1-cc5e-417a-b037-01ff3c05537b`, resource group `policy`, and `environmentName=prod` for production after validating test.
 
+The test preview succeeds and leaves existing services unchanged. It reports the registry role assignment as unsupported because its name depends on the new identity's not-yet-created principal ID. Verify that cross-subscription grant after provisioning; a successful preview alone does not prove it.
+
 ## Staged cutover
 
 1. Provision the test identities and save the deployment outputs. Keep the existing working credentials.

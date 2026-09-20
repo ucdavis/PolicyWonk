@@ -1,0 +1,5 @@
+{
+  "state": "configured",
+  "languages": ["javascript-typescript", "python"],
+  "query_suite": "default"
+}
