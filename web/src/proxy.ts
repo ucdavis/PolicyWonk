@@ -8,11 +8,6 @@ export default auth((req: any) => {
   const url = req.nextUrl;
   const route = req.nextUrl.pathname;
 
-  // Azure probes must receive a status code, not the sign-in redirect.
-  if (route === '/api/health') {
-    return;
-  }
-
   const isLoggedIn = !!req.auth;
 
   if (!isLoggedIn) {

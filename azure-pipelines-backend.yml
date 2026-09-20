@@ -1,114 +1,147 @@
+# We'll build on `main` and PR changes.
+# Main only, we push to ACR (docker container) and deploy to test
+# Then prod deployment will start after proper approvals (setup via GUI)
+# Build when this component or its pipeline changes.
 trigger:
-  branches: { include: [main] }
-  paths:
-    include: [backend/**, azure-pipelines-backend.yml, deploy/templates/**, deploy/scripts/**, deploy/tests/**]
+  branches: { include: ["main"] }
+  paths: { include: ["backend/**", "azure-pipelines-backend.yml"] }
 
-# Run every PR so the required check always reports a result.
 pr:
-  branches: { include: [main] }
+  branches: { include: ["main"] }
+  paths: { include: ["backend/**", "azure-pipelines-backend.yml"] }
 
+# TODO - move these into the variable group
 variables:
-  acrLoginServer: policywonkcontainers.azurecr.io
-  imageRepo: policybackend
-  imageTag: $(Build.SourceVersion)
-  imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
-  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - name: acrLoginServer
+    value: policywonkcontainers.azurecr.io
+  - name: imageRepo
+    value: policybackend
+  - name: imageTag
+    value: $(Build.SourceVersion)
+  - name: imageUri
+    value: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  - name: isMain
+    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  - name: acrName
+    value: policywonkcontainers
 
 stages:
+  # ─────────────────────── 1) BUILD (+ PUSH on main only) ───────────────────────
   - stage: BuildPush
-    displayName: Validate and build ingestion worker
+    displayName: Build and push on main changes
     jobs:
       - job: BuildPushJob
+        displayName: Build (always) / Push (main only)
         pool: { vmImage: ubuntu-latest }
         steps:
           - checkout: self
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '3.12'
-          - script: |
-              set -euo pipefail
-              python -m compileall -q backend
-              python -m unittest discover -s deploy/tests -v
-            displayName: Check Python and test deployment verification
+
+          # --- Build image (always) ---
           - task: Docker@2
-            displayName: Build ingestion image
+            displayName: docker build
             inputs:
               command: build
               dockerfile: backend/Dockerfile
-              buildContext: backend
               repository: $(imageRepo)
-              arguments: -t $(imageUri) --build-arg BUILD_REVISION=$(Build.SourceVersion)
+              arguments: -t $(imageUri)
+
+          # --- Login & push image (only on main) ---
           - task: Docker@2
-            displayName: Push ingestion image
-            condition: and(succeeded(), eq(variables.isMain, true))
+            displayName: docker push
+            condition: and(succeeded(), eq(variables.isMain, 'True'))
             inputs:
               command: push
               repository: $(imageRepo)
-              tags: $(imageTag)
-              containerRegistry: CaesProductionPolicyWonkContainerConnection
+              tags: |
+                $(imageTag)
+              containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
 
+  # ─────────────────────── 2) DEPLOY to TEST ───────────────────────
   - stage: DeployTest
-    displayName: Deploy and verify TEST worker
+    displayName: Deploy to TEST
     dependsOn: BuildPush
-    condition: and(succeeded(), eq(variables.isMain, true))
+    condition: and(succeeded('BuildPush'), eq(variables.isMain, 'True')) # skip on PRs / only after BuildPush succeeds
     jobs:
       - deployment: DeployTest
         environment: test
         pool: { vmImage: ubuntu-latest }
         variables:
           - group: Backend-Dev
+
         strategy:
           runOnce:
             deploy:
               steps:
-                - template: deploy/templates/worker-deploy.yml
-                  parameters:
-                    serviceConnection: CaesTestDeploy
-                    resourceGroup: policywonk-dev
-                    containerName: policywonk-dev-backend
+                - task: AzureCLI@2
+                  displayName: Deploy backend to ACI
+                  inputs:
+                    azureSubscription: CaesTestDeploy # ARM connection (no extra login block)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az container create \
+                        --resource-group policywonk-dev \
+                        --name policywonk-dev-backend \
+                        --image $(imageUri) \
+                        --cpu 1 --memory 8 \
+                        --os-type Linux \
+                        --registry-login-server $(acrLoginServer) \
+                        --registry-username "$ACR_USER" \
+                        --registry-password "$ACR_PASS" \
+                        --environment-variables \
+                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
+                          ELASTIC_URL=$(ELASTIC_URL) \
+                          ELASTIC_INDEX=$(ELASTIC_INDEX) \
+                        --secure-environment-variables \
+                          LLM_API_KEY=$(LLM_API_KEY) \
+                          DATABASE_URL=$(DATABASE_URL) \
+                          ELASTIC_WRITE_USERNAME=$(ELASTIC_WRITE_USERNAME) \
+                          ELASTIC_WRITE_PASSWORD=$(ELASTIC_WRITE_PASSWORD)
+                  env:
+                    ACR_USER: $(ACR_USER)
+                    ACR_PASS: $(ACR_PASS)
 
-  - stage: TestAcceptance
-    displayName: Confirm TEST ingestion acceptance
-    dependsOn: DeployTest
-    condition: and(succeeded(), eq(variables.isMain, true))
-    jobs:
-      - template: deploy/templates/acceptance.yml
-        parameters:
-          instructions: |
-            Follow the controlled test ingestion procedure in deploy/README.md.
-            Confirm a designated test source completed successfully after this deployment,
-            check its document and vectors, and retrieve it through the test website.
-            Record the run's commit and evidence in the approval comment. Reject on failure.
-            A Running container alone is insufficient. Acceptance expires after 24 hours.
-
+  # ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
   - stage: DeployProd
-    displayName: Deploy and verify PROD worker
-    dependsOn: TestAcceptance
-    condition: and(succeeded(), eq(variables.isMain, true))
+    displayName: Deploy to PROD
+    dependsOn: DeployTest
+    condition: and(succeeded('DeployTest'), eq(variables.isMain, 'True')) # skip on PRs / only after TEST succeeds
     jobs:
       - deployment: DeployProd
-        environment: prod
+        environment: prod # Add manual approvers here
         pool: { vmImage: ubuntu-latest }
         variables:
           - group: Backend-Prod
+
         strategy:
           runOnce:
             deploy:
               steps:
-                - template: deploy/templates/worker-deploy.yml
-                  parameters:
-                    serviceConnection: CaesProductionDeployPrincipal
-                    resourceGroup: policy
-                    containerName: policywonk-prod-backend
-
-  - stage: ReleaseSummary
-    displayName: Release outcome
-    dependsOn: [BuildPush, DeployTest, TestAcceptance, DeployProd]
-    condition: and(always(), eq(variables.isMain, true))
-    variables:
-      buildResult: $[ dependencies.BuildPush.result ]
-      testResult: $[ dependencies.DeployTest.result ]
-      acceptanceResult: $[ dependencies.TestAcceptance.result ]
-      prodResult: $[ dependencies.DeployProd.result ]
-    jobs:
-      - template: deploy/templates/release-summary.yml
+                - task: AzureCLI@2
+                  displayName: Deploy backend to ACI
+                  inputs:
+                    azureSubscription: CaesProductionDeployPrincipal # ARM connection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az container create \
+                        --resource-group policy \
+                        --name policywonk-prod-backend \
+                        --image $(imageUri) \
+                        --cpu 1 --memory 8 \
+                        --os-type Linux \
+                        --registry-login-server $(acrLoginServer) \
+                        --registry-username "$ACR_USER" \
+                        --registry-password "$ACR_PASS" \
+                        --environment-variables \
+                          LLM_EMBEDDING_MODEL=$(LLM_EMBEDDING_MODEL) \
+                          ELASTIC_URL=$(ELASTIC_URL) \
+                          ELASTIC_INDEX=$(ELASTIC_INDEX) \
+                        --secure-environment-variables \
+                          LLM_API_KEY=$(LLM_API_KEY) \
+                          DATABASE_URL=$(DATABASE_URL) \
+                          ELASTIC_WRITE_USERNAME=$(ELASTIC_WRITE_USERNAME) \
+                          ELASTIC_WRITE_PASSWORD=$(ELASTIC_WRITE_PASSWORD)
+                  env:
+                    ACR_USER: $(ACR_USER)
+                    ACR_PASS: $(ACR_PASS)

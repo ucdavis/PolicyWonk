@@ -39,9 +39,5 @@ RUN python -m playwright install chromium && \
 # Copy the entire application code into the container
 COPY . .
 
-ARG BUILD_REVISION=unknown
-ENV BUILD_REVISION=$BUILD_REVISION
-LABEL org.opencontainers.image.revision=$BUILD_REVISION
-
 # Set the entrypoint to your watchdog script
 ENTRYPOINT ["python", "watchdog.py"]
