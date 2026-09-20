@@ -1,0 +1,14 @@
+jobs:
+  - job: ReleaseSummary
+    displayName: Record release outcome
+    pool: { vmImage: ubuntu-latest }
+    steps:
+      - checkout: self
+      - script: python3 deploy/scripts/release_summary.py
+        displayName: Publish release summary
+        env:
+          BUILD_RESULT: $(buildResult)
+          TEST_RESULT: $(testResult)
+          ACCEPTANCE_RESULT: $(acceptanceResult)
+          PROD_RESULT: $(prodResult)
+          RELEASE_IMAGE: $(imageUri)

@@ -45,6 +45,10 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+ARG BUILD_REVISION=unknown
+ENV BUILD_REVISION=$BUILD_REVISION
+LABEL org.opencontainers.image.revision=$BUILD_REVISION
+
 ENV NODE_ENV production
 
 # Uncomment the following line in case you want to disable telemetry during runtime.

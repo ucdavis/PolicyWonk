@@ -5,6 +5,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 import gc
 import math
+import os
 import traceback
 from dotenv import load_dotenv
 import time
@@ -111,6 +112,12 @@ async def update_loop(delay: int = 60) -> None:
             # new session for each loop iteration
             sources_to_index = get_sources(session, one_day_ago,
                                            refresh_frequency=RefreshFrequency.DAILY)
+
+            # Emitted only after startup verified Elasticsearch and this loop read
+            # PostgreSQL successfully. Deployment checks also verify the image.
+            logger.info("POLICYWONK_READY revision=%s at=%s",
+                        os.getenv("BUILD_REVISION", "unknown"),
+                        datetime.now(timezone.utc).isoformat())
 
             # we don't want to index any sources that have failed recently
             filtered_sources = []
