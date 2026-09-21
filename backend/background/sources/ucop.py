@@ -1,152 +1,152 @@
-from datetime import datetime
-from urllib.parse import urljoin
 import asyncio
-from playwright.async_api import Page
-from bs4 import BeautifulSoup, Tag
-
+from datetime import datetime
+import re
 from typing import AsyncIterator
+from urllib.parse import urljoin, urlsplit
 
 from background.logger import setup_logger
-from background.sources.ingestion import ingest_path_to_markdown
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent, get_browser_page
+from background.sources.shared import request_with_retry
 from db.models import Source
 from models.document_details import DocumentDetails
 
 logger = setup_logger()
 
-# UCOP Policies are on `https://policy.ucop.edu`
-base_url = "https://policy.ucop.edu"
+BASE_URL = "https://policy.ucop.edu"
+LISTING_URL = (
+    "https://policyapi.ucop.edu/php-app/"
+    "?action=welcome&op=browse&api=1&p=1&all=1"
+)
+
+
+class UcopListingError(ValueError):
+    """UCOP did not return a complete, usable policy listing."""
+
+
+def _document_from_record(record: object, position: int) -> DocumentDetails:
+    context = f"UCOP listing record {position}"
+    if not isinstance(record, dict):
+        raise UcopListingError(f"{context} must be an object")
+
+    for field in ("title", "url", "responsibleOffice"):
+        if not isinstance(record.get(field), str):
+            raise UcopListingError(f"{context} has invalid {field}")
+    if not record["title"].strip() or not record["url"].strip():
+        raise UcopListingError(f"{context} has an empty title or URL")
+
+    # Resolve document identity against the policy site, never the API host.
+    url = urljoin(BASE_URL, record["url"].strip())
+    parsed = urlsplit(url)
+    if (
+        parsed.scheme != "https"
+        or parsed.netloc != "policy.ucop.edu"
+        or not re.fullmatch(r"/doc/[0-9]+", parsed.path)
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise UcopListingError(f"{context} has an unsupported document URL")
+
+    subject_areas = record.get("subjectAreas")
+    if not isinstance(subject_areas, list) or any(
+        not isinstance(area, str) or not area.strip() for area in subject_areas
+    ):
+        raise UcopListingError(f"{context} has invalid subjectAreas")
+
+    for field in ("effectiveDate", "issuanceDate"):
+        if field not in record or (
+            record[field] is not None and not isinstance(record[field], str)
+        ):
+            raise UcopListingError(f"{context} has invalid {field}")
+
+    return DocumentDetails(
+        title=record["title"].strip(),
+        url=url,
+        description="",
+        content="",
+        last_modified=datetime.now().isoformat(),
+        metadata={
+            "subject_areas": [area.strip() for area in subject_areas],
+            "effective_date": (record["effectiveDate"] or "").strip(),
+            "issuance_date": (record["issuanceDate"] or "").strip(),
+            "responsible_office": record["responsibleOffice"].strip(),
+            "classifications": ["Policy"],
+        },
+    )
+
+
+def _parse_listing(payload: object) -> list[DocumentDetails]:
+    if not isinstance(payload, dict):
+        raise UcopListingError("UCOP listing must be an object")
+    meta = payload.get("meta")
+    records = payload.get("data")
+    if not isinstance(meta, dict) or not isinstance(records, list):
+        raise UcopListingError("UCOP listing requires meta and a data array")
+    page_info = meta.get("page_info")
+    if not isinstance(page_info, dict):
+        raise UcopListingError("UCOP listing is missing page_info")
+    if type(page_info.get("all_entries")) is not int or page_info["all_entries"] != 1:
+        raise UcopListingError("UCOP listing did not return all entries")
+    total = page_info.get("num_results")
+    if type(total) is not int or total <= 0 or not records:
+        raise UcopListingError("UCOP listing is empty or has an invalid total")
+    if len(records) != total or meta.get("page_links") != []:
+        raise UcopListingError(
+            f"UCOP listing is incomplete: received {len(records)} of {total} records "
+            "or pagination remains"
+        )
+
+    # Validate every record before the processor can download or write anything.
+    documents = [
+        _document_from_record(record, position)
+        for position, record in enumerate(records, start=1)
+    ]
+    if len({doc.url for doc in documents}) != total:
+        raise UcopListingError("UCOP listing contains duplicate document URLs")
+    return documents
+
+
+def _fetch_listing() -> list[DocumentDetails]:
+    response = request_with_retry(
+        LISTING_URL,
+        retries=3,
+        timeout=60,
+        headers={"Accept": "application/json"},
+        allow_redirects=False,
+    )
+    if response is None:
+        raise UcopListingError("UCOP listing request failed after 3 attempts")
+    with response:
+        content_type = response.headers.get(
+            "Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            raise UcopListingError(
+                "UCOP listing did not return application/json")
+        try:
+            payload = response.json()
+        except ValueError:
+            # Never include upstream response bodies in logs or stored errors.
+            raise UcopListingError(
+                "UCOP listing returned invalid JSON") from None
+    return _parse_listing(payload)
 
 
 class UcopDocumentStream(DocumentStream):
-    def __init__(self, source: Source):
-        super().__init__(source)
-        self.policy_url = source.url
-        self.max_retries = 3
-
     async def __aiter__(self) -> AsyncIterator[DocumentDetails]:
-        # We'll use playwright to read the provided policies page and get back the list of policies
-        # then we'll loop through each and grab the policy PDF, parse it and return the DocumentDetails
-        soup = None
-        async with get_browser_page(user_agent) as page:
-            try:
-                # Navigate and wait for content to load
-                await page.goto(self.policy_url)
-                await page.wait_for_selector("#accordion", state="visible")
-
-                # Get page content after JavaScript execution
-                content = await page.content()
-
-                # Parse with BeautifulSoup
-                soup = BeautifulSoup(content, "html.parser")
-            except Exception as e:
-                logger.exception(
-                    f"Couldn't fetch policy info from {self.policy_url}")
-                return
-
-        if soup is None:
-            return
-
-        # Find the element with the id 'accordion'
-        accordion = soup.find(id="accordion")
-
-        if not isinstance(accordion, Tag):
-            logger.error("Couldn't find the accordion element")
-            return
-
-        # Find all 'a' tags within the accordion with class="blue"
-        raw_links = accordion.find_all("a", class_="blue")
-        links = [link for link in raw_links if isinstance(link, Tag)]
-
-        for link in links:
-            # Get href directly from the link tag but convert to absolute url
-            raw_href = link.get("href")
-            if raw_href is None:
-                logger.error(
-                    "Couldn't find the href attribute in this link, moving on")
-                continue
-            elif isinstance(raw_href, list):
-                # Join the list elements into a single string if necessary.
-                href_attr = " ".join(raw_href)
-            else:
-                href_attr = raw_href
-
-            href = urljoin(base_url, href_attr)
-
-            logger.info(f"Processing policy at {href}")
-
-            # For the title, find the first (or only) 'span' with class 'icon pdf' within the link
-            span = link.find("span", class_="icon pdf")
-            if span:  # Check if the span exists
-                title = span.text.strip()
-            else:
-                title = "Title not found"
-
-            # get the parent of the link and find the next 4 sibling divs - subject areas, effective date, issuance date, responsible office
-            parent = link.parent
-
-            if not isinstance(parent, Tag):
-                logger.error("Couldn't find the parent div of this link")
-                continue
-
-            # Get the next 4 sibling divs
-            raw_siblings = parent.find_next_siblings("div")
-            siblings = [
-                sibling for sibling in raw_siblings if isinstance(sibling, Tag)]
-
-            # Get the text from each sibling but ignore the <cite> tag
-            subject_areas_text = get_sibling_text(
-                siblings[0]) if len(siblings) > 0 else ""
-            effective_date = get_sibling_text(
-                siblings[1]) if len(siblings) > 1 else ""
-            issuance_date = get_sibling_text(
-                siblings[2]) if len(siblings) > 2 else ""
-            responsible_office = get_sibling_text(
-                siblings[3]) if len(siblings) > 3 else ""
-            classifications = ["Policy"]
-
-            # subject areas is a comma separated list, so split it into a list
-            subject_areas = [area.strip()
-                             for area in subject_areas_text.split(",")]
-
-            # Create a DocumentDetails object with the extracted information
-            doc = DocumentDetails(
-                title=title,
-                url=href,
-                description="",
-                content="",
-                last_modified=datetime.now().isoformat(),
-                # TODO: standarize metadata a little for these common ones
-                metadata={
-                    "subject_areas": subject_areas,
-                    "effective_date": effective_date,
-                    "issuance_date": issuance_date,
-                    "responsible_office": responsible_office,
-                    "classifications": classifications
-                }
-            )
-
-            logger.info(f"Processed policy: {doc.title} at {doc.url}")
-
-            yield doc
-
-
-def get_sibling_text(sibling: Tag) -> str:
-    """
-    Return the text of the sibling with any text from a <cite> tag removed.
-    """
-    cite_tag = sibling.find("cite")
-    cite_text = cite_tag.text if cite_tag is not None else ""
-    return sibling.text.replace(cite_text, "").strip()
+        # UCOP is a fixed catalog. source.url remains descriptive, including the
+        # retired advanced-search.php URLs already saved in existing databases.
+        documents = await asyncio.to_thread(_fetch_listing)
+        logger.info("Validated UCOP listing with %s policies", len(documents))
+        for document in documents:
+            yield document
 
 
 if __name__ == "__main__":
     source = Source(
         name="UCOP",
-        url="https://policy.ucop.edu/advanced-search.php?action=welcome&op=browse",
+        url="https://policy.ucop.edu/advanced-search.html?action=welcome&op=browse",
         last_updated=None,
-        type="UCOP")
+        type="UCOP",
+    )
 
     async def main():
         async for doc in UcopDocumentStream(source):
