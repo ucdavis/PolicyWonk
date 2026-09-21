@@ -1,14 +1,14 @@
 # We'll build on `main` and PR changes.
 # Main only, we push to ACR (docker container) and deploy to test
 # Then prod deployment will start after proper approvals (setup via GUI)
-# Monorepo and for now, only get changes under backend/**
+# Build when this component or its pipeline changes.
 trigger:
   branches: { include: ["main"] }
-  paths: { include: ["backend/**"] }
+  paths: { include: ["backend/**", "azure-pipelines-backend.yml"] }
 
 pr:
   branches: { include: ["main"] }
-  paths: { include: ["backend/**"] }
+  paths: { include: ["backend/**", "azure-pipelines-backend.yml"] }
 
 # TODO - move these into the variable group
 variables:
@@ -48,7 +48,7 @@ stages:
           # --- Login & push image (only on main) ---
           - task: Docker@2
             displayName: docker push
-            condition: eq(variables.isMain, 'True')
+            condition: and(succeeded(), eq(variables.isMain, 'True'))
             inputs:
               command: push
               repository: $(imageRepo)

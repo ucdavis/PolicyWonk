@@ -1,14 +1,14 @@
-# We'll build on `main` and PR changes. 
+# We'll build on `main` and PR changes.
 # Main only, we push to ACR (docker container) and deploy to test
 # Then prod deployment will start after proper approvals (setup via GUI)
-# Monorepo and for now, only get changes under web/**
+# Build when this component or its pipeline changes.
 trigger:
   branches: { include: ['main'] }
-  paths:    { include: ['web/**'] }
+  paths:    { include: ['web/**', 'azure-pipelines.yml'] }
 
 pr:
   branches: { include: ['main'] }
-  paths:    { include: ['web/**'] }
+  paths:    { include: ['web/**', 'azure-pipelines.yml'] }
 
 variables:
   acrLoginServer: policywonkcontainers.azurecr.io
@@ -40,7 +40,7 @@ stages:
     # --- Login & push image (only on main) ---
     - task: Docker@2
       displayName: docker push
-      condition: eq(variables.isMain, 'True')
+      condition: and(succeeded(), eq(variables.isMain, 'True'))
       inputs:
         command: push
         repository: $(imageRepo)
@@ -52,7 +52,7 @@ stages:
 - stage: DeployTest
   displayName: Deploy to TEST
   dependsOn: BuildPush
-  condition: eq(variables.isMain, 'True')      # skip on PRs
+  condition: and(succeeded(), eq(variables.isMain, 'True'))      # skip on PRs
   jobs:
   - deployment: DeployTest
     environment: test
@@ -66,15 +66,22 @@ stages:
               azureSubscription: CaesTestDeploy
               appName: policywonk-test
               containers: $(imageUri)
+          - bash: |
+              set -e
+              status=$(curl --fail --silent --show-error --retry 12 --retry-all-errors \
+                --retry-delay 10 --max-time 30 --output /dev/null --write-out '%{http_code}' \
+                https://policywonk-test.azurewebsites.net/auth/login)
+              test "$status" = "200"
+            displayName: Check TEST login page responds
 
 # ─────────────────────── 3) DEPLOY to PROD (gated) ───────────────────────
 - stage: DeployProd
   displayName: Deploy to PROD
   dependsOn: DeployTest
-  condition: eq(variables.isMain, 'True')
+  condition: and(succeeded(), eq(variables.isMain, 'True'))
   jobs:
   - deployment: DeployProd
-    environment: prod                 # Add manual approvers here
+    environment: prod                 # Existing CAES Developers approval
     pool: { vmImage: ubuntu-latest }
     strategy:
       runOnce:
@@ -85,3 +92,10 @@ stages:
               azureSubscription: CaesProductionDeployPrincipal
               appName: policywonk
               containers: $(imageUri)
+          - bash: |
+              set -e
+              status=$(curl --fail --silent --show-error --retry 12 --retry-all-errors \
+                --retry-delay 10 --max-time 30 --output /dev/null --write-out '%{http_code}' \
+                https://policywonk.ucdavis.edu/auth/login)
+              test "$status" = "200"
+            displayName: Check PROD login page responds

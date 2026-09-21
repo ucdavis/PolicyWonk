@@ -29,6 +29,9 @@ ARG SENTRY_ENVIRONMENT
 # Run prisma generate before building the app
 RUN npx prisma generate
 
+# Use the installed dependencies to check the app before packaging it.
+RUN npm run lint && npm test
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.

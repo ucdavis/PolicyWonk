@@ -20,6 +20,8 @@ Sources include `UCOP Policies`, `UC Davis Administrative Policy Manuals`, and `
 
 ## Setting up a Dev Environment
 
+For test/production environments, pipeline approvals, verification, and rollback, see [the deployment guide](deploy/README.md).
+
 ### Prerequisites
 
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)

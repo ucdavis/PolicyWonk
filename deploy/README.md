@@ -1,78 +1,57 @@
-# Deployment Setup
+# Deploying PolicyWonk
 
-We need to deploy
+Azure Pipelines owns builds and deployments. GitHub hosts the code and required PR checks. CodeQL default setup scans JavaScript/TypeScript and Python. The old GitHub Actions deployment workflow is retired.
 
-1. Database (PGSQL)
-2. The Auth service
-3. PolicyWonk frontend (NextJS)
+## Environments
 
-# Database
+The Next.js app serves the website and chat. The Python backend continuously ingests policies in Azure Container Instances.
 
-For now it's just a manual deployment of PGSQL Flexible Server
+| Component | Test | Production |
+| --- | --- | --- |
+| Subscription | UC Davis CAES Test | UC Davis CAES Production |
+| Resource group | `policywonk-dev` | `policy` |
+| Website | [policywonk-test](https://policywonk-test.azurewebsites.net) | [policywonk](https://policywonk.ucdavis.edu) |
+| Worker | `policywonk-dev-backend` | `policywonk-prod-backend` |
+| PostgreSQL server | `policywonk-dev-db` | `policywonk-prod-db` |
+| Search index | `policy_vectorstore_test_v2` | `policy_vectorstore_production_v2` |
+| Embedding model | `text-embedding-3-small` | `text-embedding-3-large` |
 
-# Auth Deployment
+Both environments use the production registry, `policywonkcontainers.azurecr.io`, the same Elastic Cloud cluster, and the production SSO issuer, `https://policywonk-sso.ucdavis.edu`. Test has separate application data, but it cannot isolate a shared search-cluster or SSO upgrade. Different embedding models also mean retrieval quality can differ. These settings were checked on September 19, 2026.
 
-We need to use SAML for auth so we can integrate w/ UCTrust + InCommon.
+## Release flow
 
-This is done using BoxyHQ SAML Jackson as a service provider (SP) to basically proxy auth our NextJS app.
+- [Frontend pipeline 41](https://dev.azure.com/ucdavis/Policy%20Wonk/_build?definitionId=41) uses `azure-pipelines.yml`.
+- [Worker pipeline 49](https://dev.azure.com/ucdavis/Policy%20Wonk/_build?definitionId=49) uses `azure-pipelines-backend.yml`.
 
-Full details [are in notion](https://www.notion.so/caes-cru/SAML-Shibboleth-1b4e70f6741180d9b780fb1354c0b380?pvs=4).
+Each pipeline keeps three stages: `BuildPush` → `DeployTest` → `DeployProd`.
 
-## Setup
+1. PRs build the affected component when its directory or pipeline YAML changes. The frontend Docker build runs the existing ESLint and Vitest checks using its installed dependencies. PRs do not push images or deploy.
+2. A successful build on `main` pushes an image tagged with the full commit SHA and deploys it to test. The frontend checks that `/auth/login` returns HTTP 200, with retries for startup.
+3. CAES Developers test the candidate, then approve the existing Azure DevOps `prod` environment gate. Production receives the same image tag and repeats the login-page check.
 
-We need to deploy the BoxyHQ SAML Jackson service provider (SP) to an azure webapp.
+The HTTP check proves the login page responds. It does not verify the running revision, database/search access, SSO, chat, or ingestion. Before approving production:
 
-To make it easy and repeatable, we'll use a bicep template plus the azure cli.
+- Confirm the test app or worker is configured with the pipeline's image SHA. If a newer run has replaced test, redeploy the intended candidate before testing it.
+- For the frontend, sign in normally, ask a policy question, open its citations, and reload the saved conversation.
+- For the worker, check startup logs and observe a controlled test source refresh. Confirm a successful `index_attempts` record, expected indexed documents, and retrieval through the test website. Do not use database reset scripts as deployment tests.
+- Record the tested SHA and results in the production approval comment. Reject the release if verification fails.
 
-## Bicep template
+Repeat the relevant functional check after production deployment. Check the **DeployProd stage**, not just the overall run badge: an expired approval can leave production skipped while the run appears successful. Frontend and worker releases are independent, so their deployed SHAs may differ.
 
-The bicep template is in `auth/boxy.bicep`.
+## Merge requirements
 
-It will define the Azure resources we need and is idempotent, so we can run it multiple times and it'll only create or update the resources as needed.
+The active `main` ruleset requires a PR, an up-to-date branch, and the Azure Pipelines checks `ucdavis.PolicyWonk` and `ucdavis.PolicyWonk Backend`. Force-push and deletion are blocked. These settings live in GitHub; the production approval lives in [Azure DevOps environments](https://dev.azure.com/ucdavis/Policy%20Wonk/_environments).
 
-## Deploy
+Keep the component path filters. Azure Pipelines [reports a neutral check when paths exclude a PR](https://learn.microsoft.com/en-us/azure/devops/release-notes/2021/sprint-194-update), and GitHub [accepts neutral required checks](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks). Unrelated changes do not need both Docker builds.
 
-You'll need the azure cli installed and logged in. Make sure you are in the right subscription. ex: `az account set --subscription "UC Davis CAES Production"`
+## Schema changes and rollback
 
-```bash
-az deployment group create \
-  --name pwssoDeploy \
-  --resource-group policy \
-  --template-file boxy.bicep
-```
+Alembic in `backend/alembic` owns schema migrations. Neither pipeline applies migrations automatically. Before a schema change, compare `alembic_version`, review the migration, verify a recoverable backup, and plan compatible frontend/worker deployment order. Apply the reviewed migration once per environment before promoting dependent code.
 
-## Configure Networking App <--> DB
+Before production approval, record the current image tags. To roll back, redeploy the previous retained image after checking its compatibility with the current database and index, then repeat functional checks. Avoid rebuilding an old SHA because dependencies or base images may have changed. Worker rollback does not undo database or search writes; ingestion deletes old vectors before writing replacements.
 
-We need to talk to the DB and the easiest way is to just add the outbound IPs of the app to the DB firewall.
+## Infrastructure follow-up
 
-This take a lot of time by hand so I wrote a script to do it
+The existing `frontend.bicep`, `boxy.bicep`, and `network.sh` are provisioning aids, not a complete definition of the running environments. Review their changes before reapplying them, especially the frontend app-settings resource, which includes registry credentials. [SSO setup notes](https://www.notion.so/caes-cru/SAML-Shibboleth-1b4e70f6741180d9b780fb1354c0b380?pvs=4) cover the Jackson integration.
 
-```bash
-sh network.sh
-```
-
-# PolicyWonk Frontend
-
-The frontend is a NextJS app that will be deployed to the same Azure App Service as the BoxyHQ SAML Jackson service. Doesn't need to be but let's start there.
-
-It's a Docker container we'll build and push to the Azure Container Registry, then deploy to the Azure App Service.
-
-## Local testing
-
-You can always build it locally w/ docker for testing
-
-```bash
-docker build -t policywonk-frontend .
-docker run --rm -p 3000:3000 policywonk-frontend
-```
-
-## Azure Setup
-
-We'll use another bicep template to get the Azure resources we need. It's just a webapp and a container registry.
-
-```bash
-az deployment group create \
-  --name pwappDeploy \
-  --resource-group policy \
-  --template-file frontend.bicep
-```
+The ACR build connection already uses federation. The two ARM deployment connections use service-principal secrets, and runtime image pulls use registry credentials. A separate identity migration can use Bicep for identities, `AcrPull` grants, and federated credentials, plus Azure CLI/API changes for service connections and app/worker configuration. Validate test before cutting over production or removing old credentials. This pipeline cleanup does not perform that migration.
