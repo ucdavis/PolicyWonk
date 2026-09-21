@@ -79,3 +79,35 @@ python -m background.sources.ucd
 ## Browsing
 
 Locally you can set headless=False in `backend/background/sources/shared.py` to see the browser window when browsing
+
+## UCOP policy listing
+
+The UCOP adapter reads the public listing API at
+`https://policyapi.ucop.edu/php-app/?action=welcome&op=browse&api=1&p=1&all=1`.
+The UCOP source's saved URL is descriptive; existing `advanced-search.php`
+source records work without a database edit. The adapter always requests the
+fixed API endpoint and does not follow listing redirects.
+
+Before yielding any documents, it requires a nonempty listing with
+`all_entries = 1`, a matching `num_results`, no remaining page links, valid
+record fields, and unique document URLs. An incomplete or malformed response
+raises an error so the existing worker records FAILURE, leaves `last_updated`
+unchanged, and applies its normal retry/backoff and source-disable rules.
+It does not hardcode the current catalog size.
+
+Document URLs retain their `https://policy.ucop.edu/doc/<id>` identity. Metadata
+keeps the existing keys, with API date strings preserved and null dates mapped
+to empty strings. Downloads, content hashing, and indexing use the existing
+processor.
+
+Run the offline tests from `backend` after installing the dev dependencies:
+
+```bash
+python -m pytest tests/test_ucop.py -q
+```
+
+The tests mock HTTP and use an in-memory database for worker failure handling.
+For a read-only live listing check, `python -m background.sources.ucop` validates
+and prints the listing without running the ingestion processor. Deployment,
+source resets, and reindexing are separate operations; see
+[the deployment guide](../deploy/README.md).
