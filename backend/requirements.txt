@@ -1,6 +1,6 @@
 alembic==1.13.2
 beautifulsoup4
-docling==2.65.0
+docling==2.130.0
 langchain==0.3.20
 langchain-elasticsearch==0.3.2
 langchain-openai==0.3.7
@@ -8,8 +8,8 @@ langchain-text-splitters==0.3.6
 pgvector==0.3.6
 psycopg2==2.9.9
 playwright==1.58.0
-PyMuPDF==1.26.7
-pymupdf4llm==0.2.9
+PyMuPDF==1.28.2
+pymupdf4llm==1.28.2
 python-dotenv==1.0.1
 sentry-sdk==2.14.0
 SQLAlchemy==2.0.33
