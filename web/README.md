@@ -20,7 +20,8 @@ Sources include `UCOP Policies`, `UC Davis Administrative Policy Manuals`, and `
 ## Retrieval and reranking
 
 Reranking is enabled by default. Hybrid search retrieves 40 candidate passages,
-then `gpt-6-luna` selects up to five before the existing full-document expansion.
+then the reranker selects up to five before the existing full-document expansion.
+Set `OPENAI_RERANK_MODEL` to choose the model; it defaults to `gpt-6-luna`.
 The reranker separately assesses whether the evidence answers all, part, or none
 of the question. No supporting evidence produces the existing insufficient-information
 response. For partial or unassessed evidence, the answer model must identify gaps

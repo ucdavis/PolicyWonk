@@ -185,7 +185,7 @@ export const getSearchResultsElastic = async (
     ? await rerankPassages(
         userInput,
         allResults,
-        openai.responses('gpt-6-luna')
+        openai.responses(process.env.OPENAI_RERANK_MODEL ?? 'gpt-6-luna')
       )
     : { results: allResults, evidenceStatus: undefined };
   const selectedResults = selection.results.map((result, docNumber) => ({
