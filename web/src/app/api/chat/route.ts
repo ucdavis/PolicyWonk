@@ -97,14 +97,14 @@ export async function POST(req: Request) {
       const embeddings = await getEmbeddings(userInput);
 
       writeThought('Searching for relevant documents...');
-      const searchResults = await getSearchResultsElastic(
-        embeddings,
-        focus,
-        userInput
-      );
+      const { results: searchResults, evidenceStatus } =
+        await getSearchResultsElastic(embeddings, focus, userInput);
 
       const transformedResults = expandedTransformSearchResults(searchResults);
-      const systemMessage = getSystemMessage(transformedResults);
+      const systemMessage = getSystemMessage(
+        transformedResults,
+        evidenceStatus
+      );
 
       const modelMessages = await convertToModelMessages(
         Array.isArray(messages) ? messages : []

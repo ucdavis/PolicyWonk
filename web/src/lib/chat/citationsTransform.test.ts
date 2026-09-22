@@ -13,7 +13,7 @@ const runTransform = async ({
   chunks: TextStreamPart<any>[];
   policies: CitationPolicy[];
 }) => {
-  const onAssistantTextComplete = vi.fn(async () => {});
+  const onAssistantTextComplete = vi.fn(async (_assistantText: string) => {});
 
   const transform = createCitationsTransform({
     policies,
