@@ -1,0 +1,92 @@
+[
+  {
+    "file": "ucop-abusive-conduct.pdf",
+    "url": "https://policy.ucop.edu/doc/4000701/AbusiveConduct",
+    "retrieved": "2026-09-22",
+    "sha256": "3b94b2d11ae87b4db35f8715155e5ec29b130aa020798bdae20055a7da92455a",
+    "required_text": [
+      "Abusive Conduct",
+      "Retaliation"
+    ]
+  },
+  {
+    "file": "ucop-travel.pdf",
+    "url": "https://policy.ucop.edu/doc/3420365/BFB-G-28",
+    "retrieved": "2026-09-22",
+    "sha256": "76e41572b9cabcc72a6537bb33dddff7dcc18a007c76f2f17bdca9b800629613",
+    "required_text": [
+      "Transportation Expenses",
+      "Air Travel"
+    ]
+  },
+  {
+    "file": "ucop-personal-leave.pdf",
+    "url": "https://policy.ucop.edu/doc/4010575/PPSM-II-43",
+    "retrieved": "2026-09-22",
+    "sha256": "ce97f519f70ab12d9ee86b18fc3af93aa0874cb79e898b6283b49194ab6ed5b9",
+    "required_text": [
+      "Senior Management Group",
+      "Personal Leave"
+    ]
+  },
+  {
+    "file": "ucop-religious-holiday-move-in.pdf",
+    "url": "https://policy.ucop.edu/doc/2700513/ReligiousHolConflictsResHallMovein",
+    "retrieved": "2026-09-22",
+    "sha256": "aeabbcefbbe77f10cb7148be3d199abd8130466ef2736fce77e24b78626cd25d",
+    "required_text": [
+      "religious",
+      "residence"
+    ]
+  },
+  {
+    "file": "ucop-non-cash-awards.pdf",
+    "url": "https://policy.ucop.edu/doc/3420353/BFB-G-41",
+    "retrieved": "2026-09-22",
+    "sha256": "e85b059e5fb2eaf207d69a0d642df77153e97c10d3323bf5e5b0caf932b2eed8",
+    "required_text": [
+      "One-month parking permit",
+      "One-month transit pass"
+    ]
+  },
+  {
+    "file": "ucd-performance-management.docx",
+    "url": "https://ucdavispolicy.ellucid.com/pman/documents/view/169/active/",
+    "retrieved": "2026-09-22",
+    "sha256": "8f8d751f640cd8fe70790eaf9fb78abcf4cc5ebce75165d0e791e6698bd4dbec",
+    "required_text": [
+      "Limited and contract employees",
+      "50%"
+    ]
+  },
+  {
+    "file": "ucd-integrity-in-research.docx",
+    "url": "https://ucdavispolicy.ellucid.com/pman/documents/view/121/active/",
+    "retrieved": "2026-09-22",
+    "sha256": "ae4863aaf675fae512cd2cc9868c4fdc9e45c01b7d46ae8abe22e4824681b6b4",
+    "required_text": [
+      "must be established by a preponderance of the evidence",
+      "A significant departure from accepted practices"
+    ]
+  },
+  {
+    "file": "ucd-chemical-safety.pdf",
+    "url": "https://ucdavispolicy.ellucid.com/pman/documents/view/305/active/",
+    "retrieved": "2026-09-22",
+    "sha256": "ac2827ff04c1cf6d6aa199eaf83bd016153ab758a98efed2e22b4f2bd9af8eb9",
+    "required_text": [
+      "Chemical Safety",
+      "Roles and Responsibilities"
+    ]
+  },
+  {
+    "file": "ucd-capital-project-delegation.pdf",
+    "url": "https://ucdavispolicy.ellucid.com/pman/documents/view/1540/active/",
+    "retrieved": "2026-09-22",
+    "sha256": "914c9478cc10c14f7b1fdf94b2c15108b8a873f7f40be73bd6ef38a92e760a84",
+    "required_text": [
+      "Capital Project Matters",
+      "President\u2019s Maximum Authority"
+    ]
+  }
+]

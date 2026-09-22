@@ -18,6 +18,15 @@ Optional dev/test deps:
 pip install -r requirements-dev.txt
 ```
 
+Run the offline backend tests from `backend`:
+
+```bash
+SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests -q
+```
+
+The [policy reader fixtures](tests/fixtures/ingestion/README.md) cover real PDF
+and Word documents, source-text coverage, and table amounts with footnotes.
+
 # Browsing / Scraping
 
 Playing with using playwright for browser automation instead of selenium (mostly for ease of setup)
