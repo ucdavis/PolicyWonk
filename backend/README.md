@@ -31,7 +31,10 @@ and Word documents, source-text coverage, and table amounts with footnotes.
 
 Playing with using playwright for browser automation instead of selenium (mostly for ease of setup)
 
-`playwright install chromium` and `playwright install-deps chromium` currently needs to be run before using anything that requires crawling. Eventually will be built into the devcontainer or at least deployment docker images.
+Install Chromium and its system dependencies for adapters that use Playwright.
+The [UC contracts adapter](#uc-contracts-discovery) uses HTTP requests and does
+not require a browser. Its comparison command still needs Chromium to run the
+old adapter.
 
 ```bash
 playwright install chromium && playwright install-deps chromium
@@ -120,3 +123,52 @@ For a read-only live listing check, `python -m background.sources.ucop` validate
 and prints the listing without running the ingestion processor. Deployment,
 source resets, and reindexing are separate operations; see
 [the deployment guide](../deploy/README.md).
+
+## UC contracts discovery
+
+The UC contracts adapter reads UCnet's `sitemap_index.xml` and all advertised
+`page-sitemap*.xml` files. It discovers unit home pages and contract tabs,
+including names such as `contract-mr`, without launching a browser. About and
+news pages and the sitewide PDF library are outside this source's scope.
+
+The main bargaining-unit listing supplies existing unit names and campus
+metadata. Units found only in the sitemap use their own page heading and campus
+label. Local agreements with PDFs directly on the unit page remain included.
+Document URLs and filename-based titles retain their existing identities;
+uppercase PDF extensions and query strings are supported. Shared URLs are
+emitted once with all unit keywords, subject areas, and responsible offices
+retained. Document conversion, content hashing, and indexing are unchanged.
+The processor skips unchanged content hashes, so combined metadata is not
+automatically backfilled into already-indexed, unchanged shared PDFs.
+
+Before yielding documents, the adapter checks every discovered unit and contract
+page, compares the main listing and unit contract tabs with the sitemap, and requires PDFs or
+an explicit notice that the agreement is not published yet. Invalid, missing,
+unexpectedly empty, or failed responses raise `UcnetListingError`. The existing
+worker then records FAILURE without advancing `last_updated`. Its normal retry
+and eventual source-disable rules still apply. New upstream wording or layout
+can therefore require an adapter update instead of silently reducing coverage.
+Sitemaps have no authoritative total, so these cross-checks cannot detect a unit
+removed from both the sitemap and every checked navigation page.
+
+Run the offline source tests from `backend`:
+
+```bash
+SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests/test_collective_bargaining.py -q
+```
+
+A live discovery comparison runs the old adapter from a trusted Git revision
+and the current one. It compares URLs, titles, and every original unit metadata
+association, refuses a baseline with logged errors, and saves both manifests.
+It performs no database, embedding, or search writes. This command uses the
+pre-change adapter at `7e8d53c` and requires Chromium for that baseline only:
+
+```bash
+SENTRY_DSN='' PYTHONPATH=. python -m experiments.compare_uc_contracts \
+  --baseline-ref 7e8d53c --output /tmp/uc-contracts-comparison.json
+```
+
+The adapter alone can be checked with `python -m background.sources.collective_bargaining`.
+See [the initial comparison](experiments/uc_contracts_sitemap_validation.md) for
+live coverage and extraction evidence. Discovery does not prove production
+indexing; deployment and a normal worker refresh remain separate steps.
