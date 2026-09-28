@@ -31,7 +31,10 @@ and Word documents, source-text coverage, and table amounts with footnotes.
 
 Playing with using playwright for browser automation instead of selenium (mostly for ease of setup)
 
-`playwright install chromium` and `playwright install-deps chromium` currently needs to be run before using anything that requires crawling. Eventually will be built into the devcontainer or at least deployment docker images.
+Install Chromium and its system dependencies for adapters that use Playwright.
+The [UC contracts adapter](#uc-contracts-discovery) uses HTTP requests and does
+not require a browser. Its comparison command still needs Chromium to run the
+old adapter.
 
 ```bash
 playwright install chromium && playwright install-deps chromium
@@ -133,10 +136,13 @@ metadata. Units found only in the sitemap use their own page heading and campus
 label. Local agreements with PDFs directly on the unit page remain included.
 Document URLs and filename-based titles retain their existing identities;
 uppercase PDF extensions and query strings are supported. Shared URLs are
-emitted once with all unit keywords and subject areas retained.
+emitted once with all unit keywords, subject areas, and responsible offices
+retained. Document conversion, content hashing, and indexing are unchanged.
+The processor skips unchanged content hashes, so combined metadata is not
+automatically backfilled into already-indexed, unchanged shared PDFs.
 
-Before yielding documents, the adapter checks every discovered unit and contract page, compares
-the main listing and unit contract tabs with the sitemap, and requires PDFs or
+Before yielding documents, the adapter checks every discovered unit and contract
+page, compares the main listing and unit contract tabs with the sitemap, and requires PDFs or
 an explicit notice that the agreement is not published yet. Invalid, missing,
 unexpectedly empty, or failed responses raise `UcnetListingError`. The existing
 worker then records FAILURE without advancing `last_updated`. Its normal retry

@@ -58,33 +58,12 @@ existing reader with `docling==2.130.0`, `PyMuPDF==1.28.2`, and
 These are full-file conversion smoke checks, not a manual audit of every
 extracted provision. The scanned side letter used the existing OCR path.
 
-To repeat the live comparison from `backend`, with Chromium installed for the
-baseline:
-
-```bash
-SENTRY_DSN='' PYTHONPATH=. python -m experiments.compare_uc_contracts \
-  --baseline-ref 7e8d53c --output /tmp/uc-contracts-comparison.json
-```
-
-The JSON contains both full manifests and the comparison. The command returns
-a nonzero exit status for lost coverage or baseline errors.
+To repeat the live comparison, see the command and prerequisites in the
+[backend README](../README.md#uc-contracts-discovery).
 
 ## Limits and rollout
 
-This replaces discovery only. Document readers, hashing, database writes,
-embedding, and indexing are unchanged. No deployed source was refreshed or
-reset. After deployment, a normal refresh should discover the added documents;
-production index coverage still needs verification.
-
-For existing documents, the processor skips unchanged content hashes. Combined
-metadata emitted by discovery is therefore not automatically backfilled into
-already-indexed, unchanged shared PDFs by this change.
-
-A failed or unexplained empty discovery page now fails the entire listing
-before yielding documents, instead of allowing a partial SUCCESS. The existing
-worker's retry and three-failure source-disable behavior still applies. The
-adapter depends on UCnet's current content container, unit labels, and explicit
-unpublished notices; changed markup or wording can require maintenance.
-Sitemaps do not report a total, and a unit omitted from both the sitemap and
-all checked navigation cannot be detected by these cross-checks. Downstream PDF
-download/conversion failures retain the processor's existing handling.
+No deployed source was refreshed or reset during this validation. Production
+index coverage still needs verification. See the
+[backend README](../README.md#uc-contracts-discovery) for discovery failure
+handling, coverage limits, and the unchanged-hash metadata caveat.
