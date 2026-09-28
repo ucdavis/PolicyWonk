@@ -158,7 +158,7 @@ export const getSearchResultsElastic = async (
     rank: {
       rrf: {
         rank_constant: 10,
-        ...(rerankEnabled ? { window_size: 100 } : {}),
+        ...(rerankEnabled ? { rank_window_size: 100 } : {}),
       },
     },
   };
