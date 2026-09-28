@@ -65,7 +65,7 @@ describe('retrieval with optional reranking', () => {
     expect(wideQuery.size).toBe(40);
     expect(wideQuery.body.knn).toMatchObject({ k: 40, num_candidates: 200 });
     expect(wideQuery.body.rank.rrf.rank_constant).toBe(10);
-    expect(wideQuery.body.rank.rrf.window_size).toBe(100);
+    expect(wideQuery.body.rank.rrf.rank_window_size).toBe(100);
     expect(vi.mocked(rerankPassages).mock.calls[0][2]).toMatchObject({
       modelId: 'gpt-6-luna',
     });
