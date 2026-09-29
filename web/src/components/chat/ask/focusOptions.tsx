@@ -10,6 +10,7 @@ import { Focus, FocusName } from '../../../models/focus';
 import UnionSelection from './unionSelection';
 
 interface FocusOptionsProps {
+  group: string;
   open: boolean;
   focus: Focus; // currently selected focus
   options: Focus[];
@@ -17,6 +18,7 @@ interface FocusOptionsProps {
 }
 
 const FocusOptions: React.FC<FocusOptionsProps> = ({
+  group,
   open,
   focus,
   onSelection,
@@ -65,7 +67,13 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
 
   const renderBody = () => {
     if (subFocusType) {
-      return <UnionSelection focus={focus} onSelection={subFocusSelection} />;
+      return (
+        <UnionSelection
+          key={group}
+          group={group}
+          onSelection={subFocusSelection}
+        />
+      );
     } else {
       return (
         <div className='py-2'>

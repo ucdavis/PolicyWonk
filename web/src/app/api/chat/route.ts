@@ -10,11 +10,6 @@ import { auth } from '@/auth';
 import { createCitationsTransform } from '@/lib/chat/citationsTransform';
 import { isWonkSuccess } from '@/lib/error/error';
 import { isValidGroupName } from '@/lib/groups';
-import {
-  focuses,
-  getFocusWithSubFocus,
-  getFocusesForGroup,
-} from '@/models/focus';
 import type { WonkSession } from '@/models/session';
 import {
   expandedTransformSearchResults,
@@ -25,6 +20,7 @@ import {
   openai,
 } from '@/services/chatService';
 import { saveChat } from '@/services/historyService';
+import { FocusSelectionError, resolveFocus } from '@/services/unionCatalog';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,12 +59,15 @@ export async function POST(req: Request) {
     return new Response('Invalid group', { status: 400 });
   }
 
-  const focusOptions = getFocusesForGroup(group);
-  const requestedFocus = getFocusWithSubFocus(focusParam, subFocusParam);
-  const focus =
-    requestedFocus && focusOptions.some((f) => f.name === requestedFocus.name)
-      ? requestedFocus
-      : (focusOptions[0] ?? focuses[0]);
+  let focus;
+  try {
+    focus = await resolveFocus(group, focusParam, subFocusParam);
+  } catch (error) {
+    if (error instanceof FocusSelectionError) {
+      return new Response(error.message, { status: error.status });
+    }
+    throw error;
+  }
 
   const lastUserMessage = Array.isArray(messages)
     ? [...messages].reverse().find((m) => m?.role === 'user')

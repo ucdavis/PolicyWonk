@@ -10,9 +10,9 @@ import WonkyPageError from '@/lib/error/wonkyPageError';
 import { isValidGroupName } from '@/lib/groups';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory, blankAIState } from '@/models/chat';
-import { getFocusWithSubFocus, focuses } from '@/models/focus';
 import { WonkSession } from '@/models/session';
 import { getChat } from '@/services/historyService';
+import { FocusSelectionError, resolveFocus } from '@/services/unionCatalog';
 
 type HomePageProps = {
   params: Promise<{
@@ -79,7 +79,19 @@ const ChatPage = async (props: HomePageProps) => {
     chat = result.data;
   } else {
     const session = (await auth()) as WonkSession;
-    chat = newChatSession(session, group, focus, subFocus);
+    try {
+      chat = await newChatSession(session, group, focus, subFocus);
+    } catch (error) {
+      if (error instanceof FocusSelectionError) {
+        return (
+          <div className='container py-4' role='alert'>
+            <p>{error.message}</p>
+            <a href={`/${group}/chat/new`}>Choose a focus</a>
+          </div>
+        );
+      }
+      throw error;
+    }
   }
 
   return <MainContent initialChat={chat} />;
@@ -87,20 +99,20 @@ const ChatPage = async (props: HomePageProps) => {
 
 export default ChatPage;
 
-const newChatSession = (
+const newChatSession = async (
   session: WonkSession,
   group: string,
   focusParam?: string,
   subFocusParam?: string
 ) => {
-  const focus = getFocusWithSubFocus(focusParam, subFocusParam);
+  const focus = await resolveFocus(group, focusParam, subFocusParam);
 
   const chat: ChatHistory = {
     ...blankAIState,
     // id is '' in state until the chat is saved
     group,
     meta: {
-      focus: focus ?? focuses[0],
+      focus,
     },
     userId: session.userId,
   };

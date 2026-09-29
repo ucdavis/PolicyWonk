@@ -48,6 +48,7 @@ const FocusBar: React.FC<FocusBarProps> = ({ group, focus, onSelection }) => {
       </div>
       <WonkyErrorBoundary>
         <FocusOptions
+          group={group}
           focus={focus}
           open={open}
           onSelection={onFocusSelection}

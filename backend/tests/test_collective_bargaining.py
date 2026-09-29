@@ -100,6 +100,7 @@ def test_discovers_separate_contracts_and_direct_local_agreement(site):
     assert sv.metadata == {
         "keywords": ["SV", "Student Services and Advising Professionals", "ucop"],
         "subject_areas": ["Collective Bargaining", "SV"], "responsible_office": "ucop",
+        "bargaining_units": [{"code": "SV", "name": "Student Services and Advising Professionals", "campuses": ["all"]}],
     }
     assert PDF_RP in {doc.url for doc in docs}
     local = next(doc for doc in docs if "K3" in doc.metadata["keywords"])
@@ -162,6 +163,11 @@ def test_shared_pdf_is_yielded_once_with_all_unit_metadata(site):
     assert set(metadata["keywords"]) == {
         "K3", "Skilled Craft", "UC Davis", "SV", "Student Services and Advising Professionals", "ucop",
     }
+    assert metadata["bargaining_units"] == [
+        {"code": "K3", "name": "Skilled Craft", "campuses": ["ucdavis"]},
+        {"code": "SV", "name": "Student Services and Advising Professionals",
+            "campuses": ["all"]},
+    ]
     assert set(metadata["responsible_office"].split("; ")) == {
         "ucop", "UC Davis"}
 
