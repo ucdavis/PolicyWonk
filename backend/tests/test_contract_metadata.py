@@ -232,7 +232,8 @@ def test_backfill_reports_failures_and_completes_remaining_documents(context, mo
     monkeypatch.setattr(backfill, 'get_session', lambda: Session(engine))
     monkeypatch.setattr(backfill, '_fetch_listing', lambda: [
         details, DocumentDetails(url=healthy.url, metadata=dict(details.metadata))])
-    refresh = Mock()
+    refresh = Mock(return_value={
+        '_shards': {'total': 2, 'successful': 2, 'failed': 0}})
     monkeypatch.setattr(backfill.es_client.indices, 'refresh', refresh)
     index_update.side_effect = [RuntimeError('Search update failed'), {
         'total': 1, 'updated': 1}]
@@ -259,21 +260,44 @@ def test_backfill_reports_failures_and_completes_remaining_documents(context, mo
         assert healthy.meta == original_metadata
 
 
-def test_backfill_prints_report_when_final_index_refresh_fails(context, monkeypatch, capsys):
+@pytest.mark.parametrize('refresh_result', ['exception', 'partial_failure', 'healthy'])
+def test_backfill_reports_final_index_refresh_result(context, monkeypatch, capsys, refresh_result):
     session, _, _, details, _, _, _ = context
     from dev import backfill_contract_catalog as backfill
 
     engine = session.get_bind()
     monkeypatch.setattr(backfill, 'get_session', lambda: Session(engine))
     monkeypatch.setattr(backfill, '_fetch_listing', lambda: [details])
-    monkeypatch.setattr(backfill.es_client.indices, 'refresh', Mock(
-        side_effect=RuntimeError('Refresh failed')))
+    shard_failures = [{'shard': 0, 'index': backfill.ELASTIC_INDEX,
+                       'reason': {'type': 'illegal_state_exception', 'reason': 'Refresh failed'}}]
+    refresh = Mock(return_value={'_shards': {
+        'total': 2, 'successful': 2, 'failed': 0}})
+    if refresh_result == 'exception':
+        refresh.side_effect = RuntimeError('Refresh failed')
+    elif refresh_result == 'partial_failure':
+        refresh.return_value = {'_shards': {
+            'total': 2, 'successful': 1, 'failed': 1, 'failures': shard_failures}}
+    monkeypatch.setattr(backfill.es_client.indices, 'refresh', refresh)
     monkeypatch.setattr(
         sys, 'argv', ['backfill', '--expect-index', backfill.ELASTIC_INDEX, '--apply'])
-    with pytest.raises(ExceptionGroup, match='Contract catalog backfill failed'):
+    if refresh_result == 'healthy':
         backfill.main()
+    else:
+        with pytest.raises(ExceptionGroup, match='Contract catalog backfill failed') as failure:
+            backfill.main()
     report = json.loads(capsys.readouterr().out)
     assert report['documents'] == 1
     assert report['updated_chunks'] == 2
     assert report['failed'] == []
-    assert report['refresh_error'] == 'Refresh failed'
+    refresh.assert_called_once_with(index=backfill.ELASTIC_INDEX)
+    if refresh_result == 'healthy':
+        assert 'refresh_error' not in report
+    else:
+        assert len(failure.value.exceptions) == 1
+        assert str(failure.value.exceptions[0]) == report['refresh_error']
+        if refresh_result == 'exception':
+            assert report['refresh_error'] == 'Refresh failed'
+        else:
+            message, details_json = report['refresh_error'].split(': ', 1)
+            assert message == 'Index refresh failed on 1 shards'
+            assert json.loads(details_json) == shard_failures

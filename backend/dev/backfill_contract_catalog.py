@@ -66,7 +66,12 @@ def main():
                     failures.append(error)
         if args.apply:
             try:
-                es_client.indices.refresh(index=ELASTIC_INDEX)
+                response = es_client.indices.refresh(index=ELASTIC_INDEX)
+                shards = response['_shards']
+                if shards['failed'] > 0:
+                    raise RuntimeError(
+                        f"Index refresh failed on {shards['failed']} shards: "
+                        f"{json.dumps(shards.get('failures', []), sort_keys=True)}")
             except Exception as error:
                 logger.exception("Backfill index refresh failed")
                 report['refresh_error'] = str(error)
