@@ -137,9 +137,9 @@ label. Local agreements with PDFs directly on the unit page remain included.
 Document URLs and filename-based titles retain their existing identities;
 uppercase PDF extensions and query strings are supported. Shared URLs are
 emitted once with all unit keywords, subject areas, and responsible offices
-retained. Document conversion, content hashing, and indexing are unchanged.
-The processor skips unchanged content hashes, so combined metadata is not
-automatically backfilled into already-indexed, unchanged shared PDFs.
+retained. For structured unit associations, unchanged-content metadata updates,
+and existing-document backfills, see the
+[bargaining-unit catalog guide](../docs/bargaining-unit-catalog.md).
 
 Before yielding documents, the adapter checks every discovered unit and contract
 page, compares the main listing and unit contract tabs with the sitemap, and requires PDFs or

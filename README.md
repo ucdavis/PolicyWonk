@@ -18,6 +18,9 @@ See [UC Davis Policy Documents Repository](https://github.com/ucdavis/policy) fo
 
 Sources include `UCOP Policies`, `UC Davis Administrative Policy Manuals`, and `UCOP Collective Bargaining Agreements`.
 
+For union selection, campus availability, and metadata migration, see the
+[bargaining-unit catalog guide](docs/bargaining-unit-catalog.md).
+
 ## Setting up a Dev Environment
 
 For test/production environments, pipeline approvals, verification, and rollback, see [the deployment guide](deploy/README.md).
