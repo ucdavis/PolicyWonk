@@ -24,18 +24,26 @@ def context(monkeypatch):
     with Session(engine) as session:
         source = Source(name='Contracts', type=SourceType.UCCONTRACTS, url='https://example.org',
                         status=SourceStatus.ACTIVE, refresh_frequency=RefreshFrequency.DAILY)
-        session.add(source); session.flush()
+        session.add(source)
+        session.flush()
         content = 'Identical contract text'
         document = Document(title='Contract', url='https://example.org/agreement.pdf', source_id=source.id,
-                            meta={'hash': stream.calculate_content_hash(content), 'token_count': 5},
+                            meta={'hash': stream.calculate_content_hash(
+                                content), 'token_count': 5},
                             content=DocumentContent(content=content))
-        session.add(document); session.commit()
-        details = DocumentDetails(url=document.url, metadata=Unit('K3', 'Skilled Craft', 'UC Davis').metadata())
-        update = Mock(return_value={'total': 2, 'updated': 2, 'failures': [], 'version_conflicts': 0})
+        session.add(document)
+        session.commit()
+        details = DocumentDetails(url=document.url, metadata=Unit(
+            'K3', 'Skilled Craft', 'UC Davis').metadata())
+        update = Mock(return_value={
+                      'total': 2, 'updated': 2, 'failures': [], 'version_conflicts': 0})
         monkeypatch.setattr(elastic.es_client, 'update_by_query', update)
-        monkeypatch.setattr(stream, 'download_document', Mock(return_value=('contract.pdf', 'application/pdf')))
-        monkeypatch.setattr(stream, 'ingest_path_to_markdown', AsyncMock(return_value=content))
-        vectorize = Mock(side_effect=AssertionError('Must not regenerate embeddings'))
+        monkeypatch.setattr(stream, 'download_document', Mock(
+            return_value=('contract.pdf', 'application/pdf')))
+        monkeypatch.setattr(stream, 'ingest_path_to_markdown',
+                            AsyncMock(return_value=content))
+        vectorize = Mock(side_effect=AssertionError(
+            'Must not regenerate embeddings'))
         monkeypatch.setattr(stream, 'vectorize_document', vectorize)
         yield session, source, document, details, update, vectorize, stream
     engine.dispose()
@@ -92,7 +100,8 @@ def test_explicit_backfill_reconciles_chunks_even_if_db_was_already_migrated(con
     session, source, document, details, update, _, _ = context
     from background.contract_metadata import refresh_contract_metadata
     document.meta = {**document.meta, **details.metadata}
-    assert refresh_contract_metadata(session, source, document, details, reconcile=True) == 2
+    assert refresh_contract_metadata(
+        session, source, document, details, reconcile=True) == 2
     update.assert_called_once()
 
 

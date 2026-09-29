@@ -1,7 +1,8 @@
 """Refresh only catalog metadata on existing contract chunks, never embeddings."""
 from db.constants import SourceType
 
-CATALOG_FIELDS = ("bargaining_units", "keywords", "subject_areas", "responsible_office")
+CATALOG_FIELDS = ("bargaining_units", "keywords",
+                  "subject_areas", "responsible_office")
 
 
 def refresh_contract_metadata(session, source, document, details, *, reconcile=False):
@@ -39,7 +40,8 @@ def refresh_contract_metadata(session, source, document, details, *, reconcile=F
         """, "params": {"hash": previous["hash"], "metadata": metadata}},
     )
     if result.get("failures") or result.get("version_conflicts") or result.get("timed_out"):
-        raise RuntimeError(f"Incomplete contract metadata update: {document.url}")
+        raise RuntimeError(
+            f"Incomplete contract metadata update: {document.url}")
     if not result.get("total"):
         # Do not advertise a DB-only document as migrated/searchable.
         return 0

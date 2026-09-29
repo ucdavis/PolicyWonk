@@ -54,7 +54,8 @@ class Unit:
     def metadata(self) -> dict:
         campus = CAMPUS_CODES.get(self.office.casefold())
         if campus is None:
-            raise UcnetListingError(f"Unrecognized bargaining-unit campus: {self.office}")
+            raise UcnetListingError(
+                f"Unrecognized bargaining-unit campus: {self.office}")
         return {
             "keywords": [self.code, self.name, self.office],
             "subject_areas": ["Collective Bargaining", self.code],

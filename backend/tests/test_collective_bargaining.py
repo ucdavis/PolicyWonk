@@ -165,7 +165,8 @@ def test_shared_pdf_is_yielded_once_with_all_unit_metadata(site):
     }
     assert metadata["bargaining_units"] == [
         {"code": "K3", "name": "Skilled Craft", "campuses": ["ucdavis"]},
-        {"code": "SV", "name": "Student Services and Advising Professionals", "campuses": ["all"]},
+        {"code": "SV", "name": "Student Services and Advising Professionals",
+            "campuses": ["all"]},
     ]
     assert set(metadata["responsible_office"].split("; ")) == {
         "ucop", "UC Davis"}

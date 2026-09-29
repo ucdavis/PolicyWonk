@@ -23,7 +23,8 @@ def main():
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     if args.expect_index != ELASTIC_INDEX:
-        parser.error('Configured Elasticsearch index does not match --expect-index')
+        parser.error(
+            'Configured Elasticsearch index does not match --expect-index')
     if 'v2' not in ELASTIC_INDEX:
         parser.error('This ingestion backfill supports v2 indexes only')
     # Listing validation completes before the first write.
@@ -31,12 +32,15 @@ def main():
     report = {'index': ELASTIC_INDEX, 'apply': args.apply, 'documents': 0,
               'updated_chunks': 0, 'historical_untouched': 0, 'missing_from_db': 0}
     with get_session() as session:
-        sources = session.scalars(select(Source).where(Source.type == SourceType.UCCONTRACTS)).all()
+        sources = session.scalars(select(Source).where(
+            Source.type == SourceType.UCCONTRACTS)).all()
         if len(sources) != 1:
             raise ValueError('Expected exactly one UCCONTRACTS source')
         source = sources[0]
-        documents = session.scalars(select(Document).where(Document.source_id == source.id)).all()
-        report['missing_from_db'] = len(set(listing) - {doc.url for doc in documents})
+        documents = session.scalars(select(Document).where(
+            Document.source_id == source.id)).all()
+        report['missing_from_db'] = len(
+            set(listing) - {doc.url for doc in documents})
         for document in documents:
             details = listing.get(document.url)
             if details is None:
