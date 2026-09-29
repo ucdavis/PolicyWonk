@@ -62,6 +62,7 @@ is rolled back. Normal ingestion continues through the remaining batches, then
 records the source attempt as failed. The existing retry/backoff and three-failure
 source-disable policy still applies; partial work never advances `last_updated`.
 
+The backfill is a manual migration or repair command, not a scheduled task.
 For an initial backfill, run from `backend` with the intended environment's
 existing credentials. Inspect the dry run first:
 
@@ -78,10 +79,12 @@ missing DB documents are reported rather than created. The exact index guard
 prevents accidentally using a different configured index.
 
 The backfill also continues after individual failures, refreshes the index, and
-prints its JSON report before exiting nonzero if any update failed. The `failed`
-list identifies affected URLs; `refresh_error` records a final index-refresh error
-if present. `updated_chunks` counts successful updates, not partial writes from
-failed requests. Correct the reported problem and rerun the same command to
+prints its JSON report before exiting nonzero if any update or final index
+refresh failed, including shard failures in an otherwise successful response.
+The `failed` list identifies affected URLs; `refresh_error` records the final
+index-refresh error and any returned shard failure details. `updated_chunks`
+counts successful updates, not partial writes from failed requests. Correct the
+reported problem and rerun the same command to
 reconcile partial work. Listing validation still fails before any writes.
 
 Run the TEST backfill and check indexed catalog availability before releasing the
