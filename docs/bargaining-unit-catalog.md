@@ -57,6 +57,11 @@ content hash. Database metadata is committed only after a successful index
 update. A failed or partially applied update is safe to retry. New or changed
 text continues through the existing vectorization path.
 
+An individual metadata failure is logged with its URL and its database transaction
+is rolled back. Normal ingestion continues through the remaining batches, then
+records the source attempt as failed. The existing retry/backoff and three-failure
+source-disable policy still applies; partial work never advances `last_updated`.
+
 For an initial backfill, run from `backend` with the intended environment's
 existing credentials. Inspect the dry run first:
 
@@ -71,6 +76,13 @@ embeddings. It reconciles indexed metadata even when the database is already
 migrated, then refreshes the index. URLs absent from the listing are left intact;
 missing DB documents are reported rather than created. The exact index guard
 prevents accidentally using a different configured index.
+
+The backfill also continues after individual failures, refreshes the index, and
+prints its JSON report before exiting nonzero if any update failed. The `failed`
+list identifies affected URLs; `refresh_error` records a final index-refresh error
+if present. `updated_chunks` counts successful updates, not partial writes from
+failed requests. Correct the reported problem and rerun the same command to
+reconcile partial work. Listing validation still fails before any writes.
 
 Run the TEST backfill and check indexed catalog availability before releasing the
 frontend. The production backfill and deployment require separate approval.

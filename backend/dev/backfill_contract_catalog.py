@@ -10,11 +10,14 @@ import json
 from sqlalchemy import select
 
 from background.contract_metadata import refresh_contract_metadata
+from background.logger import setup_logger
 from background.sources.collective_bargaining import _fetch_listing
 from background.util.elastic import ELASTIC_INDEX, es_client
 from db.connection import get_session
 from db.constants import SourceType
 from db.models import Document, Source
+
+logger = setup_logger()
 
 
 def main():
@@ -30,7 +33,9 @@ def main():
     # Listing validation completes before the first write.
     listing = {details.url: details for details in _fetch_listing()}
     report = {'index': ELASTIC_INDEX, 'apply': args.apply, 'documents': 0,
-              'updated_chunks': 0, 'historical_untouched': 0, 'missing_from_db': 0}
+              'updated_chunks': 0, 'historical_untouched': 0, 'missing_from_db': 0,
+              'failed': []}
+    failures = []
     with get_session() as session:
         sources = session.scalars(select(Source).where(
             Source.type == SourceType.UCCONTRACTS)).all()
@@ -42,17 +47,33 @@ def main():
         report['missing_from_db'] = len(
             set(listing) - {doc.url for doc in documents})
         for document in documents:
-            details = listing.get(document.url)
+            document_url = document.url
+            details = listing.get(document_url)
             if details is None:
                 report['historical_untouched'] += 1
                 continue
             report['documents'] += 1
             if args.apply:
-                report['updated_chunks'] += refresh_contract_metadata(
-                    session, source, document, details, reconcile=True)
+                try:
+                    report['updated_chunks'] += refresh_contract_metadata(
+                        session, source, document, details, reconcile=True)
+                except Exception as error:
+                    session.rollback()
+                    error.add_note(
+                        f"Contract metadata refresh failed for {document_url}")
+                    logger.exception("Backfill failed for %s", document_url)
+                    report['failed'].append(document_url)
+                    failures.append(error)
         if args.apply:
-            es_client.indices.refresh(index=ELASTIC_INDEX)
+            try:
+                es_client.indices.refresh(index=ELASTIC_INDEX)
+            except Exception as error:
+                logger.exception("Backfill index refresh failed")
+                report['refresh_error'] = str(error)
+                failures.append(error)
     print(json.dumps(report, sort_keys=True))
+    if failures:
+        raise ExceptionGroup("Contract catalog backfill failed", failures)
 
 
 if __name__ == '__main__':

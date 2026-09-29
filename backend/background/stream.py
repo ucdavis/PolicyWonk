@@ -51,6 +51,7 @@ class DocumentProcessor:
 
     async def process_stream(self):
         ingest_results = []
+        metadata_failures = []
 
         try:
             async for document in self.stream:
@@ -59,22 +60,31 @@ class DocumentProcessor:
                 self.current_batch.append(document)
 
                 if len(self.current_batch) >= self.batch_size:
-                    ingest_result = await self.process_batch(self.current_batch)
+                    ingest_result = await self.process_batch(self.current_batch, metadata_failures)
 
                     ingest_results.append(ingest_result)
                     self.current_batch = []
 
             # Process any remaining documents
             if self.current_batch:
-                ingest_result = await self.process_batch(self.current_batch)
+                ingest_result = await self.process_batch(self.current_batch, metadata_failures)
                 ingest_results.append(ingest_result)
+                self.current_batch = []
+
+            if metadata_failures:
+                raise ExceptionGroup(
+                    "Contract metadata refresh failed", metadata_failures)
 
             return IngestResult.combine_results(ingest_results)
         except Exception as e:
             logger.error(f"Error processing stream: {str(e)}")
             raise
 
-    async def process_batch(self, batch: List[DocumentDetails]):
+    async def process_batch(self, batch: List[DocumentDetails], metadata_failures: List[Exception] | None = None):
+        # Stream callers share failures across batches; standalone batches still fail visibly.
+        standalone_batch = metadata_failures is None
+        if metadata_failures is None:
+            metadata_failures = []
         start_time = datetime.now(timezone.utc)
         num_docs_indexed = 0
         num_new_docs = 0
@@ -124,8 +134,17 @@ class DocumentProcessor:
                     self.session, document_details.url)
 
                 if db_document and db_document.meta and db_document.meta.get("hash") == content_hash:
-                    refresh_contract_metadata(
-                        self.session, self.stream.source, db_document, document_details)
+                    try:
+                        refresh_contract_metadata(
+                            self.session, self.stream.source, db_document, document_details)
+                    except Exception as error:
+                        self.session.rollback()
+                        error.add_note(
+                            f"Contract metadata refresh failed for {document_details.url}")
+                        logger.exception(
+                            "Metadata refresh failed for %s", document_details.url)
+                        metadata_failures.append(error)
+                        continue
                     logger.info(
                         f"Document {document_details.url} has not changed. Skipping")
                     continue
@@ -157,6 +176,10 @@ class DocumentProcessor:
         # end of batch
         logger.info(
             f"Indexed {num_docs_indexed} documents from source {self.stream.source.name} with {token_count} tokens")
+
+        if standalone_batch and metadata_failures:
+            raise ExceptionGroup(
+                "Contract metadata refresh failed", metadata_failures)
 
         end_time = datetime.now(timezone.utc)
 

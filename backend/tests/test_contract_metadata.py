@@ -1,13 +1,16 @@
 """Execute unchanged-content ingestion against persisted DB state."""
 import asyncio
+from datetime import datetime
+import json
+import sys
 from unittest.mock import Mock, AsyncMock
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-from db.constants import SourceType, SourceStatus, RefreshFrequency
-from db.models import Document, DocumentContent, Source
+from db.constants import IndexStatus, SourceType, SourceStatus, RefreshFrequency
+from db.models import Document, DocumentContent, IndexAttempt, Source
 from models.document_details import DocumentDetails
 
 
@@ -109,3 +112,168 @@ def test_unknown_campus_fails_closed():
     from background.sources.collective_bargaining import Unit, UcnetListingError
     with pytest.raises(UcnetListingError, match='campus'):
         Unit('ZZ', 'New local unit', 'Unknown campus').metadata()
+
+
+def add_contract(session, source, template, suffix):
+    document = Document(
+        title=suffix, url=f'https://example.org/{suffix}.pdf', source_id=source.id,
+        meta=dict(template.meta), content=DocumentContent(content=template.content.content))
+    session.add(document)
+    session.commit()
+    return document
+
+
+def test_metadata_failures_allow_later_batches_and_still_fail_source(context, monkeypatch):
+    session, source, document, details, index_update, vectorize, stream = context
+    from background import update
+    from background.sources.document_stream import DocumentStream
+
+    IndexAttempt.__table__.create(session.get_bind())
+    previous_refresh = datetime(2026, 9, 1)
+    source.last_updated = previous_refresh
+    session.commit()
+    documents = [document] + \
+        [add_contract(session, source, document, str(i)) for i in range(3)]
+    items = [DocumentDetails(url=doc.url, metadata=dict(
+        details.metadata)) for doc in documents]
+    items.append(DocumentDetails(url='https://example.org/new.pdf',
+                 metadata=dict(details.metadata)))
+    failed_urls = [documents[0].url, documents[2].url]
+    original_metadata = dict(document.meta)
+
+    class Contracts(DocumentStream):
+        async def __aiter__(self):
+            for item in items:
+                yield item
+
+    monkeypatch.setattr(update.DocumentIngestStream,
+                        'getSourceStream', lambda _: Contracts(source))
+
+    def refresh(**kwargs):
+        url = kwargs['query']['bool']['filter'][2]['term']['metadata.url.keyword']
+        if url == failed_urls[0]:
+            raise RuntimeError('Search update failed')
+        if url == failed_urls[1]:
+            # A failed SQL write requires rollback before later documents can commit.
+            session.add(Source(
+                name=None, url='https://example.org/invalid', type=SourceType.UCCONTRACTS))
+            session.flush()
+        return {'total': 1, 'updated': 1}
+
+    index_update.side_effect = refresh
+
+    def save_new(db_session, db_source, item, previous):
+        assert previous is None
+        result = Document(title='New', url=item.url, source_id=db_source.id,
+                          meta=dict(item.metadata), content=DocumentContent(content=item.content))
+        db_session.add(result)
+        return result
+
+    vectorize.side_effect = save_new
+    asyncio.run(update.index_documents(session, source))
+    session.expire_all()
+    attempt = session.scalars(select(IndexAttempt)).one()
+    assert attempt.status == IndexStatus.FAILURE
+    assert all(url in attempt.error_details for url in failed_urls)
+    assert source.last_updated == previous_refresh
+    assert source.failure_count == 1
+    assert source.last_failed is not None
+    assert source.status == SourceStatus.ACTIVE
+    assert index_update.call_count == 4
+    vectorize.assert_called_once()
+    assert documents[0].meta == documents[2].meta == original_metadata
+    for healthy in (documents[1], documents[3]):
+        assert healthy.meta['bargaining_units'] == details.metadata['bargaining_units']
+    assert session.scalars(select(Document).where(
+        Document.url == items[-1].url)).one()
+    assert len(session.scalars(select(Source)).all()) == 1
+
+    # Retrying the source repairs only the failed metadata and records success.
+    index_update.side_effect = None
+    index_update.return_value = {'total': 1, 'updated': 1}
+    index_update.reset_mock()
+    asyncio.run(update.index_documents(session, source))
+    session.expire_all()
+    attempts = session.scalars(
+        select(IndexAttempt).order_by(IndexAttempt.id)).all()
+    assert [item.status for item in attempts] == [
+        IndexStatus.FAILURE, IndexStatus.SUCCESS]
+    assert index_update.call_count == 2
+    assert source.failure_count == 0
+    assert source.last_failed is None
+    assert source.last_updated > previous_refresh
+    vectorize.assert_called_once()
+
+
+def test_direct_batch_reports_metadata_failure_after_processing_other_documents(context):
+    session, source, document, details, index_update, _, stream = context
+    healthy = add_contract(session, source, document, 'healthy')
+    index_update.side_effect = [RuntimeError('Search update failed'), {
+        'total': 1, 'updated': 1}]
+    processor = stream.DocumentProcessor(session, Mock(source=source))
+    with pytest.raises(ExceptionGroup, match='Contract metadata refresh failed'):
+        asyncio.run(processor.process_batch([
+            details, DocumentDetails(url=healthy.url, metadata=dict(details.metadata))]))
+    session.expire_all()
+    assert index_update.call_count == 2
+    assert 'bargaining_units' not in document.meta
+    assert healthy.meta['bargaining_units'] == details.metadata['bargaining_units']
+
+
+@pytest.mark.parametrize('apply', [False, True])
+def test_backfill_reports_failures_and_completes_remaining_documents(context, monkeypatch, capsys, apply):
+    session, source, document, details, index_update, _, _ = context
+    from dev import backfill_contract_catalog as backfill
+
+    healthy = add_contract(session, source, document, 'healthy')
+    historical = add_contract(session, source, document, 'historical')
+    original_metadata = dict(document.meta)
+    engine = session.get_bind()
+    monkeypatch.setattr(backfill, 'get_session', lambda: Session(engine))
+    monkeypatch.setattr(backfill, '_fetch_listing', lambda: [
+        details, DocumentDetails(url=healthy.url, metadata=dict(details.metadata))])
+    refresh = Mock()
+    monkeypatch.setattr(backfill.es_client.indices, 'refresh', refresh)
+    index_update.side_effect = [RuntimeError('Search update failed'), {
+        'total': 1, 'updated': 1}]
+    monkeypatch.setattr(sys, 'argv', ['backfill', '--expect-index', backfill.ELASTIC_INDEX] +
+                        (['--apply'] if apply else []))
+    if apply:
+        with pytest.raises(ExceptionGroup, match='Contract catalog backfill failed'):
+            backfill.main()
+    else:
+        backfill.main()
+    report = json.loads(capsys.readouterr().out)
+    session.expire_all()
+    assert report['documents'] == 2
+    assert report['historical_untouched'] == 1
+    assert report['failed'] == ([document.url] if apply else [])
+    assert report['updated_chunks'] == (1 if apply else 0)
+    assert document.meta == historical.meta == original_metadata
+    assert index_update.call_count == (2 if apply else 0)
+    if apply:
+        refresh.assert_called_once_with(index=backfill.ELASTIC_INDEX)
+        assert healthy.meta['bargaining_units'] == details.metadata['bargaining_units']
+    else:
+        refresh.assert_not_called()
+        assert healthy.meta == original_metadata
+
+
+def test_backfill_prints_report_when_final_index_refresh_fails(context, monkeypatch, capsys):
+    session, _, _, details, _, _, _ = context
+    from dev import backfill_contract_catalog as backfill
+
+    engine = session.get_bind()
+    monkeypatch.setattr(backfill, 'get_session', lambda: Session(engine))
+    monkeypatch.setattr(backfill, '_fetch_listing', lambda: [details])
+    monkeypatch.setattr(backfill.es_client.indices, 'refresh', Mock(
+        side_effect=RuntimeError('Refresh failed')))
+    monkeypatch.setattr(
+        sys, 'argv', ['backfill', '--expect-index', backfill.ELASTIC_INDEX, '--apply'])
+    with pytest.raises(ExceptionGroup, match='Contract catalog backfill failed'):
+        backfill.main()
+    report = json.loads(capsys.readouterr().out)
+    assert report['documents'] == 1
+    assert report['updated_chunks'] == 2
+    assert report['failed'] == []
+    assert report['refresh_error'] == 'Refresh failed'
