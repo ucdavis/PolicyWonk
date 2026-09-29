@@ -1,9 +1,9 @@
 'server only';
 import { createOpenAI } from '@ai-sdk/openai';
-import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { estypes } from '@elastic/elasticsearch';
 
 import prisma from '@/lib/db';
+import { searchClient, indexName } from '@/lib/elastic';
 
 import type { ChatMessage, PolicyIndex } from '../models/chat';
 import { Focus, FocusScope } from '../models/focus';
@@ -19,19 +19,6 @@ export const llmModel = process.env.OPENAI_LLM_MODEL ?? 'gpt-5.2';
 const embeddingModel = openai.embedding(
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large'
 );
-
-// get my vector store
-const config: ClientOptions = {
-  node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
-  auth: {
-    username: process.env.ELASTIC_SEARCHER_USERNAME ?? 'elastic',
-    password: process.env.ELASTIC_SEARCHER_PASSWORD ?? 'changeme',
-  },
-};
-
-const searchClient: Client = new Client(config);
-
-const indexName = process.env.ELASTIC_INDEX ?? 'test_vectorstore4';
 
 export const getEmbeddings = async (query: string): Promise<number[][]> => {
   // get our embeddings

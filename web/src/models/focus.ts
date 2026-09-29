@@ -58,35 +58,11 @@ export type Union = {
   value: string;
 };
 
-// TODO: grab unions from the db/index somehow? or just hardcode them?
-// For now this is hardcoded & includes UCOP + UC Davis unions
-export const unions: Union[] = [
-  { key: 'ra', value: 'Academic Researchers' },
-  { key: 'bx', value: 'Academic Student Employees' },
-  { key: 'cx', value: 'Clerical & Allied Services' },
-  { key: 'br', value: 'Graduate Student Researchers' },
-  { key: 'hx', value: 'Health Care Professionals' },
-  { key: 'ix', value: 'Non-Senate Instructional (Lecturers)' },
-  { key: 'ex', value: 'Patient Care Technical' },
-  { key: 'dx', value: 'Physicians, Dentists and Podiatrists' },
-  { key: 'pa', value: 'Police Officers' },
-  { key: 'px', value: 'Postdoctoral Scholars' },
-  { key: 'lx', value: 'Professional Librarians' },
-  { key: 'nx', value: 'Registered Nurses' },
-  { key: 'rp', value: 'Research and Public Service Professionals' },
-  { key: 'rx', value: 'Research Support Professionals' },
-  { key: 'sx', value: 'Service' },
-  { key: 'sv', value: 'Student Services and Advising Professionals' },
-  { key: 'tx', value: 'Technical' },
-  { key: 'k3', value: 'Skilled Craft' },
-  { key: 'f3', value: 'Local 4920' },
-  { key: 'm3', value: 'Medical Residents' },
-];
-
 // get a focus w/ sub-focus if it exists, otherwise return undefined
 export const getFocusWithSubFocus = (
   focus?: string,
-  subFocus?: string
+  subFocus?: string,
+  unions: Union[] = []
 ): Focus | undefined => {
   const foundFocus = focuses.find((f) => f.name === focus);
 
@@ -97,7 +73,7 @@ export const getFocusWithSubFocus = (
   // right now, we only have unions as a focus with sub-focus
   if (foundFocus.name === 'unions') {
     // find the union by key
-    const union = unions.find((u) => u.key === subFocus);
+    const union = unions.find((u) => u.key === subFocus?.toLowerCase());
 
     // if we found the union, we can return the focus with the union name as the subFocus
     if (union) {

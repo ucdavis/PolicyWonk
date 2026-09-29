@@ -4,6 +4,7 @@ import tempfile
 from typing import List
 
 from background.logger import log_memory_usage, setup_logger
+from background.contract_metadata import refresh_contract_metadata
 from background.sources.apm import UcdApmStream
 from background.sources.collective_bargaining import UcnetCollectiveBargainingStream
 from background.sources.document_stream import DocumentStream
@@ -123,6 +124,8 @@ class DocumentProcessor:
                     self.session, document_details.url)
 
                 if db_document and db_document.meta and db_document.meta.get("hash") == content_hash:
+                    refresh_contract_metadata(
+                        self.session, self.stream.source, db_document, document_details)
                     logger.info(
                         f"Document {document_details.url} has not changed. Skipping")
                     continue

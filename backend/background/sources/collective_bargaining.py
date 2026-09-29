@@ -28,6 +28,17 @@ UNPUBLISHED_NOTICES = (
     "no collective bargaining agreement has yet been completed",
     "will be posted to this page once it is available",
 )
+# UCnet publication labels mapped to the app's campus identifiers. Unknown
+# labels fail closed so a local agreement can never become systemwide.
+CAMPUS_CODES = {
+    "ucop": "all",
+    "uc berkeley": "ucb", "uc davis": "ucdavis",
+    "uc san francisco": "ucsf", "uc irvine": "uci",
+    "ucla": "ucla", "uc los angeles": "ucla",
+    "uc merced": "ucmerced", "uc riverside": "ucr",
+    "uc san diego": "ucsd", "uc santa barbara": "ucsb",
+    "uc santa cruz": "ucsc", "lawrence berkeley national laboratory": "lbl",
+}
 
 
 class UcnetListingError(ValueError):
@@ -41,10 +52,16 @@ class Unit:
     office: str = "ucop"
 
     def metadata(self) -> dict:
+        campus = CAMPUS_CODES.get(self.office.casefold())
+        if campus is None:
+            raise UcnetListingError(f"Unrecognized bargaining-unit campus: {self.office}")
         return {
             "keywords": [self.code, self.name, self.office],
             "subject_areas": ["Collective Bargaining", self.code],
             "responsible_office": self.office,
+            "bargaining_units": [{
+                "code": self.code.upper(), "name": self.name, "campuses": [campus],
+            }],
         }
 
 
@@ -264,6 +281,9 @@ def _fetch_listing() -> list[DocumentDetails]:
                 for key in ("keywords", "subject_areas"):
                     existing[key] = list(dict.fromkeys(
                         existing[key] + metadata[key]))
+                for association in metadata["bargaining_units"]:
+                    if association not in existing["bargaining_units"]:
+                        existing["bargaining_units"].append(association)
                 offices = existing["responsible_office"].split("; ")
                 if unit.office not in offices:
                     existing["responsible_office"] += "; " + unit.office
