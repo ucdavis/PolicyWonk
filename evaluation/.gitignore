@@ -3,3 +3,11 @@ data/
 # don't track config files
 .deepeval*
 temp_test_run_data.json
+# Local evaluation data and dependencies
+runner/node_modules/
+runs/
+*.jsonl
+report.html
+
+runner/.venv/
+runner/__pycache__/

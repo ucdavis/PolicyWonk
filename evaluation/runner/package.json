@@ -1,0 +1,11 @@
+{
+  "name": "policywonk-evaluation-runner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test *.test.mjs"
+  },
+  "devDependencies": {
+    "tsx": "4.20.6"
+  }
+}
