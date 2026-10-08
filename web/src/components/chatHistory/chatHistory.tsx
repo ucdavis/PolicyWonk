@@ -52,27 +52,25 @@ const ChatHistory: React.FC<ChatHistoryProps> = async ({ group }) => {
     // same return as the fallback in the error boundary
     // but we have to do it here too, since the error boundary doesn't catch server errors
     return (
-      <div className='chat-history-wrapper'>
-        <h3 className='text-end me-3'>Chat History</h3>
-        <div className='chat-history'>
+      <section className='mt-5 flex min-h-0 flex-1 flex-col'>
+        <h2 className='mb-1 px-4 text-sm font-semibold'>Chats</h2>
+        <div className='min-h-0 flex-1 overflow-y-auto px-4'>
           <WonkyClientError
             thereWasAnErrorLoadingThe='chat history'
             type='text'
           />
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <>
-      <div className='chat-history-wrapper'>
-        <h3 className='text-end me-3'>Chat History</h3>
-        <div className='chat-history'>
-          {!!chats && <ChatHistoryWrapper group={group} chats={chats} />}
-        </div>
+    <section className='mt-5 flex min-h-0 flex-1 flex-col'>
+      <h2 className='mb-1 px-4 text-sm font-semibold'>Chats</h2>
+      <div className='min-h-0 flex-1 overflow-y-auto'>
+        {!!chats && <ChatHistoryWrapper group={group} chats={chats} />}
       </div>
-    </>
+    </section>
   );
 };
 

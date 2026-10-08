@@ -5,7 +5,7 @@ interface SidebarContextProps {
   openSidebar: () => void;
   closeSidebar: () => void;
   isLargeScreen: boolean;
-  sidebarRef: React.RefObject<HTMLDivElement | null>;
+  sidebarRef: React.RefObject<HTMLElement | null>;
   onNavigate: (callback: () => void) => void;
 }
 
@@ -21,7 +21,7 @@ export const CollapsibleSidebarProvider: React.FC<{
 }> = ({ children, isMobile }) => {
   const [isLargeScreen, setIsLargeScreen] = React.useState(!isMobile);
   const [isOpen, setIsOpen] = React.useState(!isMobile);
-  const sidebarRef = React.useRef<HTMLDivElement | null>(null);
+  const sidebarRef = React.useRef<HTMLElement | null>(null);
   const isLargeScreenRef = React.useRef(isLargeScreen); // Ref to track isLargeScreen state
 
   React.useEffect(() => {

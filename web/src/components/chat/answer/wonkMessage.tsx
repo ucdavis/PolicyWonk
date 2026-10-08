@@ -19,29 +19,32 @@ export const WonkMessage = ({
   children?: ReactNode;
 }) => {
   return (
-    <div className='chat-row'>
-      <div className='d-flex'>
-        <div>
-          {isLoading && !content && (
-            <p className='text-muted mb-2'>
-              {thought || 'PolicyWonk is thinking…'}
-            </p>
-          )}
-          {content ? (
-            <WonkyErrorBoundary
-              fallback={
-                <WonkyClientError
-                  type='alert'
-                  thereWasAnErrorLoadingThe='answer'
-                />
-              }
-            >
-              <WonkAnswer text={content} />
-            </WonkyErrorBoundary>
-          ) : null}
-        </div>
+    <section
+      className='mb-6 min-w-0 text-base leading-7 text-base-content focus:outline-none'
+      aria-label='PolicyWonk response'
+      tabIndex={0}
+    >
+      <h2 className='mb-1 text-lg font-semibold leading-tight'>PolicyWonk</h2>
+      <div className='min-w-0'>
+        {isLoading && !content && (
+          <p className='mb-2 text-base-content/65'>
+            {thought || 'PolicyWonk is thinking…'}
+          </p>
+        )}
+        {content ? (
+          <WonkyErrorBoundary
+            fallback={
+              <WonkyClientError
+                type='alert'
+                thereWasAnErrorLoadingThe='answer'
+              />
+            }
+          >
+            <WonkAnswer text={content} />
+          </WonkyErrorBoundary>
+        ) : null}
       </div>
-      {!isLoading && children}
-    </div>
+      {!isLoading && children && <div className='mt-3'>{children}</div>}
+    </section>
   );
 };

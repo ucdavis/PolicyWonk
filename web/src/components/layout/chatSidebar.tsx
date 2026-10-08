@@ -2,6 +2,7 @@
 import React from 'react';
 
 import CollapsibleSidebar from './collapsibleSidebar';
+import SiteBrand from './siteBrand';
 
 interface ChatSidebarProps {
   isMobile: boolean;
@@ -10,7 +11,7 @@ interface ChatSidebarProps {
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({ isMobile, children }) => {
   return (
-    <CollapsibleSidebar isMobile={isMobile} hideNewChatButton={false}>
+    <CollapsibleSidebar isMobile={isMobile} header={<SiteBrand />}>
       {children}
     </CollapsibleSidebar>
   );

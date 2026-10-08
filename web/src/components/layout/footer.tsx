@@ -1,37 +1,77 @@
 import React from 'react';
 
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import FooterLinks from './footerLinks';
+import { campusMap } from '@/lib/constants';
 
-interface FooterProps {
+interface FooterProps extends React.ComponentPropsWithoutRef<'footer'> {
   group?: string;
 }
 
-const Footer: React.FC<FooterProps> = ({ group }) => {
+const Footer: React.FC<FooterProps> = ({
+  group,
+  className,
+  ...footerProps
+}) => {
+  const campusName = campusMap[group ?? '']?.name ?? 'Choose a location';
+
   return (
-    <footer>
-      <div className='footer-campus-chooser mb-3'>
-        <h3 className='mb-0'>Location</h3>
-        <Link href='/groups' passHref>
-          <button className='btn btn-link btn-icon'>
-            {group || 'UNKNOWN'} <FontAwesomeIcon icon={faCaretDown} />
-          </button>
-        </Link>
+    <footer
+      className={`border-t border-main-border ${className ?? ''}`}
+      {...footerProps}
+    >
+      <div className='flex flex-col items-start gap-4 pt-5'>
+        <nav aria-label='Sidebar footer navigation'>
+          <ul className='flex list-none flex-col items-start gap-2 p-0 text-sm'>
+            <li>
+              <Link
+                className='text-base-content/75 no-underline hover:text-primary'
+                href='/groups'
+              >
+                {campusName}
+              </Link>
+            </li>
+            <li>
+              <Link
+                className='text-base-content/75 no-underline hover:text-primary'
+                href='/about'
+              >
+                About
+              </Link>
+            </li>
+            <li>
+              <Link
+                className='text-base-content/75 no-underline hover:text-primary'
+                href='/privacy'
+              >
+                Privacy
+              </Link>
+            </li>
+            <li>
+              <Link
+                className='text-base-content/75 no-underline hover:text-primary'
+                href='/disclaimer'
+              >
+                Disclaimer
+              </Link>
+            </li>
+          </ul>
+        </nav>
+        <div className='flex flex-col items-start gap-1'>
+          <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
+            <Image
+              width={100}
+              height={50}
+              src='/media/uc_wordmark_blue_official.svg'
+              alt='University of California Office of the President'
+            />
+          </a>
+          <p className='text-xs leading-4 text-base-content/65'>
+            Copyright &copy; The Regents of the University of California.
+          </p>
+        </div>
       </div>
-      <FooterLinks />
-      <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
-        <Image
-          width={110}
-          height={55}
-          src='/media/uc_wordmark_blue_official.svg'
-          alt='UCOP logo'
-        />
-      </a>
-      <p>Copyright &copy; All rights reserved.</p>
     </footer>
   );
 };

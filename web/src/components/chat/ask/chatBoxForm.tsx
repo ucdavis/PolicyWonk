@@ -36,7 +36,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
     <>
       <form
         ref={formRef}
-        className='wonk-input-wrapper'
+        className='relative flex items-end'
         onSubmit={async (e) => {
           e.preventDefault();
 
@@ -49,12 +49,12 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
           onQuestionSubmit(value);
         }}
       >
-        <div className='form-floating w-full'>
+        <div className='w-full'>
           <textarea
             id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
-            className='form-control wonk-input resize-none overflow-hidden'
+            className='textarea w-full resize-none overflow-hidden border-main-border bg-base-100 pr-14 pt-6 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20'
             autoFocus
             placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
             value={input}
@@ -74,16 +74,24 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
               }
             }}
           ></textarea>
-          <label htmlFor='messageTextArea'>Ask a question</label>
+          <label
+            htmlFor='messageTextArea'
+            className='pointer-events-none absolute top-2 left-3 text-sm text-base-content/65'
+          >
+            Ask a question
+          </label>
         </div>
-        <button className='btn btn-prompt' aria-label='Send message'>
+        <button
+          className='btn btn-primary btn-circle btn-sm absolute right-3 bottom-3'
+          aria-label='Send message'
+        >
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
       </form>
-      <p className='disclaimer text-end mt-3 mb-2'>
+      <p className='mt-3 mb-2 text-right text-sm text-base-content/65'>
         PolicyWonk can make errors, view our{' '}
         <Link
-          className='discreet-link'
+          className='underline underline-offset-2 hover:text-primary'
           href='https://iet.ucdavis.edu/aggie-ai/rocky/faq'
         >
           Disclaimer.

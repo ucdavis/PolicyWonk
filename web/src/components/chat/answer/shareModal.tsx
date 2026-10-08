@@ -4,7 +4,6 @@ import React from 'react';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { faPaperPlane as faPaperPlaneSolid } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { shareChat, unshareChat } from '../../../lib/actions';
 import WonkyClientError from '../../../lib/error/wonkyClientError';
@@ -12,7 +11,6 @@ import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import type { ChatHistory } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
-import AnimatedButton from '../../ui/animatedButton';
 
 import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
@@ -67,66 +65,95 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
     gtagEvent({ event: GTagEvents.COPY_SHARE, chat });
   };
 
-  const toggle = () => {
-    setIsOpen(!isOpen);
+  const openModal = () => {
+    setIsOpen(true);
+    gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat });
   };
+
+  const closeModal = () => setIsOpen(false);
 
   return (
     <>
-      <AnimatedButton
-        displayBeforeClick={
-          <FontAwesomeIcon icon={isShared ? faPaperPlaneSolid : faPaperPlane} />
-        }
-        onClick={toggle}
-        selected={isShared}
-        title={'Share Chat'}
-      />
-      <Modal
-        isOpen={isOpen}
-        toggle={toggle}
-        onOpened={() => {
-          gtagEvent({ event: GTagEvents.OPEN_SHARE_MODAL, chat });
-        }}
+      <button
+        type='button'
+        className={`btn btn-ghost btn-lg btn-square mr-1 bg-transparent text-base-content/60 shadow-none hover:bg-transparent hover:text-primary active:bg-transparent disabled:bg-transparent ${
+          isShared ? 'text-primary' : ''
+        }`}
+        onClick={openModal}
+        title='Share chat'
+        aria-label='Share chat'
       >
-        <ModalHeader toggle={toggle}>Share Chat</ModalHeader>
-        <ModalBody>
-          <p>
-            Sharing this chat will allow anyone with the link to view it. They
-            will be able to see your name and the entire content of the chat.
-            You will be able to delete the shared link or regenerate it at any
-            time.
-          </p>
-          <WonkyErrorBoundary
-            fallback={
-              <WonkyClientError
-                thereWasAnErrorLoadingThe='shared url'
-                type='alert'
-              />
-            }
-          >
-            <SharedUrl
-              shareId={shareId}
-              group={group}
-              isShared={isShared}
-              handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
-              handleUnshare={handleUnshare}
-              handleCopyShareUrl={handleCopyShareUrl}
-              isLoading={isLoading}
-            />
-          </WonkyErrorBoundary>
-        </ModalBody>
-        <ModalFooter>
-          {!isShared && (
-            <ShareButton
-              handleShare={() => handleShare(GTagEvents.SHARE)}
-              loadingState={isLoading}
-            />
-          )}
-          <Button color='link' onClick={toggle}>
-            {!isShared ? 'Cancel' : 'Close'}
-          </Button>
-        </ModalFooter>
-      </Modal>
+        <FontAwesomeIcon icon={isShared ? faPaperPlaneSolid : faPaperPlane} />
+      </button>
+      {isOpen && (
+        <dialog
+          className='modal modal-open'
+          aria-modal='true'
+          aria-labelledby='share-chat-title'
+        >
+          <div className='modal-box max-w-2xl border border-main-border bg-base-100 p-0'>
+            <div className='flex items-center justify-between border-b border-main-border bg-base-200 px-6 py-4'>
+              <h2 id='share-chat-title' className='text-lg font-semibold'>
+                Share chat
+              </h2>
+              <button
+                type='button'
+                className='btn btn-ghost btn-sm btn-circle'
+                onClick={closeModal}
+                aria-label='Close share dialog'
+              >
+                ✕
+              </button>
+            </div>
+            <div className='space-y-4 p-6'>
+              <p>
+                Sharing this chat will allow anyone with the link to view it.
+                They will be able to see your name and the entire content of the
+                chat. You will be able to delete the shared link or regenerate
+                it at any time.
+              </p>
+              <WonkyErrorBoundary
+                fallback={
+                  <WonkyClientError
+                    thereWasAnErrorLoadingThe='shared url'
+                    type='alert'
+                  />
+                }
+              >
+                <SharedUrl
+                  shareId={shareId}
+                  group={group}
+                  isShared={isShared}
+                  handleRegenShare={() => handleShare(GTagEvents.REGEN_SHARE)}
+                  handleUnshare={handleUnshare}
+                  handleCopyShareUrl={handleCopyShareUrl}
+                  isLoading={isLoading}
+                />
+              </WonkyErrorBoundary>
+            </div>
+            <div className='flex justify-end gap-2 border-t border-main-border px-6 py-4'>
+              {!isShared && (
+                <ShareButton
+                  handleShare={() => handleShare(GTagEvents.SHARE)}
+                  loadingState={isLoading}
+                />
+              )}
+              <button
+                type='button'
+                className='btn btn-ghost'
+                onClick={closeModal}
+              >
+                {!isShared ? 'Cancel' : 'Close'}
+              </button>
+            </div>
+          </div>
+          <form method='dialog' className='modal-backdrop'>
+            <button type='button' onClick={closeModal}>
+              Close
+            </button>
+          </form>
+        </dialog>
+      )}
     </>
   );
 };

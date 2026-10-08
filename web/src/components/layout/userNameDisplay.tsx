@@ -10,8 +10,8 @@ const UserNameDisplay: React.FC = ({}) => {
 
   return (
     <>
-      <p className='mb-0'>
-        <span className='me-1'>Logged in as:</span>
+      <p className='mb-0 text-sm'>
+        <span className='mr-1'>Logged in as:</span>
         {session?.user?.name}
       </p>
     </>

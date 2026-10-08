@@ -15,21 +15,23 @@ const StaticNav: React.FC = () => {
   const pathname = usePathname();
 
   return (
-    <div className='static-nav-list'>
-      <h3>Navigation</h3>
-      <ul>
+    <nav className='px-6'>
+      <h2 className='mb-3 text-xs font-semibold uppercase text-base-content/70'>
+        Navigation
+      </h2>
+      <ul className='list-none space-y-1 p-0'>
         {navItems.map(({ href, label }) => (
           <li key={href}>
             <Link
               href={href}
-              className={`discreet-link${pathname === href ? ' active' : ''}`}
+              className={`block py-1 text-sm no-underline hover:text-primary ${pathname === href ? 'font-semibold text-primary' : 'text-base-content/75'}`}
             >
               {label}
             </Link>
           </li>
         ))}
       </ul>
-    </div>
+    </nav>
   );
 };
 

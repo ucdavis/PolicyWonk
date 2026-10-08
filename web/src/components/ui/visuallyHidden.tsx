@@ -13,7 +13,7 @@ const VisuallyHidden: React.FC<VisuallyHiddenProps> = ({
 }) => {
   return (
     <Element
-      className={`visually-hidden${className ? ` ${className}` : ''}`}
+      className={`sr-only${className ? ` ${className}` : ''}`}
       {...delegated}
     >
       {children}

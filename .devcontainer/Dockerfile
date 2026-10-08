@@ -2,8 +2,10 @@
 # https://hub.docker.com/r/microsoft/devcontainers-python
 FROM mcr.microsoft.com/vscode/devcontainers/python:3.12
 
-# Install Node.js 20.x
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+# The legacy base image includes an obsolete Yarn apt source whose signing key
+# is no longer available. Remove it before the NodeSource setup script refreshes apt.
+RUN rm -f /etc/apt/sources.list.d/yarn.list \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -31,4 +33,3 @@ ENV PATH="$VENV_PATH/bin:$PATH"
 # Install Playwright and download chromium
 # RUN python3 -m playwright install chromium && \
 #     playwright install-deps chromium
-

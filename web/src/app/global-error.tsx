@@ -26,13 +26,13 @@ const GlobalError: React.FC = () => {
   return (
     <html lang='en'>
       <body>
-        <main className='d-flex'>
+        <main className='flex min-h-dvh'>
           <WonkyErrorBoundary>
             <ChatSidebar isMobile={isMobile} />
           </WonkyErrorBoundary>
 
-          <div className='wonk-wrapper'>
-            <div className='wonk-container'>
+          <div className='flex min-w-0 flex-1 flex-col border-b-8 border-primary bg-white'>
+            <div className='mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-9 md:px-10'>
               <ChatHeader>
                 <WonkyClientError
                   thereWasAnErrorLoadingThe={`application`}

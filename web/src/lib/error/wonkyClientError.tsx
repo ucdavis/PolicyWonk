@@ -1,6 +1,4 @@
 'use client';
-import { Alert } from 'reactstrap';
-
 interface WonkyClientErrorProps {
   type: 'text' | 'alert';
   thereWasAnErrorLoadingThe?: string;
@@ -37,7 +35,11 @@ export const WonkyClientError: React.FC<WonkyClientErrorProps> = ({
     </>
   );
   if (type === 'alert') {
-    return <Alert color='danger'>{errorContent}</Alert>;
+    return (
+      <div className='alert alert-error' role='alert'>
+        {errorContent}
+      </div>
+    );
   }
   return <>{errorContent}</>;
 };

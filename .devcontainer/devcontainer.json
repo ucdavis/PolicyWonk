@@ -25,8 +25,7 @@
       }
     }
   },
-  // Uncomment the following lines to use Playwright (not currently used in this project)
-  // "postCreateCommand": "playwright install chromium",
+  "postCreateCommand": "sudo chown -R \"$(id -u):$(id -g)\" /workspace/web/node_modules && cd /workspace/web && npm ci --include=optional && node -e \"require('lightningcss')\"",
   "mounts": [
     // Mount to persist Playwright's browser cache
     "source=playwright-cache,target=/root/.cache/ms-playwright,type=volume"

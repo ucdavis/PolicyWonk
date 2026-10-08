@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 
-import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
-
 import WonkyClientError from '../../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { Focus, FocusName } from '../../../models/focus';
@@ -77,18 +75,23 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     } else {
       return (
         <div className='py-2'>
-          <div className='row g-3'>
+          <div className='grid gap-3 md:grid-cols-2'>
             {options.map((option) => (
-              <div className='col-12 col-md-6 focus-option' key={option.name}>
-                <Button
-                  className={`btn btn-wonk ${option.name === focus.name ? 'selected-focus' : ''}`}
-                  style={{ cursor: 'pointer' }}
-                  color='none'
+              <div key={option.name}>
+                <button
+                  type='button'
+                  className={`flex min-h-28 w-full flex-col items-start rounded-box border border-main-border bg-base-100 p-4 text-left transition hover:border-primary hover:shadow-sm ${
+                    option.name === focus.name
+                      ? 'border-primary bg-primary/5'
+                      : ''
+                  }`}
                   onClick={() => onFocusSelection(option)}
                 >
-                  <h4>{option.name}</h4>
-                  <p>{option.description}</p>
-                </Button>
+                  <span className='font-semibold uppercase'>{option.name}</span>
+                  <span className='mt-2 text-sm text-base-content/70'>
+                    {option.description}
+                  </span>
+                </button>
               </div>
             ))}
           </div>
@@ -97,24 +100,49 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     }
   };
 
+  if (!open) {
+    return null;
+  }
+
   return (
-    <Modal isOpen={open} toggle={onClose} centered>
-      <ModalHeader toggle={onClose}>
-        Choose a focus for your question
-      </ModalHeader>
-      <ModalBody>
-        <WonkyErrorBoundary
-          fallback={
-            <WonkyClientError
-              type='alert'
-              thereWasAnErrorLoadingThe='focus options'
-            />
-          }
-        >
-          {renderBody()}
-        </WonkyErrorBoundary>
-      </ModalBody>
-    </Modal>
+    <dialog
+      className='modal modal-open'
+      aria-modal='true'
+      aria-labelledby='focus-options-title'
+    >
+      <div className='modal-box max-w-3xl border border-main-border bg-base-100 p-0'>
+        <div className='flex items-center justify-between border-b border-main-border bg-base-200 px-6 py-4'>
+          <h2 id='focus-options-title' className='text-lg font-semibold'>
+            Choose a focus for your question
+          </h2>
+          <button
+            type='button'
+            className='btn btn-ghost btn-sm btn-circle'
+            onClick={onClose}
+            aria-label='Close focus options'
+          >
+            ✕
+          </button>
+        </div>
+        <div className='p-6'>
+          <WonkyErrorBoundary
+            fallback={
+              <WonkyClientError
+                type='alert'
+                thereWasAnErrorLoadingThe='focus options'
+              />
+            }
+          >
+            {renderBody()}
+          </WonkyErrorBoundary>
+        </div>
+      </div>
+      <form method='dialog' className='modal-backdrop'>
+        <button type='button' onClick={onClose}>
+          Close
+        </button>
+      </form>
+    </dialog>
   );
 };
 

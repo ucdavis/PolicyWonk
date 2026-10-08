@@ -5,7 +5,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'; // Import the CSS
 import type { Metadata } from 'next';
 config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 
-import './styles/main.scss';
+import './styles/main.css';
 
 import GtagProvider from '../lib/gtagProvider';
 
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' data-theme='policywonk'>
       <head>
         <GtagProvider />
         <link rel='image_src' href='/media/thumbnail.jpg' />
@@ -38,8 +38,8 @@ export default function RootLayout({
           href='/media/logo512.png'
         />
       </head>
-      <body>
-        <main className='d-flex'>{children}</main>
+      <body className='font-sans text-base-content antialiased'>
+        <main className='flex min-h-dvh'>{children}</main>
       </body>
     </html>
   );

@@ -4,7 +4,6 @@ import React from 'react';
 import { faRotateRight, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
-import { Button } from 'reactstrap';
 
 import { IconVariants, IconVariantOptions } from '../../../models/animations';
 import { GTagEvents } from '../../../models/gtag';
@@ -23,13 +22,14 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 }) => {
   const isLoading = loadingState === GTagEvents.SHARE;
   return (
-    <Button
-      color='secondary'
+    <button
+      type='button'
+      className='btn btn-secondary'
       onClick={handleShare}
       disabled={loadingState !== ''}
     >
       {isLoading ? 'Sharing...' : 'Share'}
-    </Button>
+    </button>
   );
 };
 

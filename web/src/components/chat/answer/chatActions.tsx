@@ -36,7 +36,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
 
   return (
     <>
-      <div className='d-flex'>
+      <div className='flex items-center'>
         <WonkyErrorBoundary>
           <CopyToClipboardButton
             id='gtag-copy-chat'

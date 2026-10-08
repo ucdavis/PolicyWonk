@@ -9,7 +9,7 @@ interface FeedbackBarProps {}
 const FeedbackBar: React.FC<FeedbackBarProps> = ({}) => {
   return (
     <motion.div
-      className='row mb-3'
+      className='mb-3 ml-auto max-w-2xl'
       initial={{ opacity: 0.1, scale: 0 }}
       animate={{
         opacity: 1,
@@ -21,18 +21,13 @@ const FeedbackBar: React.FC<FeedbackBarProps> = ({}) => {
         },
       }}
     >
-      <div className='col-1'>{/* empty */}</div>
-      <div className='col-11'>
-        <div
-          className='alert alert-success d-flex align-items-center'
-          role='alert'
-        >
-          <div className='me-2'>
+      <div>
+        <div className='alert alert-success flex items-center' role='alert'>
+          <div className='mr-2'>
             <FontAwesomeIcon icon={faClipboardCheck} />
           </div>
           <div>Thank you for your feedback!</div>
         </div>
-        <div>{/*empty */}</div>
       </div>
     </motion.div>
   );

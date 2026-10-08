@@ -2,7 +2,7 @@ import React from 'react';
 
 const Disclaimer: React.FC = () => {
   return (
-    <p className='discreet mt-2'>
+    <p className='mt-2 text-sm italic text-base-content/65'>
       Disclaimer: The information provided by PolicyWonk is for general
       informational purposes only and is not considered official UC Davis
       interpretations of policy and/or legal advice. The Policy Owner is

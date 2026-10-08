@@ -67,7 +67,10 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   return (
     <motion.button
       ref={buttonRef}
-      className={className ?? 'btn-feedback me-1'}
+      className={
+        className ??
+        'btn btn-ghost btn-sm btn-square mr-1 text-base-content/60 hover:text-primary'
+      }
       title={title}
       onClick={handleClick}
       onMouseEnter={(e) => handleHover(e, true)}

@@ -3,7 +3,6 @@
 import React from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { InputGroup, Input } from 'reactstrap';
 
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useShareUrl } from '../../../lib/hooks/useShareUrl';
@@ -56,13 +55,13 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
             ease: 'easeIn',
           }}
         >
-          <InputGroup>
-            <Input
-              className='custom-input-height'
+          <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+            <input
+              className='input w-full border-main-border bg-base-100 text-sm'
               value={url}
               readOnly={true}
             />
-            <div className='ms-2'>
+            <div className='flex shrink-0 gap-1'>
               <WonkyErrorBoundary>
                 <CopyToClipboardButton
                   value={url}
@@ -83,7 +82,7 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
                 />
               </WonkyErrorBoundary>
             </div>
-          </InputGroup>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

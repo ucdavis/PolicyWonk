@@ -10,8 +10,8 @@ export const UserMessage = ({
   content: string;
 }) => {
   return (
-    <div className='chat-row'>
-      <div className='user-message-row'>
+    <div className='mb-5 max-w-3xl'>
+      <div className='flex justify-end'>
         <WonkyErrorBoundary
           fallback={
             <WonkyClientError
@@ -20,7 +20,9 @@ export const UserMessage = ({
             />
           }
         >
-          <p>{content}</p>
+          <p className='max-w-2xl rounded-3xl bg-primary/10 px-4 py-3'>
+            {content}
+          </p>
         </WonkyErrorBoundary>
       </div>
     </div>
