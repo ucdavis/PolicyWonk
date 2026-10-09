@@ -50,7 +50,11 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          onNavigate(handleRemoveChat);
+          if (checkActiveChat(pathname, chatId)) {
+            onNavigate(handleRemoveChat);
+          } else {
+            void handleRemoveChat();
+          }
         }}
         title='Delete chat'
         aria-label='Delete chat'
