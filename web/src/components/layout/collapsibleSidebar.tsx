@@ -150,6 +150,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
           type='button'
           className='fixed inset-0 z-40 cursor-default bg-neutral/20'
           onClick={closeSidebar}
+          tabIndex={-1}
           aria-label='Close sidebar'
         />
       )}
