@@ -119,7 +119,7 @@ const WonkAnswer: React.FC<WonkAnswerProps> = ({ text }) => {
               'font-medium text-primary underline decoration-primary/40 underline-offset-2 transition-colors hover:text-primary/80 hover:decoration-primary';
 
             if (isFootnoteBackReference) {
-              return null;
+              return <a {...props} className={linkClassName} />;
             }
 
             if (isFootnoteReference) {
