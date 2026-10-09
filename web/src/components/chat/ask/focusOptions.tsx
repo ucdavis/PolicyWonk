@@ -111,8 +111,11 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
       aria-labelledby='focus-options-title'
     >
       <div className='modal-box max-w-3xl border border-main-border bg-base-100 p-0'>
-        <div className='flex items-center justify-between border-b border-main-border bg-base-200 px-6 py-4'>
-          <h2 id='focus-options-title' className='text-lg font-semibold'>
+        <div className='flex items-center justify-between gap-4 border-b border-main-border bg-base-200 px-4 py-4 sm:px-6'>
+          <h2
+            id='focus-options-title'
+            className='min-w-0 text-lg font-semibold'
+          >
             Choose a focus for your question
           </h2>
           <button
@@ -124,7 +127,7 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
             ✕
           </button>
         </div>
-        <div className='p-6'>
+        <div className='p-4 sm:p-6'>
           <WonkyErrorBoundary
             fallback={
               <WonkyClientError

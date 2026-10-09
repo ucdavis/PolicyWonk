@@ -20,7 +20,7 @@ export const WonkMessage = ({
 }) => {
   return (
     <section
-      className='mb-6 min-w-0 text-base leading-7 text-base-content focus:outline-none'
+      className='mb-6 min-w-0 break-words text-base leading-7 text-base-content focus:outline-none'
       aria-label='PolicyWonk response'
       tabIndex={0}
     >

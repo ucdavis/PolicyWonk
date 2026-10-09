@@ -13,7 +13,6 @@
 @theme {
   --color-main-border: #e6e7e9;
   --animate-chat-title-scroll: chat-title-scroll 8s linear infinite;
-  --animate-eye-pan: eye-pan 1s infinite;
 }
 
 @plugin 'daisyui/theme' {
@@ -57,6 +56,10 @@ body {
   min-height: 100%;
 }
 
+body[data-sidebar-scroll-lock] {
+  overflow: hidden;
+}
+
 html {
   background: var(--color-base-100);
   color: var(--color-base-content);
@@ -95,15 +98,4 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   border-radius: 5px;
-}
-
-@keyframes eye-pan {
-  0%,
-  100% {
-    transform: translate(28%, 28%);
-  }
-
-  50% {
-    transform: translate(34%, 28%);
-  }
 }

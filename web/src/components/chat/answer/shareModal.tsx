@@ -92,8 +92,11 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
           aria-labelledby='share-chat-title'
         >
           <div className='modal-box max-w-2xl border border-main-border bg-base-100 p-0'>
-            <div className='flex items-center justify-between border-b border-main-border bg-base-200 px-6 py-4'>
-              <h2 id='share-chat-title' className='text-lg font-semibold'>
+            <div className='flex items-center justify-between gap-4 border-b border-main-border bg-base-200 px-4 py-4 sm:px-6'>
+              <h2
+                id='share-chat-title'
+                className='min-w-0 text-lg font-semibold'
+              >
                 Share chat
               </h2>
               <button
@@ -105,7 +108,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
                 ✕
               </button>
             </div>
-            <div className='space-y-4 p-6'>
+            <div className='space-y-4 p-4 sm:p-6'>
               <p>
                 Sharing this chat will allow anyone with the link to view it.
                 They will be able to see your name and the entire content of the
@@ -131,7 +134,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
                 />
               </WonkyErrorBoundary>
             </div>
-            <div className='flex justify-end gap-2 border-t border-main-border px-6 py-4'>
+            <div className='flex flex-col-reverse gap-2 border-t border-main-border px-4 py-4 sm:flex-row sm:justify-end sm:px-6'>
               {!isShared && (
                 <ShareButton
                   handleShare={() => handleShare(GTagEvents.SHARE)}
@@ -140,7 +143,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ chat, onShareIdUpdate }) => {
               )}
               <button
                 type='button'
-                className='btn btn-ghost'
+                className='btn btn-ghost w-full sm:w-auto'
                 onClick={closeModal}
               >
                 {!isShared ? 'Cancel' : 'Close'}

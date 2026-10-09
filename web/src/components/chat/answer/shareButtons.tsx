@@ -24,7 +24,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
   return (
     <button
       type='button'
-      className='btn btn-secondary'
+      className='btn btn-secondary w-full sm:w-auto'
       onClick={handleShare}
       disabled={loadingState !== ''}
     >

@@ -39,14 +39,14 @@ const FocusBar: React.FC<FocusBarProps> = ({ group, focus, onSelection }) => {
     <>
       <button
         type='button'
-        className='mb-2 flex w-full items-center gap-2 rounded-box px-0 py-2 text-left hover:text-primary'
+        className='mb-2 flex w-full flex-col items-start gap-1 rounded-box px-0 py-2 text-left hover:text-primary sm:flex-row sm:items-center sm:gap-2'
         onClick={() => setOpen(true)}
       >
-        <span className='inline-flex items-center gap-2 font-semibold'>
+        <span className='inline-flex shrink-0 items-center gap-2 font-semibold'>
           <FontAwesomeIcon icon={faCaretDown} />
           Focus: {focus.name}
         </span>
-        <span className='text-sm text-base-content/65'>
+        <span className='min-w-0 text-sm text-base-content/65'>
           {focus.description}
         </span>
       </button>

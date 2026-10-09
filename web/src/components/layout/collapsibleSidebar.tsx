@@ -19,14 +19,84 @@ interface CollapsibleSidebarProps {
   header?: React.ReactNode;
 }
 
+const focusableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
 const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
   children,
   header,
 }) => {
   const { isOpen, openSidebar, closeSidebar, isLargeScreen, sidebarRef } =
     useCollapsibleSidebar();
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+  const openButtonRef = React.useRef<HTMLButtonElement>(null);
+  const previousDrawerStateRef = React.useRef({ isOpen, isLargeScreen });
   const pathname = usePathname();
   const group = getGroupFromPathname(pathname);
+
+  React.useEffect(() => {
+    const previousDrawerState = previousDrawerStateRef.current;
+
+    if (
+      !isLargeScreen &&
+      isOpen &&
+      (!previousDrawerState.isOpen || previousDrawerState.isLargeScreen)
+    ) {
+      closeButtonRef.current?.focus();
+    }
+
+    if (
+      !isLargeScreen &&
+      !isOpen &&
+      previousDrawerState.isOpen &&
+      !previousDrawerState.isLargeScreen
+    ) {
+      openButtonRef.current?.focus();
+    }
+
+    previousDrawerStateRef.current = { isOpen, isLargeScreen };
+  }, [isLargeScreen, isOpen]);
+
+  React.useEffect(() => {
+    if (!isOpen || isLargeScreen) {
+      return;
+    }
+
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements =
+        sidebarRef.current?.querySelectorAll<HTMLElement>(focusableSelector);
+
+      if (!focusableElements?.length) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', trapFocus);
+
+    return () => document.removeEventListener('keydown', trapFocus);
+  }, [isLargeScreen, isOpen, sidebarRef]);
 
   return (
     <>
@@ -53,10 +123,13 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
             <div className='flex items-center gap-2'>
               {header && <div className='min-w-0 flex-1'>{header}</div>}
               <button
-                className='ml-auto shrink-0 cursor-pointer p-0 text-base-content/75 hover:text-primary active:!bg-transparent'
+                ref={closeButtonRef}
+                type='button'
+                className='ml-auto flex size-11 shrink-0 cursor-pointer items-center justify-center text-base-content/75 hover:text-primary active:!bg-transparent lg:size-9'
                 onClick={closeSidebar}
                 aria-expanded={true}
                 aria-controls='wonk-sidebar-main'
+                aria-label='Close sidebar'
                 title='Close sidebar'
               >
                 <AggieIcon icon={faBars} isDecorative={true} />
@@ -72,12 +145,23 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
           <Footer group={group} className='shrink-0 px-4 pb-4' />
         </div>
       </nav>
+      {isOpen && !isLargeScreen && (
+        <button
+          type='button'
+          className='fixed inset-0 z-40 cursor-default bg-neutral/20'
+          onClick={closeSidebar}
+          aria-label='Close sidebar'
+        />
+      )}
       {!isOpen && (
         <button
-          className='fixed top-5 left-2 z-40 cursor-pointer rounded-box bg-base-100 p-2 text-base-content shadow-sm hover:text-primary active:!bg-transparent lg:absolute'
+          ref={openButtonRef}
+          type='button'
+          className='fixed top-3 left-2 z-40 flex size-11 cursor-pointer items-center justify-center text-base-content hover:text-primary active:!bg-transparent lg:absolute lg:top-5 lg:size-10'
           onClick={openSidebar}
           aria-expanded={false}
           aria-controls='wonk-sidebar-main'
+          aria-label='Open sidebar'
           title='Open sidebar'
         >
           <AggieIcon icon={faBars} isDecorative={true} />

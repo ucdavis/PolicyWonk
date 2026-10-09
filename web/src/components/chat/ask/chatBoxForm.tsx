@@ -54,9 +54,10 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
             id='messageTextArea'
             ref={inputRef}
             tabIndex={0}
-            className='textarea w-full resize-none overflow-hidden border-main-border bg-base-100 pr-14 pt-6 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20'
+            className='textarea min-h-16 w-full resize-none overflow-hidden border-main-border bg-base-100 px-4 py-3 pr-16 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20'
             autoFocus
-            placeholder='Ask PolicyWonk a question; Change your focus by clicking on the Focus Bar above'
+            aria-label='Ask a question'
+            placeholder='Type your question…'
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
@@ -74,15 +75,9 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
               }
             }}
           ></textarea>
-          <label
-            htmlFor='messageTextArea'
-            className='pointer-events-none absolute top-2 left-3 text-sm text-base-content/65'
-          >
-            Ask a question
-          </label>
         </div>
         <button
-          className='btn btn-primary btn-circle btn-sm absolute right-3 bottom-3'
+          className='btn btn-primary btn-circle btn-md absolute right-2 bottom-2'
           aria-label='Send message'
         >
           <FontAwesomeIcon icon={faPaperPlane} />

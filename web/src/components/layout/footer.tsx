@@ -26,7 +26,7 @@ const Footer: React.FC<FooterProps> = ({
           <ul className='flex list-none flex-col items-start gap-2 p-0 text-sm'>
             <li>
               <Link
-                className='text-base-content/75 no-underline hover:text-primary'
+                className='block py-3 text-base-content/75 no-underline hover:text-primary lg:py-1'
                 href='/groups'
               >
                 {campusName}
@@ -34,7 +34,7 @@ const Footer: React.FC<FooterProps> = ({
             </li>
             <li>
               <Link
-                className='text-base-content/75 no-underline hover:text-primary'
+                className='block py-3 text-base-content/75 no-underline hover:text-primary lg:py-1'
                 href='/about'
               >
                 About
@@ -42,7 +42,7 @@ const Footer: React.FC<FooterProps> = ({
             </li>
             <li>
               <Link
-                className='text-base-content/75 no-underline hover:text-primary'
+                className='block py-3 text-base-content/75 no-underline hover:text-primary lg:py-1'
                 href='/privacy'
               >
                 Privacy
@@ -50,7 +50,7 @@ const Footer: React.FC<FooterProps> = ({
             </li>
             <li>
               <Link
-                className='text-base-content/75 no-underline hover:text-primary'
+                className='block py-3 text-base-content/75 no-underline hover:text-primary lg:py-1'
                 href='/disclaimer'
               >
                 Disclaimer

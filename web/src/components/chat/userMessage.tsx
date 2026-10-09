@@ -20,7 +20,7 @@ export const UserMessage = ({
             />
           }
         >
-          <p className='max-w-2xl rounded-3xl bg-primary/10 px-4 py-3'>
+          <p className='max-w-2xl break-words rounded-3xl bg-primary/10 px-4 py-3'>
             {content}
           </p>
         </WonkyErrorBoundary>

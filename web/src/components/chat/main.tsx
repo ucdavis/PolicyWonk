@@ -179,7 +179,7 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
 
   const campus = campusMap[chat.group];
   const campusLogo = campus ? (
-    <div className='mx-auto mb-6 flex w-full max-w-7xl justify-end'>
+    <div className='mx-auto -mt-4 mb-6 flex w-full max-w-7xl justify-end lg:mt-0'>
       <a
         href={campus.link}
         target='_blank'
@@ -207,12 +207,12 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
       )}
       <div
         className={`min-h-0 flex-1 overflow-y-auto ${
-          !messages.length ? 'flex flex-col py-8' : 'pt-4'
+          !messages.length ? 'flex flex-col py-8' : 'pt-8 lg:pt-4'
         }`}
       >
         {campusLogo}
         {!messages.length ? (
-          <div className='mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-5 pb-8'>
+          <div className='mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-2 pb-8'>
             <ChatHeader className='py-0' />
             <WonkyErrorBoundary
               fallback={

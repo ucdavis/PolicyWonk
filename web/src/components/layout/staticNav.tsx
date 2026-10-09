@@ -15,7 +15,7 @@ const StaticNav: React.FC = () => {
   const pathname = usePathname();
 
   return (
-    <nav className='px-6'>
+    <nav className='px-4'>
       <h2 className='mb-3 text-xs font-semibold uppercase text-base-content/70'>
         Navigation
       </h2>
@@ -24,7 +24,7 @@ const StaticNav: React.FC = () => {
           <li key={href}>
             <Link
               href={href}
-              className={`block py-1 text-sm no-underline hover:text-primary ${pathname === href ? 'font-semibold text-primary' : 'text-base-content/75'}`}
+              className={`block py-3 text-sm no-underline hover:text-primary lg:py-1 ${pathname === href ? 'font-semibold text-primary' : 'text-base-content/75'}`}
             >
               {label}
             </Link>
