@@ -34,10 +34,12 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
 
   const clearTitleScroll = React.useCallback(() => {
     window.clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = undefined;
     setShouldScrollTitle(false);
   }, []);
 
   const startTitleScroll = React.useCallback(() => {
+    window.clearTimeout(scrollTimerRef.current);
     router.prefetch(chatHref);
     setIsHovering(true);
 
@@ -46,6 +48,7 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
       titleRef.current.scrollWidth > titleRef.current.clientWidth
     ) {
       scrollTimerRef.current = window.setTimeout(() => {
+        scrollTimerRef.current = undefined;
         setShouldScrollTitle(true);
       }, 1000);
     }
