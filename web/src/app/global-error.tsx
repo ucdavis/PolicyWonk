@@ -1,6 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
+import './styles/main.css';
+
 import ChatHeader from '@/components/chat/chatHeader';
 import ChatSidebar from '@/components/layout/chatSidebar';
 import WonkyClientError from '@/lib/error/wonkyClientError';
@@ -24,7 +26,7 @@ function useIsMobile() {
 const GlobalError: React.FC = () => {
   const isMobile = useIsMobile();
   return (
-    <html lang='en'>
+    <html lang='en' data-theme='policywonk'>
       <body>
         <main className='flex min-h-dvh'>
           <WonkyErrorBoundary>

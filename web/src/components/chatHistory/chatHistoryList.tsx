@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { ChatHistoryTitleEntry } from '@/services/historyService';
@@ -85,9 +86,20 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
         }
       }}
     >
-      <button
+      <Link
+        href={chatHref}
         className='flex w-full cursor-pointer items-center overflow-hidden px-2 py-3 text-left text-sm hover:bg-transparent active:bg-transparent lg:py-2'
-        onClick={() => onNavigate(() => router.push(chatHref))}
+        onClick={(event) => {
+          if (
+            event.button === 0 &&
+            !event.metaKey &&
+            !event.ctrlKey &&
+            !event.shiftKey &&
+            !event.altKey
+          ) {
+            onNavigate(() => {});
+          }
+        }}
       >
         <span className='min-w-0 flex-1 overflow-hidden'>
           <span
@@ -106,7 +118,7 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
             )}
           </span>
         </span>
-      </button>
+      </Link>
       <DeleteChatButton chatId={chat.id} isHovering={isHovering} />
     </motion.li>
   );
