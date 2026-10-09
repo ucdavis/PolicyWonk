@@ -23,7 +23,21 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
   options,
 }) => {
   // if the focus is unions, we need to show the sub focus options
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
   const [subFocusType, setSubFocusType] = React.useState<FocusName>();
+
+  React.useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) {
+      return;
+    }
+
+    if (open && !dialog.open) {
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
 
   const clearSubFocus = () => {
     setSubFocusType(undefined);
@@ -33,6 +47,8 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     clearSubFocus();
     onSelection();
   };
+
+  const closeDialog = () => dialogRef.current?.close();
 
   const onFocusSelection = (selection: Focus) => {
     if (selection.name === 'unions') {
@@ -100,15 +116,13 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
     }
   };
 
-  if (!open) {
-    return null;
-  }
-
   return (
     <dialog
-      className='modal modal-open'
+      ref={dialogRef}
+      className='modal'
       aria-modal='true'
       aria-labelledby='focus-options-title'
+      onClose={onClose}
     >
       <div className='modal-box max-w-3xl border border-main-border bg-base-100 p-0'>
         <div className='flex items-center justify-between gap-4 border-b border-main-border bg-base-200 px-4 py-4 sm:px-6'>
@@ -121,7 +135,7 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
           <button
             type='button'
             className='btn btn-ghost btn-sm btn-circle'
-            onClick={onClose}
+            onClick={closeDialog}
             aria-label='Close focus options'
           >
             ✕
@@ -141,9 +155,7 @@ const FocusOptions: React.FC<FocusOptionsProps> = ({
         </div>
       </div>
       <form method='dialog' className='modal-backdrop'>
-        <button type='button' onClick={onClose}>
-          Close
-        </button>
+        <button type='submit'>Close</button>
       </form>
     </dialog>
   );
