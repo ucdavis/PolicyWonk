@@ -78,9 +78,11 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
         clearTitleScroll();
       }}
       onFocus={startTitleScroll}
-      onBlur={() => {
-        setIsHovering(false);
-        clearTitleScroll();
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+          setIsHovering(false);
+          clearTitleScroll();
+        }
       }}
     >
       <button
