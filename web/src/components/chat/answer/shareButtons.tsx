@@ -45,6 +45,7 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
       className='btn btn-ghost btn-sm btn-square mr-1 text-base-content/60 hover:text-primary'
       onClick={handleUnshare}
       title={'Delete share link'}
+      aria-label='Delete share link'
       disabled={loadingState !== ''}
     >
       <FontAwesomeIcon icon={faTrash} />
@@ -67,6 +68,7 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
       className='btn btn-ghost btn-sm btn-square mr-1 text-base-content/60 hover:text-primary'
       onClick={handleShare}
       title={'Regenerate share link'}
+      aria-label='Regenerate share link'
       disabled={loadingState !== ''}
     >
       <FontAwesomeIcon icon={faRotateRight} />
