@@ -13,7 +13,7 @@ import { campusMap } from '@/lib/constants';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../lib/hooks/useGtagEvent';
-import type { ChatHistory } from '../../models/chat';
+import { blankAIState, type ChatHistory } from '../../models/chat';
 import type { Focus } from '../../models/focus';
 import { GTagEvents } from '../../models/gtag';
 import { useNewQuestionNavigation } from '../layout/newQuestionNavigationProvider';
@@ -81,7 +81,15 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     []
   );
 
-  const { messages, sendMessage, status, error, stop } = useChat({
+  const {
+    messages,
+    sendMessage,
+    setMessages,
+    status,
+    error,
+    stop,
+    clearError,
+  } = useChat({
     transport,
     messages: initialMessages,
     onData: (dataPart) => {
@@ -145,8 +153,26 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
       newRoute += `&subFocus=${chat.meta.focus.subFocus}`;
     }
 
+    setMessages([]);
+    setChat((currentChat) => ({
+      ...blankAIState,
+      group: currentChat.group,
+      userId: currentChat.userId,
+      meta: { focus: currentChat.meta.focus },
+    }));
+    setCurrentStatusMessage('');
+    clearError();
+    didLogNewChatEventRef.current = false;
+    lastRedirectedChatIdRef.current = null;
     router.push(newRoute);
-  }, [chat.group, chat.meta.focus.name, chat.meta.focus.subFocus, router]);
+  }, [
+    chat.group,
+    chat.meta.focus.name,
+    chat.meta.focus.subFocus,
+    clearError,
+    router,
+    setMessages,
+  ]);
 
   const handleNewQuestionRequest = React.useCallback(
     (navigate: () => void) => {
