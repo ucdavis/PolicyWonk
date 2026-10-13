@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -58,21 +57,10 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
   React.useEffect(() => clearTitleScroll, [clearTitleScroll]);
 
   return (
-    <motion.li
+    <li
       className={`group relative mx-2 overflow-hidden rounded-lg text-sm text-base-content hover:bg-base-300 focus-within:bg-base-300 ${
         isActive ? 'bg-base-300' : ''
       }`}
-      initial={{ height: 0, opacity: 0 }}
-      animate={{
-        height: 'auto',
-        opacity: 1,
-        transition: { duration: 0.4, ease: 'easeIn' },
-      }}
-      exit={{
-        height: 0,
-        opacity: 0,
-        transition: { duration: 0.3, ease: 'easeOut' },
-      }}
       onMouseEnter={startTitleScroll}
       onMouseLeave={() => {
         setIsHovering(false);
@@ -120,7 +108,7 @@ const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({
         </span>
       </Link>
       <DeleteChatButton chatId={chat.id} isHovering={isHovering} />
-    </motion.li>
+    </li>
   );
 };
 
@@ -133,15 +121,13 @@ const ChatHistoryList: React.FC<ChatHistoryListProps> = ({ chats }) => {
 
   return (
     <ul className='m-0 list-none p-0'>
-      <AnimatePresence initial={false}>
-        {chats.map((chat) => (
-          <ChatHistoryItem
-            chat={chat}
-            isActive={pathname.includes(chat.id)}
-            key={chat.id}
-          />
-        ))}
-      </AnimatePresence>
+      {chats.map((chat) => (
+        <ChatHistoryItem
+          chat={chat}
+          isActive={pathname.includes(chat.id)}
+          key={chat.id}
+        />
+      ))}
     </ul>
   );
 };

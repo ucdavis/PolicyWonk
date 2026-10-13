@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 
 import './styles/main.css';
 
-import ChatHeader from '@/components/chat/chatHeader';
 import ChatSidebar from '@/components/layout/chatSidebar';
-import WonkyClientError from '@/lib/error/wonkyClientError';
+import { WonkStatusCodes } from '@/lib/error/error';
 import WonkyErrorBoundary from '@/lib/error/wonkyErrorBoundary';
+import WonkyPageError from '@/lib/error/wonkyPageError';
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -35,13 +35,7 @@ const GlobalError: React.FC = () => {
 
           <div className='flex min-w-0 flex-1 flex-col border-b-8 border-primary bg-white'>
             <div className='mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pt-20 pb-9 md:px-10 lg:py-9'>
-              <ChatHeader>
-                <WonkyClientError
-                  thereWasAnErrorLoadingThe={`application`}
-                  contactLink={true}
-                  type='alert'
-                />
-              </ChatHeader>
+              <WonkyPageError status={WonkStatusCodes.SERVER_ERROR} />
             </div>
           </div>
         </main>

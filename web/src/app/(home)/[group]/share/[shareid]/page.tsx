@@ -49,13 +49,18 @@ export async function generateMetadata(
 const SharePage = async (props: SharedPageProps) => {
   const params = await props.params;
 
-  const { shareid } = params;
+  const { group, shareid } = params;
 
   // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page
   const result = await getCachedSharedChat(shareid);
 
   if (!isWonkSuccess(result)) {
-    return <WonkyPageError status={result.status} />;
+    return (
+      <WonkyPageError
+        status={result.status}
+        newQuestionHref={`/${group}/chat/new`}
+      />
+    );
   }
 
   return (

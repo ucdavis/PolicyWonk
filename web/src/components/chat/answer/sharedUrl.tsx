@@ -2,8 +2,6 @@
 
 import React from 'react';
 
-import { AnimatePresence, motion } from 'framer-motion';
-
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
 import { useShareUrl } from '../../../lib/hooks/useShareUrl';
 import CopyToClipboardButton from '../../ui/copyToClipboardButton';
@@ -32,60 +30,39 @@ const SharedUrl: React.FC<SharedUrlProps> = ({
 }) => {
   const url = useShareUrl(shareId, group);
 
+  if (!isShared) {
+    return null;
+  }
+
   return (
-    <AnimatePresence mode='popLayout'>
-      {isShared && (
-        <motion.div // do not move this animation into a different component
-          // or it will have to wait for a rerender to animate, making popLayout not work as expected
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 100,
-            damping: 10,
-            ease: 'easeIn',
-          }}
-        >
-          <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
-            <input
-              className='input w-full border-main-border bg-base-100 text-sm'
-              value={url}
-              readOnly={true}
-            />
-            <div className='flex shrink-0 gap-1'>
-              <WonkyErrorBoundary>
-                <CopyToClipboardButton
-                  value={url}
-                  id='gtag-copy-share-url'
-                  onClick={handleCopyShareUrl}
-                />
-              </WonkyErrorBoundary>
-              <WonkyErrorBoundary>
-                <RegenerateShareButton
-                  handleShare={handleRegenShare}
-                  loadingState={isLoading}
-                />
-              </WonkyErrorBoundary>
-              <WonkyErrorBoundary>
-                <UnshareButton
-                  handleUnshare={handleUnshare}
-                  loadingState={isLoading}
-                />
-              </WonkyErrorBoundary>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
+      <input
+        className='input w-full border-main-border bg-base-100 text-sm'
+        value={url}
+        readOnly={true}
+      />
+      <div className='flex shrink-0 gap-1'>
+        <WonkyErrorBoundary>
+          <CopyToClipboardButton
+            value={url}
+            id='gtag-copy-share-url'
+            onClick={handleCopyShareUrl}
+          />
+        </WonkyErrorBoundary>
+        <WonkyErrorBoundary>
+          <RegenerateShareButton
+            handleShare={handleRegenShare}
+            loadingState={isLoading}
+          />
+        </WonkyErrorBoundary>
+        <WonkyErrorBoundary>
+          <UnshareButton
+            handleUnshare={handleUnshare}
+            loadingState={isLoading}
+          />
+        </WonkyErrorBoundary>
+      </div>
+    </div>
   );
 };
 

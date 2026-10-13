@@ -119,7 +119,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
               : 'duration-75 opacity-0'
           }`}
         >
-          <div className='shrink-0 px-4 pt-4 pb-4'>
+          <div className='shrink-0 px-4 pt-4 pb-4 max-lg:landscape:px-3 max-lg:landscape:py-2'>
             <div className='flex items-center gap-2'>
               {header && <div className='min-w-0 flex-1'>{header}</div>}
               <button
@@ -142,7 +142,10 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
           >
             {children}
           </div>
-          <Footer group={group} className='shrink-0 px-4 pb-4' />
+          <Footer
+            group={group}
+            className='shrink-0 px-4 pb-4 max-lg:landscape:hidden'
+          />
         </div>
       </nav>
       {isOpen && !isLargeScreen && (
