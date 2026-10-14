@@ -14,9 +14,11 @@ const FocusBanner: React.FC<FocusBannerProps> = ({ focus }) => {
   }
 
   return (
-    <div className='focus-result'>
-      <h4>{focus.name}</h4>
-      <p>{focus.description}</p>
+    <div className='mb-8 border-r-4 border-main-border pr-3 text-right'>
+      <h2 className='text-sm font-semibold uppercase text-base-content/75'>
+        {focus.name}
+      </h2>
+      <p className='text-sm text-base-content/65'>{focus.description}</p>
     </div>
   );
 };

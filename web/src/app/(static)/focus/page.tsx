@@ -9,7 +9,7 @@ export const generateMetadata = () => {
 const FocusPage = () => {
   return (
     <div>
-      <h1 className='display-6 fw-bold py-5'>
+      <h1 className='py-5 text-3xl font-bold'>
         Focus: Search over relevant policies
       </h1>
       <p>
@@ -22,7 +22,7 @@ const FocusPage = () => {
         alt='Focus bar screenshot'
         width={943}
         height={77}
-        className='my-3'
+        className='my-3 h-auto max-w-full'
       />
 
       <p>

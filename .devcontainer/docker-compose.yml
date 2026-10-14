@@ -7,6 +7,8 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - ..:/workspace:cached
+      # Keep Linux-native packages out of the macOS workspace bind mount.
+      - policywonk-web-node-modules:/workspace/web/node_modules
       - playwright-cache:/root/.cache/ms-playwright
       - ./persistent_bash_history:/home/vscode/.bash_history
     command: sleep infinity
@@ -27,5 +29,6 @@ services:
       - ./pg_data:/var/lib/postgresql/data
 
 volumes:
+  policywonk-web-node-modules:
   playwright-cache:
   pg_data:

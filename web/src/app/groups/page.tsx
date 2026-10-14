@@ -31,48 +31,42 @@ export default function GroupsPage() {
   };
 
   return (
-    <div className='container mt-5'>
-      <div className='row justify-content-center'>
-        <div className='col-md-8'>
-          <div className='card'>
-            <div className='card-header'>
-              <h2 className='mb-0'>Select a location</h2>
-            </div>
-            <div className='card-body'>
-              <p className='lead mb-4'>
-                Choose which location you want to use for your PolicyWonk
-                session:
-              </p>
-
-              <div className='list-group'>
-                {campuses.map((campus) => (
-                  <button
-                    key={campus.value}
-                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                      selectedGroup === campus.value ? 'active' : ''
-                    }`}
-                    onClick={() => handleGroupSelection(campus.value)}
-                    disabled={isLoading}
+    <div className='mx-auto w-full max-w-2xl px-4 py-12 md:px-8'>
+      <div className='card border border-main-border bg-base-100 shadow-sm'>
+        <div className='card-body gap-5'>
+          <div>
+            <h1 className='card-title text-2xl'>Select a location</h1>
+            <p className='mt-2 text-base text-base-content/75'>
+              Choose which location you want to use for your PolicyWonk session:
+            </p>
+          </div>
+          <div className='space-y-2'>
+            {campuses.map((campus) => (
+              <button
+                key={campus.value}
+                className={`flex w-full items-center justify-between rounded-box border border-main-border px-4 py-3 text-left font-medium transition-colors hover:border-primary hover:bg-primary/5 ${
+                  selectedGroup === campus.value
+                    ? 'border-primary bg-primary/10'
+                    : ''
+                }`}
+                onClick={() => handleGroupSelection(campus.value)}
+                disabled={isLoading}
+              >
+                <span>{campus.name}</span>
+                {isLoading && selectedGroup === campus.value && (
+                  <span
+                    className='loading loading-spinner loading-sm text-primary'
+                    role='status'
                   >
-                    <span>{campus.name}</span>
-                    {isLoading && selectedGroup === campus.value && (
-                      <div
-                        className='spinner-border spinner-border-sm text-light'
-                        role='status'
-                      >
-                        <span className='visually-hidden'>Loading...</span>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className='card-footer text-muted'>
-              <small>
-                Your selected location will determine which policies and
-                procedures are most relevant to your queries.
-              </small>
-            </div>
+                    <span className='sr-only'>Loading...</span>
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          <div className='border-t border-main-border pt-4 text-sm text-base-content/70'>
+            Your selected location will determine which policies and procedures
+            are most relevant to your queries.
           </div>
         </div>
       </div>

@@ -37,15 +37,19 @@ const FocusBar: React.FC<FocusBarProps> = ({ group, focus, onSelection }) => {
 
   return (
     <>
-      <div className='focus-bar' onClick={() => setOpen(true)}>
-        <div className='d-flex justify-content-start align-items-center'>
-          <span className='btn btn-link ps-0'>
-            <FontAwesomeIcon icon={faCaretDown} />
-            Focus: {focus.name}
-          </span>
-          <span className='text-muted small'>{focus.description}</span>
-        </div>
-      </div>
+      <button
+        type='button'
+        className='mb-2 flex w-full flex-col items-start gap-1 rounded-box px-0 py-2 text-left hover:text-primary sm:flex-row sm:items-center sm:gap-2'
+        onClick={() => setOpen(true)}
+      >
+        <span className='inline-flex shrink-0 items-center gap-2 font-semibold'>
+          <FontAwesomeIcon icon={faCaretDown} />
+          Focus: {focus.name}
+        </span>
+        <span className='min-w-0 text-sm text-base-content/65'>
+          {focus.description}
+        </span>
+      </button>
       <WonkyErrorBoundary>
         <FocusOptions
           group={group}

@@ -95,7 +95,9 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({
       {chats.length ? (
         <ChatHistoryList chats={chats} />
       ) : (
-        <p className='text-end me-3'>No chat history found</p>
+        <p className='px-4 text-sm text-base-content/65'>
+          No chat history found
+        </p>
       )}
     </WonkyErrorBoundary>
   );

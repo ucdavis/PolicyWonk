@@ -23,7 +23,7 @@ const ChatInput: FC<ChatInputProps> = ({
   onQuestionSubmit,
 }: ChatInputProps) => {
   return (
-    <div className='wonk-chat-width'>
+    <div className='mx-auto w-full max-w-3xl'>
       <FocusBar group={group} focus={focus} onSelection={onFocusSelection} />
       <ChatBoxForm onQuestionSubmit={onQuestionSubmit} />
     </div>

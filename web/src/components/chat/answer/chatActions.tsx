@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 
-import { AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
 import WonkyErrorBoundary from '../../../lib/error/wonkyErrorBoundary';
@@ -36,7 +35,7 @@ const ChatActions: React.FC<ChatActionsProps> = ({
 
   return (
     <>
-      <div className='d-flex'>
+      <div className='flex flex-wrap items-center'>
         <WonkyErrorBoundary>
           <CopyToClipboardButton
             id='gtag-copy-chat'
@@ -60,13 +59,11 @@ const ChatActions: React.FC<ChatActionsProps> = ({
           </>
         )}
       </div>
-      <AnimatePresence initial={false}>
-        {!onSharedPage && !!chat.reaction && (
-          <WonkyErrorBoundary>
-            <FeedbackBar />
-          </WonkyErrorBoundary>
-        )}
-      </AnimatePresence>
+      {!onSharedPage && !!chat.reaction && (
+        <WonkyErrorBoundary>
+          <FeedbackBar />
+        </WonkyErrorBoundary>
+      )}
     </>
   );
 };

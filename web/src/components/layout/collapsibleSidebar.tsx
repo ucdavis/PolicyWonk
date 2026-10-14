@@ -1,9 +1,7 @@
 'use client';
 import React from 'react';
 
-import { faBars, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { AnimatePresence, motion, Transition, Variants } from 'framer-motion';
-import Link from 'next/link';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { usePathname } from 'next/navigation';
 
 import { getGroupFromPathname } from '@/lib/groups';
@@ -17,106 +15,162 @@ import {
 import Footer from './footer';
 
 interface CollapsibleSidebarProps {
-  hideNewChatButton?: boolean;
   children?: React.ReactNode;
-  className?: string;
+  header?: React.ReactNode;
 }
 
+const focusableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
 const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
-  hideNewChatButton = false,
   children,
-  className,
+  header,
 }) => {
   const { isOpen, openSidebar, closeSidebar, isLargeScreen, sidebarRef } =
     useCollapsibleSidebar();
-
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+  const openButtonRef = React.useRef<HTMLButtonElement>(null);
+  const previousDrawerStateRef = React.useRef({ isOpen, isLargeScreen });
   const pathname = usePathname();
   const group = getGroupFromPathname(pathname);
 
-  const newChatUrl = group ? `/${group}/chat/new` : '/chat/new';
+  React.useEffect(() => {
+    const previousDrawerState = previousDrawerStateRef.current;
+
+    if (
+      !isLargeScreen &&
+      isOpen &&
+      (!previousDrawerState.isOpen || previousDrawerState.isLargeScreen)
+    ) {
+      closeButtonRef.current?.focus();
+    }
+
+    if (
+      !isLargeScreen &&
+      !isOpen &&
+      previousDrawerState.isOpen &&
+      !previousDrawerState.isLargeScreen
+    ) {
+      openButtonRef.current?.focus();
+    }
+
+    previousDrawerStateRef.current = { isOpen, isLargeScreen };
+  }, [isLargeScreen, isOpen]);
+
+  React.useEffect(() => {
+    if (!isOpen || isLargeScreen) {
+      return;
+    }
+
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements =
+        sidebarRef.current?.querySelectorAll<HTMLElement>(focusableSelector);
+
+      if (!focusableElements?.length) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', trapFocus);
+
+    return () => document.removeEventListener('keydown', trapFocus);
+  }, [isLargeScreen, isOpen, sidebarRef]);
 
   return (
     <>
-      <motion.nav
-        className={`wonk-sidebar-wrapper${className ? ` ${className}` : ''}`}
+      <nav
+        className={`flex h-dvh shrink-0 flex-col overflow-hidden border-b-8 border-b-secondary bg-base-100 transition-[width,transform,opacity,border-color] duration-300 ease-out ${
+          isOpen
+            ? 'w-64 translate-x-0 border-r border-main-border opacity-100'
+            : 'pointer-events-none w-0 -translate-x-full border-r border-transparent opacity-0'
+        } ${isLargeScreen ? 'relative' : 'fixed inset-y-0 left-0 z-50 shadow-xl'}`}
         role='navigation'
         aria-label='Main sidebar'
-        initial={false}
-        animate={isOpen ? 'open' : 'closed'}
-        variants={isLargeScreen ? sidebarVariants : sidebarVariantsMobile}
-        transition={transition}
-        layout
-        layoutId='wonk-sidebar'
+        aria-hidden={!isOpen}
+        inert={!isOpen}
         ref={sidebarRef}
       >
-        {isOpen && (
-          <motion.div
-            layout='position'
-            className='wonk-sidebar-header d-flex align-items-center justify-content-between container'
-          >
-            <button
-              className='btn btn-icon btn-lg btn-link'
-              onClick={closeSidebar}
-              aria-expanded={true}
-              aria-controls='wonk-sidebar-main'
-              title='close sidebar'
-            >
-              <AggieIcon icon={faBars} isDecorative={true} />
-            </button>
-            {!hideNewChatButton && (
-              <Link
-                className='btn btn-icon btn-lg btn-link'
-                onClick={() => {
-                  if (!isLargeScreen) {
-                    closeSidebar();
-                  }
-                }}
-                href={newChatUrl}
-                title='Start a new chat'
+        <div
+          className={`flex h-full w-64 flex-col transition-opacity ${
+            isOpen
+              ? 'delay-150 duration-150 opacity-100'
+              : 'duration-75 opacity-0'
+          }`}
+        >
+          <div className='shrink-0 px-4 pt-4 pb-4 max-lg:landscape:px-3 max-lg:landscape:py-2'>
+            <div className='flex items-center gap-2'>
+              {header && <div className='min-w-0 flex-1'>{header}</div>}
+              <button
+                ref={closeButtonRef}
+                type='button'
+                className='ml-auto flex size-11 shrink-0 cursor-pointer items-center justify-center text-base-content/75 hover:text-primary active:!bg-transparent lg:size-9'
+                onClick={closeSidebar}
+                aria-expanded={true}
+                aria-controls='wonk-sidebar-main'
+                aria-label='Close sidebar'
+                title='Close sidebar'
               >
-                <AggieIcon icon={faPenToSquare} isDecorative={true} />
-              </Link>
-            )}
-          </motion.div>
-        )}
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <motion.div
-              key='wonk-sidebar-main'
-              id='wonk-sidebar-main'
-              className='wonk-sidebar-main'
-              initial='hidden'
-              animate='open'
-              exit={isLargeScreen ? 'hidden' : ''}
-              variants={sidebarContentVariants}
-              transition={transition}
-            >
-              {children}
-              <Footer group={group} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.div
-            animate={isOpen ? 'open' : 'closed'}
-            variants={collapseButtonVariants}
-            initial={false}
-            transition={transition}
+                <AggieIcon icon={faBars} isDecorative={true} />
+              </button>
+            </div>
+          </div>
+          <div
+            id='wonk-sidebar-main'
+            className='flex min-h-0 flex-1 flex-col overflow-hidden pt-1'
           >
-            <button
-              className='btn-open-sidebar btn btn-icon btn-lg btn-link'
-              onClick={openSidebar}
-              aria-expanded={false}
-              aria-controls='wonk-sidebar-main'
-              title='Open Sidebar'
-            >
-              <AggieIcon icon={faBars} isDecorative={true} />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {children}
+          </div>
+          <Footer
+            group={group}
+            className='shrink-0 px-4 pb-4 max-lg:landscape:hidden'
+          />
+        </div>
+      </nav>
+      {isOpen && !isLargeScreen && (
+        <button
+          type='button'
+          className='fixed inset-0 z-40 cursor-default bg-neutral/20'
+          onClick={closeSidebar}
+          tabIndex={-1}
+          aria-label='Close sidebar'
+        />
+      )}
+      {!isOpen && (
+        <button
+          ref={openButtonRef}
+          type='button'
+          className='fixed top-3 left-2 z-40 flex size-11 cursor-pointer items-center justify-center text-base-content hover:text-primary active:!bg-transparent lg:absolute lg:top-5 lg:size-10'
+          onClick={openSidebar}
+          aria-expanded={false}
+          aria-controls='wonk-sidebar-main'
+          aria-label='Open sidebar'
+          title='Open sidebar'
+        >
+          <AggieIcon icon={faBars} isDecorative={true} />
+        </button>
+      )}
     </>
   );
 };
@@ -124,6 +178,7 @@ const CollapsibleSidebarComponent: React.FC<CollapsibleSidebarProps> = ({
 interface CollapsibleSidebarContextProps extends CollapsibleSidebarProps {
   isMobile: boolean;
 }
+
 const CollapsibleSidebar: React.FC<CollapsibleSidebarContextProps> = ({
   isMobile,
   ...rest
@@ -136,63 +191,3 @@ const CollapsibleSidebar: React.FC<CollapsibleSidebarContextProps> = ({
 };
 
 export default CollapsibleSidebar;
-
-const transition: Transition = {
-  type: 'tween',
-  ease: 'easeOut',
-  duration: 0.3,
-};
-
-const sidebarVariants: Variants = {
-  open: {
-    width: 'var(--sidebar-width-open)',
-    position: 'relative',
-    display: 'block',
-  },
-  closed: {
-    width: 0,
-    position: 'relative',
-    display: 'none',
-  },
-};
-
-const sidebarVariantsMobile: Variants = {
-  open: {
-    ...sidebarVariants.open,
-    position: 'absolute',
-    zIndex: 1000,
-  },
-  closed: {
-    ...sidebarVariants.closed,
-    position: 'absolute',
-    display: 'block',
-    transition: {
-      ...transition,
-    },
-    transitionEnd: {
-      position: 'relative',
-      display: 'none',
-      zIndex: 0,
-    },
-  },
-};
-
-const sidebarContentVariants: Variants = {
-  open: {
-    x: 0,
-    width: 'var(--sidebar-width-open)',
-  },
-  hidden: {
-    x: '-130%',
-    width: 'var(--sidebar-width-open)',
-  },
-};
-
-const collapseButtonVariants: Variants = {
-  open: {
-    display: 'none',
-  },
-  closed: {
-    display: 'block',
-  },
-};

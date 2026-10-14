@@ -9,11 +9,9 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { submitFeedback } from '../../../lib/actions';
-import { throwConfettiAt } from '../../../lib/confetti';
 import { useGtagEvent } from '../../../lib/hooks/useGtagEvent';
 import { ChatHistory, Feedback } from '../../../models/chat';
 import { GTagEvents } from '../../../models/gtag';
-import AnimatedButton from '../../ui/animatedButton';
 
 export type FeedbackLoadingStates = '' | Feedback;
 
@@ -28,8 +26,6 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
 }) => {
   const { id: chatId, reaction: feedback } = chat;
   const gtagEvent = useGtagEvent();
-
-  const thumbsUpRef = React.useRef<HTMLButtonElement>(null);
 
   const onFeedback = async (newFeedback: Feedback) => {
     const updatedChat: ChatHistory = {
@@ -57,24 +53,36 @@ const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
 
   return (
     <>
-      <AnimatedButton
-        buttonRef={thumbsUpRef}
-        displayBeforeClick={<FontAwesomeIcon icon={faThumbsUp} />}
-        displayOnClick={<FontAwesomeIcon icon={faThumbsUpSolid} />}
+      <button
+        type='button'
+        className={`btn btn-ghost btn-lg btn-square mr-1 bg-transparent text-base-content/60 shadow-none hover:bg-transparent hover:text-primary active:bg-transparent disabled:bg-transparent ${
+          feedback === 'thumbs_up' ? 'text-primary' : ''
+        }`}
         onClick={() => {
-          throwConfettiAt(thumbsUpRef.current);
           onFeedback('thumbs_up');
         }}
         disabled={!!feedback}
-        selected={feedback === 'thumbs_up'}
-      />
-      <AnimatedButton
-        displayBeforeClick={<FontAwesomeIcon icon={faThumbsDown} />}
-        displayOnClick={<FontAwesomeIcon icon={faThumbsDownSolid} />}
+        aria-label='Helpful response'
+        title='Helpful response'
+      >
+        <FontAwesomeIcon
+          icon={feedback === 'thumbs_up' ? faThumbsUpSolid : faThumbsUp}
+        />
+      </button>
+      <button
+        type='button'
+        className={`btn btn-ghost btn-lg btn-square mr-1 bg-transparent text-base-content/60 shadow-none hover:bg-transparent hover:text-primary active:bg-transparent disabled:bg-transparent ${
+          feedback === 'thumbs_down' ? 'text-primary' : ''
+        }`}
         onClick={() => onFeedback('thumbs_down')}
         disabled={!!feedback}
-        selected={feedback === 'thumbs_down'}
-      />
+        aria-label='Unhelpful response'
+        title='Unhelpful response'
+      >
+        <FontAwesomeIcon
+          icon={feedback === 'thumbs_down' ? faThumbsDownSolid : faThumbsDown}
+        />
+      </button>
     </>
   );
 };

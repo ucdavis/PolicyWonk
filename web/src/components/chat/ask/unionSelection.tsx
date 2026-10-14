@@ -43,37 +43,43 @@ const UnionSelection: React.FC<UnionSelectionProps> = ({
   }, [group, attempt]);
 
   return (
-    <div className='container'>
-      <h2 className='h4'>Union Selection</h2>
+    <div>
+      <h2 className='text-lg font-semibold'>Union selection</h2>
       {error ? (
-        <div role='alert'>
-          <p>
-            Union contracts are temporarily unavailable. Your focus has not
-            changed.
-          </p>
-          <button
-            type='button'
-            className='btn btn-link'
-            onClick={() => {
-              setError(false);
-              setUnions(undefined);
-              setAttempt((value) => value + 1);
-            }}
-          >
-            Try again
-          </button>
+        <div className='alert alert-error mt-4' role='alert'>
+          <div>
+            <p>
+              Union contracts are temporarily unavailable. Your focus has not
+              changed.
+            </p>
+            <button
+              type='button'
+              className='btn btn-link px-0 text-error-content underline'
+              onClick={() => {
+                setError(false);
+                setUnions(undefined);
+                setAttempt((value) => value + 1);
+              }}
+            >
+              Try again
+            </button>
+          </div>
         </div>
       ) : unions === undefined ? (
-        <p role='status'>Loading union contracts…</p>
+        <p className='mt-4' role='status'>
+          Loading union contracts…
+        </p>
       ) : unions.length === 0 ? (
-        <p>No searchable union contracts are available for this campus.</p>
+        <p className='mt-4'>
+          No searchable union contracts are available for this campus.
+        </p>
       ) : (
-        <div className='list-group'>
+        <div className='mt-4 space-y-2'>
           {unions.map((union) => (
             <button
               type='button'
               key={union.key}
-              className='list-group-item list-group-item-action'
+              className='block w-full rounded-box border border-main-border bg-base-100 px-4 py-3 text-left hover:border-primary hover:bg-primary/5'
               onClick={() =>
                 onSelection('unions', union.key, getUnionDescription(union))
               }

@@ -7,6 +7,7 @@ import { auth } from '@/auth';
 import MainContent from '@/components/chat/main';
 import { WonkReturnObject, isWonkSuccess } from '@/lib/error/error';
 import WonkyPageError from '@/lib/error/wonkyPageError';
+import { isValidGroupName } from '@/lib/groups';
 import { cleanMetadataTitle } from '@/lib/util';
 import { ChatHistory } from '@/models/chat';
 import type { WonkSession } from '@/models/session';
@@ -49,13 +50,19 @@ export async function generateMetadata(
 const SharePage = async (props: SharedPageProps) => {
   const params = await props.params;
 
-  const { shareid } = params;
+  const { group, shareid } = params;
+  const newQuestionHref = isValidGroupName(group) ? `/${group}/chat/new` : '/';
 
   // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page
   const result = await getCachedSharedChat(shareid);
 
   if (!isWonkSuccess(result)) {
-    return <WonkyPageError status={result.status} />;
+    return (
+      <WonkyPageError
+        status={result.status}
+        newQuestionHref={newQuestionHref}
+      />
+    );
   }
 
   return (

@@ -74,7 +74,12 @@ const ChatPage = async (props: HomePageProps) => {
     // any unexpected or server errors will be caught by the error.tsx boundary instead of crashing the page
     const result = await getCachedChat(chatid);
     if (!isWonkSuccess(result)) {
-      return <WonkyPageError status={result.status} />;
+      return (
+        <WonkyPageError
+          status={result.status}
+          newQuestionHref={`/${group}/chat/new`}
+        />
+      );
     }
     chat = result.data;
   } else {

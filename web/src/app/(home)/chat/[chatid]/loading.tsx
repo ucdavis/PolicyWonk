@@ -1,15 +1,14 @@
 import React from 'react';
 
 import ChatHeader from '@/components/chat/chatHeader';
-import WonkTop from '@/components/layout/wonkTop';
 
 const Loading: React.FC = () => {
   return (
-    <>
-      <WonkTop>
+    <div className='min-h-0 flex-1 overflow-y-auto pt-16 lg:pt-4'>
+      <div className='mx-auto w-full max-w-3xl'>
         <ChatHeader>Loading, please wait...</ChatHeader>
-      </WonkTop>
-    </>
+      </div>
+    </div>
   );
 };
 

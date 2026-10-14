@@ -66,26 +66,23 @@ const Login: React.FC<LoginProps> = async (props) => {
 
   return (
     <>
-      <div className='m-auto mt-5 row justify-content-center'>
-        <div className='col-12 col-md-6 login-wrapper'>
-          <h1>Welcome to PolicyWonk</h1>
-          <p className='lede'>
+      <div className='mx-auto flex w-full max-w-2xl items-center px-4 py-12 md:px-8'>
+        <div className='w-full rounded-box border border-main-border bg-base-100 p-6 shadow-sm md:p-8'>
+          <h1 className='text-3xl font-semibold'>Welcome to PolicyWonk</h1>
+          <p className='mt-3 text-lg leading-7 text-base-content/75'>
             PolicyWonk will help you answer your UC administrative policy and
             procedure questions, just login with your school below, type your
             question and voila PolicyWonk will do it’s best to answer it!
           </p>
-          <h4>Available Campuses</h4>
+          <h2 className='mt-7 text-lg font-semibold'>Available Campuses</h2>
           {devAuthBypassEnabled && (
             <>
-              <h4 className='mt-4'>Development</h4>
+              <h3 className='mt-5 text-base font-semibold'>Development</h3>
               <form action={devBypassSignInHandler}>
                 <input type='hidden' name='callbackUrl' value={callbackUrl} />
                 <input type='hidden' name='userId' value={devAuthUserId} />
-                <div className='d-grid'>
-                  <button
-                    type='submit'
-                    className='btn btn-outline-secondary btn-md btn-block m-1'
-                  >
+                <div className='mt-2 grid'>
+                  <button type='submit' className='btn btn-outline w-full'>
                     Dev login (user {devAuthUserId})
                   </button>
                 </div>
@@ -94,21 +91,21 @@ const Login: React.FC<LoginProps> = async (props) => {
           )}
           <form action={signInHandler}>
             <input type='hidden' name='callbackUrl' value={callbackUrl} />
-            <div className='d-grid'>
+            <div className='mt-3 grid gap-2'>
               {campuses.map((campus) => (
                 <button
                   key={campus.value}
                   type='submit'
                   name='tenant'
                   value={campus.value}
-                  className='btn btn-primary btn-md btn-block m-1'
+                  className='btn btn-primary w-full'
                 >
                   {campus.name}
                 </button>
               ))}
             </div>
           </form>
-          <div className='mt-4 text-center'>
+          <div className='mt-6 text-center text-sm text-base-content/75'>
             <small>
               Don&apos;t see your campus listed?{' '}
               <a
@@ -121,7 +118,7 @@ const Login: React.FC<LoginProps> = async (props) => {
               if you would like to use PolicyWonk.
             </small>
           </div>
-          <div className='login-footer mt-auto'>
+          <div className='mt-8 border-t border-main-border pt-5 text-right'>
             <FooterLinks />
             <a
               target='_blank'
@@ -135,7 +132,9 @@ const Login: React.FC<LoginProps> = async (props) => {
                 alt='UCOP logo'
               />
             </a>
-            <p>Copyright &copy; All rights reserved.</p>
+            <p className='mt-2 text-sm text-base-content/70'>
+              Copyright &copy; All rights reserved.
+            </p>
           </div>
         </div>
       </div>

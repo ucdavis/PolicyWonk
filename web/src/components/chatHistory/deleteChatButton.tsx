@@ -3,13 +3,11 @@ import React from 'react';
 
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { deleteChatFromSidebar } from '../../lib/actions';
 import { checkActiveChat } from '../../lib/util';
-import { IconVariants, IconVariantOptions } from '../../models/animations';
-import AnimatedButton from '../ui/animatedButton';
+import { useCollapsibleSidebar } from '../layout/collapsibleSidebarProvider';
 
 interface DeleteChatButtonProps {
   chatId: string;
@@ -22,10 +20,10 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const pathname = usePathname();
-
   const router = useRouter();
+  const { onNavigate } = useCollapsibleSidebar();
 
-  const handleRemoveChat = async (chatId: string) => {
+  const handleRemoveChat = async () => {
     const isActiveChat = checkActiveChat(pathname, chatId);
     setIsLoading(true);
     // TODO: handle errors, set isLoading to false on err
@@ -41,45 +39,29 @@ const DeleteChatButton: React.FC<DeleteChatButtonProps> = ({
     }
   };
 
-  const adjustedVariant = {
-    ...IconVariants,
-    bounce: {
-      ...IconVariants.bounce,
-      y: [0, -1, 0],
-    },
-  };
+  if (!isHovering && !isLoading) {
+    return null;
+  }
+
   return (
-    <div className='list-actions'>
-      {(isHovering || isLoading) && (
-        <AnimatedButton
-          className='btn btn-link'
-          color='link'
-          style={{ width: '24px', height: '24px', padding: 0 }} // lock button size
-          displayBeforeClick={
-            <motion.div
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }} // lock icon size container
-              variants={IconVariants}
-              initial={false}
-              animate={
-                isLoading
-                  ? adjustedVariant.bounce
-                  : IconVariantOptions.bounceStop
-              }
-            >
-              <FontAwesomeIcon icon={faTrash} size='1x' />
-            </motion.div>
+    <div className='absolute inset-y-0 right-0 z-10 flex items-center rounded-r-lg bg-base-300 px-2'>
+      <button
+        className='btn btn-link btn-square btn-sm text-base-content/70 hover:text-error'
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (checkActiveChat(pathname, chatId)) {
+            onNavigate(handleRemoveChat);
+          } else {
+            void handleRemoveChat();
           }
-          onClick={() => handleRemoveChat(chatId)}
-          title={'Delete chathistory link'}
-          disabled={isLoading}
-        />
-      )}
+        }}
+        title='Delete chat'
+        aria-label='Delete chat'
+        disabled={isLoading}
+      >
+        <FontAwesomeIcon icon={faTrash} spin={isLoading} />
+      </button>
     </div>
   );
 };

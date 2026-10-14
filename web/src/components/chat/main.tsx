@@ -5,7 +5,10 @@ import { useChat } from '@ai-sdk/react';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DefaultChatTransport, type UIMessage } from 'ai';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+
+import { campusMap } from '@/lib/constants';
 
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
@@ -13,8 +16,6 @@ import { useGtagEvent } from '../../lib/hooks/useGtagEvent';
 import type { ChatHistory } from '../../models/chat';
 import type { Focus } from '../../models/focus';
 import { GTagEvents } from '../../models/gtag';
-import WonkBottom from '../layout/wonkBottom';
-import WonkTop from '../layout/wonkTop';
 
 import ChatActions from './answer/chatActions';
 import FocusBanner from './answer/focusBanner';
@@ -52,6 +53,21 @@ const chatMessagesToUIMessages = (messages: ChatHistory['messages']) => {
   return uiMessages;
 };
 
+const createBlankChatState = (chat: ChatHistory): ChatHistory => ({
+  id: '',
+  active: true,
+  title: '',
+  messages: [],
+  assistantSlug: 'policywonk',
+  meta: { focus: chat.meta.focus },
+  group: chat.group,
+  llmModel: chat.llmModel,
+  userId: chat.userId,
+  reaction: undefined,
+  timestamp: new Date(),
+  shareId: undefined,
+});
+
 const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -72,20 +88,22 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     []
   );
 
-  const { messages, sendMessage, status, error } = useChat({
-    transport,
-    messages: initialMessages,
-    onData: (dataPart) => {
-      if (dataPart.type !== 'data-aggiethought') {
-        return;
-      }
+  const { messages, sendMessage, setMessages, status, error, clearError } =
+    useChat({
+      transport,
+      messages: initialMessages,
+      onData: (dataPart) => {
+        if (dataPart.type !== 'data-aggiethought') {
+          return;
+        }
 
-      const thought = dataPart.data;
-      if (typeof thought === 'string') {
-        setCurrentStatusMessage(thought);
-      }
-    },
-  });
+        const thought = dataPart.data;
+        if (typeof thought === 'string') {
+          setCurrentStatusMessage(thought);
+        }
+      },
+    });
+  const isAnswerInProgress = status === 'submitted' || status === 'streaming';
 
   const chatIdFromMetadata = React.useMemo(() => {
     const lastAssistantMessage = [...messages]
@@ -129,15 +147,28 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     }
   }, [router, pathname, chat.group, chat.id, chatIdFromMetadata, status]);
 
-  const onNewMessage = () => {
-    let newRoute = `/?focus=${chat.meta.focus.name}`;
+  const navigateToNewQuestion = React.useCallback(() => {
+    let newRoute = `/${chat.group}/chat/new?focus=${chat.meta.focus.name}`;
 
     if (chat.meta.focus.subFocus) {
       newRoute += `&subFocus=${chat.meta.focus.subFocus}`;
     }
 
+    setMessages([]);
+    setChat(createBlankChatState);
+    setCurrentStatusMessage('');
+    clearError();
+    didLogNewChatEventRef.current = false;
+    lastRedirectedChatIdRef.current = null;
     router.push(newRoute);
-  };
+  }, [
+    chat.group,
+    chat.meta.focus.name,
+    chat.meta.focus.subFocus,
+    clearError,
+    router,
+    setMessages,
+  ]);
 
   const onFocusSelection = (focus: Focus) => {
     setChat((currentChat) => ({
@@ -176,22 +207,43 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     setChat((currentChat) => ({ ...currentChat, shareId }));
   };
 
+  const campus = campusMap[chat.group];
+  const campusLogo = campus ? (
+    <div className='mx-auto -mt-4 mb-6 flex w-full max-w-7xl justify-end lg:mt-0'>
+      <a
+        href={campus.link}
+        target='_blank'
+        rel='noopener noreferrer'
+        aria-label={campus.name}
+      >
+        <Image
+          src={campus.logoPath}
+          alt=''
+          aria-hidden='true'
+          width={120}
+          height={54}
+          className='h-auto w-28 md:w-32'
+        />
+      </a>
+    </div>
+  ) : null;
+
   return (
     <>
       {!!error && (
-        <div className='wonk-chat-width'>
+        <div className='mx-auto w-full max-w-3xl'>
           <WonkyClientError thereWasAnErrorLoadingThe='chat' type='alert' />
         </div>
       )}
-      {!messages.length ? (
-        <>
-          <WonkTop>
-            <ChatHeader>
-              <></>
-              {/* Empty children here */}
-            </ChatHeader>
-          </WonkTop>
-          <WonkBottom>
+      <div
+        className={`min-h-0 flex-1 overflow-y-auto ${
+          !messages.length ? 'flex flex-col py-8' : 'pt-8 lg:pt-4'
+        }`}
+      >
+        {campusLogo}
+        {!messages.length ? (
+          <div className='mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-2 pb-8'>
+            <ChatHeader className='py-0' />
             <WonkyErrorBoundary
               fallback={
                 <WonkyClientError
@@ -207,12 +259,9 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
                 onQuestionSubmit={onQuestionSubmit}
               />
             </WonkyErrorBoundary>
-            {/* <Disclaimer /> */}
-          </WonkBottom>
-        </>
-      ) : (
-        <>
-          <WonkTop>
+          </div>
+        ) : (
+          <div className='mx-auto w-full max-w-3xl'>
             <FocusBanner focus={chat.meta.focus} />
             {messages.map((message, index) => {
               const text = getTextFromMessage(message);
@@ -255,31 +304,26 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
             })}
             {status !== 'ready' &&
               messages[messages.length - 1]?.role !== 'assistant' && (
-                <div className='wonk-chat-width'>
-                  <p className='text-muted mb-0'>
-                    {currentStatusMessage || 'PolicyWonk is thinking…'}
-                  </p>
-                </div>
+                <p className='mb-0 text-base-content/65'>
+                  {currentStatusMessage || 'PolicyWonk is thinking…'}
+                </p>
               )}
-          </WonkTop>
-          <WonkBottom>
-            <div className='wonk-chat-width mt-auto'>
-              <div className='pt-4'>
+            {!isAnswerInProgress && (
+              <div className='mt-4 pb-4'>
                 <button
-                  className='btn btn-primary'
-                  onClick={() => {
-                    onNewMessage();
-                  }}
-                  aria-label='Ask another question'
+                  type='button'
+                  className='btn btn-primary w-full sm:w-auto'
+                  onClick={navigateToNewQuestion}
+                  aria-label='Start a new question'
                 >
-                  Ask another question{' '}
-                  <FontAwesomeIcon className='ms-1' icon={faPenToSquare} />
+                  New question{' '}
+                  <FontAwesomeIcon className='ml-1' icon={faPenToSquare} />
                 </button>
               </div>
-            </div>
-          </WonkBottom>
-        </>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 };

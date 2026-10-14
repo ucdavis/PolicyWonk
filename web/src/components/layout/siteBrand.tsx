@@ -1,38 +1,28 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { campusMap } from '@/lib/constants';
 import { getGroupFromPathname } from '@/lib/groups';
 
 const SiteBrand = () => {
   const pathname = usePathname();
   const group = getGroupFromPathname(pathname);
-  const { logoPath, link } = campusMap[group];
   const chatHref = `/${group}/chat/new`;
 
   return (
-    <div className='wonk-header d-flex container justify-content-between align-items-center'>
-      <div>
-        <Link className='site-brand' href={chatHref} title='Start a new chat'>
-          <h1 className='mb-0'>PolicyWonk</h1>
-        </Link>
-
-        <p className='discreet m-0'>Beta</p>
-      </div>
-      <div className='text-end'>
-        <Link
-          className='campus-link'
-          href={link}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          <Image src={logoPath} alt='Logo' width={100} height={45} />
-        </Link>
-      </div>
-    </div>
+    <Link
+      className='block leading-tight no-underline'
+      href={chatHref}
+      title='Start a new chat'
+    >
+      <span className='block text-2xl font-bold tracking-tight text-primary'>
+        PolicyWonk
+      </span>
+      <span className='block text-sm font-medium tracking-wide text-base-content/80'>
+        UC policy assistant
+      </span>
+    </Link>
   );
 };
 

@@ -3,12 +3,8 @@ import React from 'react';
 
 import { faRotateRight, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { motion } from 'framer-motion';
-import { Button } from 'reactstrap';
 
-import { IconVariants, IconVariantOptions } from '../../../models/animations';
 import { GTagEvents } from '../../../models/gtag';
-import AnimatedButton from '../../ui/animatedButton';
 
 import { ShareModalLoadingStates } from './shareModal';
 
@@ -23,13 +19,14 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
 }) => {
   const isLoading = loadingState === GTagEvents.SHARE;
   return (
-    <Button
-      color='secondary'
+    <button
+      type='button'
+      className='btn btn-secondary w-full sm:w-auto'
       onClick={handleShare}
       disabled={loadingState !== ''}
     >
       {isLoading ? 'Sharing...' : 'Share'}
-    </Button>
+    </button>
   );
 };
 
@@ -42,26 +39,17 @@ export const UnshareButton: React.FC<UnshareButtonProps> = ({
   handleUnshare,
   loadingState,
 }) => {
-  const isLoading = loadingState === GTagEvents.UNSHARE;
   return (
-    <AnimatedButton
-      displayBeforeClick={
-        <motion.div
-          variants={IconVariants}
-          initial={false}
-          animate={
-            isLoading
-              ? IconVariantOptions.bounce
-              : IconVariantOptions.bounceStop
-          }
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </motion.div>
-      }
+    <button
+      type='button'
+      className='btn btn-ghost btn-sm btn-square mr-1 text-base-content/60 hover:text-primary'
       onClick={handleUnshare}
       title={'Delete share link'}
+      aria-label='Delete share link'
       disabled={loadingState !== ''}
-    />
+    >
+      <FontAwesomeIcon icon={faTrash} />
+    </button>
   );
 };
 
@@ -74,25 +62,16 @@ export const RegenerateShareButton: React.FC<RegenerateShareButtonProps> = ({
   handleShare,
   loadingState,
 }) => {
-  const isLoading = loadingState === GTagEvents.REGEN_SHARE;
   return (
-    <AnimatedButton
-      displayBeforeClick={
-        <motion.div
-          variants={IconVariants}
-          initial={false}
-          animate={
-            isLoading
-              ? IconVariantOptions.rotate
-              : IconVariantOptions.rotateStop
-          }
-        >
-          <FontAwesomeIcon icon={faRotateRight} />
-        </motion.div>
-      }
+    <button
+      type='button'
+      className='btn btn-ghost btn-sm btn-square mr-1 text-base-content/60 hover:text-primary'
       onClick={handleShare}
       title={'Regenerate share link'}
+      aria-label='Regenerate share link'
       disabled={loadingState !== ''}
-    />
+    >
+      <FontAwesomeIcon icon={faRotateRight} />
+    </button>
   );
 };

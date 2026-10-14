@@ -33,14 +33,17 @@ export function GroupSwitcher({
   };
 
   return (
-    <div className='group-switcher'>
-      <div className='mb-3'>
-        <label htmlFor='groupSelect' className='form-label'>
+    <div className='space-y-4'>
+      <div className='space-y-2'>
+        <label
+          htmlFor='groupSelect'
+          className='text-sm font-semibold uppercase'
+        >
           Current Location:
         </label>
         <select
           id='groupSelect'
-          className='form-select'
+          className='select w-full border-main-border bg-base-100'
           value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
           disabled={isUpdating}

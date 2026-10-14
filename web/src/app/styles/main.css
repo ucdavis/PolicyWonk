@@ -1,0 +1,101 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@ucdavis/gunrock-tailwind/imports.css';
+
+@source '../../';
+
+@plugin 'daisyui' {
+  themes: policywonk --default;
+  logs: false;
+}
+
+@theme {
+  --color-main-border: #e6e7e9;
+  --animate-chat-title-scroll: chat-title-scroll 8s linear infinite;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'policywonk';
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #fcfcfc;
+  --color-base-200: #f6f8fa;
+  --color-base-300: #e6e7e9;
+  --color-base-content: #1f1f1f;
+  --color-primary: #1295d8;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffb511;
+  --color-secondary-content: #033266;
+  --color-accent: #54c7ec;
+  --color-accent-content: #033266;
+  --color-success: #008eaa;
+  --color-success-content: #ffffff;
+  --color-warning: #ffb511;
+  --color-warning-content: #033266;
+  --color-error: #8c1515;
+  --color-error-content: #ffffff;
+  --color-info: #1295d8;
+  --color-info-content: #ffffff;
+  --color-neutral: #033266;
+  --color-neutral-content: #ffffff;
+  --radius-selector: 0.375rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body[data-sidebar-scroll-lock] {
+  overflow: hidden;
+}
+
+html {
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+@keyframes chat-title-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 1rem));
+  }
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: var(--color-main-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 5px;
+}
