@@ -13,7 +13,7 @@ import { campusMap } from '@/lib/constants';
 import WonkyClientError from '../../lib/error/wonkyClientError';
 import WonkyErrorBoundary from '../../lib/error/wonkyErrorBoundary';
 import { useGtagEvent } from '../../lib/hooks/useGtagEvent';
-import { blankAIState, type ChatHistory } from '../../models/chat';
+import type { ChatHistory } from '../../models/chat';
 import type { Focus } from '../../models/focus';
 import { GTagEvents } from '../../models/gtag';
 import { useNewQuestionNavigation } from '../layout/newQuestionNavigationProvider';
@@ -53,6 +53,21 @@ const chatMessagesToUIMessages = (messages: ChatHistory['messages']) => {
 
   return uiMessages;
 };
+
+const createBlankChatState = (chat: ChatHistory): ChatHistory => ({
+  id: '',
+  active: true,
+  title: '',
+  messages: [],
+  assistantSlug: 'policywonk',
+  meta: { focus: chat.meta.focus },
+  group: chat.group,
+  llmModel: chat.llmModel,
+  userId: chat.userId,
+  reaction: undefined,
+  timestamp: new Date(),
+  shareId: undefined,
+});
 
 const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   const router = useRouter();
@@ -154,12 +169,7 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     }
 
     setMessages([]);
-    setChat((currentChat) => ({
-      ...blankAIState,
-      group: currentChat.group,
-      userId: currentChat.userId,
-      meta: { focus: currentChat.meta.focus },
-    }));
+    setChat(createBlankChatState);
     setCurrentStatusMessage('');
     clearError();
     didLogNewChatEventRef.current = false;
