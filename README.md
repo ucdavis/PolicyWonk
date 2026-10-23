@@ -27,6 +27,8 @@ For test/production environments, pipeline approvals, verification, and rollback
 
 ### Prerequisites
 
+The web build, runtime, and development container use Node.js 22.23.4. Use the same version for development outside the container. After pulling a runtime update, run `Dev Containers: Rebuild Container` in VS Code.
+
 - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 - Install [VS Code Dev Containers extension](https://code.visualstudio.com/docs/devcontainers/containers)
