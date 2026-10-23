@@ -4,17 +4,19 @@
 # Build when this component or its pipeline changes.
 trigger:
   branches: { include: ['main'] }
-  paths:    { include: ['web/**', 'azure-pipelines.yml'] }
+  paths:    { include: ['web/**', 'deploy/boxy/**', 'azure-pipelines.yml'] }
 
 pr:
   branches: { include: ['main'] }
-  paths:    { include: ['web/**', 'azure-pipelines.yml'] }
+  paths:    { include: ['web/**', 'deploy/boxy/**', 'azure-pipelines.yml'] }
 
 variables:
   acrLoginServer: policywonkcontainers.azurecr.io
   imageRepo: policywonk
   imageTag: $(Build.SourceVersion)                     # commit SHA
   imageUri: $(acrLoginServer)/$(imageRepo):$(imageTag)
+  ssoImageRepo: policywonk-sso
+  ssoImageUri: $(acrLoginServer)/$(ssoImageRepo):$(imageTag)
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
 stages:
@@ -37,6 +39,15 @@ stages:
         repository: $(imageRepo)
         arguments: -t $(imageUri)
 
+    - task: Docker@2
+      displayName: Build patched BoxyHQ image
+      inputs:
+        command: build
+        dockerfile: deploy/boxy/Dockerfile
+        buildContext: deploy/boxy
+        repository: $(ssoImageRepo)
+        arguments: -t $(ssoImageUri)
+
     # --- Login & push image (only on main) ---
     - task: Docker@2
       displayName: docker push
@@ -47,6 +58,16 @@ stages:
         tags: |
           $(imageTag)
         containerRegistry: CaesProductionPolicyWonkContainerConnection # Docker-registry SC
+
+    - task: Docker@2
+      displayName: Push patched BoxyHQ image
+      condition: and(succeeded(), eq(variables.isMain, 'True'))
+      inputs:
+        command: push
+        repository: $(ssoImageRepo)
+        tags: |
+          $(imageTag)
+        containerRegistry: CaesProductionPolicyWonkContainerConnection
 
 # ─────────────────────── 2) DEPLOY to TEST ───────────────────────
 - stage: DeployTest

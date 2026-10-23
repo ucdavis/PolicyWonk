@@ -1,13 +1,13 @@
-# Use the python devcontainer which also installs Node.js via devcontainer.json
+# Use the Python devcontainer and install the pinned Node.js runtime below.
 # https://hub.docker.com/r/microsoft/devcontainers-python
 FROM mcr.microsoft.com/vscode/devcontainers/python:3.12
 
 # The legacy base image includes an obsolete Yarn apt source whose signing key
 # is no longer available. Remove it before the NodeSource setup script refreshes apt.
 RUN rm -f /etc/apt/sources.list.d/yarn.list \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \
-    && apt-get install -y nodejs \
+    && apt-get install -y nodejs=22.23.4-1nodesource1 \
     && rm -rf /var/lib/apt/lists/*
 
 # copy requirements

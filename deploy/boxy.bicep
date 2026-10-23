@@ -10,8 +10,8 @@ param webAppName string = 'policywonk-prod-sso'
 @description('Azure region for the Web App.')
 param webAppLocation string = 'westus2'
 
-@description('Container image name to run (including tag).')
-param containerImage string = 'boxyhq/jackson:1.42.0'
+@description('Patched SSO image URI from the frontend build: policywonkcontainers.azurecr.io/policywonk-sso:<commit SHA>.')
+param containerImage string
 
 // Create or update the Web App in this *resource group* deployment
 resource webApp 'Microsoft.Web/sites@2022-09-01' = {
