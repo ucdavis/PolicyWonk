@@ -22,18 +22,20 @@ export const generateMetadata = async () => {
   };
 };
 
-// Server action to handle sign in based on tenant value and callbackUrl
+// Resolve the selected app group to its configured Jackson tenant.
 async function signInHandler(formData: FormData) {
   'use server';
-  // pull tenant and callbackUrl from the submitted form data
-  const tenant = formData.get('tenant') as string;
+  const campus = campuses.find((c) => c.value === formData.get('tenant'));
+  if (!campus) {
+    throw new Error('Unknown campus');
+  }
   const callbackUrl = (formData.get('callbackUrl') as string) || '/';
 
   await signIn(
     'boxyhq-saml',
     { redirectTo: callbackUrl },
     {
-      tenant,
+      tenant: campus.ssoTenant,
       product: 'policywonk',
     }
   );

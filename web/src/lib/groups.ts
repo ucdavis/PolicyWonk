@@ -1,4 +1,4 @@
-import { campusMap, DEFAULT_GROUP } from './constants';
+import { campuses, campusMap, DEFAULT_GROUP } from './constants';
 
 export const getGroupFromPathname = (pathname: string) => {
   const pathGroup = pathname?.split('/')[1];
@@ -51,13 +51,14 @@ export const isValidGroupName = (group: string | undefined) => {
 };
 
 export const getGroupNameFromAffiliation = (affiliations: string[]): string => {
-  // affiliations is an array of strings like `staff@ucdavis.edu` or `faculty@ucsf.edu`, etc
-  // a person can have multiple affiliations, so we need to split by comma and probably just take the first one (or the first valid one)
-  // We'll want to try to match each with one of our valid groups
+  // Use the first recognized scope, which may differ from the app's group ID.
   for (const aff of affiliations) {
-    const match = aff.match(/@([a-zA-Z0-9-_]+)\.edu/);
-    if (match && match[1] && campusMap[match[1]]) {
-      return campusMap[match[1]].value; // return group value (e.g., 'ucdavis', 'ucb', etc)
+    const scope = aff.match(/^[^@]+@([^@]+)$/)?.[1].toLowerCase();
+    const campus = campuses.find(
+      (c) => scope && c.affiliationScopes.includes(scope)
+    );
+    if (campus) {
+      return campus.value;
     }
   }
   return DEFAULT_GROUP; // Fallback to default group if no valid affiliation found

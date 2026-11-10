@@ -18,6 +18,8 @@ The Next.js app serves the website and chat. The Python backend continuously ing
 
 Both environments use the production registry, `policywonkcontainers.azurecr.io`, the same Elastic Cloud cluster, and the production SSO issuer, `https://policywonk-sso.ucdavis.edu`. Test has separate application data, but it cannot isolate a shared search-cluster or SSO upgrade. Different embedding models also mean retrieval quality can differ. These settings were checked on September 19, 2026.
 
+Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an app group `value`, a Jackson `ssoTenant` for product `policywonk`, and explicit `affiliationScopes` for `eduPersonScopedAffiliation`. Berkeley uses `ucb`, `ucberkeley`, and `berkeley.edu`, respectively. Keep the app group stable to preserve URLs and saved-chat grouping. When testing SSO, the Jackson connection must allow the test app's `/api/auth/callback/boxyhq-saml` URL as well as the production callback.
+
 ## Release flow
 
 - [Frontend pipeline 41](https://dev.azure.com/ucdavis/Policy%20Wonk/_build?definitionId=41) uses `azure-pipelines.yml`.
