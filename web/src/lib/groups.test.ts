@@ -10,6 +10,10 @@ describe('campus affiliation mapping', () => {
     ['staff@ucdavis.edu', 'ucdavis'],
     ['employee@ucop.edu', 'ucop'],
     ['faculty@ucsf.edu', 'ucsf'],
+    ['staff@ucla.edu', 'ucla'],
+    ['employee@ucmerced.edu', 'ucmerced'],
+    ['faculty@ucr.edu', 'ucr'],
+    ['staff@ucsd.edu', 'ucsd'],
   ])('maps %s to the app group %s', (affiliation, group) => {
     expect(getGroupNameFromAffiliation([affiliation])).toBe(group);
   });
@@ -30,6 +34,7 @@ describe('campus affiliation mapping', () => {
     'staff@berkeley.edu.example.org',
     'staff@department.berkeley.edu',
     'staff@invalid@berkeley.edu',
+    'staff@health.ucsd.edu',
     'berkeley.edu',
   ])(
     'does not infer a campus from an unrecognized scope: %s',

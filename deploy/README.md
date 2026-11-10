@@ -18,7 +18,11 @@ The Next.js app serves the website and chat. The Python backend continuously ing
 
 Both environments use the production registry, `policywonkcontainers.azurecr.io`, the same Elastic Cloud cluster, and the production SSO issuer, `https://policywonk-sso.ucdavis.edu`. Test has separate application data, but it cannot isolate a shared search-cluster or SSO upgrade. Different embedding models also mean retrieval quality can differ. These settings were checked on September 19, 2026.
 
-Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an app group `value`, a Jackson `ssoTenant` for product `policywonk`, and explicit `affiliationScopes` for `eduPersonScopedAffiliation`. Berkeley uses `ucb`, `ucberkeley`, and `berkeley.edu`, respectively. Keep the app group stable to preserve URLs and saved-chat grouping. When testing SSO, the Jackson connection must allow the test app's `/api/auth/callback/boxyhq-saml` URL as well as the production callback.
+Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an app group `value`, a Jackson `ssoTenant` for product `policywonk`, and explicit `affiliationScopes` for `eduPersonScopedAffiliation`. Berkeley uses `ucb`, `ucberkeley`, and `berkeley.edu`, respectively. Keep the app group stable to preserve URLs and saved-chat grouping. A Jackson connection must allow the `/api/auth/callback/boxyhq-saml` URL for each environment where that campus is enabled.
+
+The UCLA, Merced, Riverside, and San Diego connections use tenants `ucla`, `ucmerced`, `ucr`, and `ucsd`. Their InCommon entity IDs are `urn:mace:incommon:<campus>.edu`; each connection imports metadata from `https://mdq.incommon.org/entities/<entityID>`. The login and location pages both use the campus list, and new campuses receive the shared UCOP policy and union-contract choices. Campus sign-in does not add local policy sources.
+
+For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/api/auth/callback/boxyhq-saml` on new Jackson connections and set their default redirect to the TEST site. Add the production callback when promoting that campus. Confirm attribute release and complete sign-in with a campus tester before calling access verified. The San Diego / Health option uses UCSD's published IdP and `ucsd.edu` scope; it does not establish Health-only eligibility or assume that the email domain `health.ucsd.edu` is an affiliation scope.
 
 ## Release flow
 
