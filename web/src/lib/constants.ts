@@ -68,7 +68,7 @@ export const campuses: Campus[] = [
     link: 'https://www.ucr.edu/',
   },
   {
-    name: 'UC San Diego / Health',
+    name: 'UC San Diego',
     value: 'ucsd',
     ssoTenant: 'ucsd',
     affiliationScopes: ['ucsd.edu'],

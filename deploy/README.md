@@ -22,7 +22,7 @@ Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an a
 
 The UCLA, Merced, Riverside, and San Diego connections use tenants `ucla`, `ucmerced`, `ucr`, and `ucsd`. Their InCommon entity IDs are `urn:mace:incommon:<campus>.edu`; each connection imports metadata from `https://mdq.incommon.org/entities/<entityID>`. The login and location pages both use the campus list, and new campuses receive the shared UCOP policy and union-contract choices. Campus sign-in does not add local policy sources.
 
-For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/api/auth/callback/boxyhq-saml` on new Jackson connections and set their default redirect to the TEST site. Add the production callback when promoting that campus. Confirm attribute release and complete sign-in with a campus tester before calling access verified. The San Diego / Health option uses UCSD's published IdP and `ucsd.edu` scope; it does not establish Health-only eligibility or assume that the email domain `health.ucsd.edu` is an affiliation scope.
+For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/api/auth/callback/boxyhq-saml` on new Jackson connections and set their default redirect to the TEST site. Add the production callback when promoting that campus. Confirm attribute release and complete sign-in with a campus tester before calling access verified. The UC San Diego option uses UCSD's published IdP and `ucsd.edu` scope. No separate Health login is configured.
 
 ## Release flow
 
