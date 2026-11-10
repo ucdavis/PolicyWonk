@@ -43,6 +43,38 @@ export const campuses: Campus[] = [
     logoPath: '/media/groups/ucsf.png',
     link: 'https://www.ucsf.edu/',
   },
+  {
+    name: 'UCLA',
+    value: 'ucla',
+    ssoTenant: 'ucla',
+    affiliationScopes: ['ucla.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucla.edu/',
+  },
+  {
+    name: 'UC Merced',
+    value: 'ucmerced',
+    ssoTenant: 'ucmerced',
+    affiliationScopes: ['ucmerced.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucmerced.edu/',
+  },
+  {
+    name: 'UC Riverside',
+    value: 'ucr',
+    ssoTenant: 'ucr',
+    affiliationScopes: ['ucr.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucr.edu/',
+  },
+  {
+    name: 'UC San Diego / Health',
+    value: 'ucsd',
+    ssoTenant: 'ucsd',
+    affiliationScopes: ['ucsd.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucsd.edu/',
+  },
 ];
 
 export const DEFAULT_GROUP = 'ucdavis'; // Default group for the app, mostly for error handling
