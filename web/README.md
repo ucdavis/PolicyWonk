@@ -32,14 +32,14 @@ app to restore the previous five-result search and answer prompt, with no rerank
 call. The flag is read at request time and does not require a frontend build.
 
 Reranking uses the existing `OPENAI_API_KEY` through the Responses API. It has an
-eight-second timeout, no retries, and a 250,000-character input bound. On failure
-or oversized input, it uses the wider search's first five passages and treats
-their relevance as unassessed. This fallback differs from disabling the feature,
-which restores the original search. No ingestion or index changes are required.
+eight-second timeout, no retries, and a 250,000-character input bound. On oversized
+input or a reranker failure, including its own timeout, it uses the wider search's
+first five passages and treats their relevance as unassessed. Cancelling the chat
+request stops retrieval instead of using this fallback. Disabling the feature
+restores the original search. No ingestion or index changes are required.
 
 Run deterministic retrieval, fallback, and citation tests from `web` with
 `npm test`. Tests mock external services and do not incur API charges.
-
 
 ## Chat request and session safeguards
 
@@ -60,9 +60,9 @@ telemetry, and prevents subsequent document lookups or writes. The response
 closes at the deadline even while a downstream operation is settling. Its
 concurrency slot stays occupied until that work finishes. Chat document reads
 and answer writes use database transactions with a 2-second acquisition wait,
-10-second statement timeout, and 15-second transaction timeout. Shared catalog
-loads have their own 20-second deadline; cancelling one question does not cancel
-the catalog load for other callers.
+10-second statement timeout, and 15-second transaction timeout. For shared catalog
+load deadlines and cancellation behavior, see the
+[bargaining-unit catalog guide](../docs/bargaining-unit-catalog.md).
 
 Each app process permits 20 request starts per user per minute, two concurrent
 requests per user, and 20 concurrent requests total. Rejections use HTTP 429 and
@@ -75,7 +75,8 @@ settings and search indexes are unchanged.
 The November 2026 refresh retains Next 16, React 19, AI SDK 6, Prisma 6, and
 Node 22. Zod moves to 4 for its security fix. Matching Next packages and React
 types move together. Run `npm ci`, `npx prisma generate`, `npm test`,
-`npm run lint`, and `npm run build` with Node 22.23.5.
+`npm run lint`, and `npm run build` from `web` with the Node version specified in
+[the development prerequisites](../README.md#prerequisites).
 
 Two distinct tooling advisories remain, reported as ten affected dependency
 nodes by `npm audit` on November 12, 2026:

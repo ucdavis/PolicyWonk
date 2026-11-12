@@ -1,8 +1,9 @@
+import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
 import { expect, it, vi } from 'vitest';
 
 vi.mock('./auth', () => ({ auth: (handler: unknown) => handler }));
 
-import proxy from './proxy';
+import proxy, { config } from './proxy';
 
 const run = (auth: unknown, path = '/ucdavis/chat/new') =>
   (proxy as unknown as (req: unknown) => Response | undefined)({
@@ -31,4 +32,19 @@ it.each([
 it('accepts a real application session and permits the login route', () => {
   expect(run({ userId: 1, user: { name: 'Test' } })).toBeUndefined();
   expect(run(null, '/auth/login')).toBeUndefined();
+});
+
+it('lets chat enforce upload deadlines without proxy body buffering', () => {
+  expect(unstable_doesMiddlewareMatch({ config, url: '/api/chat' })).toBe(false);
+});
+
+it.each([
+  '/ucdavis/chat/new',
+  '/api/history',
+  '/api/unions',
+  '/api/chat/completions',
+  '/api/chat.json',
+  '/trpc/chat',
+])('retains proxy authentication for %s', (url) => {
+  expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true);
 });

@@ -69,7 +69,6 @@ Select up to five unique passage IDs in descending usefulness, covering the supp
       }),
       providerOptions: {
         openai: {
-          // The installed SDK predates GPT-6's model-name detection.
           forceReasoning: true,
           reasoningEffort: 'none',
           store: false,
