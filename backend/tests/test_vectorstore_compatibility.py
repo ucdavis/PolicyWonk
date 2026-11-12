@@ -14,7 +14,8 @@ from models.document_details import DocumentDetails
 def fake_client(monkeypatch):
     client = Mock()
     client.options.return_value = client
-    client.indices.exists.return_value = SimpleNamespace(meta=SimpleNamespace(status=200))
+    client.indices.exists.return_value = SimpleNamespace(
+        meta=SimpleNamespace(status=200))
     monkeypatch.setattr(elastic, "es_client", client)
     monkeypatch.setattr(vectorize, "es_client", client)
     embeddings = FakeEmbeddings(size=3)
@@ -27,7 +28,8 @@ def test_vectorize_preserves_text_fields_metadata_and_embedding_dimensions(monke
     client = fake_client(monkeypatch)
     # Capture the bulk transport boundary; execute the real LangChain store.
     bulk = Mock(return_value=(1, 0))
-    monkeypatch.setattr("elasticsearch.helpers.vectorstore._sync.vectorstore.bulk", bulk)
+    monkeypatch.setattr(
+        "elasticsearch.helpers.vectorstore._sync.vectorstore.bulk", bulk)
     delete = Mock()
     monkeypatch.setattr(vectorize, "delete_by_url", delete)
     source = Source(id=7, name="UCOP", type=SourceType.UCOP)
@@ -57,7 +59,8 @@ def test_vectorize_preserves_text_fields_metadata_and_embedding_dimensions(monke
 
 def test_missing_index_initialization_uses_the_installed_store(monkeypatch):
     client = fake_client(monkeypatch)
-    client.indices.exists.return_value = SimpleNamespace(meta=SimpleNamespace(status=404))
+    client.indices.exists.return_value = SimpleNamespace(
+        meta=SimpleNamespace(status=404))
     assert elastic.ensure_elasticsearch_index() is True
     mappings = client.indices.create.call_args.kwargs["mappings"]
     assert mappings["properties"]["vector"]["dims"] == 3
