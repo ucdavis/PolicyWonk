@@ -23,13 +23,8 @@ Markdown snapshots. DOCX coverage is checked against the independent source
 XML. The awards test checks that $315 and footnotes 2/3 do not become $3152 or
 $3153 and that the effective-date note survives.
 
-From `backend`, after running `uv sync --locked`:
-
-```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
-ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
-uv run --no-sync pytest tests -q --disable-socket --allow-unix-socket
-```
+Use the [dependency setup and offline test command](../../../README.md#installing-dependencies)
+in the backend README to run these fixtures.
 
 These samples contain extractable PDF text and native Word content. They do not
 exercise scanned-only OCR or prove retrieval/answer quality. Section-aware

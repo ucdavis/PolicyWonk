@@ -21,7 +21,8 @@ ELASTIC_INDEX = os.getenv("ELASTIC_INDEX", "vectorstore_test")
 
 # Setup for Embeddings
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_EMBEDDING_MODEL = os.getenv("LLM_EMBEDDING_MODEL", "text-embedding-3-small")
+LLM_EMBEDDING_MODEL = os.getenv(
+    "LLM_EMBEDDING_MODEL", "text-embedding-3-small")
 LLM_EMBEDDINGS_CHUNK_SIZE = int(os.getenv("LLM_EMBEDDINGS_CHUNK_SIZE", "64"))
 
 USE_DEV_SETTINGS = os.getenv("USE_DEV_SETTINGS", "false").lower() == "true"
@@ -39,7 +40,8 @@ USE_AZURE_EMBEDDINGS = bool(
     and AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT
     and not USE_DEV_SETTINGS
 )
-USE_OPENAI_EMBEDDINGS = bool(LLM_API_KEY and LLM_EMBEDDING_MODEL and not USE_DEV_SETTINGS)
+USE_OPENAI_EMBEDDINGS = bool(
+    LLM_API_KEY and LLM_EMBEDDING_MODEL and not USE_DEV_SETTINGS)
 
 # Create our elastic client
 es_client = Elasticsearch(
@@ -106,7 +108,8 @@ def ensure_elasticsearch_index() -> bool:
         logger.info(f"Created Elasticsearch index {ELASTIC_INDEX}")
         return True
     except Exception as e:
-        logger.error(f"Failed to create Elasticsearch index {ELASTIC_INDEX}: {e}")
+        logger.error(
+            f"Failed to create Elasticsearch index {ELASTIC_INDEX}: {e}")
         return False
 
 

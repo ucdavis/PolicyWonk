@@ -11,10 +11,10 @@
 Use Python 3.12 and uv 0.13.8. `pyproject.toml` defines direct dependencies and
 `uv.lock` records resolved versions and artifact hashes. Linux uses CPU-only
 PyTorch wheels from its explicit index; other packages resolve from PyPI.
-The unused umbrella `langchain` package is removed. The narrow integrations
-keep the existing embedding configuration, Elasticsearch 8 client family,
-index names, and document metadata. Historical migrations still use pgvector.
+The Elasticsearch integration requires an 8.x client. Historical migrations
+still use pgvector.
 
+Run dependency commands from `backend`:
 
 ```bash
 uv sync --locked --no-dev
@@ -34,8 +34,9 @@ ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
 uv run --no-sync pytest tests -q --disable-socket --allow-unix-socket
 ```
 
-Every worker Docker build, including PR CI, runs this suite with network sockets disabled
-before producing the runtime image. Dev/test dependencies stay in the test stage.
+Every worker Docker build, including PR CI, requires this suite to pass before
+producing the runtime image. TCP sockets are disabled; Unix sockets remain
+available for asyncio self-pipes. Dev/test dependencies stay in the test stage.
 No live ingestion, embeddings, migrations, or index changes run during tests.
 
 To update dependencies, edit `pyproject.toml`, run `uv lock`, then `uv sync --locked`
@@ -70,7 +71,7 @@ npx repomix backend --ignore "experiments/,.env"
 
 # Running locally (outside of devcontainer)
 
-First time, create a venv
+From `backend`, create a venv the first time:
 
 ```bash
 uv venv --python 3.12
@@ -82,7 +83,8 @@ Activate the venv
 source .venv/bin/activate
 ```
 
-Weird dependency issue w/ psycopg -- I needed to point to my openssl before running pip install
+If building psycopg2 on macOS needs Homebrew's OpenSSL and libpq paths, set them
+before installing dependencies:
 
 ```bash
 export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/libpq/lib"
@@ -90,11 +92,7 @@ export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/libpq
 export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig:/opt/homebrew/opt/libpq/lib/pkgconfig"
 ```
 
-Install dependencies
-
-```bash
-uv sync --locked --no-dev
-```
+Install dependencies using [the commands above](#installing-dependencies).
 
 Install playwright browsers (so that it is installed in the venv)
 
@@ -132,13 +130,8 @@ keeps the existing keys, with API date strings preserved and null dates mapped
 to empty strings. Downloads, content hashing, and indexing use the existing
 processor.
 
-Run the offline tests from `backend` after installing the dev dependencies:
-
-```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
-ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
-uv run --no-sync pytest tests/test_ucop.py -q --disable-socket --allow-unix-socket
-```
+Use the [offline test setup and command](#installing-dependencies). For only
+this adapter's tests, replace `tests` with `tests/test_ucop.py`.
 
 The tests mock HTTP and use an in-memory database for worker failure handling.
 For a read-only live listing check, `python -m background.sources.ucop` validates
@@ -173,13 +166,8 @@ can therefore require an adapter update instead of silently reducing coverage.
 Sitemaps have no authoritative total, so these cross-checks cannot detect a unit
 removed from both the sitemap and every checked navigation page.
 
-Run the offline source tests from `backend`:
-
-```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
-ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
-uv run --no-sync pytest tests/test_collective_bargaining.py -q --disable-socket --allow-unix-socket
-```
+Use the [offline test setup and command](#installing-dependencies). For only
+this adapter's tests, replace `tests` with `tests/test_collective_bargaining.py`.
 
 A live discovery comparison runs the old adapter from a trusted Git revision
 and the current one. It compares URLs, titles, and every original unit metadata

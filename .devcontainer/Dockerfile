@@ -10,7 +10,6 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list \
     && apt-get install -y nodejs=22.23.4-1nodesource1 \
     && rm -rf /var/lib/apt/lists/*
 
-# copy requirements
 COPY backend/pyproject.toml backend/uv.lock /tmp/backend/
 
 # install uv (root is fine; it's just a binary)
@@ -29,7 +28,4 @@ RUN uv sync --project /tmp/backend --locked
 # make the venv the default python/pip
 ENV PATH="$VENV_PATH/bin:$PATH"
 
-# We are not yet using playwright for web scraping. Uncomment the following lines once we need playwright
-# Install Playwright and download chromium
-# RUN python3 -m playwright install chromium && \
-#     playwright install-deps chromium
+# For browser setup, see backend/README.md, Browsing / Scraping.
