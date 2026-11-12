@@ -135,7 +135,9 @@ processor.
 Run the offline tests from `backend` after installing the dev dependencies:
 
 ```bash
-python -m pytest tests/test_ucop.py -q
+SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
+ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
+uv run --no-sync pytest tests/test_ucop.py -q --disable-socket --allow-unix-socket
 ```
 
 The tests mock HTTP and use an in-memory database for worker failure handling.
@@ -174,7 +176,9 @@ removed from both the sitemap and every checked navigation page.
 Run the offline source tests from `backend`:
 
 ```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests/test_collective_bargaining.py -q
+SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
+ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
+uv run --no-sync pytest tests/test_collective_bargaining.py -q --disable-socket --allow-unix-socket
 ```
 
 A live discovery comparison runs the old adapter from a trusted Git revision

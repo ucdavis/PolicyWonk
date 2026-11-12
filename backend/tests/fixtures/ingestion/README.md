@@ -26,7 +26,9 @@ $3153 and that the effective-date note survives.
 From `backend`, after running `uv sync --locked`:
 
 ```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests -q
+SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
+ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
+uv run --no-sync pytest tests -q --disable-socket --allow-unix-socket
 ```
 
 These samples contain extractable PDF text and native Word content. They do not

@@ -18,12 +18,13 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install uv==0.13.8
 
 # --- python deps in a venv owned by vscode ---
 ENV VENV_PATH=/home/vscode/.venv
+ENV UV_PROJECT_ENVIRONMENT="$VENV_PATH"
 RUN mkdir -p /home/vscode \
     && chown -R vscode:vscode /home/vscode
 
 USER vscode
 
-RUN UV_PROJECT_ENVIRONMENT="$VENV_PATH" uv sync --project /tmp/backend --locked
+RUN uv sync --project /tmp/backend --locked
 
 # make the venv the default python/pip
 ENV PATH="$VENV_PATH/bin:$PATH"
