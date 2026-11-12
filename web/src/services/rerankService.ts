@@ -8,7 +8,8 @@ export type EvidenceStatus = 'sufficient' | 'partial' | 'none' | 'unassessed';
 export const rerankPassages = async (
   question: string,
   candidates: PolicyIndex[],
-  model: LanguageModel
+  model: LanguageModel,
+  abortSignal?: AbortSignal
 ): Promise<{ results: PolicyIndex[]; evidenceStatus: EvidenceStatus }> => {
   if (candidates.length === 0) {
     return { results: [], evidenceStatus: 'none' };
@@ -76,7 +77,10 @@ Select up to five unique passage IDs in descending usefulness, covering the supp
       },
       maxOutputTokens: 500,
       maxRetries: 0,
-      abortSignal: AbortSignal.timeout(8_000),
+      abortSignal: AbortSignal.any([
+        AbortSignal.timeout(8_000),
+        ...(abortSignal ? [abortSignal] : []),
+      ]),
     });
 
     if (output.evidenceStatus === 'none') {
@@ -95,6 +99,7 @@ Select up to five unique passage IDs in descending usefulness, covering the supp
       evidenceStatus: output.evidenceStatus,
     };
   } catch {
+    abortSignal?.throwIfAborted();
     // Avoid logging provider errors containing questions or document text.
     console.warn('Policy reranking failed; using hybrid search order');
     return fallback;

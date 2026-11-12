@@ -16,10 +16,7 @@ import { ShareButton } from './shareButtons';
 import SharedUrl from './sharedUrl';
 
 export type ShareModalLoadingStates =
-  | ''
-  | GTagEvents.SHARE
-  | GTagEvents.REGEN_SHARE
-  | GTagEvents.UNSHARE;
+  '' | GTagEvents.SHARE | GTagEvents.REGEN_SHARE | GTagEvents.UNSHARE;
 
 interface ShareModalProps {
   chat: ChatHistory;

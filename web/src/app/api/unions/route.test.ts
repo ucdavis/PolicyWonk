@@ -19,7 +19,7 @@ import { GET } from './route';
 
 beforeEach(() => {
   vi.clearAllMocks();
-  auth.mockResolvedValue({ userId: 1 });
+  auth.mockResolvedValue({ userId: 1, user: { name: 'Test' } });
 });
 
 it('authenticates catalog access and validates group before querying', async () => {
@@ -49,7 +49,11 @@ it('surfaces a catalog outage in both selection and chat, with no default-scope 
         focus: 'unions',
         subFocus: 'sv',
         messages: [
-          { role: 'user', parts: [{ type: 'text', text: 'Question' }] },
+          {
+            id: 'user-1',
+            role: 'user',
+            parts: [{ type: 'text', text: 'Question' }],
+          },
         ],
       }),
     })
@@ -112,7 +116,15 @@ it('validates against exactly the units offered by the selector endpoint', async
           group: 'ucb',
           focus: 'unions',
           subFocus,
-          messages: [],
+          messages: [
+            {
+              id: 'user-1',
+              role: 'user',
+              parts: [
+                { type: 'text', text: subFocus === 'zz' ? '' : 'Question' },
+              ],
+            },
+          ],
         }),
       })
     );

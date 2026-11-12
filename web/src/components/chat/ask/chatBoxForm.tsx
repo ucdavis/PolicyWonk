@@ -5,6 +5,8 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 
+import { CHAT_LIMITS } from '@/lib/chat/limits';
+
 interface ChatBoxFormProps {
   onQuestionSubmit: (question: string) => void;
 }
@@ -67,6 +69,7 @@ const ChatBoxForm: React.FC<ChatBoxFormProps> = ({ onQuestionSubmit }) => {
             autoComplete='off'
             autoCorrect='off'
             name='message'
+            maxLength={CHAT_LIMITS.userCharacters}
             rows={1}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {

@@ -1,4 +1,5 @@
 import { auth } from './auth';
+import { isApplicationSession } from './lib/session';
 
 const unprotectedRoutes = ['/api/auth', '/auth', '/api/documents'];
 
@@ -8,7 +9,7 @@ export default auth((req: any) => {
   const url = req.nextUrl;
   const route = req.nextUrl.pathname;
 
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = isApplicationSession(req.auth);
 
   if (!isLoggedIn) {
     // auth routes are unprotected

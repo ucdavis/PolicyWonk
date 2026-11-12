@@ -22,12 +22,11 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({
   chats: initialChats,
 }) => {
   const pathname = usePathname();
-  const [chats, setChats] =
-    React.useState<ChatHistoryTitleEntry[]>(initialChats);
-
-  React.useEffect(() => {
-    setChats(initialChats);
-  }, [initialChats]);
+  const [history, setHistory] = React.useState({
+    source: initialChats,
+    chats: initialChats,
+  });
+  const chats = history.source === initialChats ? history.chats : initialChats;
 
   React.useEffect(() => {
     const prefix = `/${group}/chat/`;
@@ -69,7 +68,7 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({
         })) as ChatHistoryTitleEntry[];
 
         if (!cancelled) {
-          setChats(nextChats);
+          setHistory({ source: initialChats, chats: nextChats });
         }
       } catch {
         // ignore
@@ -81,7 +80,7 @@ const ChatHistoryWrapper: React.FC<ChatHistoryWrapperProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [pathname, group]);
+  }, [pathname, group, initialChats]);
 
   return (
     <WonkyErrorBoundary

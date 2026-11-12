@@ -117,7 +117,7 @@ export const {
     },
     async session({ session, token }) {
       // we need a valid numeric userId on the token to add to the session
-      if (!token.userId || isNaN(Number(token.userId))) {
+      if (!Number.isSafeInteger(token.userId) || Number(token.userId) <= 0) {
         // Throwing an error forces a relogin.
         throw new Error('Invalid Session');
       }

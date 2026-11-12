@@ -1,4 +1,4 @@
-'server only';
+import 'server-only';
 
 import {
   JsonValue,
@@ -15,7 +15,9 @@ import {
   WonkSuccess,
   WonkNotFound,
   WonkServerError,
+  WonkForbidden,
 } from '@/lib/error/error';
+import { isApplicationSession } from '@/lib/session';
 import {
   ChatHistory,
   ChatHistoryMetadata,
@@ -23,7 +25,6 @@ import {
   Feedback,
 } from '@/models/chat';
 import { Focus } from '@/models/focus';
-import { WonkSession } from '@/models/session';
 
 import { llmModel } from './chatService';
 import { logMessages, logReaction } from './loggingService';
@@ -49,9 +50,9 @@ const filterOutSystemMessages = (messages: ChatMessage[]): ChatMessage[] => {
 export const getChatHistoryForGroup = async (
   group: string
 ): Promise<WonkReturnObject<ChatHistoryTitleEntry[]>> => {
-  const session = (await auth()) as WonkSession;
+  const session = await auth();
 
-  if (!session || !session.userId) {
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
 
@@ -80,9 +81,9 @@ export const getChatHistoryForGroup = async (
 export const getChatHistory = async (): Promise<
   WonkReturnObject<ChatHistoryTitleEntry[]>
 > => {
-  const session = (await auth()) as WonkSession;
+  const session = await auth();
 
-  if (!session || !session.userId) {
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
 
@@ -115,11 +116,11 @@ export const getChatHistory = async (): Promise<
 export const getChat = async (
   chatId: string
 ): Promise<WonkReturnObject<ChatHistory>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   const chat = await prisma.chats.findUnique({
     where: {
@@ -143,10 +144,8 @@ export const getChat = async (
 export const getSharedChat = async (
   shareId: string
 ): Promise<WonkReturnObject<ChatHistory>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
 
@@ -177,12 +176,11 @@ export const saveChat = async (
   group: string,
   focus: Focus
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   // TODO: might be fun to use chatGPT to generate a title, either now or later when loading back up, or async
   const title =
@@ -215,7 +213,12 @@ export const saveChat = async (
   }
 
   // also log to elastic for now
-  await logMessages(chatId, messages);
+  try {
+    await logMessages(chatId, messages);
+  } catch {
+    // The database save succeeded. Do not fail the answer because telemetry failed.
+    console.warn('Chat telemetry write failed');
+  }
 
   return WonkSuccess(true);
 };
@@ -224,12 +227,14 @@ export const saveReaction = async (
   chatId: string,
   reaction: Feedback
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  if (reaction !== 'thumbs_up' && reaction !== 'thumbs_down') {
+    return WonkForbidden();
+  }
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   // 1. Find the chat first to ensure it exists and belongs to the user
   const chat = await prisma.chats.findFirst({
@@ -268,7 +273,11 @@ export const saveReaction = async (
   }
 
   // also log to elastic for now
-  await logReaction(chatId, reaction);
+  try {
+    await logReaction(chatId, reaction);
+  } catch {
+    console.warn('Reaction telemetry write failed');
+  }
 
   return WonkSuccess(true);
 };
@@ -276,12 +285,11 @@ export const saveReaction = async (
 export const saveShareChat = async (
   chatId: string
 ): Promise<WonkReturnObject<string>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   const chat = await prisma.chats.findFirst({
     where: { id: chatId, userId: userId, active: true },
@@ -315,12 +323,11 @@ export const saveShareChat = async (
 export const removeShareChat = async (
   chatId: string
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   // 1. Verify chat existence and ownership
   const chat = await prisma.chats.findFirst({
@@ -355,12 +362,11 @@ export const removeShareChat = async (
 export const removeChat = async (
   chatId: string
 ): Promise<WonkReturnObject<boolean>> => {
-  const session = (await auth()) as WonkSession;
-  const userId = session.userId;
-
-  if (!userId) {
+  const session = await auth();
+  if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
+  const userId = session.userId;
 
   // 1. Verify chat existence and ownership *before* updating
   // Use updateMany for potentially slightly better performance if we don't need the record first

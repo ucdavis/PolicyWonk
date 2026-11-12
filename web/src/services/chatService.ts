@@ -20,10 +20,14 @@ const embeddingModel = openai.embedding(
   process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-large'
 );
 
-export const getEmbeddings = async (query: string): Promise<number[][]> => {
+export const getEmbeddings = async (
+  query: string,
+  abortSignal?: AbortSignal
+): Promise<number[][]> => {
   // get our embeddings
   const embeddings = await embeddingModel.doEmbed({
     values: [query],
+    abortSignal,
   });
 
   return embeddings.embeddings;
@@ -106,7 +110,8 @@ const generateFilterElastic = (
 export const getSearchResultsElastic = async (
   embeddings: number[][],
   focus: Focus,
-  userInput: string
+  userInput: string,
+  abortSignal?: AbortSignal
 ) => {
   const rerankEnabled = process.env.RERANK_ENABLED !== 'false';
   const searchResultMaxSize = rerankEnabled ? 40 : 5;
@@ -150,12 +155,15 @@ export const getSearchResultsElastic = async (
     },
   };
 
-  const searchResults = await searchClient.search<PolicyIndex>({
-    index: indexName,
-    size: searchResultMaxSize,
-    ...(rerankEnabled ? { _source: ['text', 'metadata'] } : {}),
-    body: fullSearchQueryBody,
-  });
+  const searchResults = await searchClient.search<PolicyIndex>(
+    {
+      index: indexName,
+      size: searchResultMaxSize,
+      ...(rerankEnabled ? { _source: ['text', 'metadata'] } : {}),
+      body: fullSearchQueryBody,
+    },
+    { signal: abortSignal }
+  );
 
   // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
 
@@ -172,7 +180,8 @@ export const getSearchResultsElastic = async (
     ? await rerankPassages(
         userInput,
         allResults,
-        openai.responses(process.env.OPENAI_RERANK_MODEL ?? 'gpt-6-luna')
+        openai.responses(process.env.OPENAI_RERANK_MODEL ?? 'gpt-6-luna'),
+        abortSignal
       )
     : { results: allResults, evidenceStatus: undefined };
   const selectedResults = selection.results.map((result, docNumber) => ({

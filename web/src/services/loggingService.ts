@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Session } from 'next-auth';
 
@@ -10,6 +10,8 @@ import { llmModel } from './chatService';
 
 // get my vector store
 const config: ClientOptions = {
+  requestTimeout: 2_000,
+  maxRetries: 0,
   node: process.env.ELASTIC_URL ?? 'http://127.0.0.1:9200',
   auth: {
     username: process.env.ELASTIC_WRITE_USERNAME ?? 'policylogger',
@@ -79,7 +81,7 @@ export const logMessages = async (chatId: string, messages: ChatMessage[]) => {
 };
 
 // use elasticsearch to log the user's query and the results
-export const logResponse = async (
+const logResponse = async (
   id: string,
   messages: ChatMessage[],
   model: string,
