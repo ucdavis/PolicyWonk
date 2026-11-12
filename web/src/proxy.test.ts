@@ -35,7 +35,9 @@ it('accepts a real application session and permits the login route', () => {
 });
 
 it('lets chat enforce upload deadlines without proxy body buffering', () => {
-  expect(unstable_doesMiddlewareMatch({ config, url: '/api/chat' })).toBe(false);
+  expect(unstable_doesMiddlewareMatch({ config, url: '/api/chat' })).toBe(
+    false
+  );
 });
 
 it.each([
