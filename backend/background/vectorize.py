@@ -66,7 +66,7 @@ def vectorize_document(session: Session, source: Source, document_details: Docum
     store = ElasticsearchStore(
         embedding=embeddings,
         index_name=ELASTIC_INDEX,
-        es_connection=es_client,
+        client=es_client,
     )
 
     # delete any existing vectors for this doc

@@ -100,7 +100,7 @@ def ensure_elasticsearch_index() -> bool:
         store = ElasticsearchStore(
             embedding=embeddings,
             index_name=ELASTIC_INDEX,
-            es_connection=es_client,
+            client=es_client,
         )
         store.add_texts([], create_index_if_not_exists=True)
         logger.info(f"Created Elasticsearch index {ELASTIC_INDEX}")

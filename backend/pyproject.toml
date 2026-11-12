@@ -1,0 +1,39 @@
+[project]
+name = "policywonk-worker"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "alembic==1.13.2",
+    "beautifulsoup4>=4.12,<5",
+    "docling==2.150.0",
+    "langchain-core==1.8.0",
+    "langchain-elasticsearch==1.0.0",
+    "langchain-openai==1.7.4",
+    "langchain-text-splitters==1.1.3",
+    "pgvector==0.3.6",
+    "psycopg2==2.9.9",
+    "playwright==1.65.1",
+    "PyMuPDF==1.28.2",
+    "pymupdf4llm==1.28.2",
+    "python-dotenv==1.2.4",
+    "sentry-sdk==2.75.0",
+    "SQLAlchemy==2.0.33",
+    "requests==2.34.2",
+    "torch==2.13.0",
+    "torchvision==0.28.0",
+]
+
+[dependency-groups]
+dev = ["autopep8==2.3.1", "pytest-playwright==0.7.2", "pytest-socket==0.7.0"]
+
+[tool.uv]
+package = false
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]

@@ -11,10 +11,10 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list \
     && rm -rf /var/lib/apt/lists/*
 
 # copy requirements
-COPY backend/requirements.txt /tmp/requirements.txt
+COPY backend/pyproject.toml backend/uv.lock /tmp/backend/
 
 # install uv (root is fine; it's just a binary)
-RUN pip3 --disable-pip-version-check --no-cache-dir install uv
+RUN pip3 --disable-pip-version-check --no-cache-dir install uv==0.13.8
 
 # --- python deps in a venv owned by vscode ---
 ENV VENV_PATH=/home/vscode/.venv
@@ -23,8 +23,7 @@ RUN mkdir -p /home/vscode \
 
 USER vscode
 
-RUN uv venv "$VENV_PATH" \
-    && uv pip install --python "$VENV_PATH/bin/python" -r /tmp/requirements.txt
+RUN UV_PROJECT_ENVIRONMENT="$VENV_PATH" uv sync --project /tmp/backend --locked
 
 # make the venv the default python/pip
 ENV PATH="$VENV_PATH/bin:$PATH"

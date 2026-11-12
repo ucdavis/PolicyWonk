@@ -8,21 +8,41 @@
 
 ## Installing Dependencies
 
+Use Python 3.12 and uv 0.13.8. `pyproject.toml` defines direct dependencies and
+`uv.lock` records resolved versions and artifact hashes. Linux uses CPU-only
+PyTorch wheels from its explicit index; other packages resolve from PyPI.
+The unused umbrella `langchain` package is removed. The narrow integrations
+keep the existing embedding configuration, Elasticsearch 8 client family,
+index names, and document metadata. Historical migrations still use pgvector.
+
+
 ```bash
-pip install -r requirements.txt
+uv sync --locked --no-dev
 ```
 
 Optional dev/test deps:
 
 ```bash
-pip install -r requirements-dev.txt
+uv sync --locked
 ```
 
 Run the offline backend tests from `backend`:
 
 ```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests -q
+SENTRY_DSN='' HF_HUB_OFFLINE=1 USE_DEV_SETTINGS=true \
+ELASTIC_INDEX=policy_vectorstore_offline_v2 PYTHONPATH=. \
+uv run --no-sync pytest tests -q --disable-socket --allow-unix-socket
 ```
+
+Every worker Docker build, including PR CI, runs this suite with network sockets disabled
+before producing the runtime image. Dev/test dependencies stay in the test stage.
+No live ingestion, embeddings, migrations, or index changes run during tests.
+
+To update dependencies, edit `pyproject.toml`, run `uv lock`, then `uv sync --locked`
+and the offline suite above. Commit both the manifest and lock. Use
+`uv lock --check` to detect stale locks; do not regenerate dependencies during a
+release build. The lock covers supported Python 3.12 environments, including
+Linux CPU wheels and local macOS development.
 
 The [policy reader fixtures](tests/fixtures/ingestion/README.md) cover real PDF
 and Word documents, source-text coverage, and table amounts with footnotes.
@@ -73,7 +93,7 @@ export PKG_CONFIG_PATH="/opt/homebrew/opt/openssl@3/lib/pkgconfig:/opt/homebrew/
 Install dependencies
 
 ```bash
-uv pip install -r requirements.txt
+uv sync --locked --no-dev
 ```
 
 Install playwright browsers (so that it is installed in the venv)
