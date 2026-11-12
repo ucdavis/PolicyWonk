@@ -55,7 +55,14 @@ It discards client metadata and provider options. Limits are 128 KiB per body,
 conversation. Retrieved answer context is capped at 160,000 characters and
 answer output at 16,000 tokens, including reasoning where the provider counts it.
 Bodies have 20 seconds to arrive; the request deadline is three minutes.
-Cancellation reaches embedding, search, reranking, and answer generation.
+Cancellation reaches embedding, search, reranking, answer generation, and
+telemetry, and prevents subsequent document lookups or writes. The response
+closes at the deadline even while a downstream operation is settling. Its
+concurrency slot stays occupied until that work finishes. Chat document reads
+and answer writes use database transactions with a 2-second acquisition wait,
+10-second statement timeout, and 15-second transaction timeout. Shared catalog
+loads have their own 20-second deadline; cancelling one question does not cancel
+the catalog load for other callers.
 
 Each app process permits 20 request starts per user per minute, two concurrent
 requests per user, and 20 concurrent requests total. Rejections use HTTP 429 and

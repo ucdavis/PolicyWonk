@@ -2,7 +2,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { estypes } from '@elastic/elasticsearch';
 
-import prisma from '@/lib/db';
+import { withChatDatabase } from '@/lib/chat/database';
 import { searchClient, indexName } from '@/lib/elastic';
 
 import type { ChatMessage, PolicyIndex } from '../models/chat';
@@ -24,12 +24,14 @@ export const getEmbeddings = async (
   query: string,
   abortSignal?: AbortSignal
 ): Promise<number[][]> => {
+  abortSignal?.throwIfAborted();
   // get our embeddings
   const embeddings = await embeddingModel.doEmbed({
     values: [query],
     abortSignal,
   });
 
+  abortSignal?.throwIfAborted();
   return embeddings.embeddings;
 };
 
@@ -113,6 +115,7 @@ export const getSearchResultsElastic = async (
   userInput: string,
   abortSignal?: AbortSignal
 ) => {
+  abortSignal?.throwIfAborted();
   const rerankEnabled = process.env.RERANK_ENABLED !== 'false';
   const searchResultMaxSize = rerankEnabled ? 40 : 5;
   const MAX_DOC_TOKENS = 20000;
@@ -165,6 +168,8 @@ export const getSearchResultsElastic = async (
     { signal: abortSignal }
   );
 
+  abortSignal?.throwIfAborted();
+
   // Note: if we want >1 fileter, we can add a bool -> must -> terms[]
 
   // transform the results
@@ -184,6 +189,7 @@ export const getSearchResultsElastic = async (
         abortSignal
       )
     : { results: allResults, evidenceStatus: undefined };
+  abortSignal?.throwIfAborted();
   const selectedResults = selection.results.map((result, docNumber) => ({
     ...result,
     docNumber,
@@ -215,34 +221,49 @@ export const getSearchResultsElastic = async (
   };
 
   const eligibleDocs = getEligibleDocs(selectedResults);
-  const contextResults = await addFullDocument(selectedResults, eligibleDocs);
+  const contextResults = await addFullDocument(
+    selectedResults,
+    eligibleDocs,
+    abortSignal
+  );
 
   return { results: contextResults, evidenceStatus: selection.evidenceStatus };
 };
 
-export const getDocumentByUrl = async (url: string): Promise<string | null> => {
+export const getDocumentByUrl = async (
+  url: string,
+  abortSignal?: AbortSignal
+): Promise<string | null> => {
+  abortSignal?.throwIfAborted();
   if (!url) {
     return null;
   }
 
-  const document = await prisma.documents.findFirst({
-    where: { url },
-    select: {
-      documentContents: {
+  const document = await withChatDatabase(
+    (transaction) =>
+      transaction.documents.findFirst({
+        where: { url },
         select: {
-          content: true,
+          documentContents: {
+            select: {
+              content: true,
+            },
+          },
         },
-      },
-    },
-  });
+      }),
+    abortSignal
+  );
+  abortSignal?.throwIfAborted();
 
   return document?.documentContents?.content ?? null;
 };
 
 export const addFullDocument = async (
   results: PolicyIndex[],
-  eligibleDocs: Set<string>
+  eligibleDocs: Set<string>,
+  abortSignal?: AbortSignal
 ): Promise<PolicyIndex[]> => {
+  abortSignal?.throwIfAborted();
   const filteredDocs = new Map<string, string>();
   const MAX_FULL_DOCS = 1;
   for (const url of eligibleDocs) {
@@ -250,7 +271,7 @@ export const addFullDocument = async (
       break;
     }
 
-    const fullDocument = await getDocumentByUrl(url);
+    const fullDocument = await getDocumentByUrl(url, abortSignal);
     if (!fullDocument) {
       continue;
     }

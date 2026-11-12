@@ -172,5 +172,7 @@ it('rejects a third concurrent question and releases failed requests', async () 
   controller.abort();
   await Promise.all([first.text(), second.text()]);
   embeddings.mockResolvedValue([[1]]);
-  expect((await POST(request())).status).toBe(200);
+  const replacement = await POST(request());
+  expect(replacement.status).toBe(200);
+  await replacement.text();
 });

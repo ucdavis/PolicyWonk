@@ -8,6 +8,7 @@ import {
 import { nanoid } from 'nanoid';
 
 import { auth } from '@/auth';
+import { withChatDatabase } from '@/lib/chat/database';
 import prisma from '@/lib/db';
 import {
   WonkReturnObject,
@@ -174,9 +175,12 @@ export const saveChat = async (
   chatId: string,
   messages: ChatMessage[],
   group: string,
-  focus: Focus
+  focus: Focus,
+  signal?: AbortSignal
 ): Promise<WonkReturnObject<boolean>> => {
+  signal?.throwIfAborted();
   const session = await auth();
+  signal?.throwIfAborted();
   if (!isApplicationSession(session)) {
     return WonkUnauthorized();
   }
@@ -201,12 +205,17 @@ export const saveChat = async (
     timestamp: new Date(),
   };
 
-  const newChat = await prisma.chats.create({
-    data: {
-      ...chat,
-      messages: messages as unknown as InputJsonValue, // hack for now until we switch to useChat
-    },
-  });
+  const newChat = await withChatDatabase(
+    (transaction) =>
+      transaction.chats.create({
+        data: {
+          ...chat,
+          messages: messages as unknown as InputJsonValue,
+        },
+      }),
+    signal
+  );
+  signal?.throwIfAborted();
 
   if (!newChat) {
     return WonkServerError();
@@ -214,7 +223,12 @@ export const saveChat = async (
 
   // also log to elastic for now
   try {
-    await logMessages(chatId, messages);
+    await logMessages(
+      chatId,
+      messages,
+      session.user?.name ?? 'Unknown User',
+      signal
+    );
   } catch {
     // The database save succeeded. Do not fail the answer because telemetry failed.
     console.warn('Chat telemetry write failed');

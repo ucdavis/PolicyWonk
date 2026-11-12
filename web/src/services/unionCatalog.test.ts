@@ -178,3 +178,28 @@ describe('catalog availability and campus associations', () => {
     );
   });
 });
+
+it('bounds the shared catalog load independently and retries after timeout', async () => {
+  vi.useFakeTimers();
+  search.mockImplementation(
+    (_query, { signal }) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener('abort', () => reject(signal.reason), {
+          once: true,
+        });
+      })
+  );
+  const catalog = createUnionCatalog(loadIndexedUnits);
+  const first = expect(catalog('ucb')).rejects.toThrow();
+  const second = expect(catalog('ucdavis')).rejects.toThrow();
+  await vi.advanceTimersByTimeAsync(20_000);
+  await Promise.all([first, second]);
+  expect(search).toHaveBeenCalledOnce();
+  search.mockResolvedValue(page(units));
+  expect((await catalog('ucb')).map((unit) => unit.key).sort()).toEqual([
+    'k2',
+    'rp',
+    'sv',
+  ]);
+  expect(search).toHaveBeenCalledTimes(2);
+});

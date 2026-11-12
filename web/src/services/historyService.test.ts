@@ -15,7 +15,14 @@ const { auth, chats, logMessages, logReaction } = vi.hoisted(() => ({
 }));
 vi.mock('server-only', () => ({}));
 vi.mock('@/auth', () => ({ auth }));
-vi.mock('@/lib/db', () => ({ default: { chats } }));
+vi.mock('@/lib/db', () => ({
+  default: {
+    chats,
+    $transaction: async (
+      operation: (transaction: unknown) => Promise<unknown>
+    ) => operation({ $executeRaw: vi.fn(), chats }),
+  },
+}));
 vi.mock('./loggingService', () => ({ logMessages, logReaction }));
 vi.mock('./chatService', () => ({ llmModel: 'test-model' }));
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
@@ -107,4 +114,17 @@ it('validates reactions at runtime and preserves saved feedback when telemetry f
   logReaction.mockRejectedValue(new Error('offline'));
   await expect(submitFeedback('chat', 'thumbs_up')).resolves.toBeUndefined();
   expect(chats.update.mock.calls[0][0].data.meta.reaction).toBe('thumbs_up');
+});
+
+it('does not start persistence if cancellation happens during authentication', async () => {
+  const controller = new AbortController();
+  auth.mockImplementation(async () => {
+    controller.abort();
+    return { userId: 1, user: { name: 'Test' } };
+  });
+  await expect(
+    saveChat('cancelled', [], 'ucdavis', focuses[0], controller.signal)
+  ).rejects.toThrow();
+  expect(chats.create).not.toHaveBeenCalled();
+  expect(logMessages).not.toHaveBeenCalled();
 });

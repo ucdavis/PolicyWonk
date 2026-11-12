@@ -1,17 +1,21 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 
-const { auth, search, getEmbeddings } = vi.hoisted(() => ({
+const { auth, search, getEmbeddings, retrieve } = vi.hoisted(() => ({
   auth: vi.fn(),
   search: vi.fn(),
   getEmbeddings: vi.fn(),
+  retrieve: vi.fn(),
 }));
 vi.mock('@/auth', () => ({ auth }));
 vi.mock('@/lib/elastic', () => ({
   searchClient: { search },
   indexName: 'contracts_v2',
 }));
-vi.mock('@/services/chatService', () => ({ getEmbeddings }));
+vi.mock('@/services/chatService', () => ({
+  getEmbeddings,
+  getSearchResultsElastic: retrieve,
+}));
 vi.mock('@/services/historyService', () => ({ saveChat: vi.fn() }));
 import { POST } from '../chat/route';
 
@@ -102,13 +106,9 @@ it('validates against exactly the units offered by the selector endpoint', async
   expect(await catalog.json()).toEqual({
     unions: [{ key: 'zz', value: 'New Unit' }],
   });
-  for (const [subFocus, message] of [
-    ['zz', 'Missing user message'],
-    [
-      'k3',
-      'This bargaining unit is unavailable for this campus. Choose another focus.',
-    ],
-  ]) {
+  getEmbeddings.mockResolvedValue([[1]]);
+  retrieve.mockRejectedValue(new Error('Stop after retrieval'));
+  for (const subFocus of ['zz', 'k3']) {
     const response = await POST(
       new Request('https://example.org/api/chat', {
         method: 'POST',
@@ -120,15 +120,28 @@ it('validates against exactly the units offered by the selector endpoint', async
             {
               id: 'user-1',
               role: 'user',
-              parts: [
-                { type: 'text', text: subFocus === 'zz' ? '' : 'Question' },
-              ],
+              parts: [{ type: 'text', text: 'Question' }],
             },
           ],
         }),
       })
     );
-    expect(await response.text()).toBe(message);
+    const body = await response.text();
+    if (subFocus === 'zz') {
+      expect(response.status).toBe(200);
+      expect(retrieve).toHaveBeenCalledWith(
+        [[1]],
+        expect.objectContaining({ name: 'unions', subFocus: 'zz' }),
+        'Question',
+        expect.any(AbortSignal)
+      );
+    } else {
+      expect(response.status).toBe(400);
+      expect(body).toBe(
+        'This bargaining unit is unavailable for this campus. Choose another focus.'
+      );
+    }
   }
-  expect(getEmbeddings).not.toHaveBeenCalled();
+  expect(getEmbeddings).toHaveBeenCalledOnce();
+  expect(retrieve).toHaveBeenCalledOnce();
 });
