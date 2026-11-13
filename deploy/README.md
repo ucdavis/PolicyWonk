@@ -27,7 +27,7 @@ These additional connections complete the current UCPath location list, excludin
 | Location | Tenant | Affiliation scopes | InCommon entity ID |
 | --- | --- | --- | --- |
 | UC Santa Cruz | `ucsc` | `ucsc.edu` | `urn:mace:incommon:ucsc.edu` |
-| Berkeley Lab | `lbl` | `lbl.gov` | `urn:mace:incommon:lbl.gov` |
+| Lawrence Berkeley National Laboratory | `lbl` | `lbl.gov` | `urn:mace:incommon:lbl.gov` |
 | UC Irvine | `uci` | `uci.edu` | `urn:mace:incommon:uci.edu` |
 | UC Santa Barbara | `ucsb` | `ucsb.edu` | `urn:mace:incommon:ucsb.edu` |
 | UC Agriculture and Natural Resources | `ucanr` | `ucanr.edu` | `https://ucanridp.ucanr.edu/idp/shibboleth` |

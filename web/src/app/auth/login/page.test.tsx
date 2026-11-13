@@ -43,7 +43,7 @@ it.each([
   ['UC Riverside', 'ucr'],
   ['UC San Diego', 'ucsd'],
   ['UC Santa Cruz', 'ucsc'],
-  ['Berkeley Lab', 'lbl'],
+  ['Lawrence Berkeley National Laboratory', 'lbl'],
   ['UC Irvine', 'uci'],
   ['UC Santa Barbara', 'ucsb'],
   ['UC Agriculture and Natural Resources', 'ucanr'],
