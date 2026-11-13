@@ -10,6 +10,7 @@ export interface Campus {
   link: string;
 }
 
+// Keep UCOP first; alphabetize the remaining display names, treating UCLA as UC Los Angeles.
 export const campuses: Campus[] = [
   {
     name: 'UC Office of the President',
@@ -20,12 +21,20 @@ export const campuses: Campus[] = [
     link: 'https://www.ucop.edu/',
   },
   {
-    name: 'UC Davis',
-    value: 'ucdavis',
-    ssoTenant: 'ucdavis',
-    affiliationScopes: ['ucdavis.edu'],
-    logoPath: '/media/groups/ucdavis.png',
-    link: 'https://www.ucdavis.edu/',
+    name: 'Lawrence Berkeley National Laboratory',
+    value: 'lbl',
+    ssoTenant: 'lbl',
+    affiliationScopes: ['lbl.gov'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.lbl.gov/',
+  },
+  {
+    name: 'UC Agriculture and Natural Resources',
+    value: 'ucanr',
+    ssoTenant: 'ucanr',
+    affiliationScopes: ['ucanr.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://ucanr.edu/',
   },
   {
     name: 'UC Berkeley',
@@ -36,12 +45,28 @@ export const campuses: Campus[] = [
     link: 'https://www.berkeley.edu/',
   },
   {
-    name: 'UC San Francisco',
-    value: 'ucsf',
-    ssoTenant: 'ucsf',
-    affiliationScopes: ['ucsf.edu'],
-    logoPath: '/media/groups/ucsf.png',
-    link: 'https://www.ucsf.edu/',
+    name: 'UC Davis',
+    value: 'ucdavis',
+    ssoTenant: 'ucdavis',
+    affiliationScopes: ['ucdavis.edu'],
+    logoPath: '/media/groups/ucdavis.png',
+    link: 'https://www.ucdavis.edu/',
+  },
+  {
+    name: 'UC Irvine',
+    value: 'uci',
+    ssoTenant: 'uci',
+    affiliationScopes: ['uci.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.uci.edu/',
+  },
+  {
+    name: 'UC Law San Francisco',
+    value: 'uclawsf',
+    ssoTenant: 'uclawsf',
+    affiliationScopes: ['uclawsf.edu', 'uchastings.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.uclawsf.edu/',
   },
   {
     name: 'UCLA',
@@ -76,28 +101,12 @@ export const campuses: Campus[] = [
     link: 'https://www.ucsd.edu/',
   },
   {
-    name: 'UC Santa Cruz',
-    value: 'ucsc',
-    ssoTenant: 'ucsc',
-    affiliationScopes: ['ucsc.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
-    link: 'https://www.ucsc.edu/',
-  },
-  {
-    name: 'Berkeley Lab',
-    value: 'lbl',
-    ssoTenant: 'lbl',
-    affiliationScopes: ['lbl.gov'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
-    link: 'https://www.lbl.gov/',
-  },
-  {
-    name: 'UC Irvine',
-    value: 'uci',
-    ssoTenant: 'uci',
-    affiliationScopes: ['uci.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
-    link: 'https://www.uci.edu/',
+    name: 'UC San Francisco',
+    value: 'ucsf',
+    ssoTenant: 'ucsf',
+    affiliationScopes: ['ucsf.edu'],
+    logoPath: '/media/groups/ucsf.png',
+    link: 'https://www.ucsf.edu/',
   },
   {
     name: 'UC Santa Barbara',
@@ -108,20 +117,12 @@ export const campuses: Campus[] = [
     link: 'https://www.ucsb.edu/',
   },
   {
-    name: 'UC Agriculture and Natural Resources',
-    value: 'ucanr',
-    ssoTenant: 'ucanr',
-    affiliationScopes: ['ucanr.edu'],
+    name: 'UC Santa Cruz',
+    value: 'ucsc',
+    ssoTenant: 'ucsc',
+    affiliationScopes: ['ucsc.edu'],
     logoPath: '/media/uc_wordmark_blue_official.svg',
-    link: 'https://ucanr.edu/',
-  },
-  {
-    name: 'UC Law San Francisco',
-    value: 'uclawsf',
-    ssoTenant: 'uclawsf',
-    affiliationScopes: ['uclawsf.edu', 'uchastings.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
-    link: 'https://www.uclawsf.edu/',
+    link: 'https://www.ucsc.edu/',
   },
 ];
 
