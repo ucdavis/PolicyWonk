@@ -48,7 +48,7 @@ export const campuses: Campus[] = [
     value: 'ucla',
     ssoTenant: 'ucla',
     affiliationScopes: ['ucla.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucla.png',
     link: 'https://www.ucla.edu/',
   },
   {
@@ -56,7 +56,7 @@ export const campuses: Campus[] = [
     value: 'ucmerced',
     ssoTenant: 'ucmerced',
     affiliationScopes: ['ucmerced.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucmerced.png',
     link: 'https://www.ucmerced.edu/',
   },
   {
@@ -64,7 +64,7 @@ export const campuses: Campus[] = [
     value: 'ucr',
     ssoTenant: 'ucr',
     affiliationScopes: ['ucr.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucriverside.png',
     link: 'https://www.ucr.edu/',
   },
   {
@@ -72,7 +72,7 @@ export const campuses: Campus[] = [
     value: 'ucsd',
     ssoTenant: 'ucsd',
     affiliationScopes: ['ucsd.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucsandiego.png',
     link: 'https://www.ucsd.edu/',
   },
   {
