@@ -51,6 +51,58 @@
   --noise: 0;
 }
 
+/* Campuses override their brand colors while UCOP inherits the base theme. */
+[data-campus='ucdavis'] {
+  --color-primary: #022851;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffbf00;
+  --color-secondary-content: #022851;
+}
+
+[data-campus='ucsd'] {
+  --color-primary: #182b49;
+  --color-primary-content: #ffffff;
+  --color-secondary: #c69214;
+  --color-secondary-content: #182b49;
+}
+
+[data-campus='ucmerced'] {
+  --color-primary: #002856;
+  --color-primary-content: #ffffff;
+  --color-secondary: #daa900;
+  --color-secondary-content: #002856;
+}
+
+[data-campus='ucr'] {
+  --color-primary: #003da5;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffb81c;
+  --color-secondary-content: #003da5;
+}
+
+[data-campus='ucla'] {
+  --color-primary: #2774ae;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffd100;
+  --color-secondary-content: #033266;
+}
+
+/* https://brand.berkeley.edu/visual-identity/colors/ */
+[data-campus='ucb'] {
+  --color-primary: #002676;
+  --color-primary-content: #ffffff;
+  --color-secondary: #fdb515;
+  --color-secondary-content: #002676;
+}
+
+/* https://identity.ucsf.edu/brand-guide/color (UCSF Navy and L3 Yellow) */
+[data-campus='ucsf'] {
+  --color-primary: #052049;
+  --color-primary-content: #ffffff;
+  --color-secondary: #feb80a;
+  --color-secondary-content: #052049;
+}
+
 html,
 body {
   min-height: 100%;
