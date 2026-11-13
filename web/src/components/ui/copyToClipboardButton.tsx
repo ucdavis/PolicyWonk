@@ -60,7 +60,7 @@ const CopyToClipboardButton: React.FC<CopyToClipboardButtonProps> = ({
   return (
     <button
       type='button'
-      className={`${
+      className={`relative ${
         className ??
         'btn btn-ghost btn-lg btn-square mr-1 bg-transparent text-base-content/60 shadow-none hover:bg-transparent hover:text-primary active:bg-transparent disabled:bg-transparent'
       } ${copyStatus === 'copied' ? 'text-success' : copyStatus === 'error' ? 'text-error' : ''}`}
