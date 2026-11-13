@@ -25,7 +25,7 @@ export const campuses: Campus[] = [
     value: 'lbl',
     ssoTenant: 'lbl',
     affiliationScopes: ['lbl.gov'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/berklab.svg',
     link: 'https://www.lbl.gov/',
   },
   {
@@ -33,7 +33,7 @@ export const campuses: Campus[] = [
     value: 'ucanr',
     ssoTenant: 'ucanr',
     affiliationScopes: ['ucanr.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucanr.svg',
     link: 'https://ucanr.edu/',
   },
   {
@@ -49,7 +49,7 @@ export const campuses: Campus[] = [
     value: 'ucdavis',
     ssoTenant: 'ucdavis',
     affiliationScopes: ['ucdavis.edu'],
-    logoPath: '/media/groups/ucdavis.png',
+    logoPath: '/media/groups/ucd.png',
     link: 'https://www.ucdavis.edu/',
   },
   {
@@ -57,7 +57,7 @@ export const campuses: Campus[] = [
     value: 'uci',
     ssoTenant: 'uci',
     affiliationScopes: ['uci.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/uci.svg',
     link: 'https://www.uci.edu/',
   },
   {
@@ -65,7 +65,7 @@ export const campuses: Campus[] = [
     value: 'uclawsf',
     ssoTenant: 'uclawsf',
     affiliationScopes: ['uclawsf.edu', 'uchastings.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/uclawsf.svg',
     link: 'https://www.uclawsf.edu/',
   },
   {
@@ -73,7 +73,7 @@ export const campuses: Campus[] = [
     value: 'ucla',
     ssoTenant: 'ucla',
     affiliationScopes: ['ucla.edu'],
-    logoPath: '/media/groups/ucla.png',
+    logoPath: '/media/groups/ucla.svg',
     link: 'https://www.ucla.edu/',
   },
   {
@@ -81,7 +81,7 @@ export const campuses: Campus[] = [
     value: 'ucmerced',
     ssoTenant: 'ucmerced',
     affiliationScopes: ['ucmerced.edu'],
-    logoPath: '/media/groups/ucmerced.png',
+    logoPath: '/media/groups/ucm.png',
     link: 'https://www.ucmerced.edu/',
   },
   {
@@ -89,7 +89,7 @@ export const campuses: Campus[] = [
     value: 'ucr',
     ssoTenant: 'ucr',
     affiliationScopes: ['ucr.edu'],
-    logoPath: '/media/groups/ucriverside.png',
+    logoPath: '/media/groups/ucr.png',
     link: 'https://www.ucr.edu/',
   },
   {
@@ -97,7 +97,7 @@ export const campuses: Campus[] = [
     value: 'ucsd',
     ssoTenant: 'ucsd',
     affiliationScopes: ['ucsd.edu'],
-    logoPath: '/media/groups/ucsandiego.png',
+    logoPath: '/media/groups/ucsd.png',
     link: 'https://www.ucsd.edu/',
   },
   {
@@ -113,7 +113,7 @@ export const campuses: Campus[] = [
     value: 'ucsb',
     ssoTenant: 'ucsb',
     affiliationScopes: ['ucsb.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucsb.svg',
     link: 'https://www.ucsb.edu/',
   },
   {
@@ -121,7 +121,7 @@ export const campuses: Campus[] = [
     value: 'ucsc',
     ssoTenant: 'ucsc',
     affiliationScopes: ['ucsc.edu'],
-    logoPath: '/media/uc_wordmark_blue_official.svg',
+    logoPath: '/media/groups/ucsc.svg',
     link: 'https://www.ucsc.edu/',
   },
 ];

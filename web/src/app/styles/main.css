@@ -103,6 +103,119 @@
   --color-secondary-content: #052049;
 }
 
+[data-campus='uclawsf'] {
+  --color-primary: #0047bb;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffe22b;
+  --color-secondary-content: #0047bb;
+}
+
+/* https://creative.lbl.gov/visual-identity/ (Dark Blue and Teal) */
+[data-campus='lbl'] {
+  --color-primary: #00313c;
+  --color-primary-content: #ffffff;
+  --color-secondary: #007681;
+  --color-secondary-content: #ffffff;
+}
+
+/* https://ucanr.edu/dept/iwp-training/using-fonts-and-colors */
+[data-campus='ucanr'] {
+  --color-primary: #005fae;
+  --color-primary-content: #ffffff;
+  --color-secondary: #febe10;
+  --color-secondary-content: #033266;
+}
+
+/* https://brand.uci.edu/identity/colors.php */
+[data-campus='uci'] {
+  --color-primary: #255799;
+  --color-primary-content: #ffffff;
+  --color-secondary: #fecc07;
+  --color-secondary-content: #255799;
+}
+
+/* https://brand.ucsb.edu/visual-identity/color */
+[data-campus='ucsb'] {
+  --color-primary: #003660;
+  --color-primary-content: #ffffff;
+  --color-secondary: #febc11;
+  --color-secondary-content: #003660;
+}
+
+/* https://communications.ucsc.edu/brand-overview/color/ */
+[data-campus='ucsc'] {
+  --color-primary: #003c6c;
+  --color-primary-content: #ffffff;
+  --color-secondary: #fdc700;
+  --color-secondary-content: #003c6c;
+}
+
+.location-button {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--color-main-border);
+  border-radius: var(--radius-box);
+  background-color: var(--color-base-100);
+  padding-block: 0.75rem;
+  padding-inline: 1.25rem 1rem;
+  text-align: start;
+  font-weight: 500;
+  color: var(--color-base-content);
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms;
+}
+
+.location-button::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary) 50%,
+    var(--color-secondary) 50%
+  );
+  content: '';
+}
+
+@media (hover: hover) {
+  .location-button:not(:disabled):hover {
+    border-color: var(--color-primary);
+    background-color: color-mix(
+      in srgb,
+      var(--color-primary) 5%,
+      var(--color-base-100)
+    );
+  }
+}
+
+.location-button[data-selected='true'] {
+  border-color: var(--color-primary);
+  background-color: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    var(--color-base-100)
+  );
+}
+
+.location-button:focus-visible {
+  border-color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.location-button:disabled {
+  cursor: wait;
+}
+
 html,
 body {
   min-height: 100%;
