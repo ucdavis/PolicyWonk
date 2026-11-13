@@ -10,26 +10,22 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list \
     && apt-get install -y nodejs=22.23.4-1nodesource1 \
     && rm -rf /var/lib/apt/lists/*
 
-# copy requirements
-COPY backend/requirements.txt /tmp/requirements.txt
+COPY backend/pyproject.toml backend/uv.lock /tmp/backend/
 
 # install uv (root is fine; it's just a binary)
-RUN pip3 --disable-pip-version-check --no-cache-dir install uv
+RUN pip3 --disable-pip-version-check --no-cache-dir install uv==0.13.8
 
 # --- python deps in a venv owned by vscode ---
 ENV VENV_PATH=/home/vscode/.venv
+ENV UV_PROJECT_ENVIRONMENT="$VENV_PATH"
 RUN mkdir -p /home/vscode \
     && chown -R vscode:vscode /home/vscode
 
 USER vscode
 
-RUN uv venv "$VENV_PATH" \
-    && uv pip install --python "$VENV_PATH/bin/python" -r /tmp/requirements.txt
+RUN uv sync --project /tmp/backend --locked
 
 # make the venv the default python/pip
 ENV PATH="$VENV_PATH/bin:$PATH"
 
-# We are not yet using playwright for web scraping. Uncomment the following lines once we need playwright
-# Install Playwright and download chromium
-# RUN python3 -m playwright install chromium && \
-#     playwright install-deps chromium
+# For browser setup, see backend/README.md, Browsing / Scraping.

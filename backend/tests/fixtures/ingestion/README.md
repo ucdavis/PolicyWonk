@@ -23,11 +23,8 @@ Markdown snapshots. DOCX coverage is checked against the independent source
 XML. The awards test checks that $315 and footnotes 2/3 do not become $3152 or
 $3153 and that the effective-date note survives.
 
-From `backend`, after installing `requirements-dev.txt`:
-
-```bash
-SENTRY_DSN='' HF_HUB_OFFLINE=1 PYTHONPATH=. python -m pytest tests -q
-```
+Use the [dependency setup and offline test command](../../../README.md#installing-dependencies)
+in the backend README to run these fixtures.
 
 These samples contain extractable PDF text and native Word content. They do not
 exercise scanned-only OCR or prove retrieval/answer quality. Section-aware

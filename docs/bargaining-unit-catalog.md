@@ -99,10 +99,12 @@ campus labels, unchanged-content migration, partial failure/retry, cache refresh
 new units, endpoint authentication, campus scoping, validation/UI agreement,
 SV/RP links, legacy/v2 search filters, and saved-history descriptions.
 
+For backend coverage, use the [offline test setup and command](../backend/README.md#installing-dependencies),
+replacing `tests` with `tests/test_collective_bargaining.py tests/test_contract_metadata.py`.
+Run the frontend checks from the repository root:
+
 ```sh
-cd backend
-USE_DEV_SETTINGS=true SENTRY_DSN='' .venv/bin/python -m pytest tests/test_collective_bargaining.py tests/test_contract_metadata.py -q
-cd ../web
+cd web
 npm test
 npx tsc --noEmit
 ```

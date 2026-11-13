@@ -45,6 +45,8 @@ def context(monkeypatch):
             return_value=('contract.pdf', 'application/pdf')))
         monkeypatch.setattr(stream, 'ingest_path_to_markdown',
                             AsyncMock(return_value=content))
+        # Metadata recovery must not depend on a cached tokenizer download.
+        monkeypatch.setattr(stream, 'num_tokens', Mock(return_value=5))
         vectorize = Mock(side_effect=AssertionError(
             'Must not regenerate embeddings'))
         monkeypatch.setattr(stream, 'vectorize_document', vectorize)
