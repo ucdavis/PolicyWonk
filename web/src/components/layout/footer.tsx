@@ -1,6 +1,5 @@
 import React from 'react';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { campusMap } from '@/lib/constants';
@@ -58,19 +57,9 @@ const Footer: React.FC<FooterProps> = ({
             </li>
           </ul>
         </nav>
-        <div className='flex flex-col items-start gap-1'>
-          <a target='_blank' rel='noopener noreferrer' href='https://ucop.edu'>
-            <Image
-              width={100}
-              height={50}
-              src='/media/uc_wordmark_blue_official.svg'
-              alt='University of California Office of the President'
-            />
-          </a>
-          <p className='text-xs leading-4 text-base-content/65'>
-            Copyright &copy; The Regents of the University of California.
-          </p>
-        </div>
+        <p className='text-xs leading-4 text-base-content/65'>
+          Copyright &copy; The Regents of the University of California.
+        </p>
       </div>
     </footer>
   );
