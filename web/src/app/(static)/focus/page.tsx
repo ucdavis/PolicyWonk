@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 export const generateMetadata = () => {
   return {
     title: 'Focus',
@@ -16,14 +14,6 @@ const FocusPage = () => {
         With <b>PolicyWonk</b> you can focus your search on specific policy
         areas by clicking the "Focus" bar.
       </p>
-
-      <Image
-        src='/media/focusbar.png'
-        alt='Focus bar screenshot'
-        width={943}
-        height={77}
-        className='my-3 h-auto max-w-full'
-      />
 
       <p>
         Once a focus is selected, any question you ask will be answered with

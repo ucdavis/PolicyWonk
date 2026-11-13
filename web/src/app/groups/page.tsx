@@ -31,7 +31,7 @@ export default function GroupsPage() {
   };
 
   return (
-    <div className='mx-auto w-full max-w-2xl px-4 py-12 md:px-8'>
+    <div className='mx-auto w-full max-w-4xl px-4 py-12 md:px-8'>
       <div className='card border border-main-border bg-base-100 shadow-sm'>
         <div className='card-body gap-5'>
           <div>
@@ -40,22 +40,21 @@ export default function GroupsPage() {
               Choose which location you want to use for your PolicyWonk session:
             </p>
           </div>
-          <div className='space-y-2'>
+          <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             {campuses.map((campus) => (
               <button
                 key={campus.value}
-                className={`flex w-full items-center justify-between rounded-box border border-main-border px-4 py-3 text-left font-medium transition-colors hover:border-primary hover:bg-primary/5 ${
-                  selectedGroup === campus.value
-                    ? 'border-primary bg-primary/10'
-                    : ''
-                }`}
+                type='button'
+                className='location-button'
+                data-campus={campus.value}
+                data-selected={selectedGroup === campus.value}
                 onClick={() => handleGroupSelection(campus.value)}
                 disabled={isLoading}
               >
                 <span>{campus.name}</span>
                 {isLoading && selectedGroup === campus.value && (
                   <span
-                    className='loading loading-spinner loading-sm text-primary'
+                    className='loading loading-spinner loading-sm shrink-0 text-primary'
                     role='status'
                   >
                     <span className='sr-only'>Loading...</span>

@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang='en' data-theme='policywonk'>
       <head>
         <GtagProvider />
-        <link rel='image_src' href='/media/thumbnail.jpg' />
+        <link rel='image_src' href='/media/thumbnail.png' />
         <link
           rel='apple-touch-icon'
           sizes='192x192'

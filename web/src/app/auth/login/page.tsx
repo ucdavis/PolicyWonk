@@ -68,7 +68,7 @@ const Login: React.FC<LoginProps> = async (props) => {
 
   return (
     <>
-      <div className='mx-auto flex w-full max-w-2xl items-center px-4 py-12 md:px-8'>
+      <div className='mx-auto flex w-full max-w-4xl items-center px-4 py-12 md:px-8'>
         <div className='w-full rounded-box border border-main-border bg-base-100 p-6 shadow-sm md:p-8'>
           <h1 className='text-3xl font-semibold'>Welcome to PolicyWonk</h1>
           <p className='mt-3 text-lg leading-7 text-base-content/75'>
@@ -93,14 +93,15 @@ const Login: React.FC<LoginProps> = async (props) => {
           )}
           <form action={signInHandler}>
             <input type='hidden' name='callbackUrl' value={callbackUrl} />
-            <div className='mt-3 grid gap-2'>
+            <div className='mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2'>
               {campuses.map((campus) => (
                 <button
                   key={campus.value}
                   type='submit'
                   name='tenant'
                   value={campus.value}
-                  className='btn btn-primary w-full'
+                  className='location-button'
+                  data-campus={campus.value}
                 >
                   {campus.name}
                 </button>
