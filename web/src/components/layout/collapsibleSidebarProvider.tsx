@@ -18,40 +18,32 @@ export const sidebarBreakpoint = 1024;
 export const isSidebarLargeScreen = (viewportWidth: number) =>
   viewportWidth >= sidebarBreakpoint;
 
+const subscribeViewport = (onChange: () => void) => {
+  window.addEventListener('resize', onChange);
+  return () => window.removeEventListener('resize', onChange);
+};
+const getViewportIsLarge = () => isSidebarLargeScreen(window.innerWidth);
+
 export const CollapsibleSidebarProvider: React.FC<{
   children: React.ReactNode;
   isMobile: boolean;
 }> = ({ children, isMobile }) => {
-  const [isLargeScreen, setIsLargeScreen] = React.useState(!isMobile);
-  const [isOpen, setIsOpen] = React.useState(!isMobile);
+  const isLargeScreen = React.useSyncExternalStore(
+    subscribeViewport,
+    getViewportIsLarge,
+    () => !isMobile
+  );
+  const [openState, setOpenState] = React.useState({
+    large: !isMobile,
+    open: !isMobile,
+  });
+  const isOpen =
+    openState.large === isLargeScreen ? openState.open : isLargeScreen;
+  const setIsOpen = React.useCallback(
+    (open: boolean) => setOpenState({ large: getViewportIsLarge(), open }),
+    []
+  );
   const sidebarRef = React.useRef<HTMLElement | null>(null);
-  const isLargeScreenRef = React.useRef(isLargeScreen); // Ref to track isLargeScreen state
-
-  React.useEffect(() => {
-    // update the ref so that we can use it in the event listener
-    isLargeScreenRef.current = isLargeScreen;
-  }, [isLargeScreen]);
-
-  const handleResize = () => {
-    if (isSidebarLargeScreen(window.innerWidth)) {
-      setIsLargeScreen(true);
-      setIsOpen(true);
-    } else {
-      setIsLargeScreen(false);
-      setIsOpen(false);
-    }
-  };
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      !isLargeScreenRef.current &&
-      sidebarRef.current &&
-      !sidebarRef.current.contains(event.target as Node)
-    ) {
-      setIsOpen(false);
-    }
-  };
-
   const onNavigate = (callback: () => void) => {
     if (!isLargeScreen) {
       setIsOpen(false);
@@ -60,17 +52,23 @@ export const CollapsibleSidebarProvider: React.FC<{
   };
 
   React.useEffect(() => {
-    const viewportIsLarge = isSidebarLargeScreen(window.innerWidth);
-    setIsLargeScreen(viewportIsLarge);
-    setIsOpen(viewportIsLarge);
+    const handleResize = () => setIsOpen(getViewportIsLarge());
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        !getViewportIsLarge() &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
     window.addEventListener('resize', handleResize);
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [setIsOpen]);
 
   React.useEffect(() => {
     if (isLargeScreen || !isOpen) {
@@ -89,7 +87,7 @@ export const CollapsibleSidebarProvider: React.FC<{
       delete document.body.dataset.sidebarScrollLock;
       document.removeEventListener('keydown', closeOnEscape);
     };
-  }, [isLargeScreen, isOpen]);
+  }, [isLargeScreen, isOpen, setIsOpen]);
 
   return (
     <CollapsibleSidebarContext.Provider

@@ -5,6 +5,9 @@ The authenticated `/api/unions?group=ucdavis` route and server-side chat/link
 validation share a five-minute, process-local catalog cache. Concurrent requests
 share one refresh. An expired cache that cannot refresh returns an explicit error;
 failed loads are retried on the next request. Each process refreshes independently.
+A refresh has a 20-second deadline across all pages; each Elasticsearch request
+has a 10-second timeout and no retries. Cancelling one chat request does not cancel
+the shared refresh for other callers.
 
 ## Metadata and campus rules
 
@@ -20,11 +23,12 @@ list together, for example:
 ```
 
 The selector shows systemwide entries plus the selected campus's entries. UCOP
-shows systemwide entries only. Current supported campus groups are `ucdavis`,
-`ucb`, and `ucsf`. Other UC campuses are represented in ingestion metadata for
-future group support. Unknown UCnet campus labels fail listing validation instead
-of being treated as systemwide. Adding a bargaining unit requires no frontend
-edit; adding an app campus still requires adding that group to the app.
+shows systemwide entries only. Supported app campuses are defined in the
+[campus configuration](../web/src/lib/constants.ts). Ingestion metadata can also
+represent campuses not yet supported by the app. Unknown UCnet campus labels fail
+listing validation instead of being treated as systemwide. Adding a bargaining
+unit requires no frontend edit; adding an app campus still requires adding that
+group to the app.
 
 The catalog aggregates document URLs and reads intact association objects from
 one indexed chunk per document. It does not aggregate parallel code, name, and

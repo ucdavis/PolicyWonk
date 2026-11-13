@@ -56,82 +56,96 @@ type CatalogBucket = {
 // Aggregate document URLs only. Read association objects intact from _source:
 // aggregating separate code/name/campus arrays would manufacture cross-products.
 export async function loadIndexedUnits(): Promise<UnitAssociation[]> {
-  const units: UnitAssociation[] = [];
-  let after: Record<string, estypes.FieldValue> | undefined;
-  const isV2 = indexName.includes('v2');
-  do {
-    const response = await searchClient.search({
-      index: indexName,
-      size: 0,
-      allow_partial_search_results: false,
-      query: {
-        bool: {
-          filter: [
-            {
-              term: {
-                [isV2
-                  ? 'metadata.source_type.keyword'
-                  : 'metadata.scope.keyword']: isV2
-                  ? 'UCCONTRACTS'
-                  : 'UCCOLLECTIVEBARGAINING',
-              },
+  const deadline = new AbortController();
+  const timer = globalThis.setTimeout(() => deadline.abort(), 20_000);
+  const signal = deadline.signal;
+  try {
+    const units: UnitAssociation[] = [];
+    let after: Record<string, estypes.FieldValue> | undefined;
+    const isV2 = indexName.includes('v2');
+    do {
+      signal.throwIfAborted();
+      const response = await searchClient.search(
+        {
+          index: indexName,
+          size: 0,
+          allow_partial_search_results: false,
+          query: {
+            bool: {
+              filter: [
+                {
+                  term: {
+                    [isV2
+                      ? 'metadata.source_type.keyword'
+                      : 'metadata.scope.keyword']: isV2
+                      ? 'UCCONTRACTS'
+                      : 'UCCOLLECTIVEBARGAINING',
+                  },
+                },
+                { exists: { field: 'vector' } },
+                { exists: { field: 'text' } },
+                { exists: { field: 'metadata.bargaining_units.code' } },
+              ],
             },
-            { exists: { field: 'vector' } },
-            { exists: { field: 'text' } },
-            { exists: { field: 'metadata.bargaining_units.code' } },
-          ],
-        },
-      },
-      aggs: {
-        documents: {
-          composite: {
-            size: 250,
-            sources: [{ url: { terms: { field: 'metadata.url.keyword' } } }],
-            ...(after ? { after } : {}),
           },
           aggs: {
-            document: {
-              top_hits: {
-                size: 1,
-                _source: ['metadata.bargaining_units', 'metadata.keywords'],
+            documents: {
+              composite: {
+                size: 250,
+                sources: [
+                  { url: { terms: { field: 'metadata.url.keyword' } } },
+                ],
+                ...(after ? { after } : {}),
+              },
+              aggs: {
+                document: {
+                  top_hits: {
+                    size: 1,
+                    _source: ['metadata.bargaining_units', 'metadata.keywords'],
+                  },
+                },
               },
             },
           },
         },
-      },
-    });
-    if (response.timed_out || response._shards.failed) {
-      throw new Error('Incomplete bargaining-unit catalog search');
-    }
-    const documents = response.aggregations?.documents as unknown as
-      | {
-          buckets: CatalogBucket[];
-          after_key?: Record<string, estypes.FieldValue>;
-        }
-      | undefined;
-    if (!documents || !Array.isArray(documents.buckets)) {
-      throw new Error('Missing bargaining-unit catalog results');
-    }
-    for (const bucket of documents.buckets) {
-      const metadata = bucket.document.hits.hits[0]?._source?.metadata;
-      const associations = z
-        .array(associationSchema)
-        .min(1)
-        .parse(metadata?.bargaining_units);
-      for (const unit of associations) {
-        // The existing retrieval filter still uses the uppercase code keyword.
-        if (metadata?.keywords?.includes(unit.code)) {
-          units.push(unit);
+        { signal, requestTimeout: 10_000, maxRetries: 0 }
+      );
+      signal.throwIfAborted();
+      if (response.timed_out || response._shards.failed) {
+        throw new Error('Incomplete bargaining-unit catalog search');
+      }
+      const documents = response.aggregations?.documents as unknown as
+        | {
+            buckets: CatalogBucket[];
+            after_key?: Record<string, estypes.FieldValue>;
+          }
+        | undefined;
+      if (!documents || !Array.isArray(documents.buckets)) {
+        throw new Error('Missing bargaining-unit catalog results');
+      }
+      for (const bucket of documents.buckets) {
+        const metadata = bucket.document.hits.hits[0]?._source?.metadata;
+        const associations = z
+          .array(associationSchema)
+          .min(1)
+          .parse(metadata?.bargaining_units);
+        for (const unit of associations) {
+          // The existing retrieval filter still uses the uppercase code keyword.
+          if (metadata?.keywords?.includes(unit.code)) {
+            units.push(unit);
+          }
         }
       }
-    }
-    const next = documents.buckets.length ? documents.after_key : undefined;
-    if (next && JSON.stringify(next) === JSON.stringify(after)) {
-      throw new Error('Catalog pagination did not advance');
-    }
-    after = next;
-  } while (after);
-  return units;
+      const next = documents.buckets.length ? documents.after_key : undefined;
+      if (next && JSON.stringify(next) === JSON.stringify(after)) {
+        throw new Error('Catalog pagination did not advance');
+      }
+      after = next;
+    } while (after);
+    return units;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export function createUnionCatalog(

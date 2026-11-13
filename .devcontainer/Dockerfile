@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:3.12
 RUN rm -f /etc/apt/sources.list.d/yarn.list \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get update \
-    && apt-get install -y nodejs=22.23.4-1nodesource1 \
+    && apt-get install -y nodejs=22.23.5-1nodesource1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY backend/pyproject.toml backend/uv.lock /tmp/backend/

@@ -1,4 +1,5 @@
 import { auth } from './auth';
+import { isApplicationSession } from './lib/session';
 
 const unprotectedRoutes = ['/api/auth', '/auth', '/api/documents'];
 
@@ -8,7 +9,7 @@ export default auth((req: any) => {
   const url = req.nextUrl;
   const route = req.nextUrl.pathname;
 
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = isApplicationSession(req.auth);
 
   if (!isLoggedIn) {
     // auth routes are unprotected
@@ -34,5 +35,12 @@ export default auth((req: any) => {
 });
 
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  // Chat authenticates in its route handler. Proxy body cloning waits for the
+  // entire upload, which would postpone that handler's body and request timers.
+  matcher: [
+    '/((?!api/chat$|.+\\.[\\w]+$|_next).*)',
+    '/',
+    '/api/((?!chat$).*)',
+    '/trpc(.*)',
+  ],
 };

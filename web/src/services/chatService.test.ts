@@ -20,7 +20,13 @@ vi.mock('@elastic/elasticsearch', () => ({
     search = search;
   },
 }));
-vi.mock('@/lib/db', () => ({ default: { documents: { findFirst } } }));
+vi.mock('@/lib/db', () => ({
+  default: {
+    $transaction: async (
+      operation: (transaction: unknown) => Promise<unknown>
+    ) => operation({ $executeRaw: vi.fn(), documents: { findFirst } }),
+  },
+}));
 vi.mock('./rerankService', () => ({ rerankPassages: vi.fn() }));
 
 const hits = Array.from({ length: 8 }, (_, i) => ({
@@ -134,6 +140,18 @@ describe('retrieval with optional reranking', () => {
     }
     expect(output).toContain('[^0]: [Policy 6](https://example.com/6)');
     expect(output).toContain('[^1]: [Policy 1](https://example.com/1)');
+  });
+
+  it('stops before document expansion if reranking completes after cancellation', async () => {
+    const controller = new AbortController();
+    vi.mocked(rerankPassages).mockImplementation(async (_, candidates) => {
+      controller.abort();
+      return { results: candidates.slice(0, 2), evidenceStatus: 'sufficient' };
+    });
+    await expect(
+      getSearchResultsElastic([[1]], focuses[0], 'Question', controller.signal)
+    ).rejects.toThrow();
+    expect(findFirst).not.toHaveBeenCalled();
   });
 
   it('does not load full documents when no evidence supports the question', async () => {

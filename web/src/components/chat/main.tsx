@@ -122,12 +122,6 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
   }, [messages]);
 
   React.useEffect(() => {
-    if (status === 'ready') {
-      setCurrentStatusMessage('');
-    }
-  }, [status]);
-
-  React.useEffect(() => {
     if (
       // on first response from AI
       pathname === `/${chat.group}/chat/new` &&
@@ -137,13 +131,6 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
     ) {
       lastRedirectedChatIdRef.current = chatIdFromMetadata;
       router.replace(`/${chat.group}/chat/${chatIdFromMetadata}`);
-    }
-
-    if (!chat.id && chatIdFromMetadata) {
-      setChat((current) => ({
-        ...current,
-        id: chatIdFromMetadata,
-      }));
     }
   }, [router, pathname, chat.group, chat.id, chatIdFromMetadata, status]);
 
@@ -289,13 +276,17 @@ const MainContent: React.FC<MainContentProps> = ({ initialChat }) => {
                         isLoading={isLoadingAnswer}
                         thought={isLoadingAnswer ? currentStatusMessage : null}
                       >
-                        {chat.id && status === 'ready' && (
-                          <ChatActions
-                            chat={chat}
-                            onReactionUpdate={onFeedbackUpdate}
-                            onShareIdUpdate={onShareIdUpdate}
-                          />
-                        )}
+                        {(chat.id || chatIdFromMetadata) &&
+                          status === 'ready' && (
+                            <ChatActions
+                              chat={{
+                                ...chat,
+                                id: chat.id || chatIdFromMetadata!,
+                              }}
+                              onReactionUpdate={onFeedbackUpdate}
+                              onShareIdUpdate={onShareIdUpdate}
+                            />
+                          )}
                       </WonkMessage>
                     )}
                   </WonkyErrorBoundary>

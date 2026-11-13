@@ -32,10 +32,46 @@ app to restore the previous five-result search and answer prompt, with no rerank
 call. The flag is read at request time and does not require a frontend build.
 
 Reranking uses the existing `OPENAI_API_KEY` through the Responses API. It has an
-eight-second timeout, no retries, and a 250,000-character input bound. On failure
-or oversized input, it uses the wider search's first five passages and treats
-their relevance as unassessed. This fallback differs from disabling the feature,
-which restores the original search. No ingestion or index changes are required.
+eight-second timeout, no retries, and a 250,000-character input bound. On oversized
+input or a reranker failure, including its own timeout, it uses the wider search's
+first five passages and treats their relevance as unassessed. Cancelling the chat
+request stops retrieval instead of using this fallback. Disabling the feature
+restores the original search. No ingestion or index changes are required.
 
 Run deterministic retrieval, fallback, and citation tests from `web` with
 `npm test`. Tests mock external services and do not incur API charges.
+
+## Chat request and session safeguards
+
+The proxy and chat/history mutations require an application session with a
+positive integer user ID and a user object. Configuration-error sessions fail
+closed. Logging helpers are internal server-only functions; feedback, sharing,
+and deletion go through authenticated ownership checks. Elastic telemetry has
+short timeouts and cannot turn a successful database save into a failed answer.
+
+Chat accepts text-only user and assistant messages, ending with a user question.
+It discards client metadata and provider options. Limits are 128 KiB per body,
+40 messages, 8,000 characters per user message, and 48,000 characters across the
+conversation. Retrieved answer context is capped at 160,000 characters and
+answer output at 16,000 tokens, including reasoning where the provider counts it.
+Bodies have 20 seconds to arrive; the request deadline is three minutes.
+Cancellation reaches embedding, search, reranking, answer generation, and
+telemetry, and prevents subsequent document lookups or writes. The response
+closes at the deadline even while a downstream operation is settling. Its
+concurrency slot stays occupied until that work finishes. Chat document reads
+and answer writes use database transactions with a 2-second acquisition wait,
+10-second statement timeout, and 15-second transaction timeout. For shared catalog
+load deadlines and cancellation behavior, see the
+[bargaining-unit catalog guide](../docs/bargaining-unit-catalog.md).
+
+Each app process permits 20 request starts per user per minute, two concurrent
+requests per user, and 20 concurrent requests total. Rejections use HTTP 429 and
+`Retry-After: 60`. These are process-local resource bounds, not a shared quota
+across replicas or restarts. Existing answer, reranker, and embedding model
+settings and search indexes are unchanged.
+
+## Future dependency upgrades
+
+- Upgrade Prisma from 6 to 7 to pick up the patched `deepmerge-ts` dependency.
+- Update TypeScript ESLint when it supports `minimatch` 11, which contains the
+  remaining glob-matching security fix.

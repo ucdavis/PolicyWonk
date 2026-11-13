@@ -2,24 +2,20 @@
 
 import React from 'react';
 
+const subscribe = () => () => {};
+const getOrigin = () => window.location.origin;
+const getServerOrigin = () => '';
+
 export const useShareUrl = (
   shareId: string | undefined | null,
   group: string
 ) => {
-  const [url, setUrl] = React.useState('');
-
-  React.useEffect(() => {
-    if (!shareId || !group) {
-      setUrl('');
-      return;
-    }
-
-    // since window doesn't exist on the server, initialize this on first mount + on shareId change
-    const newUrl = shareId
-      ? `${window.location.origin}/${group}/share/${shareId}`
-      : '';
-    setUrl(newUrl);
-  }, [shareId, group]);
-
-  return url;
+  const origin = React.useSyncExternalStore(
+    subscribe,
+    getOrigin,
+    getServerOrigin
+  );
+  return origin && shareId && group
+    ? `${origin}/${group}/share/${shareId}`
+    : '';
 };
