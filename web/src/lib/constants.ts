@@ -91,6 +91,38 @@ export const campuses: Campus[] = [
     logoPath: '/media/uc_wordmark_blue_official.svg',
     link: 'https://www.lbl.gov/',
   },
+  {
+    name: 'UC Irvine',
+    value: 'uci',
+    ssoTenant: 'uci',
+    affiliationScopes: ['uci.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.uci.edu/',
+  },
+  {
+    name: 'UC Santa Barbara',
+    value: 'ucsb',
+    ssoTenant: 'ucsb',
+    affiliationScopes: ['ucsb.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucsb.edu/',
+  },
+  {
+    name: 'UC Agriculture and Natural Resources',
+    value: 'ucanr',
+    ssoTenant: 'ucanr',
+    affiliationScopes: ['ucanr.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://ucanr.edu/',
+  },
+  {
+    name: 'UC Law San Francisco',
+    value: 'uclawsf',
+    ssoTenant: 'uclawsf',
+    affiliationScopes: ['uclawsf.edu', 'uchastings.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.uclawsf.edu/',
+  },
 ];
 
 export const DEFAULT_GROUP = 'ucdavis'; // Default group for the app, mostly for error handling

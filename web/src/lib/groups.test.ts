@@ -16,6 +16,11 @@ describe('campus affiliation mapping', () => {
     ['staff@ucsd.edu', 'ucsd'],
     ['staff@ucsc.edu', 'ucsc'],
     ['employee@lbl.gov', 'lbl'],
+    ['staff@uci.edu', 'uci'],
+    ['faculty@ucsb.edu', 'ucsb'],
+    ['employee@ucanr.edu', 'ucanr'],
+    ['staff@uclawsf.edu', 'uclawsf'],
+    ['staff@uchastings.edu', 'uclawsf'],
   ])('maps %s to the app group %s', (affiliation, group) => {
     expect(getGroupNameFromAffiliation([affiliation])).toBe(group);
   });
