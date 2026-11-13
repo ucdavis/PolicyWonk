@@ -28,7 +28,7 @@ async function fetchLocal(path, options={}) {
  }
  assert.ok(ready,'Isolated Boxy startup');
  const spCert=await (await fetchLocal('/.well-known/saml.cer')).text();
- for(const [tenant,certs] of [['single',[fixture.cert]],['first',[fixture.cert,fixture.other]],['second',[fixture.other,fixture.cert]]]) {
+ for(const [tenant,certs] of [['single',[fixture.cert]],['first',[fixture.cert,fixture.other]],['second',[fixture.other,fixture.cert]],['duplicate',[fixture.cert,fixture.cert]]]) {
   const descriptors=certs.map(cert=>`<KeyDescriptor use="signing"><KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#"><X509Data><X509Certificate>${pemBody(cert)}</X509Certificate></X509Data></KeyInfo></KeyDescriptor>`).join('');
   const metadata=`<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="${issuer}/${tenant}"><IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">${descriptors}<SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="${issuer}/sso"/></IDPSSODescriptor></EntityDescriptor>`;
   const create=await fetchLocal('/api/v1/sso',{method:'POST',headers:{Authorization:'Api-Key isolated-test-key','Content-Type':'application/json'},body:JSON.stringify({tenant,product:'isolated-test',rawMetadata:metadata,redirectUrl:callback,defaultRedirectUrl:callback})});
@@ -55,6 +55,7 @@ async function fetchLocal(path, options={}) {
    if(mode!=='valid') {
     assert.equal(destination.searchParams.get('error'),'access_denied');
     assert.equal(destination.searchParams.has('code'),false);
+    console.log(JSON.stringify({tenant,mode,acs_status:result.status,error:destination.searchParams.get('error'),code_issued:false,state_matched:true}));
    } else {
     assert.equal(destination.searchParams.has('error'),false);
     assert.ok(destination.searchParams.get('code'));
@@ -65,6 +66,7 @@ async function fetchLocal(path, options={}) {
     const profile=await fetchLocal('/api/oauth/userinfo',{headers:{Authorization:'Bearer '+tokens.access_token}});
     assert.equal(profile.status,200,'Userinfo');
     assert.equal((await profile.json()).email,'test@example.invalid');
+    console.log(JSON.stringify({tenant,mode,acs_status:result.status,token_status:token.status,userinfo_status:profile.status,email:'test@example.invalid',state_matched:true}));
    }
   }
  }
