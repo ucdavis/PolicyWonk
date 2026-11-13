@@ -22,6 +22,8 @@ Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an a
 
 The UCLA, Merced, Riverside, and San Diego connections use tenants `ucla`, `ucmerced`, `ucr`, and `ucsd`. Their InCommon entity IDs are `urn:mace:incommon:<campus>.edu`; each connection imports metadata from `https://mdq.incommon.org/entities/<entityID>`. The login and location pages both use the campus list, and new campuses receive the shared UCOP policy and union-contract choices. Campus sign-in does not add local policy sources.
 
+UC Santa Cruz uses tenant `ucsc`, scope `ucsc.edu`, and entity ID `urn:mace:incommon:ucsc.edu`. Berkeley Lab (Lawrence Berkeley National Laboratory) uses tenant `lbl`, scope `lbl.gov`, and entity ID `urn:mace:incommon:lbl.gov`. Berkeley Lab is a separate identity provider and app group from UC Berkeley/CalNet. Both connections can be configured from their published metadata before coordinating a user sign-in test with the institution.
+
 For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/api/auth/callback/boxyhq-saml` on new Jackson connections and set their default redirect to the TEST site. Add the production callback when promoting that campus. Confirm attribute release and complete sign-in with a campus tester before calling access verified. The UC San Diego option uses UCSD's published IdP and `ucsd.edu` scope. No separate Health login is configured.
 
 ## Release flow

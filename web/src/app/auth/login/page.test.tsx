@@ -42,6 +42,8 @@ it.each([
   ['UC Merced', 'ucmerced'],
   ['UC Riverside', 'ucr'],
   ['UC San Diego', 'ucsd'],
+  ['UC Santa Cruz', 'ucsc'],
+  ['Berkeley Lab', 'lbl'],
 ])(
   'routes the %s button to the configured Jackson tenant',
   async (label, tenant) => {

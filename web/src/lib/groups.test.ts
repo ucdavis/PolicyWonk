@@ -14,6 +14,8 @@ describe('campus affiliation mapping', () => {
     ['employee@ucmerced.edu', 'ucmerced'],
     ['faculty@ucr.edu', 'ucr'],
     ['staff@ucsd.edu', 'ucsd'],
+    ['staff@ucsc.edu', 'ucsc'],
+    ['employee@lbl.gov', 'lbl'],
   ])('maps %s to the app group %s', (affiliation, group) => {
     expect(getGroupNameFromAffiliation([affiliation])).toBe(group);
   });

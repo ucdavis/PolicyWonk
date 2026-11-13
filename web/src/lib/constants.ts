@@ -75,6 +75,22 @@ export const campuses: Campus[] = [
     logoPath: '/media/uc_wordmark_blue_official.svg',
     link: 'https://www.ucsd.edu/',
   },
+  {
+    name: 'UC Santa Cruz',
+    value: 'ucsc',
+    ssoTenant: 'ucsc',
+    affiliationScopes: ['ucsc.edu'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.ucsc.edu/',
+  },
+  {
+    name: 'Berkeley Lab',
+    value: 'lbl',
+    ssoTenant: 'lbl',
+    affiliationScopes: ['lbl.gov'],
+    logoPath: '/media/uc_wordmark_blue_official.svg',
+    link: 'https://www.lbl.gov/',
+  },
 ];
 
 export const DEFAULT_GROUP = 'ucdavis'; // Default group for the app, mostly for error handling
