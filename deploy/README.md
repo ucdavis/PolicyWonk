@@ -31,7 +31,7 @@ For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/
 
 Each pipeline keeps three stages: `BuildPush` → `DeployTest` → `DeployProd`.
 
-1. PRs build the affected component when its directory or pipeline YAML changes. The frontend Docker build runs the existing ESLint and Vitest checks using its installed dependencies. PRs do not push images or deploy.
+1. PRs build the affected component when its directory or pipeline YAML changes. The frontend Docker build runs the existing ESLint and Vitest checks using its installed dependencies. The worker build requires the [offline backend checks](../backend/README.md#installing-dependencies) to pass. PRs do not push images or deploy.
 2. A successful build on `main` pushes an image tagged with the full commit SHA and deploys it to test. The frontend checks that `/auth/login` returns HTTP 200, with retries for startup.
 3. CAES Developers test the candidate, then approve the existing Azure DevOps `prod` environment gate. Production receives the same image tag and repeats the login-page check.
 
