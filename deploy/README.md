@@ -22,6 +22,19 @@ Campus sign-in mappings live in `web/src/lib/constants.ts`. Each campus has an a
 
 The UCLA, Merced, Riverside, and San Diego connections use tenants `ucla`, `ucmerced`, `ucr`, and `ucsd`. Their InCommon entity IDs are `urn:mace:incommon:<campus>.edu`; each connection imports metadata from `https://mdq.incommon.org/entities/<entityID>`. The login and location pages both use the campus list, and new campuses receive the shared UCOP policy and union-contract choices. Campus sign-in does not add local policy sources.
 
+These additional connections complete the current UCPath location list, excluding Former Employees. Each uses the same identifier for its app group and Jackson tenant. Import their metadata from `https://mdq.incommon.org/entities/<URL-encoded entity ID>`.
+
+| Location | Tenant | Affiliation scopes | InCommon entity ID |
+| --- | --- | --- | --- |
+| UC Santa Cruz | `ucsc` | `ucsc.edu` | `urn:mace:incommon:ucsc.edu` |
+| Berkeley Lab | `lbl` | `lbl.gov` | `urn:mace:incommon:lbl.gov` |
+| UC Irvine | `uci` | `uci.edu` | `urn:mace:incommon:uci.edu` |
+| UC Santa Barbara | `ucsb` | `ucsb.edu` | `urn:mace:incommon:ucsb.edu` |
+| UC Agriculture and Natural Resources | `ucanr` | `ucanr.edu` | `https://ucanridp.ucanr.edu/idp/shibboleth` |
+| UC Law San Francisco | `uclawsf` | `uclawsf.edu`, `uchastings.edu` | `https://shibboleth.uchastings.edu/idp/shibboleth` |
+
+Berkeley Lab is separate from UC Berkeley/CalNet, and UC Law SF is separate from UCSF. UC Law SF retains its legacy Hastings entity ID and publishes both affiliation scopes. These connections can be configured from their published metadata before coordinating a user sign-in test with the institution.
+
 For a TEST-first rollout, allow only `https://policywonk-test.azurewebsites.net/api/auth/callback/boxyhq-saml` on new Jackson connections and set their default redirect to the TEST site. Add the production callback when promoting that campus. Confirm attribute release and complete sign-in with a campus tester before calling access verified. The UC San Diego option uses UCSD's published IdP and `ucsd.edu` scope. No separate Health login is configured.
 
 ## Release flow
