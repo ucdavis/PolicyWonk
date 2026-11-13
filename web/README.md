@@ -70,30 +70,8 @@ requests per user, and 20 concurrent requests total. Rejections use HTTP 429 and
 across replicas or restarts. Existing answer, reranker, and embedding model
 settings and search indexes are unchanged.
 
-## Dependency maintenance follow-up
+## Future dependency upgrades
 
-The November 2026 refresh retains Next 16, React 19, AI SDK 6, Prisma 6, and
-Node 22. Zod moves to 4 for its security fix. Matching Next packages and React
-types move together. Run `npm ci`, `npx prisma generate`, `npm test`,
-`npm run lint`, and `npm run build` from `web` with the Node version specified in
-[the development prerequisites](../README.md#prerequisites).
-
-Two distinct tooling advisories remain, reported as ten affected dependency
-nodes by `npm audit` on November 12, 2026:
-
-- [deepmerge-ts recursive object graphs](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)
-  is pulled in by Prisma's CLI configuration loader. Its supported parent fix
-  requires Prisma 7. PolicyWonk uses the CLI at build time and does not load
-  user-supplied Prisma configuration. npm also reports this chain with
-  `--omit=dev` because the client has a CLI peer dependency. The standalone
-  production build excludes `prisma`, `@prisma/config`, and `deepmerge-ts`.
-- [minimatch glob amplification](https://github.com/advisories/GHSA-g3hv-75wg-m249)
-  is pulled in by TypeScript ESLint. The patched matcher is major 11, outside
-  the current parent's range. Lint uses repository-owned patterns, and these
-  packages are excluded from the standalone runtime.
-
-Recheck supported parent releases before removing these deferrals. A clean
-runtime bundle inspection does not replace dependency auditing or signed-in
-acceptance. Before release, follow the TEST and production approval checks in
-[the deployment guide](../deploy/README.md), including normal campus SSO,
-streamed answers, citations, history, sharing, and logout.
+- Upgrade Prisma from 6 to 7 to pick up the patched `deepmerge-ts` dependency.
+- Update TypeScript ESLint when it supports `minimatch` 11, which contains the
+  remaining glob-matching security fix.
