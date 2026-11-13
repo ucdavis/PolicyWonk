@@ -1,0 +1,14 @@
+{
+  "name": "policywonk-sso-diagnostics",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "bash ../tests/run.sh"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "0.9.12"
+  },
+  "devDependencies": {
+    "@boxyhq/saml20": "1.10.0"
+  }
+}
