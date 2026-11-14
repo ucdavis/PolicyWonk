@@ -16,7 +16,7 @@ ID, timestamp, duration, the configured campus matched from Jackson's requested
 tenant, and the resolved application group. Unknown campus/group labels become
 `unknown`. Claim-presence flags report ePPN, email, and affiliation presence,
 not their values or validity. A `null` flag means claim processing did not reach
-that check.
+that check. `resolved_group: null` means group resolution was not completed.
 
 Stages distinguish claim processing, user upsert, group assignment, and JWT
 callback completion. `outcome: completed` means this application callback
@@ -40,6 +40,10 @@ PolicyWonk web app to collect them; Boxy's log settings cover only Boxy. These
 events do not add OTEL or centralized retention. Focused callback and HTTP-flow
 regressions run with `npm test` in `web/`, using synthetic identities and local
 OAuth endpoints instead of campus credentials.
+
+Application diagnostics have only been tested locally and in CI; they have not
+been deployed. The completed isolated Azure broker exercise validates Boxy's
+SAML diagnostics, not these application events.
 
 ## Build and test
 
