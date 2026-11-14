@@ -65,16 +65,8 @@ Keep the component path filters. Azure Pipelines [reports a neutral check when p
 
 ## BoxyHQ source build
 
-`deploy/boxy/Dockerfile` builds Jackson 1.42.0 and saml20 1.10.0 from pinned,
-checksum-verified source archives. Readable source patches add diagnostics and
-fix encrypted-response verification with multiple trusted signing certificates.
-See [SSO source build and diagnostics](boxy/README.md) for the patch mechanism,
-regression tests, and upgrade procedure.
-
-The image retains Node.js 22.23.4, the patched runtime selected for
-[CVE-2026-111497](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
-Native dependencies are rebuilt on the pinned Node image. The application starts
-with `node server.js`; the manual migration tools are installed from a lockfile.
+See [SSO source build and diagnostics](boxy/README.md) for the source pins,
+patch mechanism, local build and test commands, and upgrade procedure.
 This source-build alternative has not been deployed to the shared SSO service.
 
 The frontend pipeline also builds this SSO image on PRs. Only a successful build
@@ -91,13 +83,6 @@ normal sign-in, callback/session creation, and logout before production approval
 Check the version and database of any separate test SSO instance before changing
 it. Do not apply `boxy.bicep` without reviewing its service-plan and environment
 parameters.
-
-Local image checks, without Azure changes:
-
-```sh
-docker build --platform linux/amd64 -t policywonk-sso:source deploy/boxy
-bash deploy/boxy/tests/run.sh policywonk-sso:source
-```
 
 ## Schema changes and rollback
 

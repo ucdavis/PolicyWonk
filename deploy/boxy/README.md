@@ -16,8 +16,8 @@ bash deploy/boxy/tests/run.sh policywonk-sso:source
 ```
 
 The Docker build downloads SHA-256-verified source archives for Jackson 1.42.0
-(`ory/polis` commit `0d2d849aa99b0a36ddd2f06fa11bd6307842d6e6`) and
-`@boxyhq/saml20` 1.10.0 (`ory/saml20` commit `fee694e7e88fed7f440c8787ff87fd5586aa7bdf`).
+and `@boxyhq/saml20` 1.10.0. [Dockerfile](Dockerfile) owns the immutable source
+commits, archive checksums, and runtime image digest.
 It applies the readable patches under `patches/` before TypeScript and Next.js
 compilation. The Next.js alias selects the compiled patched SAML library. There
 are no edits to generated JavaScript or dependencies on webpack chunk names.
@@ -25,25 +25,33 @@ are no edits to generated JavaScript or dependencies on webpack chunk names.
 The SAML fix preserves an explicit signature-reference mismatch when trying
 multiple trusted certificates. This lets the existing response validator retry
 the original encrypted response, whose signature covers the ciphertext rather
-than the decrypted assertion. Exceptions still fail validation, and the retry
-must verify a trusted signature. Certificate rollover, encryption, audience,
+than the decrypted assertion. If every certificate attempt throws, validation
+still fails; the retry must verify a trusted signature. Certificate rollover, encryption, audience,
 expiration, and request correlation checks remain enabled.
 
-The build runs the compiled-library regression matrix using disposable keys.
+The build first checks that unmodified saml20 1.10.0 reproduces the encrypted
+multi-certificate failure in both certificate orders, then runs the patched
+compiled-library regression matrix using disposable keys.
 It covers plaintext, AES-128/256 encrypted assertions, outer/inner signatures,
 both certificate orders, untrusted certificates, tampering, expiration, audience,
 duplicate IDs, broken ciphertext, logging isolation/redaction, a failed log sink,
 and disabling diagnostics. The separate HTTP test runs the final image with an
 in-memory database and synthetic IdPs, then exercises authorize, encrypted ACS,
-token exchange, and userinfo. No production credentials or real assertions are
+token exchange, and userinfo with one or multiple signing certificates in both
+orders. It also checks rejection of tampered and request-mismatched responses
+and the emitted HTTP diagnostics. No production credentials or real assertions are
 used. These tests do not substitute for a successful campus login.
 
 Archive checksum mismatches and patch conflicts stop the build. On an upstream
 upgrade, review source changes, update pins/checksums and patches, and rerun both
 test layers. A patch that still applies is not proof of behavioral compatibility.
-Dependency installs use upstream lockfiles. This approach requires maintaining
+Application and SAML dependency installs use upstream lockfiles. The manual
+migration command uses the dedicated [migration-tool lockfile](migrations/package-lock.json).
+Native dependencies are rebuilt on the pinned Node image, and the application
+starts with `node server.js`. This approach requires maintaining
 the source build and its dependencies, and takes longer than patching an upstream
-image. The runtime retains the patched Node 22.23.4 release used in production.
+image. The runtime retains Node 22.23.4, selected for
+[CVE-2026-111497](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
 
 ## Deployment
 
