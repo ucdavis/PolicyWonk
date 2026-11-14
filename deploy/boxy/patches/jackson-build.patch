@@ -1,0 +1,48 @@
+--- a/next.config.js
++++ b/next.config.js
+@@ -11,6 +11,11 @@
+   i18n,
+   output: 'standalone',
+   webpack: (config, { dev, webpack, isServer }) => {
++    // Compile our patched SAML source instead of the registry dependency.
++    config.resolve.alias['@boxyhq/saml20$'] = require('path').resolve(
++      __dirname, 'vendor/saml20/dist/index.js'
++    );
++
+     // Enable source maps in development mode and for server-side rendering
+     if (!dev && isServer) {
+       config.devtool = 'source-map';
+--- a/package.json
++++ b/package.json
+@@ -42,7 +42,7 @@
+     "start": "cross-env PORT=5225 NODE_OPTIONS=--dns-result-order=ipv4first node .next/standalone/server.js",
+     "swagger-jsdoc": "swagger-jsdoc -d swagger/swagger-definition.js npm/src/**/*.ts npm/src/**/**/*.ts -o swagger/swagger.json",
+     "redis": "cross-env JACKSON_API_KEYS=secret DB_ENGINE=redis DB_TYPE=redis DB_URL=redis://localhost:6379/redis npm run dev",
+-    "prepare": "npm run prepare:npm && npm run prepare:internal-ui && npm prune",
++    "prepare": "npm ci --prefix npm --legacy-peer-deps --no-audit --no-fund && npm ci --prefix internal-ui --legacy-peer-deps --no-audit --no-fund",
+     "prepare:npm": "cd npm && npm install --legacy-peer-deps",
+     "prepare:internal-ui": "cd internal-ui && npm install --legacy-peer-deps",
+     "pretest:e2e": "env-cmd -f .env.test.local ts-node --logError e2e/support/pretest.ts",
+--- a/migrate.sh
++++ b/migrate.sh
+@@ -1,7 +1,8 @@
+ #!/bin/sh
+ 
+ echo "Initiating Migration..."
+-export NODE_PATH=$(npm root -g)
++export NODE_PATH=/opt/migration-tools/node_modules
++export PATH="$NODE_PATH/.bin:$PATH"
+ 
+ cd ./npm
+ if [ "$DB_ENGINE" = "mongo" ]
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -28,7 +28,7 @@
+     },
+   },
+   "include": ["next-env.d.ts", "types/*.d.ts", "**/*.ts", "**/*.tsx"],
+-  "exclude": ["node_modules", "npm/typeorm.ts", "sdk"],
++  "exclude": ["node_modules", "npm/typeorm.ts", "sdk", "vendor", "sso-diagnostics", "diagnostics", "tests"],
+   "ts-node": {
+     "compilerOptions": {
+       "module": "CommonJS",

@@ -1,0 +1,18 @@
+--- a/npm/src/controller/oauth.ts
++++ b/npm/src/controller/oauth.ts
+@@ -1,3 +1,4 @@
++const diagnostics: { run<T>(connection: unknown, xml: string, validate: () => Promise<T>): Promise<T> } = require('/app/sso-diagnostics/index.cjs');
+ import crypto from 'crypto';
+ import { promisify } from 'util';
+ import { deflateRaw } from 'zlib';
+@@ -788,7 +789,9 @@
+     let profile: SAMLProfile | undefined;
+ 
+     try {
+-      profile = await extractSAMLResponseAttributes(rawResponse, validateOpts);
++      profile = await diagnostics.run(connection, rawResponse, () =>
++        extractSAMLResponseAttributes(rawResponse, validateOpts)
++      );
+ 
+       // This is a federated SAML flow, let's create a new SAMLResponse and POST it to the SP
+       if (isSAMLFederated) {

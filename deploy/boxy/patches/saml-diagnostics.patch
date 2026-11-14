@@ -1,0 +1,54 @@
+--- a/lib/validateSignature.ts
++++ b/lib/validateSignature.ts
+@@ -1,3 +1,4 @@
++const diagnostics = require('/app/sso-diagnostics/index.cjs');
+ import { SignedXml } from '@boxyhq/xml-crypto';
+ import { select } from 'xpath';
+ import { thumbprint } from './utils';
+@@ -64,7 +65,7 @@
+         return certToPEM(_cert);
+       };
+       try {
+-        valid = signed.checkSignature(xml);
++        valid = diagnostics.check(signed, xml, _cert);
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       } catch (err) {
+         //noop
+@@ -96,7 +97,7 @@
+       return certToPEM(cert);
+     };
+ 
+-    valid = signed.checkSignature(xml);
++    valid = diagnostics.check(signed, xml, cert);
+   }
+ 
+   if (valid) {
+--- a/lib/response.ts
++++ b/lib/response.ts
+@@ -1,3 +1,4 @@
++const diagnostics = require('/app/sso-diagnostics/index.cjs');
+ import { SAMLProfile } from './typings';
+ import xml2js from 'xml2js';
+ import xmlbuilder from 'xmlbuilder';
+@@ -119,7 +120,9 @@
+   let validId = null;
+ 
+   try {
+-    validId = validateSignature(rawAssertion, options.publicKey, options.thumbprint);
++    validId = diagnostics.phase(decAssertion ? 'decrypted' : 'original', () =>
++      validateSignature(rawAssertion, options.publicKey, options.thumbprint)
++    );
+   } catch (e) {
+     const error = new WrapError('Invalid assertion.');
+     error.inner = e;
+@@ -130,7 +133,9 @@
+   if (decAssertion && !validId) {
+     // try the fallback verification where signature has been generated on the encrypted SAML by some IdPs (like OpenAthens)
+     try {
+-      validId = validateSignature(originalAssertion, options.publicKey, options.thumbprint);
++      validId = diagnostics.phase('original_fallback', () =>
++        validateSignature(originalAssertion, options.publicKey, options.thumbprint)
++      );
+     } catch (e) {
+       const error = new WrapError('Invalid assertion.');
+       error.inner = e;
