@@ -1,6 +1,7 @@
 import NextAuth, { Profile } from 'next-auth';
 import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 
+import { authDiagnosticLogger, observeSamlSignIn } from './lib/authDiagnostics';
 import { setCurrentGroup } from './lib/cookies';
 import {
   DEV_AUTH_BYPASS_PROVIDER_ID,
@@ -33,6 +34,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  logger: authDiagnosticLogger,
   providers: [
     ...(devAuthBypassProvider ? [devAuthBypassProvider] : []),
     BoxyHQSAMLProvider({
@@ -45,9 +47,6 @@ export const {
   ],
   callbacks: {
     async jwt(params) {
-      // console.log('jwt', params);
-      // params.profile has user info -- params.profile.raw has the shibboleth claims
-      // params.profile.requested.tenant has the tenant as defined by boxy -- might be nice for multi-tenant
       if (params.trigger === 'signIn') {
         if (params.account?.provider === DEV_AUTH_BYPASS_PROVIDER_ID) {
           if (!isDevAuthBypassEnabled()) {
@@ -74,43 +73,56 @@ export const {
           return params.token;
         }
 
-        // profile is only available on sign in
-        const profileExtended = params.profile as ProfileWithRaw | undefined;
+        return observeSamlSignIn(params.profile, async (diagnostics) => {
+          // profile is only available on sign in
+          const profileExtended = params.profile as ProfileWithRaw | undefined;
 
-        const rawAffiliations = profileExtended?.raw?.[SamlClaims.affiliation];
-        const affiliations: string[] = rawAffiliations
-          ? Array.isArray(rawAffiliations)
-            ? rawAffiliations
-            : [rawAffiliations]
-          : [];
+          const rawAffiliations =
+            profileExtended?.raw?.[SamlClaims.affiliation];
+          const affiliations: string[] = rawAffiliations
+            ? Array.isArray(rawAffiliations)
+              ? rawAffiliations
+              : [rawAffiliations]
+            : [];
 
-        const extractClaim = (
-          value: string | string[] | undefined
-        ): string | undefined => {
-          return Array.isArray(value) ? value[0] : value;
-        };
+          const extractClaim = (
+            value: string | string[] | undefined
+          ): string | undefined => {
+            return Array.isArray(value) ? value[0] : value;
+          };
 
-        const userFromToken: Partial<User> = {
-          name: extractClaim(profileExtended?.raw?.[SamlClaims.name]),
-          email: extractClaim(profileExtended?.raw?.[SamlClaims.email]),
-          upn: extractClaim(profileExtended?.raw?.[SamlClaims.upn]),
-          affiliations: affiliations.join(','),
-        };
+          const userFromToken: Partial<User> = {
+            name: extractClaim(profileExtended?.raw?.[SamlClaims.name]),
+            email: extractClaim(profileExtended?.raw?.[SamlClaims.email]),
+            upn: extractClaim(profileExtended?.raw?.[SamlClaims.upn]),
+            affiliations: affiliations.join(','),
+          };
 
-        const user = await ensureUserExists(userFromToken);
+          diagnostics.claims({
+            eppn: Boolean(userFromToken.upn),
+            email: Boolean(userFromToken.email),
+            affiliation: affiliations.length > 0,
+          });
+          diagnostics.stage('user_upsert');
+          const user = await ensureUserExists(userFromToken);
 
-        // Set the current group (cookie) based on the user's affiliation
-        const groupFromAffiliation = getGroupNameFromAffiliation(affiliations);
-        await setCurrentGroup(groupFromAffiliation);
+          // Set the current group (cookie) based on the user's affiliation
+          diagnostics.stage('group_assignment');
+          const groupFromAffiliation =
+            getGroupNameFromAffiliation(affiliations);
+          diagnostics.group(groupFromAffiliation);
+          await setCurrentGroup(groupFromAffiliation);
 
-        const token = {
-          ...params.token,
-          name: user.name,
-          email: user.email,
-          userId: user.id,
-        };
+          diagnostics.stage('jwt_callback');
+          const token = {
+            ...params.token,
+            name: user.name,
+            email: user.email,
+            userId: user.id,
+          };
 
-        return token;
+          return token;
+        });
       }
 
       return params.token;

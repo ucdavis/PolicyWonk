@@ -6,7 +6,40 @@ The `saml_validation` JSON event reports validation of an incoming response, not
 
 No raw XML, attributes, NameID, session identifiers, RelayState, tokens, private keys, or arbitrary exception messages are emitted by these diagnostics. Only eight certificate attempts/phases are retained per event. XML inspection is skipped above 2 MiB. Concurrent requests use separate AsyncLocalStorage contexts. Logging write failures do not change validation results. Existing upstream logging is unchanged.
 
-`SSO_DIAGNOSTICS_ENABLED=false` disables the added instrumentation at runtime. Restart the app after changing that setting. Azure's filesystem container logs rotate; download the logs promptly after a scheduled test. This change does not add durable centralized retention or OTEL.
+`SSO_DIAGNOSTICS_ENABLED=false` disables the Boxy SAML instrumentation at runtime. Restart the app after changing that setting. Azure's filesystem container logs rotate; download the logs promptly after a scheduled test. This change does not add durable centralized retention or OTEL.
+
+## PolicyWonk application sign-in diagnostics
+
+The web application emits one `policywonk_signin` JSON event when its Boxy SAML
+sign-in JWT callback completes or fails. It records an opaque local correlation
+ID, timestamp, duration, the configured campus matched from Jackson's requested
+tenant, and the resolved application group. Unknown campus/group labels become
+`unknown`. Claim-presence flags report ePPN, email, and affiliation presence,
+not their values or validity. A `null` flag means claim processing did not reach
+that check.
+
+Stages distinguish claim processing, user upsert, group assignment, and JWT
+callback completion. `outcome: completed` means this application callback
+returned successfully; it does not prove that Auth.js issued the session cookie
+or that the browser received it. The correlation ID is local to this callback
+and is not propagated from Boxy's SAML event. Match the two services by campus
+and time when diagnosing a campus retry.
+
+Auth.js errors outside that callback emit a separate `auth_error` with an
+allowlisted error category. These events do not have a trusted campus or a
+callback duration. When Auth.js wraps an already-recorded callback Error, its
+second error event is suppressed by object identity. Auth.js warnings are
+bounded `auth_warning` events, and raw framework debug output is disabled.
+None of these events serialize profiles, claims, identity values, tokens,
+cookies, exception messages, causes, or stacks. A failed log sink cannot change
+the original authentication result. Development bypass and routine JWT refresh
+calls do not emit `policywonk_signin` events.
+
+These web events go to stdout. Enable App Service container logging on each
+PolicyWonk web app to collect them; Boxy's log settings cover only Boxy. These
+events do not add OTEL or centralized retention. Focused callback and HTTP-flow
+regressions run with `npm test` in `web/`, using synthetic identities and local
+OAuth endpoints instead of campus credentials.
 
 ## Build and test
 
@@ -60,6 +93,10 @@ Both PolicyWonk applications continue using `https://policywonk-sso.ucdavis.edu`
 The separate Azure TEST app, `policywonk-sso` in `policywonk-dev`, can run the
 same synthetic HTTP tests without registering another campus endpoint. Its
 public URL is `https://policywonk-sso.azurewebsites.net`.
+
+The in-memory matrix requires exactly one TEST broker instance because the client
+does not retain App Service affinity cookies. Verify the instance count before
+running the matrix.
 
 Back up that TEST app's settings before changing it. Use `DB_ENGINE=mem`, remove
 its database connection settings, and configure disposable SAML/OIDC keys and
