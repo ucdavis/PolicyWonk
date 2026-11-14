@@ -1,4 +1,4 @@
-# SSO diagnostics
+# SSO source build and diagnostics
 
 PolicyWonk's shared Boxy service uses stdout/stderr captured by Azure App Service container logs. There is no OTEL exporter configured for SSO. The web application's Elasticsearch chat/feedback records are a separate data path.
 
@@ -11,13 +11,39 @@ No raw XML, attributes, NameID, session identifiers, RelayState, tokens, private
 ## Build and test
 
 ```sh
-docker build --platform linux/amd64 -t policywonk-sso:diagnostics deploy/boxy
-bash deploy/boxy/tests/run.sh policywonk-sso:diagnostics
+docker build --platform linux/amd64 -t policywonk-sso:source deploy/boxy
+bash deploy/boxy/tests/run.sh policywonk-sso:source
 ```
 
-The tests generate throwaway certificates and synthetic assertions, then exercise the actual validator bundled in the image. They cover plaintext and encrypted assertions, both certificate orders, tamper rejection, concurrent request isolation, log redaction, a failed log sink, and disabling instrumentation. The existing encrypted-response/multiple-certificate failure must remain a failure in this logging-only change.
+The Docker build downloads SHA-256-verified source archives for Jackson 1.42.0
+(`ory/polis` commit `0d2d849aa99b0a36ddd2f06fa11bd6307842d6e6`) and
+`@boxyhq/saml20` 1.10.0 (`ory/saml20` commit `fee694e7e88fed7f440c8787ff87fd5586aa7bdf`).
+It applies the readable patches under `patches/` before TypeScript and Next.js
+compilation. The Next.js alias selects the compiled patched SAML library. There
+are no edits to generated JavaScript or dependencies on webpack chunk names.
 
-Jackson 1.42.0 bundles the library into Next.js webpack chunks rather than shipping editable library files. `patch.cjs` verifies the SHA-256 of all four affected chunks before inserting observation-only calls. A different image or upstream rebuild fails the build instead of silently missing an instrumentation point. On upgrade, review the upstream source and bundle, update the instrumentation and hashes, and rerun the image tests. Do not bypass the hash checks.
+The SAML fix preserves an explicit signature-reference mismatch when trying
+multiple trusted certificates. This lets the existing response validator retry
+the original encrypted response, whose signature covers the ciphertext rather
+than the decrypted assertion. Exceptions still fail validation, and the retry
+must verify a trusted signature. Certificate rollover, encryption, audience,
+expiration, and request correlation checks remain enabled.
+
+The build runs the compiled-library regression matrix using disposable keys.
+It covers plaintext, AES-128/256 encrypted assertions, outer/inner signatures,
+both certificate orders, untrusted certificates, tampering, expiration, audience,
+duplicate IDs, broken ciphertext, logging isolation/redaction, a failed log sink,
+and disabling diagnostics. The separate HTTP test runs the final image with an
+in-memory database and synthetic IdPs, then exercises authorize, encrypted ACS,
+token exchange, and userinfo. No production credentials or real assertions are
+used. These tests do not substitute for a successful campus login.
+
+Archive checksum mismatches and patch conflicts stop the build. On an upstream
+upgrade, review source changes, update pins/checksums and patches, and rerun both
+test layers. A patch that still applies is not proof of behavioral compatibility.
+Dependency installs use upstream lockfiles. This approach requires maintaining
+the source build and its dependencies, and takes longer than patching an upstream
+image. The runtime retains the patched Node 22.23.4 release used in production.
 
 ## Deployment
 

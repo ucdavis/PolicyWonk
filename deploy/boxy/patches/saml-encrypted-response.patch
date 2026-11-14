@@ -1,0 +1,13 @@
+--- a/lib/validateSignature.ts
++++ b/lib/validateSignature.ts
+@@ -73,7 +73,9 @@
+         break;
+       }
+     }
+-    if (!valid) {
++    // Preserve a reference-digest mismatch so response.ts can validate the
++    // original encrypted response. Still throw when every certificate throws.
++    if (!valid && valid !== false) {
+       throw new Error('invalid signature: Failed to verify signature against all the certificates provided.');
+     }
+   } else {

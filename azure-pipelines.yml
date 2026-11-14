@@ -49,7 +49,7 @@ stages:
         arguments: -t $(ssoImageUri)
 
     - bash: bash deploy/boxy/tests/run.sh "$(ssoImageUri)"
-      displayName: Verify SSO diagnostics preserve signature validation
+      displayName: Verify isolated SSO authentication and diagnostics
 
     # --- Login & push image (only on main) ---
     - task: Docker@2
