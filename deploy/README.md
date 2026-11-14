@@ -63,11 +63,17 @@ The active `main` ruleset requires a PR, an up-to-date branch, and the Azure Pip
 
 Keep the component path filters. Azure Pipelines [reports a neutral check when paths exclude a PR](https://learn.microsoft.com/en-us/azure/devops/release-notes/2021/sprint-194-update), and GitHub [accepts neutral required checks](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks). Unrelated changes do not need both Docker builds.
 
-## BoxyHQ source build
+## BoxyHQ Node runtime update
 
-See [SSO source build and diagnostics](boxy/README.md) for the source pins,
-patch mechanism, local build and test commands, and upgrade procedure.
-This source-build alternative has not been deployed to the shared SSO service.
+`deploy/boxy/Dockerfile` packages Jackson 1.42.0 with Node.js 22.23.4 to fix
+[CVE-2026-111497](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
+It preserves the Jackson configuration, native modules, and startup command,
+and replaces the Node executable with the official patched Node 22 binary.
+The image also includes the validator correction and instrumentation described
+in [SSO validation and diagnostics](boxy/README.md).
+The upstream Jackson image is pinned by digest. Its Alpine base and dependency
+versions are unchanged. The latest published upstream image, 26.2.0, still contains
+unpatched Node 24.14.0 as of October 23, 2026.
 
 The frontend pipeline also builds this SSO image on PRs. Only a successful build
 on `main` pushes it as `policywonkcontainers.azurecr.io/policywonk-sso:<commit SHA>`.

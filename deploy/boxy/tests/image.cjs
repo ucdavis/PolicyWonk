@@ -1,7 +1,13 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const saml = require('/app/vendor/saml20/dist').default;
-const log = require('/app/sso-diagnostics/index.cjs');
+const { createRequire } = require('node:module');
+const appRequire = createRequire('/app/server.js');
+const runtime = appRequire('./.next/server/webpack-runtime.js');
+for (const f of fs.readdirSync('/app/.next/server/chunks')) if (f.endsWith('.js')) runtime.C(appRequire('./.next/server/chunks/' + f));
+// Register the release's external dependencies without starting the HTTP server.
+const page = fs.readFileSync('/app/.next/server/pages/api/oauth/saml.js', 'utf8');
+for (const [,id,name] of page.matchAll(/(\d+):e=>\{e.exports=require\("([^"]+)"\)\}/g)) runtime.m[id] = m => { m.exports = appRequire(name); };
+const saml = runtime(19560), log = appRequire('./sso-diagnostics/index.cjs');
 const fixture = JSON.parse(fs.readFileSync('/fixtures/fixtures.json', 'utf8'));
 const records = [];
 const stdout = process.stdout.write;
@@ -65,6 +71,6 @@ async function validate(xml, cert, tenant = 'lbl') {
  process.stdout.write=stdout;
  console.log(JSON.stringify({log_sink:'throws',plain:'validated',encrypted_multi_cert:'validated'}));
  assert.deepEqual(log.shape('x'.repeat(2*1024*1024+1)),{inspected:false});
- console.log('PASS: compiled source validation, encrypted single/multi cert, rollover order, tamper rejection, isolation, redaction and disable switch');
+ console.log('PASS: actual bundled validation, encrypted single/multi cert, rollover order, tamper rejection, isolation, redaction and disable switch');
  console.log(JSON.stringify(records.find(r=>r.certificate_count===2 && r.encrypted_assertion && r.outcome==='validated')));
 })().catch(error=>{process.stdout.write=stdout;console.error(error);process.exitCode=1;});
