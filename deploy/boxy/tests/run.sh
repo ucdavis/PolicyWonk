@@ -19,6 +19,6 @@ cleanup() {
 }
 trap cleanup EXIT
 port=$(docker port "$container_id" 5225/tcp | sed 's/.*://')
-node tests/http.cjs "http://127.0.0.1:$port" "$fixtures_dir/fixtures.json"
+node tests/http.cjs "http://127.0.0.1:$port" "$fixtures_dir/fixtures.json" "$fixtures_dir/report.json"
 docker logs "$container_id" > "$fixtures_dir/container.log" 2>&1
-node tests/logs.cjs "$fixtures_dir/container.log"
+node tests/logs.cjs "$fixtures_dir/container.log" "$fixtures_dir/report.json"

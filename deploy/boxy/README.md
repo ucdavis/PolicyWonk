@@ -36,10 +36,11 @@ It covers plaintext, AES-128/256 encrypted assertions, outer/inner signatures,
 both certificate orders, untrusted certificates, tampering, expiration, audience,
 duplicate IDs, broken ciphertext, logging isolation/redaction, a failed log sink,
 and disabling diagnostics. The separate HTTP test runs the final image with an
-in-memory database and synthetic IdPs, then exercises authorize, encrypted ACS,
-token exchange, and userinfo with one or multiple signing certificates in both
-orders. It also checks rejection of tampered and request-mismatched responses
-and the emitted HTTP diagnostics. No production credentials or real assertions are
+in-memory database and synthetic IdPs, then exercises authorize, plaintext and
+encrypted ACS, token exchange, and userinfo with one
+signing certificate, both rollover orders, and duplicate certificates. It also
+checks rejection of tampered, request-mismatched, wrong-audience, expired, and
+untrusted responses and the emitted HTTP diagnostics. No production credentials or real assertions are
 used. These tests do not substitute for a successful campus login.
 
 Archive checksum mismatches and patch conflicts stop the build. On an upstream
@@ -50,8 +51,56 @@ migration command uses the dedicated [migration-tool lockfile](migrations/packag
 Native dependencies are rebuilt on the pinned Node image, and the application
 starts with `node server.js`. This approach requires maintaining
 the source build and its dependencies, and takes longer than patching an upstream
-image. The runtime retains Node 22.23.4, selected for
-[CVE-2026-111497](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases).
+image. The runtime uses the [Node 22.23.5 security release](https://nodejs.org/en/blog/release/v22.23.5).
+Jackson and its SAML dependency remain at their deployed versions.
+
+## Isolated Azure test
+
+Both PolicyWonk applications continue using `https://policywonk-sso.ucdavis.edu`.
+The separate Azure TEST app, `policywonk-sso` in `policywonk-dev`, can run the
+same synthetic HTTP tests without registering another campus endpoint. Its
+public URL is `https://policywonk-sso.azurewebsites.net`.
+
+Back up that TEST app's settings before changing it. Use `DB_ENGINE=mem`, remove
+its database connection settings, and configure disposable SAML/OIDC keys and a
+random API key. Set `SAML_AUDIENCE=https://sp.example.invalid` and `EXTERNAL_URL`
+to the TEST URL. Never copy production keys, connections, or database settings.
+Enable App Service container logging and deploy each image by immutable digest.
+Neither PolicyWonk application's `SSO_ISSUER_URL` changes.
+
+The HTTP client creates synthetic connections through the Boxy API and handles
+the OAuth callback itself. It never follows the fake IdP or callback URLs. The
+hosted target is restricted to this exact TEST hostname and requires explicit
+opt-in. To run it after securely exporting the disposable `SSO_TEST_API_KEY`:
+
+```sh
+npm ci --prefix deploy/boxy/diagnostics --ignore-scripts --no-audit --no-fund
+fixtures_dir=$(mktemp -d)
+node deploy/boxy/tests/fixtures.cjs "$fixtures_dir"
+SSO_TEST_ALLOW_HOSTED=true SSO_TEST_EXPECT=baseline \
+  node deploy/boxy/tests/http.cjs https://policywonk-sso.azurewebsites.net \
+  "$fixtures_dir/fixtures.json" /tmp/boxy-baseline-report.json
+# Deploy the candidate digest, then repeat with SSO_TEST_EXPECT=fixed and a new report.
+rm "$fixtures_dir/"*
+rmdir "$fixtures_dir"
+```
+
+The baseline must have diagnostics enabled but retain the unpatched SAML
+library. Its expected result is 5 authenticated flows and 23 denials, including
+three valid encrypted responses rejected by the bug. The candidate must
+complete all 8 valid flows and reject all 20 invalid responses. Download the
+container logs after each run, then check the matching run's events:
+
+```sh
+node deploy/boxy/tests/logs.cjs /tmp/boxy-container.log /tmp/boxy-baseline-report.json
+```
+
+The report contains only synthetic case labels and a random run identifier.
+Logs must show the candidate's successful retry against the original encrypted
+response and one redacted diagnostic per request. Restart TEST after collecting
+evidence to clear its in-memory connections and sessions. These tests verify the
+hosted broker, including token exchange and userinfo, without testing campus
+attribute release or a real PolicyWonk application session.
 
 ## Deployment
 

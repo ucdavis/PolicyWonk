@@ -1,5 +1,5 @@
 # Source pins match the deployed Jackson 1.42.0 / saml20 1.10.0 releases.
-FROM node:22.23.4-alpine@sha256:0e1754758c2df4cfa3e68d59e2e1b7374bb7fd9ea6328eaaacf15cc934af8202 AS source
+FROM node:22.23.5-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a AS source
 RUN apk add --no-cache curl git openssl python3 make g++ libc6-compat
 WORKDIR /app
 RUN curl -fsSL https://codeload.github.com/ory/polis/tar.gz/0d2d849aa99b0a36ddd2f06fa11bd6307842d6e6 -o /tmp/jackson.tar.gz \
@@ -41,12 +41,12 @@ COPY patches/jackson-diagnostics.patch /patches/jackson-diagnostics.patch
 RUN git apply --check /patches/jackson-diagnostics.patch && git apply /patches/jackson-diagnostics.patch
 RUN npm run build
 
-FROM node:22.23.4-alpine@sha256:0e1754758c2df4cfa3e68d59e2e1b7374bb7fd9ea6328eaaacf15cc934af8202 AS migration-tools
+FROM node:22.23.5-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a AS migration-tools
 WORKDIR /opt/migration-tools
 COPY migrations/package*.json ./
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
-FROM node:22.23.4-alpine@sha256:0e1754758c2df4cfa3e68d59e2e1b7374bb7fd9ea6328eaaacf15cc934af8202 AS runner
+FROM node:22.23.5-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a AS runner
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=5225 \
     NODE_OPTIONS="--max-http-header-size=81920 --dns-result-order=ipv4first"
