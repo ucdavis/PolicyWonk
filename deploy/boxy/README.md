@@ -62,11 +62,24 @@ same synthetic HTTP tests without registering another campus endpoint. Its
 public URL is `https://policywonk-sso.azurewebsites.net`.
 
 Back up that TEST app's settings before changing it. Use `DB_ENGINE=mem`, remove
-its database connection settings, and configure disposable SAML/OIDC keys and a
-random API key. Set `SAML_AUDIENCE=https://sp.example.invalid` and `EXTERNAL_URL`
-to the TEST URL. Never copy production keys, connections, or database settings.
-Enable App Service container logging and deploy each image by immutable digest.
+its database connection settings, and configure disposable SAML/OIDC keys and
+strong, random API and admin credentials. Set
+`SAML_AUDIENCE=https://sp.example.invalid` and `EXTERNAL_URL` to the TEST URL.
+Never copy production keys, connections, or database settings.
+Enable App Service container logging and set `SSO_DIAGNOSTICS_ENABLED=true`.
+Give this TEST app's managed identity `AcrPull` on the existing registry and
+configure image pulls to use that identity. Publish test-only images and deploy
+each by immutable digest.
 Neither PolicyWonk application's `SSO_ISSUER_URL` changes.
+
+For the diagnostics-only baseline, copy the `deploy/boxy` build context into a
+separate scratch directory inside the worktree. In that copy's Dockerfile, omit both the check and
+application of `saml-encrypted-response.patch`, and omit the invocation of
+`node tests/image.cjs`, which requires the fix. Keep `tests/baseline.cjs`, both
+diagnostics patches, source verification, and all other build steps. Build that
+context with a distinct baseline tag. Build the candidate from the unchanged
+`deploy/boxy` context using the command above, including its full regression
+matrix. Record both image digests and deploy the baseline first.
 
 The HTTP client creates synthetic connections through the Boxy API and handles
 the OAuth callback itself. It never follows the fake IdP or callback URLs. The
@@ -95,11 +108,17 @@ container logs after each run, then check the matching run's events:
 node deploy/boxy/tests/logs.cjs /tmp/boxy-container.log /tmp/boxy-baseline-report.json
 ```
 
-The report contains only synthetic case labels and a random run identifier.
+The report contains the random product/run identifier, expected variant, broker
+origin, and each synthetic case's tenant, mode, expected outcome, and certificate
+count. It contains no credentials, assertions, or tokens and is written only
+after the complete HTTP matrix passes.
 Logs must show the candidate's successful retry against the original encrypted
 response and one redacted diagnostic per request. Restart TEST after collecting
-evidence to clear its in-memory connections and sessions. These tests verify the
-hosted broker, including token exchange and userinfo, without testing campus
+evidence to clear its in-memory connections and sessions. Remove local disposable
+key fixtures and clear `SSO_TEST_API_KEY` from the shell after the exercise.
+Verify that the production broker and both applications' issuer settings remain
+unchanged. These tests verify the hosted broker, including token exchange and
+userinfo, without testing campus
 attribute release or a real PolicyWonk application session.
 
 ## Deployment
