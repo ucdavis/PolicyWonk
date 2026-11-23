@@ -7,7 +7,6 @@ from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
 from background.sources import apm, shared, ucd
 from db.models import Source
-from experiments import scrape_ucop
 
 EXPECTED_CRAWLER_USER_AGENT = (
     "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)"
@@ -28,7 +27,6 @@ def browser(monkeypatch):
         yield Mock(chromium=chromium)
 
     monkeypatch.setattr(shared, "async_playwright", playwright)
-    monkeypatch.setattr(scrape_ucop, "async_playwright", playwright)
     return page, new_context
 
 
@@ -118,16 +116,6 @@ def test_ellucid_uses_chrome_and_yields_policy_with_download_url(browser):
         call(homepage), call(f"{binder}/11"), call(policy_url),
         call(f"{binder}/13"), call(f"{binder}/243"), call(f"{binder}/15"),
     ]
-
-
-def test_ucop_experiment_uses_crawler_identity(browser, capsys):
-    page, new_context = browser
-    page.content = AsyncMock(return_value='<div id="accordion">Travel policy</div>')
-
-    asyncio.run(scrape_ucop.scrape_policies())
-
-    new_context.assert_awaited_once_with(user_agent=EXPECTED_CRAWLER_USER_AGENT)
-    assert "Travel policy" in capsys.readouterr().out
 
 
 def test_download_defaults_to_the_crawler_identity(monkeypatch, tmp_path):
