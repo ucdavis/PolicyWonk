@@ -177,11 +177,8 @@ this adapter's tests, replace `tests` with `tests/test_collective_bargaining.py`
 A live discovery comparison runs the old adapter from a trusted Git revision
 and the current one. It compares URLs, titles, and every original unit metadata
 association, refuses a baseline with logged errors, and saves both manifests.
-It performs no database, embedding, or search writes. The baseline adapter
-imports helpers from the checkout running the comparison. The historical
-Playwright baseline at `7e8d53c` imports the former `user_agent` constant. To
-rerun that comparison, use Chromium and run this command from `backend` at
-`1ca8ada1`, which still defines that constant.
+It performs no database, embedding, or search writes. Run the command from
+`backend` in the current checkout. The baseline at `7e8d53c` requires Chromium.
 
 ```bash
 SENTRY_DSN='' PYTHONPATH=. python -m experiments.compare_uc_contracts \

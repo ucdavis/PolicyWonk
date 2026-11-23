@@ -20,6 +20,10 @@ CHROME_USER_AGENT = (
     "(KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
 )
 
+# The historical UCnet adapter loaded by experiments.compare_uc_contracts
+# imports this name.
+user_agent = CHROME_USER_AGENT
+
 
 def request_with_retry(url, retries=5, backoff_factor=1, **kwargs):
     if 'headers' not in kwargs:
