@@ -93,7 +93,7 @@ def test_maps_complete_listing_and_uses_only_fixed_api(transport, source_url):
     transport.assert_called_once_with(
         API_URL, timeout=60,
         headers={"Accept": "application/json",
-                 "User-Agent": shared.user_agent},
+                 "User-Agent": shared.CRAWLER_USER_AGENT},
         allow_redirects=False,
     )
     reply.close.assert_called_once()

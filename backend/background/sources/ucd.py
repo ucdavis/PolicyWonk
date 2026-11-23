@@ -8,7 +8,7 @@ from typing import AsyncIterator, List, Optional, Tuple
 
 from background.logger import setup_logger
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent, get_browser_page
+from background.sources.shared import CHROME_USER_AGENT, get_browser_page
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -51,7 +51,8 @@ class UcdPolicyManualDocumentStream(DocumentStream):
         - The policies are organized by binders.
         - Each policy page contains an iframe with the actual PDF source.
         """
-        async with get_browser_page(user_agent) as page:
+        # Ellucid's policy grid fails to populate with the crawler identity.
+        async with get_browser_page(CHROME_USER_AGENT) as page:
             # before anything else, we need to navigate to the homepage
             await page.goto(base_url)
 
