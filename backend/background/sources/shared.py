@@ -12,16 +12,25 @@ from background.logger import setup_logger
 
 logger = setup_logger()
 
-# safe user agent
-user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+CRAWLER_USER_AGENT = (
+    "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)"
+)
+CHROME_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
+)
+
+# The historical UCnet adapter loaded by experiments.compare_uc_contracts
+# imports this name.
+user_agent = CHROME_USER_AGENT
 
 
 def request_with_retry(url, retries=5, backoff_factor=1, **kwargs):
     if 'headers' not in kwargs:
-        kwargs['headers'] = {'User-Agent': user_agent}
+        kwargs['headers'] = {'User-Agent': CRAWLER_USER_AGENT}
     else:
         if 'User-Agent' not in kwargs['headers']:
-            kwargs['headers']['User-Agent'] = user_agent
+            kwargs['headers']['User-Agent'] = CRAWLER_USER_AGENT
 
     """
     Sends a GET request to the specified URL with retry mechanism.
@@ -68,9 +77,8 @@ def request_with_retry(url, retries=5, backoff_factor=1, **kwargs):
 
 def download_document(url: str, dir: str) -> tuple[Optional[str], Optional[str]]:
     """ Download the document and return a path to the downloaded file and the content type """
-    headers = {"User-Agent": user_agent}
     response = request_with_retry(
-        url, headers=headers, allow_redirects=True, timeout=60, stream=True
+        url, allow_redirects=True, timeout=60, stream=True
     )
 
     if not response:

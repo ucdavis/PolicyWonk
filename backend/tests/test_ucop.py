@@ -92,8 +92,10 @@ def test_maps_complete_listing_and_uses_only_fixed_api(transport, source_url):
     datetime.fromisoformat(docs[0].last_modified)
     transport.assert_called_once_with(
         API_URL, timeout=60,
-        headers={"Accept": "application/json",
-                 "User-Agent": shared.user_agent},
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)",
+        },
         allow_redirects=False,
     )
     reply.close.assert_called_once()

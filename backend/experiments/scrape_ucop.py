@@ -3,7 +3,7 @@
 import asyncio
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
-from background.sources.shared import user_agent
+from background.sources.shared import CRAWLER_USER_AGENT
 
 # UCOP Policies are on `https://policy.ucop.edu`
 base_url = "https://policy.ucop.edu"
@@ -17,7 +17,7 @@ async def scrape_policies():
     async with async_playwright() as p:
         # Launch browser with custom user agent
         browser = await p.chromium.launch()
-        context = await browser.new_context(user_agent=user_agent)
+        context = await browser.new_context(user_agent=CRAWLER_USER_AGENT)
 
         # Create new page and navigate to UCOP policies
         page = await context.new_page()

@@ -69,6 +69,9 @@ def site(monkeypatch):
     def get(url, **kwargs):
         assert kwargs["timeout"] == 30
         assert kwargs["allow_redirects"] is False
+        assert kwargs["headers"]["User-Agent"] == (
+            "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)"
+        )
         value = pages[url]
         if isinstance(value, Exception):
             raise value

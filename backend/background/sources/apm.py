@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup, Tag
 from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError
 
 from background.sources.document_stream import DocumentStream
-from background.sources.shared import user_agent, get_browser_page
+from background.sources.shared import CRAWLER_USER_AGENT, get_browser_page
 from db.models import Source
 from models.document_details import DocumentDetails
 
@@ -28,12 +28,14 @@ class UcdApmStream(DocumentStream):
         return urljoin(base_url, "apm/apm-toc")
 
     async def get_apm_links(self, page: Page, url: str) -> List[DocumentDetails]:
-        """
-        Navigate to the given URL, wait for the main content to load, and then extract
-        all PDF links from the content.
+        """Read PDF links from the APM catalog.
+
+        Wait for DOMContentLoaded and then for the catalog content. Waiting for
+        the full page load can time out before extraction starts.
+        Resolve relative PDF links against the catalog URL. Keep absolute URLs.
         """
         policy_link_info_list: List[DocumentDetails] = []
-        await page.goto(url)
+        await page.goto(url, wait_until="domcontentloaded")
         try:
             await page.wait_for_selector("#block-sitefarm-one-content", timeout=10000)
         except PlaywrightTimeoutError as e:
@@ -55,8 +57,9 @@ class UcdApmStream(DocumentStream):
             if not href or not title:
                 continue
             if href.endswith(".pdf"):
-                logger.info(f"Found PDF link: {href}")
-                policy_link_info_list.append(DocumentDetails(title, href))
+                pdf_url = urljoin(url, href)
+                logger.info(f"Found PDF link: {pdf_url}")
+                policy_link_info_list.append(DocumentDetails(title, pdf_url))
         return policy_link_info_list
 
     async def __aiter__(self) -> AsyncIterator[DocumentDetails]:
@@ -64,7 +67,7 @@ class UcdApmStream(DocumentStream):
         Asynchronously iterate over the APM policies.
         Uses the get_browser_page context manager to handle browser lifecycle.
         """
-        async with get_browser_page(user_agent) as page:
+        async with get_browser_page(CRAWLER_USER_AGENT) as page:
             policy_links: List[DocumentDetails] = await self.get_apm_links(page, self.apm_url)
             for policy in policy_links:
                 yield policy
