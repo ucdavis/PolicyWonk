@@ -33,9 +33,7 @@ class UcdApmStream(DocumentStream):
         all PDF links from the content.
         """
         policy_link_info_list: List[DocumentDetails] = []
-        response = await page.goto(url, wait_until="domcontentloaded")
-        if response is not None and not response.ok:
-            raise ValueError(f"APM catalog returned HTTP {response.status}")
+        await page.goto(url, wait_until="domcontentloaded")
         try:
             await page.wait_for_selector("#block-sitefarm-one-content", timeout=10000)
         except PlaywrightTimeoutError as e:
