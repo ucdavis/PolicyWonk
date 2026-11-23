@@ -54,12 +54,17 @@ Playing with using playwright for browser automation instead of selenium (mostly
 
 Install Chromium and its system dependencies for adapters that use Playwright.
 The [UC contracts adapter](#uc-contracts-discovery) uses HTTP requests and does
-not require a browser. Its comparison command still needs Chromium to run the
-old adapter.
+not require a browser.
 
 ```bash
 playwright install chromium && playwright install-deps chromium
 ```
+
+APM discovery, UCOP and UCnet listings, and direct document downloads use
+`CRAWLER_USER_AGENT`. SiteFarm allow-lists that exact value for the APM catalog.
+Ellucid discovery uses `CHROME_USER_AGENT`. Both values are defined in
+[`background/sources/shared.py`](background/sources/shared.py). Callers of the
+shared HTTP helper can supply their own `User-Agent`.
 
 # Fun with LLMs
 
@@ -172,8 +177,11 @@ this adapter's tests, replace `tests` with `tests/test_collective_bargaining.py`
 A live discovery comparison runs the old adapter from a trusted Git revision
 and the current one. It compares URLs, titles, and every original unit metadata
 association, refuses a baseline with logged errors, and saves both manifests.
-It performs no database, embedding, or search writes. This command uses the
-pre-change adapter at `7e8d53c` and requires Chromium for that baseline only:
+It performs no database, embedding, or search writes. The baseline adapter
+imports helpers from the checkout running the comparison. The historical
+Playwright baseline at `7e8d53c` imports the former `user_agent` constant. To
+rerun that comparison, use Chromium and run this command from `backend` at
+`1ca8ada1`, which still defines that constant.
 
 ```bash
 SENTRY_DSN='' PYTHONPATH=. python -m experiments.compare_uc_contracts \

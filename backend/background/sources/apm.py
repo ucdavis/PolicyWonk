@@ -28,9 +28,11 @@ class UcdApmStream(DocumentStream):
         return urljoin(base_url, "apm/apm-toc")
 
     async def get_apm_links(self, page: Page, url: str) -> List[DocumentDetails]:
-        """
-        Navigate to the given URL, wait for the main content to load, and then extract
-        all PDF links from the content.
+        """Read PDF links from the APM catalog.
+
+        Wait for DOMContentLoaded and then for the catalog content. Waiting for
+        the full page load can time out before extraction starts.
+        Resolve relative PDF links against the catalog URL. Keep absolute URLs.
         """
         policy_link_info_list: List[DocumentDetails] = []
         await page.goto(url, wait_until="domcontentloaded")

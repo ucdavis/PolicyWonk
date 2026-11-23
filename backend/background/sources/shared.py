@@ -12,7 +12,9 @@ from background.logger import setup_logger
 
 logger = setup_logger()
 
-CRAWLER_USER_AGENT = "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)"
+CRAWLER_USER_AGENT = (
+    "UCDavis-PolicyWonk-Crawler/1.0 (+https://policywonk.ucdavis.edu/)"
+)
 CHROME_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36"
